@@ -1,0 +1,63 @@
+---
+bootstrap:
+  # Default is working directory
+  directory: '{{tusk_root}}'
+  script:
+    - when:
+        exists:
+          - Brewfile
+        os:
+          - Darwin
+      run:
+        - brew bundle
+
+    - when:
+        exists:
+          - .ruby-version
+        test:
+          - -z "$(rbenv version-name 2>/dev/null)"
+      run:
+        - rbenv install --skip-existing
+        - which bundle >/dev/null 2>&1 || { gem install bundler; rbenv rehash }
+
+    - when:
+        exists:
+          - ./Gemfile
+      run:
+        - bundle check --path vendor/gems >/dev/null 2>&1 || bundle install --path vendor/gems --quiet --without production
+
+console:
+  args:
+    - name: env
+      alias:
+        - environment
+      # Arguments with a default are not required
+      default: local
+  directory: '{{tusk_root}}'
+  script:
+    # TODO: Support `else`
+    - when:
+        test: '{{env}} = production'
+      run: heroku run rails console --app heroku-app-name-staging
+    - when:
+        test: '{{env}} = staging'
+      run: heroku run rails console --app heroku-app-name-staging
+    - when:
+        test: '{{env}} = local'
+      run:
+        - script/update
+        - bin/rails console
+
+test:
+  directory: '{{tusk_root}}'
+  pre:
+    - bootstrap
+  script:
+    - run: bin/rake db:create db:reset
+    - when:
+        test:
+          - -z "$RAILS_ENV"
+          - -z "$RACK_ENV"
+      run:
+        # Only things for a development environment will run here
+        - true

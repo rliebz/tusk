@@ -2,62 +2,36 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"runtime"
-	"sort"
 	"strings"
 
 	"github.com/urfave/cli"
 	yaml "gopkg.in/yaml.v2"
 )
 
-// TODO: Read from file
-var data = `
-test:
-  usage: run application tests
-  args:
-    - name: env
-      alias:
-        - environment
-      default: local
-      usage: An environment in which to run
-      environment: TUSK_ENV
-  pre:
-    - bootstrap
-  script:
-    - run:
-      - echo "Hello, world!"
-    - run:
-        # Only things for a development environment will run here
-        - echo "Foo exists!"
-      when:
-        exists:
-          - foo.json
-        os:
-          - darwin
-        test:
-          - -z "$RAILS_ENV"
-          - -z "$RACK_ENV"
-
-`
-
+// TODO: Handle errors
 func execCommand(cmd string) {
-	fmt.Printf("Running command: %v\n", cmd)
-
 	parts := strings.Fields(cmd)
 	head := parts[0]
-	args := parts[1:len(parts)]
+	args := parts[1:]
 
 	out, err := exec.Command(head, args...).Output()
 	if err != nil {
-		fmt.Printf("%s", err)
+		fmt.Printf("Error: %s\n", err)
 	}
 	if len(out) != 0 {
 		fmt.Printf("%s", out)
 	}
+}
 
+func testCommand(test string) error {
+	args := strings.Fields(test)
+	_, err := exec.Command("test", args...).Output()
+	return err
 }
 
 // Task is a single task to be run by CLI
@@ -87,16 +61,16 @@ type Script struct {
 	Run []string
 }
 
+// TODO: Check for errors
 func run(task Task) error {
-	// TODO: Check for errors
 	for _, script := range task.Script {
 		runScript(script)
 	}
 	return nil
 }
 
+// TODO: Check for errors
 func runScript(script Script) {
-	// TODO: Check for errors
 
 	for _, f := range script.When.Exists {
 		if _, err := os.Stat(f); os.IsNotExist(err) {
@@ -114,7 +88,10 @@ func runScript(script Script) {
 
 	for _, test := range script.When.Test {
 		// TODO: Execute tests with `exec`
-		fmt.Printf("Skipping test: %s\n", test)
+		if err := testCommand(test); err != nil {
+			fmt.Printf("Test failed: %s\n", test)
+			return
+		}
 	}
 
 	for _, command := range script.Run {
@@ -123,21 +100,39 @@ func runScript(script Script) {
 	}
 }
 
-func parseArgs(tasks map[string]Task) {
+func createCLIApp() {
 	app := cli.NewApp()
 	app.Name = "tusk"
 	app.HelpName = "tusk"
-	app.Usage = "a task runner built for simple configuration"
-	// app.UsageText = ""
+	app.Usage = "a task runner built with simple configuration in mind"
+
+	tasks, err := readTuskfile("tusk.yml")
+	if os.IsNotExist(err) {
+		fmt.Printf("No tusk.yml found\n\n")
+	}
 
 	for name, task := range tasks {
 		app.Commands = append(app.Commands, createCommand(name, task))
 	}
 
-	// sort.Sort(cli.FlagsByName(app.Flags))
-	sort.Sort(cli.CommandsByName(app.Commands))
-
 	app.Run(os.Args)
+}
+
+func readTuskfile(filename string) (map[string]Task, error) {
+
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	tasks := make(map[string]Task)
+	err = yaml.Unmarshal(data, &tasks)
+	if err != nil {
+		log.Printf("error: %v\n", err)
+		return nil, err
+	}
+
+	return tasks, nil
 }
 
 func createCommand(name string, task Task) cli.Command {
@@ -149,6 +144,7 @@ func createCommand(name string, task Task) cli.Command {
 			return run(task)
 		},
 	}
+
 	for _, arg := range task.Args {
 		// TODO: Flag types
 		flag := cli.StringFlag{
@@ -163,13 +159,5 @@ func createCommand(name string, task Task) cli.Command {
 }
 
 func main() {
-
-	tasks := make(map[string]Task)
-	err := yaml.Unmarshal([]byte(data), &tasks)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	parseArgs(tasks)
-
+	createCLIApp()
 }
