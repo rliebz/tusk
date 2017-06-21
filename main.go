@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -14,18 +15,65 @@ import (
 )
 
 // TODO: Handle errors
-func execCommand(cmd string) {
-	parts := strings.Fields(cmd)
+func execCommand(command string) error {
+	parts := strings.Fields(command)
 	head := parts[0]
 	args := parts[1:]
 
-	out, err := exec.Command(head, args...).Output()
+	cmd := exec.Command(head, args...)
+	printCommand(cmd)
+
+	pr, pw, err := os.Pipe()
 	if err != nil {
-		fmt.Printf("Error: %s\n", err)
+		return err
 	}
-	if len(out) != 0 {
-		fmt.Printf("%s", out)
+
+	// TODO: Is it possible to keep the output ordered and separate?
+	cmd.Stdout = pw
+	cmd.Stderr = pw
+
+	scanner := bufio.NewScanner(pr)
+	go func() {
+		for scanner.Scan() {
+			printCommandStdout(scanner.Text())
+		}
+	}()
+
+	// stdoutReader, err := cmd.StdoutPipe()
+	// if err != nil {
+	// 	printError(err)
+	// 	return err
+	// }
+	// stdoutScanner := bufio.NewScanner(stdoutReader)
+	// go func() {
+	// 	for stdoutScanner.Scan() {
+	// 		printCommandStdout(stdoutScanner.Text())
+	// 	}
+	// }()
+
+	// // TODO: Fix race condition for stderr/stdout ordering
+	// stderrReader, err := cmd.StderrPipe()
+	// if err != nil {
+	// 	printError(err)
+	// 	return err
+	// }
+	// stderrScanner := bufio.NewScanner(stderrReader)
+	// go func() {
+	// 	for stderrScanner.Scan() {
+	// 		printCommandStderr(stderrScanner.Text())
+	// 	}
+	// }()
+
+	if err := cmd.Run(); err != nil {
+		printError(err)
+		return err
 	}
+
+	// TODO: Do we need these?
+	pr.Close()
+	pw.Close()
+
+	return nil
 }
 
 func testCommand(test string) error {
