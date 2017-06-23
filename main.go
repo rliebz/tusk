@@ -8,56 +8,42 @@ import (
 	"github.com/urfave/cli"
 	yaml "gopkg.in/yaml.v2"
 
-	"gitlab.com/rliebz/tusk/script"
+	"gitlab.com/rliebz/tusk/task"
 	"gitlab.com/rliebz/tusk/ui"
 )
 
-// Task is a single task to be run by CLI
-type Task struct {
-	Args   []Arg    `yaml:",omitempty"`
-	Pre    []string `yaml:",omitempty"`
-	Script []script.Script
-	Usage  string
-}
-
-// Arg represents a command line argument
-type Arg struct {
-	Name        string
-	Alias       []string // TODO: How does urfave/cli support?
-	Default     string
-	Environment string
-	Usage       string
-}
-
-func run(task Task) error {
-	for _, script := range task.Script {
-		if err := script.Execute(); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func createCLIApp(tasks map[string]Task) *cli.App {
+func createCLIApp(tasks map[string]*task.Task) *cli.App {
 	app := cli.NewApp()
 	app.Name = "tusk"
 	app.HelpName = "tusk"
 	app.Usage = "a task runner built with simple configuration in mind"
 
+	taskMap := make(map[string]*task.Task)
+
+	// Create commands
 	for name, task := range tasks {
+		taskMap[name] = task
 		app.Commands = append(app.Commands, createCommand(name, task))
 	}
+
+	// Update pretasks
+	for _, task := range tasks {
+		for _, name := range task.PreName {
+			task.PreTasks = append(task.PreTasks, taskMap[name])
+		}
+	}
+
 	return app
 }
 
-func readTuskfile(filename string) (map[string]Task, error) {
+func readTuskfile(filename string) (map[string]*task.Task, error) {
 
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
 
-	tasks := make(map[string]Task)
+	tasks := make(map[string]*task.Task)
 	err = yaml.Unmarshal(data, &tasks)
 	if err != nil {
 		log.Printf("error: %v\n", err)
@@ -67,13 +53,13 @@ func readTuskfile(filename string) (map[string]Task, error) {
 	return tasks, nil
 }
 
-func createCommand(name string, task Task) cli.Command {
+func createCommand(name string, task *task.Task) cli.Command {
 
 	command := cli.Command{
 		Name:  name,
 		Usage: task.Usage,
 		Action: func(c *cli.Context) error {
-			return run(task)
+			return task.Execute()
 		},
 	}
 

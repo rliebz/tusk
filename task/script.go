@@ -1,4 +1,4 @@
-package script
+package task
 
 import (
 	"bufio"
@@ -48,7 +48,6 @@ func (script Script) Execute() error {
 	}
 
 	for _, command := range script.Run {
-		// TODO: Capture return value
 		err := execCommand(command)
 		if err != nil {
 			return err
@@ -60,7 +59,7 @@ func (script Script) Execute() error {
 
 func testCommand(test string) error {
 	args := strings.Fields(test)
-	_, err := exec.Command("test", args...).Output()
+	_, err := exec.Command("test", args...).Output() // nolint: gas
 	return err
 }
 
@@ -72,7 +71,7 @@ func execCommand(command string) error {
 	head := parts[0]
 	args := parts[1:]
 
-	cmd := exec.Command(head, args...)
+	cmd := exec.Command(head, args...) // nolint: gas
 
 	pr, pw, err := os.Pipe()
 	if err != nil {
