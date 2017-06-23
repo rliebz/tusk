@@ -20,6 +20,12 @@
   version = "v0.0.2"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   name = "github.com/urfave/cli"
   packages = ["."]
   revision = "0bdeddeeb0f650497d603c4ad7b20cfe685682f6"
@@ -40,6 +46,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "55fdad96fef5421edce9150141b62734058dacb2103b7fd19b59ae3fe0af0447"
+  inputs-digest = "0139ba6d52f625c5ff8b6a7a338cb75e05f803d60b77abfda3ab361921123f13"
   solver-name = "gps-cdcl"
   solver-version = 1

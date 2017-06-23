@@ -1,96 +1,26 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
-	"runtime"
-	"strings"
 
 	"github.com/urfave/cli"
 	yaml "gopkg.in/yaml.v2"
+
+	"gitlab.com/rliebz/tusk/script"
+	"gitlab.com/rliebz/tusk/ui"
 )
-
-// TODO: Handle errors
-func execCommand(command string) error {
-	parts := strings.Fields(command)
-	head := parts[0]
-	args := parts[1:]
-
-	cmd := exec.Command(head, args...)
-	printCommand(cmd)
-
-	pr, pw, err := os.Pipe()
-	if err != nil {
-		return err
-	}
-
-	// TODO: Is it possible to keep the output ordered and separate?
-	cmd.Stdout = pw
-	cmd.Stderr = pw
-
-	scanner := bufio.NewScanner(pr)
-	go func() {
-		for scanner.Scan() {
-			printCommandStdout(scanner.Text())
-		}
-	}()
-
-	// stdoutReader, err := cmd.StdoutPipe()
-	// if err != nil {
-	// 	printError(err)
-	// 	return err
-	// }
-	// stdoutScanner := bufio.NewScanner(stdoutReader)
-	// go func() {
-	// 	for stdoutScanner.Scan() {
-	// 		printCommandStdout(stdoutScanner.Text())
-	// 	}
-	// }()
-
-	// // TODO: Fix race condition for stderr/stdout ordering
-	// stderrReader, err := cmd.StderrPipe()
-	// if err != nil {
-	// 	printError(err)
-	// 	return err
-	// }
-	// stderrScanner := bufio.NewScanner(stderrReader)
-	// go func() {
-	// 	for stderrScanner.Scan() {
-	// 		printCommandStderr(stderrScanner.Text())
-	// 	}
-	// }()
-
-	if err := cmd.Run(); err != nil {
-		printError(err)
-		return err
-	}
-
-	// TODO: Do we need these?
-	pr.Close()
-	pw.Close()
-
-	return nil
-}
-
-func testCommand(test string) error {
-	args := strings.Fields(test)
-	_, err := exec.Command("test", args...).Output()
-	return err
-}
 
 // Task is a single task to be run by CLI
 type Task struct {
 	Args   []Arg    `yaml:",omitempty"`
 	Pre    []string `yaml:",omitempty"`
-	Script []Script
+	Script []script.Script
 	Usage  string
 }
 
-// Arg is a command line argument
+// Arg represents a command line argument
 type Arg struct {
 	Name        string
 	Alias       []string // TODO: How does urfave/cli support?
@@ -99,71 +29,25 @@ type Arg struct {
 	Usage       string
 }
 
-// Script is a single script within a task
-type Script struct {
-	When struct {
-		Exists []string `yaml:",omitempty"`
-		OS     []string `yaml:",omitempty"`
-		Test   []string `yaml:",omitempty"`
-	} `yaml:",omitempty"`
-	Run []string
-}
-
-// TODO: Check for errors
 func run(task Task) error {
 	for _, script := range task.Script {
-		runScript(script)
+		if err := script.Execute(); err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-// TODO: Check for errors
-func runScript(script Script) {
-
-	for _, f := range script.When.Exists {
-		if _, err := os.Stat(f); os.IsNotExist(err) {
-			fmt.Printf("File not found: %s\n", f)
-			return
-		}
-	}
-
-	for _, os := range script.When.OS {
-		if runtime.GOOS != os {
-			fmt.Printf("Unexpected Architecture: %s\n", os)
-			return
-		}
-	}
-
-	for _, test := range script.When.Test {
-		// TODO: Execute tests with `exec`
-		if err := testCommand(test); err != nil {
-			fmt.Printf("Test failed: %s\n", test)
-			return
-		}
-	}
-
-	for _, command := range script.Run {
-		// TODO: Capture return value
-		execCommand(command)
-	}
-}
-
-func createCLIApp() {
+func createCLIApp(tasks map[string]Task) *cli.App {
 	app := cli.NewApp()
 	app.Name = "tusk"
 	app.HelpName = "tusk"
 	app.Usage = "a task runner built with simple configuration in mind"
 
-	tasks, err := readTuskfile("tusk.yml")
-	if os.IsNotExist(err) {
-		fmt.Printf("No tusk.yml found\n\n")
-	}
-
 	for name, task := range tasks {
 		app.Commands = append(app.Commands, createCommand(name, task))
 	}
-
-	app.Run(os.Args)
+	return app
 }
 
 func readTuskfile(filename string) (map[string]Task, error) {
@@ -207,5 +91,13 @@ func createCommand(name string, task Task) cli.Command {
 }
 
 func main() {
-	createCLIApp()
+	tasks, err := readTuskfile("tusk.yml")
+	if err != nil {
+		log.Fatal("Could not parse Tuskfile")
+	}
+
+	app := createCLIApp(tasks)
+	if err := app.Run(os.Args); err != nil {
+		ui.PrintError(err)
+	}
 }

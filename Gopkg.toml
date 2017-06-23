@@ -22,6 +22,14 @@
 
 
 [[constraint]]
+  name = "github.com/fatih/color"
+  version = "1.5.0"
+
+[[constraint]]
+  name = "github.com/pkg/errors"
+  version = "0.8.0"
+
+[[constraint]]
   name = "github.com/urfave/cli"
   version = "1.19.1"
 
