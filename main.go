@@ -10,8 +10,6 @@ import (
 	"gitlab.com/rliebz/tusk/ui"
 )
 
-var name = "tusk"
-
 func createCLIApp(tasks map[string]*task.Task) *cli.App {
 	app := cli.NewApp()
 	app.Usage = "a task runner built with simple configuration in mind"

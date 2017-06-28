@@ -4,8 +4,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
-	"github.com/pkg/errors"
+	"path"
+	"path/filepath"
 
 	"gitlab.com/rliebz/tusk/task"
 	yaml "gopkg.in/yaml.v2"
@@ -14,44 +14,68 @@ import (
 // DefaultTuskfile is the default name for a Tuskfile.
 var DefaultTuskfile = "tusk.yml"
 
-func parseFileFlag(args []string) (string, error) {
+func parseFileFlag(args []string) (tuskfile string, passed bool) {
 	for i, arg := range args {
 		if arg == "-f" || arg == "--file" {
 			if i == len(args)-1 {
 				// This error will be handled during cli.App#Run()
-				return "", nil
+				return "", false
 			}
 			filename := args[i+1]
-			return filename, nil
+			return filename, true
 		}
 	}
 
-	return "", nil
+	return "", false
 }
 
-func findTuskfile() (string, error) {
-	// TODO: Search upwards through directories
-	// TODO: Is no tuskfile an error?
-	if _, err := os.Stat(DefaultTuskfile); os.IsNotExist(err) {
-		return "", errors.Wrap(err, "Could not find a tuskfile")
+func findTuskfile() (tuskfile string, found bool, err error) {
+	dirpath, err := os.Getwd()
+	if err != nil {
+		return "", false, err
 	}
 
-	return DefaultTuskfile, nil
+	for dirpath != "/" {
+		tuskfile, found, err = findTuskfileInDir(dirpath)
+		if err != nil || found {
+			return tuskfile, found, err
+		}
+		dirpath = filepath.Dir(dirpath)
+	}
+
+	return "", false, nil
+}
+
+func findTuskfileInDir(dirpath string) (tuskfile string, found bool, err error) {
+
+	tuskfile = path.Join(dirpath, DefaultTuskfile)
+	if _, err := os.Stat(tuskfile); err != nil {
+		if os.IsNotExist(err) {
+			return "", false, nil
+		}
+		return "", false, err
+	}
+
+	return tuskfile, true, nil
 }
 
 // ReadTuskfile parses the contents of a tusk file
 func ReadTuskfile() (map[string]*task.Task, error) {
+	tasks := make(map[string]*task.Task)
+	found := false
 
-	filename, err := parseFileFlag(os.Args)
-	if err != nil {
-		return nil, err
-	}
+	filename, passed := parseFileFlag(os.Args)
 
-	if filename == "" {
-		filename, err = findTuskfile()
+	if !passed {
+		var err error
+		filename, found, err = findTuskfile()
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if !passed && !found {
+		return tasks, nil
 	}
 
 	data, err := ioutil.ReadFile(filename)
@@ -59,7 +83,6 @@ func ReadTuskfile() (map[string]*task.Task, error) {
 		return nil, err
 	}
 
-	tasks := make(map[string]*task.Task)
 	err = yaml.Unmarshal(data, &tasks)
 	if err != nil {
 		log.Printf("error: %v\n", err)
