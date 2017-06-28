@@ -1,13 +1,12 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 
 	"github.com/urfave/cli"
-	yaml "gopkg.in/yaml.v2"
 
+	"gitlab.com/rliebz/tusk/config"
 	"gitlab.com/rliebz/tusk/task"
 	"gitlab.com/rliebz/tusk/ui"
 )
@@ -36,23 +35,6 @@ func createCLIApp(tasks map[string]*task.Task) *cli.App {
 	return app
 }
 
-func readTuskfile(filename string) (map[string]*task.Task, error) {
-
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	tasks := make(map[string]*task.Task)
-	err = yaml.Unmarshal(data, &tasks)
-	if err != nil {
-		log.Printf("error: %v\n", err)
-		return nil, err
-	}
-
-	return tasks, nil
-}
-
 func createCommand(name string, task *task.Task) cli.Command {
 
 	command := cli.Command{
@@ -77,7 +59,7 @@ func createCommand(name string, task *task.Task) cli.Command {
 }
 
 func main() {
-	tasks, err := readTuskfile("tusk.yml")
+	tasks, err := config.ReadTuskfile("tusk.yml")
 	if err != nil {
 		log.Fatal("Could not parse Tuskfile")
 	}
