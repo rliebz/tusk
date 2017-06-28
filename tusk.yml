@@ -12,3 +12,4 @@ test:
   script:
     - run:
         - gometalinter.v1 --vendor ./...
+        - go test $(go list ./... | grep -v '/tusk/vendor/')
