@@ -67,11 +67,7 @@ func testCommand(test string) error {
 func execCommand(command string) error {
 	ui.PrintCommand(command)
 
-	parts := strings.Fields(command)
-	head := parts[0]
-	args := parts[1:]
-
-	cmd := exec.Command(head, args...) // nolint: gas
+	cmd := exec.Command("sh", "-c", command) // nolint: gas
 
 	pr, pw, err := os.Pipe()
 	if err != nil {
