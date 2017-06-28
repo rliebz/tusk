@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/urfave/cli"
@@ -11,11 +10,19 @@ import (
 	"gitlab.com/rliebz/tusk/ui"
 )
 
+var name = "tusk"
+
 func createCLIApp(tasks map[string]*task.Task) *cli.App {
 	app := cli.NewApp()
-	app.Name = "tusk"
-	app.HelpName = "tusk"
 	app.Usage = "a task runner built with simple configuration in mind"
+	app.HideVersion = true
+
+	// This flag must be read directly before calling `*cli.App#Run()`
+	// It is only part of the cli.App for use with `tusk help`
+	app.Flags = append(app.Flags, cli.StringFlag{
+		Name:  "file, f",
+		Usage: "Set `FILE` to use as the Tuskfile",
+	})
 
 	taskMap := make(map[string]*task.Task)
 
@@ -59,9 +66,10 @@ func createCommand(name string, task *task.Task) cli.Command {
 }
 
 func main() {
-	tasks, err := config.ReadTuskfile("tusk.yml")
+	tasks, err := config.ReadTuskfile()
 	if err != nil {
-		log.Fatal("Could not parse Tuskfile")
+		ui.PrintError(err)
+		return
 	}
 
 	app := createCLIApp(tasks)
