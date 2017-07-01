@@ -33,7 +33,7 @@ func CreateCLIFlag(name string, arg *Arg) (cli.Flag, error) {
 	case "string", "":
 		return createStringFlag(name, arg)
 	default:
-		return nil, fmt.Errorf("unsupported flag type: %s", arg.Type)
+		return nil, fmt.Errorf("unsupported flag type `%s`", arg.Type)
 	}
 }
 
@@ -41,7 +41,7 @@ func createIntFlag(name string, arg *Arg) (cli.Flag, error) {
 	value, ok := arg.Default.(int)
 	if arg.Default != nil && !ok {
 		return nil, fmt.Errorf(
-			"default value %s for arg `%s` is not of type int",
+			"default value `%s` for arg `%s` is not of type int",
 			arg.Default, name,
 		)
 	}
@@ -58,7 +58,7 @@ func createFloatFlag(name string, arg *Arg) (cli.Flag, error) {
 	value, ok := arg.Default.(float64)
 	if arg.Default != nil && !ok {
 		return nil, fmt.Errorf(
-			"default value %s for arg `%s` is not of type float",
+			"default value `%s` for arg `%s` is not of type float",
 			arg.Default, name,
 		)
 	}
@@ -75,7 +75,7 @@ func createBoolFlag(name string, arg *Arg) (cli.Flag, error) {
 	trueByDefault, ok := arg.Default.(bool)
 	if arg.Default != nil && !ok {
 		return nil, fmt.Errorf(
-			"default value %s for arg `%s` is not of type bool",
+			"default value `%s` for arg `%s` is not of type bool",
 			arg.Default, name,
 		)
 	}
@@ -99,7 +99,7 @@ func createStringFlag(name string, arg *Arg) (cli.Flag, error) {
 	value, ok := arg.Default.(string)
 	if arg.Default != nil && !ok {
 		return nil, fmt.Errorf(
-			"default value %s for arg `%s` is not of type string",
+			"default value `%s` for arg `%s` is not of type string",
 			arg.Default, name,
 		)
 	}

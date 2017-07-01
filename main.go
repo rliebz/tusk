@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
 	"gitlab.com/rliebz/tusk/config"
@@ -10,38 +12,63 @@ import (
 	"gitlab.com/rliebz/tusk/ui"
 )
 
-func createCLIApp(tuskfile *config.Config) (*cli.App, error) {
+func main() {
+	app := createCLIApp()
+
+	cfg, err := config.ReadTuskfile()
+	if err != nil {
+		printErrorWithHelp(err)
+		return
+	}
+
+	if err := addTasks(app, cfg); err != nil {
+		printErrorWithHelp(err)
+		return
+	}
+
+	if err := app.Run(os.Args); err != nil {
+		ui.PrintError(err)
+	}
+}
+
+func createCLIApp() *cli.App {
 	app := cli.NewApp()
 	app.Usage = "a task runner built with simple configuration in mind"
 	app.HideVersion = true
+	app.HideHelp = true
 
-	// This flag must be read directly before calling `*cli.App#Run()`
-	// It is only part of the cli.App for use with `tusk help`
-	app.Flags = append(app.Flags, cli.StringFlag{
-		Name:  "file, f",
-		Usage: "Set `FILE` to use as the Tuskfile",
-	})
+	app.Flags = append(app.Flags,
+		cli.HelpFlag,
+		// The file flag will be read directly before calling `*cli.App#Run()`
+		// It is only part of the cli.App for use with `tusk help`
+		cli.StringFlag{
+			Name:  "file, f",
+			Usage: "Set `FILE` to use as the Tuskfile",
+		},
+	)
 
-	taskMap := make(map[string]*task.Task)
+	return app
+}
+
+func addTasks(app *cli.App, cfg *config.Config) error {
 
 	// Create commands
-	for name, task := range tuskfile.Tasks {
-		taskMap[name] = task
-		command, err := createCommand(name, task)
+	for name, t := range cfg.Tasks {
+		command, err := createCommand(name, t)
 		if err != nil {
-			return nil, err
+			return errors.Wrapf(err, "could not create command `%s`", name)
 		}
 		app.Commands = append(app.Commands, *command)
 	}
 
 	// Update pretasks
-	for _, task := range tuskfile.Tasks {
-		for _, name := range task.PreName {
-			task.PreTasks = append(task.PreTasks, taskMap[name])
+	for _, t := range cfg.Tasks {
+		for _, name := range t.PreName {
+			t.PreTasks = append(t.PreTasks, cfg.Tasks[name])
 		}
 	}
 
-	return app, nil
+	return nil
 }
 
 func createCommand(name string, t *task.Task) (*cli.Command, error) {
@@ -65,22 +92,16 @@ func createCommand(name string, t *task.Task) (*cli.Command, error) {
 	return &command, nil
 }
 
-func main() {
-	// TODO: Show default help message for errors
+func printErrorWithHelp(err error) {
+	ui.PrintError(err)
+	fmt.Println()
+	showDefaultHelp()
+}
 
-	tuskfile, err := config.ReadTuskfile()
-	if err != nil {
-		ui.PrintError(err)
-		return
-	}
-
-	app, err := createCLIApp(tuskfile)
-	if err != nil {
-		ui.PrintError(err)
-		return
-	}
-
-	if err := app.Run(os.Args); err != nil {
+func showDefaultHelp() {
+	defaultApp := createCLIApp()
+	context := cli.NewContext(defaultApp, nil, nil)
+	if err := cli.ShowAppHelp(context); err != nil {
 		ui.PrintError(err)
 	}
 }
