@@ -2,8 +2,8 @@ package task
 
 // Task is a single task to be run by CLI
 type Task struct {
-	Args    []Arg    `yaml:",omitempty"`
-	PreName []string `yaml:"pre,omitempty"`
+	Args    map[string]*Arg `yaml:",omitempty"`
+	PreName []string        `yaml:"pre,omitempty"`
 	Script  []Script
 	Usage   string `yaml:",omitempty"`
 

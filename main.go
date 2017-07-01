@@ -10,7 +10,7 @@ import (
 	"gitlab.com/rliebz/tusk/ui"
 )
 
-func createCLIApp(tasks map[string]*task.Task) *cli.App {
+func createCLIApp(tuskfile *config.Config) (*cli.App, error) {
 	app := cli.NewApp()
 	app.Usage = "a task runner built with simple configuration in mind"
 	app.HideVersion = true
@@ -25,52 +25,61 @@ func createCLIApp(tasks map[string]*task.Task) *cli.App {
 	taskMap := make(map[string]*task.Task)
 
 	// Create commands
-	for name, task := range tasks {
+	for name, task := range tuskfile.Tasks {
 		taskMap[name] = task
-		app.Commands = append(app.Commands, createCommand(name, task))
+		command, err := createCommand(name, task)
+		if err != nil {
+			return nil, err
+		}
+		app.Commands = append(app.Commands, *command)
 	}
 
 	// Update pretasks
-	for _, task := range tasks {
+	for _, task := range tuskfile.Tasks {
 		for _, name := range task.PreName {
 			task.PreTasks = append(task.PreTasks, taskMap[name])
 		}
 	}
 
-	return app
+	return app, nil
 }
 
-func createCommand(name string, task *task.Task) cli.Command {
+func createCommand(name string, t *task.Task) (*cli.Command, error) {
 
 	command := cli.Command{
 		Name:  name,
-		Usage: task.Usage,
+		Usage: t.Usage,
 		Action: func(c *cli.Context) error {
-			return task.Execute()
+			return t.Execute()
 		},
 	}
 
-	for _, arg := range task.Args {
-		// TODO: Flag types
-		flag := cli.StringFlag{
-			Name:   arg.Name,
-			Value:  arg.Default,
-			Usage:  arg.Usage,
-			EnvVar: arg.Environment,
+	for name, arg := range t.Args {
+		flag, err := task.CreateCLIFlag(name, arg)
+		if err != nil {
+			return nil, err
 		}
 		command.Flags = append(command.Flags, flag)
 	}
-	return command
+
+	return &command, nil
 }
 
 func main() {
-	tasks, err := config.ReadTuskfile()
+	// TODO: Show default help message for errors
+
+	tuskfile, err := config.ReadTuskfile()
 	if err != nil {
 		ui.PrintError(err)
 		return
 	}
 
-	app := createCLIApp(tasks)
+	app, err := createCLIApp(tuskfile)
+	if err != nil {
+		ui.PrintError(err)
+		return
+	}
+
 	if err := app.Run(os.Args); err != nil {
 		ui.PrintError(err)
 	}

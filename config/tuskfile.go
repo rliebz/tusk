@@ -14,6 +14,47 @@ import (
 // DefaultTuskfile is the default name for a Tuskfile.
 var DefaultTuskfile = "tusk.yml"
 
+// Config is a struct representing the format for a Tuskfile.
+type Config struct {
+	Args  map[string]*task.Arg
+	Tasks map[string]*task.Task
+}
+
+// New is the constructor for Config.
+func New() *Config {
+	return &Config{
+		Args:  make(map[string]*task.Arg),
+		Tasks: make(map[string]*task.Task),
+	}
+}
+
+// ReadTuskfile parses the contents of a tusk file
+func ReadTuskfile() (*Config, error) {
+	found := false
+
+	filename, passed := parseFileFlag(os.Args)
+
+	if !passed {
+		var err error
+		filename, found, err = findTuskfile()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if !passed && !found {
+		// No Tuskfile is equivalent to an empty Tuskfile
+		return New(), nil
+	}
+
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	return parseTuskfile(data)
+}
+
 func parseFileFlag(args []string) (tuskfile string, passed bool) {
 	for i, arg := range args {
 		if arg == "-f" || arg == "--file" {
@@ -59,35 +100,13 @@ func findTuskfileInDir(dirpath string) (tuskfile string, found bool, err error) 
 	return tuskfile, true, nil
 }
 
-// ReadTuskfile parses the contents of a tusk file
-func ReadTuskfile() (map[string]*task.Task, error) {
-	tasks := make(map[string]*task.Task)
-	found := false
+func parseTuskfile(text []byte) (*Config, error) {
+	tuskfile := New()
 
-	filename, passed := parseFileFlag(os.Args)
-
-	if !passed {
-		var err error
-		filename, found, err = findTuskfile()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if !passed && !found {
-		return tasks, nil
-	}
-
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	err = yaml.Unmarshal(data, &tasks)
-	if err != nil {
+	if err := yaml.Unmarshal(text, &tuskfile); err != nil {
 		log.Printf("error: %v\n", err)
 		return nil, err
 	}
 
-	return tasks, nil
+	return tuskfile, nil
 }
