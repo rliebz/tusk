@@ -2,7 +2,6 @@ package config
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -28,11 +27,15 @@ func New() *Config {
 	}
 }
 
-// ReadTuskfile parses the contents of a tusk file
-func ReadTuskfile() (*Config, error) {
+// ReadTuskfile finds a config file and parses its contents.
+// A blank filename can be passed, in which case a file will be searched for.
+func ReadTuskfile(filename string) (*Config, error) {
 	found := false
+	passed := false
 
-	filename, passed := parseFileFlag(os.Args)
+	if filename != "" {
+		passed = true
+	}
 
 	if !passed {
 		var err error
@@ -53,21 +56,6 @@ func ReadTuskfile() (*Config, error) {
 	}
 
 	return parseTuskfile(data)
-}
-
-func parseFileFlag(args []string) (tuskfile string, passed bool) {
-	for i, arg := range args {
-		if arg == "-f" || arg == "--file" {
-			if i == len(args)-1 {
-				// This error will be handled during cli.App#Run()
-				return "", false
-			}
-			filename := args[i+1]
-			return filename, true
-		}
-	}
-
-	return "", false
 }
 
 func findTuskfile() (tuskfile string, found bool, err error) {
@@ -104,7 +92,6 @@ func parseTuskfile(text []byte) (*Config, error) {
 	tuskfile := New()
 
 	if err := yaml.Unmarshal(text, &tuskfile); err != nil {
-		log.Printf("error: %v\n", err)
 		return nil, err
 	}
 

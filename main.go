@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/pkg/errors"
@@ -13,13 +14,25 @@ import (
 )
 
 func main() {
-	app := createCLIApp()
+	fileFlagApp := newSilentApp()
 
-	cfg, err := config.ReadTuskfile()
+	var filename string
+	fileFlagApp.Action = func(c *cli.Context) error {
+		filename = c.String("file")
+		return nil
+	}
+
+	if err := fileFlagApp.Run(os.Args); err != nil {
+		// Ignore errors; only run to get an optional -f flag
+	}
+
+	cfg, err := config.ReadTuskfile(filename)
 	if err != nil {
 		printErrorWithHelp(err)
 		return
 	}
+
+	app := newBaseApp()
 
 	if err := addTasks(app, cfg); err != nil {
 		printErrorWithHelp(err)
@@ -31,7 +44,7 @@ func main() {
 	}
 }
 
-func createCLIApp() *cli.App {
+func newBaseApp() *cli.App {
 	app := cli.NewApp()
 	app.Usage = "a task runner built with simple configuration in mind"
 	app.HideVersion = true
@@ -39,14 +52,21 @@ func createCLIApp() *cli.App {
 
 	app.Flags = append(app.Flags,
 		cli.HelpFlag,
-		// The file flag will be read directly before calling `*cli.App#Run()`
-		// It is only part of the cli.App for use with `tusk help`
 		cli.StringFlag{
 			Name:  "file, f",
 			Usage: "Set `FILE` to use as the Tuskfile",
 		},
 	)
 
+	return app
+}
+
+// newSilentApp returns an app that will never print to stderr / stdout.
+func newSilentApp() *cli.App {
+	app := newBaseApp()
+	app.Writer = ioutil.Discard
+	app.ErrWriter = ioutil.Discard
+	app.CommandNotFound = func(c *cli.Context, command string) {}
 	return app
 }
 
@@ -99,7 +119,7 @@ func printErrorWithHelp(err error) {
 }
 
 func showDefaultHelp() {
-	defaultApp := createCLIApp()
+	defaultApp := newBaseApp()
 	context := cli.NewContext(defaultApp, nil, nil)
 	if err := cli.ShowAppHelp(context); err != nil {
 		ui.PrintError(err)
