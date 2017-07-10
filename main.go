@@ -22,9 +22,8 @@ func main() {
 		return nil
 	}
 
-	if err := fileFlagApp.Run(os.Args); err != nil {
-		// Ignore errors; only run to get an optional -f flag
-	}
+	// Only does partial parsing, so errors must be ignored
+	fileFlagApp.Run(os.Args) // nolint: gas, errcheck
 
 	cfg, err := config.ReadTuskfile(filename)
 	if err != nil {
@@ -40,7 +39,7 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		ui.PrintError(err)
+		ui.Error(err)
 	}
 }
 
@@ -113,7 +112,7 @@ func createCommand(name string, t *task.Task) (*cli.Command, error) {
 }
 
 func printErrorWithHelp(err error) {
-	ui.PrintError(err)
+	ui.Error(err)
 	fmt.Println()
 	showDefaultHelp()
 }
@@ -122,6 +121,6 @@ func showDefaultHelp() {
 	defaultApp := newBaseApp()
 	context := cli.NewContext(defaultApp, nil, nil)
 	if err := cli.ShowAppHelp(context); err != nil {
-		ui.PrintError(err)
+		ui.Error(err)
 	}
 }

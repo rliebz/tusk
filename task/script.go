@@ -97,6 +97,6 @@ func execCommand(command string) error {
 
 func closeFile(file *os.File) {
 	if err := file.Close(); err != nil {
-		ui.PrintError(errors.Wrap(err, "Failed to close file"))
+		ui.Error(errors.Wrap(err, "Failed to close file"))
 	}
 }

@@ -10,6 +10,8 @@ import (
 
 const (
 	commandActionString = "Running"
+	infoString          = "INFO"
+	warningString       = "WARNING"
 	errorString         = "ERROR"
 	outputPrefix        = "  =>"
 )
@@ -24,37 +26,38 @@ var (
 	yellow = color.New(color.FgYellow).SprintFunc()
 )
 
-// PrintError prints an application error.
-func PrintError(err error) {
-	stderr.Printf(
+// Print prints a message
+func Print(a ...interface{}) {
+	message := fmt.Sprint(a...)
+	stdout.Println(message)
+}
+
+// Info prints application info.
+func Info(a ...interface{}) {
+	message := fmt.Sprint(a...)
+	stdout.Printf(
 		"[%s] %s\n",
-		red(errorString),
-		err.Error(),
+		blue(infoString),
+		message,
 	)
 }
 
-// PrintCommand prints the command to be executed.
-func PrintCommand(command string) {
-	message := fmt.Sprintf(
+// Warn prints an application warning.
+func Warn(a ...interface{}) {
+	message := fmt.Sprint(a...)
+	stdout.Printf(
 		"[%s] %s\n",
-		blue(commandActionString),
-		yellow(command),
+		yellow(warningString),
+		message,
 	)
-	stdout.Printf(message)
 }
 
-// PrintCommandOutput prints output from a running command.
-func PrintCommandOutput(text string) {
-	message := fmt.Sprintf("%s %s\n", cyan(outputPrefix), text)
-	stdout.Printf(message)
-}
-
-// PrintCommandError prints an error from a running command.
-func PrintCommandError(err error) {
+// Error prints an application error.
+func Error(a ...interface{}) {
+	message := fmt.Sprint(a...)
 	stderr.Printf(
-		"%s [%s] %s\n",
-		red(outputPrefix),
+		"[%s] %s\n",
 		red(errorString),
-		err.Error(),
+		message,
 	)
 }
