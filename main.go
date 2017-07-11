@@ -25,7 +25,13 @@ func main() {
 	// Only does partial parsing, so errors must be ignored
 	fileFlagApp.Run(os.Args) // nolint: gas, errcheck
 
-	cfg, err := config.ReadTuskfile(filename)
+	cfgText, err := config.FindFile(filename)
+	if err != nil {
+		printErrorWithHelp(err)
+		return
+	}
+
+	cfg, err := config.Parse(cfgText)
 	if err != nil {
 		printErrorWithHelp(err)
 		return
@@ -53,7 +59,7 @@ func newBaseApp() *cli.App {
 		cli.HelpFlag,
 		cli.StringFlag{
 			Name:  "file, f",
-			Usage: "Set `FILE` to use as the Tuskfile",
+			Usage: "Set `FILE` to use as the config file",
 		},
 	)
 
