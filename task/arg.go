@@ -14,10 +14,14 @@ type Arg struct {
 	Environment string
 	Type        string
 	Usage       string
+
+	// Private members not specified in yaml file
+	Name string `yaml:"-"`
 }
 
 // CreateCLIFlag converts an Arg into a cli.Flag.
-func CreateCLIFlag(name string, arg *Arg) (cli.Flag, error) {
+func CreateCLIFlag(arg *Arg) (cli.Flag, error) {
+	name := arg.Name
 	if arg.Short != "" {
 		name = fmt.Sprintf("%s, %s", name, arg.Short)
 	}

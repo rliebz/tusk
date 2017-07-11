@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
+
+	yaml "gopkg.in/yaml.v2"
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -75,14 +78,22 @@ func newSilentApp() *cli.App {
 	return app
 }
 
+// addTasks appends commands all tasks and pretasks to the app.
 func addTasks(app *cli.App, cfg *config.Config) error {
 
 	// Create commands
 	for name, t := range cfg.Tasks {
-		command, err := createCommand(name, t)
+		t.Name = name
+
+		command, err := createCommand(t)
 		if err != nil {
-			return errors.Wrapf(err, "could not create command `%s`", name)
+			return errors.Wrapf(err, "could not create command `%s`", t.Name)
 		}
+
+		if err := addGlobalArgsUsed(command, t, cfg); err != nil {
+			return err
+		}
+
 		app.Commands = append(app.Commands, *command)
 	}
 
@@ -96,10 +107,10 @@ func addTasks(app *cli.App, cfg *config.Config) error {
 	return nil
 }
 
-func createCommand(name string, t *task.Task) (*cli.Command, error) {
-
-	command := cli.Command{
-		Name:  name,
+// createCommand creates a cli.Command from a task.Task.
+func createCommand(t *task.Task) (*cli.Command, error) {
+	command := &cli.Command{
+		Name:  t.Name,
 		Usage: t.Usage,
 		Action: func(c *cli.Context) error {
 			return t.Execute()
@@ -107,16 +118,59 @@ func createCommand(name string, t *task.Task) (*cli.Command, error) {
 	}
 
 	for name, arg := range t.Args {
-		flag, err := task.CreateCLIFlag(name, arg)
-		if err != nil {
+		arg.Name = name
+		if err := addFlag(command, arg); err != nil {
 			return nil, err
 		}
-		command.Flags = append(command.Flags, flag)
 	}
 
-	return &command, nil
+	return command, nil
 }
 
+// addGlobalArgsUsed adds the top-level args to tasks where interpolation is used.
+func addGlobalArgsUsed(cmd *cli.Command, t *task.Task, cfg *config.Config) error {
+	marshalled, err := yaml.Marshal(t)
+	if err != nil {
+		return err
+	}
+
+	for name, arg := range cfg.Args {
+		arg.Name = name
+
+		pattern := config.InterpolationPattern(arg.Name)
+		match, err := regexp.Match(pattern, marshalled)
+		if err != nil {
+			return err
+		}
+
+		if !match {
+			continue
+		}
+
+		if err := addFlag(cmd, arg); err != nil {
+			return errors.Wrapf(
+				err,
+				"could not add flag `%s` to command `%s`",
+				arg.Name,
+				t.Name,
+			)
+		}
+	}
+
+	return nil
+}
+
+func addFlag(command *cli.Command, arg *task.Arg) error {
+	flag, err := task.CreateCLIFlag(arg)
+	if err != nil {
+		return err
+	}
+	command.Flags = append(command.Flags, flag)
+
+	return nil
+}
+
+// TODO: Move to UI
 func printErrorWithHelp(err error) {
 	ui.Error(err)
 	fmt.Println()

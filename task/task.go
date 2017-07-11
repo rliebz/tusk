@@ -14,6 +14,7 @@ type Task struct {
 	Usage   string `yaml:",omitempty"`
 
 	// Private members not specified in yaml file
+	Name     string  `yaml:"-"`
 	PreTasks []*Task `yaml:"-"`
 }
 
@@ -25,7 +26,6 @@ func (task *Task) Execute() error {
 		if err := preTask.Execute(); err != nil {
 			return err
 		}
-		// fmt.Println("Task Finished!")
 	}
 
 	for _, script := range task.Script {

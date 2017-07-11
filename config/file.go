@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -38,8 +37,7 @@ func FindFile(filename string) ([]byte, error) {
 
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
-		message := fmt.Sprintf("failed to parse %s", filename)
-		return nil, errors.Wrap(err, message)
+		return nil, errors.Wrapf(err, "failed to parse %s", filename)
 	}
 
 	return data, nil
