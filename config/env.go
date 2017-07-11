@@ -72,5 +72,5 @@ import (
 
 // InterpolationPattern returns the regexp pattern for a given name.
 func InterpolationPattern(name string) string {
-	return fmt.Sprintf("{{\\s*%s\\s*}}", name)
+	return fmt.Sprintf("\\${\\s*%s\\s*}", name)
 }

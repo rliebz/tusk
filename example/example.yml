@@ -1,29 +1,28 @@
-test:
-  usage: run application tests
-  args:
-    - name: env
-      alias:
-        - environment
-      default: local
-      usage: An environment in which to run
-      environment: TUSK_ENV
-  pre:
-    - bootstrap
-  script:
-    - run:
-        - echo "Hello, world!"
-        - echo "We can do two lines!"
-      when:
-        test:
-          - 1 = 1
-    - run:
-        # Only things for a development environment will run here
-        - echo "Foo exists!"
-      when:
-        exists:
-          - foo.json
-        os:
-          - darwin
-        test:
-          - -z "$RAILS_ENV"
-          - -z "$RACK_ENV"
+tasks:
+  test:
+    usage: run application tests
+    args:
+      env:
+        usage: An environment in which to run
+        default: local
+        environment: TUSK_ENV
+    pre:
+      - bootstrap
+    script:
+      - when:
+          test:
+            - 1 = 1
+        run:
+          - echo "Hello, world!"
+          - echo "We can do two lines!"
+      - when:
+          exists:
+            - foo.json
+          os:
+            - darwin
+          test:
+            - -z "$RAILS_ENV"
+            - -z "$RACK_ENV"
+        run:
+          # Only things for a development environment will run here
+          - echo "Foo exists!"
