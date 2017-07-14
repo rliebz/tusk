@@ -133,13 +133,13 @@ func TestCreateCLIFlag_string(t *testing.T) {
 			return
 		}
 
-		intFlag, ok := flag.(cli.StringFlag)
+		stringFlag, ok := flag.(cli.StringFlag)
 		if !ok {
 			t.Errorf("error converting to cli.StringFlag: %#v", flag)
 			return
 		}
 
-		actual := intFlag.Value
+		actual := stringFlag.Value
 		if actual != value {
 			t.Errorf("expected %s, actual %s", value, actual)
 		}
