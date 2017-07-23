@@ -10,7 +10,26 @@ tasks:
 
   test:
     usage: Run the linter and tests
+    args:
+      lint:
+        usage: Run the linter with the tests
+        default: true
+        type: bool
+      fast:
+        usage: Skip slow linters/tests
+        type: bool
     script:
+      - when:
+          test:
+            - ${lint} = true
+            - ${fast} = false
+        run:
+            - gometalinter.v1 --vendor ./...
+      - when:
+          test:
+            - ${lint} = true
+            - ${fast} = true
+        run:
+            - gometalinter.v1 --vendor --fast ./...
       - run:
-          - gometalinter.v1 --vendor ./...
           - go test $(go list ./... | grep -v '/tusk/vendor/')

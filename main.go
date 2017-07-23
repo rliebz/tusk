@@ -34,21 +34,57 @@ func main() {
 		return
 	}
 
-	cfg, err := config.Parse(cfgText)
+	flagApp, err := newFlagApp(cfgText)
 	if err != nil {
 		printErrorWithHelp(err)
 		return
 	}
 
+	flags, ok := flagApp.Metadata["flagValues"].(map[string]string)
+	if !ok {
+		printErrorWithHelp(errors.New("could not read flags from metadata"))
+		return
+	}
+
+	for flagName, value := range flags {
+		pattern := config.InterpolationPattern(flagName)
+		re, reErr := regexp.Compile(pattern)
+		if reErr != nil {
+			printErrorWithHelp(reErr)
+			return
+		}
+
+		cfgText = re.ReplaceAll(cfgText, []byte(value))
+	}
+
 	app := newBaseApp()
 
-	if err := addTasks(app, cfg); err != nil {
+	appCfg, err := config.Parse(cfgText)
+	if err != nil {
 		printErrorWithHelp(err)
 		return
 	}
 
+	if err := addTasks(app, appCfg); err != nil {
+		printErrorWithHelp(err)
+		return
+	}
+
+	copyFlags(app, flagApp)
+
 	if err := app.Run(os.Args); err != nil {
 		ui.Error(err)
+	}
+}
+
+func copyFlags(app *cli.App, flagApp *cli.App) {
+	for i, command := range app.Commands {
+		for _, flagCommand := range flagApp.Commands {
+			if command.Name == flagCommand.Name {
+				command.Flags = flagCommand.Flags
+				app.Commands[i] = command
+			}
+		}
 	}
 }
 
@@ -78,6 +114,60 @@ func newSilentApp() *cli.App {
 	return app
 }
 
+func newFlagApp(cfgText []byte) (*cli.App, error) {
+
+	flagCfg, err := config.Parse(cfgText)
+	if err != nil {
+		return nil, err
+	}
+
+	flagApp := newSilentApp()
+
+	if err = addFlagTasks(flagApp, flagCfg); err != nil {
+		return nil, err
+	}
+
+	if err = flagApp.Run(os.Args); err != nil {
+		return nil, err
+	}
+
+	return flagApp, nil
+}
+
+// addFlagTasks appends cli tasks that includes a map of all arguments.
+func addFlagTasks(app *cli.App, flagCfg *config.Config) error {
+
+	m := make(map[string]string)
+
+	// Create commands
+	for name, t := range flagCfg.Tasks {
+		t.Name = name
+
+		command, err := createCommand(t, getMapBuildAction(m))
+		if err != nil {
+			return errors.Wrapf(err, "could not create command `%s`", t.Name)
+		}
+
+		if err := addGlobalArgsUsed(command, t, flagCfg); err != nil {
+			return err
+		}
+
+		app.Commands = append(app.Commands, *command)
+	}
+
+	// Update pretasks
+	for _, t := range flagCfg.Tasks {
+		for _, name := range t.PreName {
+			t.PreTasks = append(t.PreTasks, flagCfg.Tasks[name])
+		}
+	}
+
+	app.Metadata = make(map[string]interface{})
+	app.Metadata["flagValues"] = m
+
+	return nil
+}
+
 // addTasks appends commands all tasks and pretasks to the app.
 func addTasks(app *cli.App, cfg *config.Config) error {
 
@@ -85,7 +175,7 @@ func addTasks(app *cli.App, cfg *config.Config) error {
 	for name, t := range cfg.Tasks {
 		t.Name = name
 
-		command, err := createCommand(t)
+		command, err := createCommand(t, getExecuteAction(t))
 		if err != nil {
 			return errors.Wrapf(err, "could not create command `%s`", t.Name)
 		}
@@ -107,14 +197,27 @@ func addTasks(app *cli.App, cfg *config.Config) error {
 	return nil
 }
 
+func getExecuteAction(t *task.Task) func(*cli.Context) error {
+	return func(c *cli.Context) error {
+		return t.Execute()
+	}
+}
+
+func getMapBuildAction(m map[string]string) func(*cli.Context) error {
+	return func(c *cli.Context) error {
+		for _, flagName := range c.FlagNames() {
+			m[flagName] = c.String(flagName)
+		}
+		return nil
+	}
+}
+
 // createCommand creates a cli.Command from a task.Task.
-func createCommand(t *task.Task) (*cli.Command, error) {
+func createCommand(t *task.Task, actionFunc func(*cli.Context) error) (*cli.Command, error) {
 	command := &cli.Command{
-		Name:  t.Name,
-		Usage: t.Usage,
-		Action: func(c *cli.Context) error {
-			return t.Execute()
-		},
+		Name:   t.Name,
+		Usage:  t.Usage,
+		Action: actionFunc,
 	}
 
 	for name, arg := range t.Args {
