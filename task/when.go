@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 )
 
 // When defines the conditions for running a task.
@@ -42,11 +43,28 @@ func validateOS(os string, required []string) error {
 
 	// Otherwise, at least one must match
 	for _, r := range required {
-		// TODO: Normalize potential values for OS
-		if os == r {
+		if os == normalizeOS(r) {
 			return nil
 		}
 	}
 
 	return fmt.Errorf("current OS %s not listed in %v", os, required)
+}
+
+func normalizeOS(os string) string {
+	lower := strings.ToLower(os)
+
+	for _, alt := range []string{"mac", "macos", "osx"} {
+		if lower == alt {
+			return "darwin"
+		}
+	}
+
+	for _, alt := range []string{"win"} {
+		if lower == alt {
+			return "windows"
+		}
+	}
+
+	return lower
 }

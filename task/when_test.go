@@ -41,5 +41,28 @@ func TestWhen_Validate(t *testing.T) {
 			)
 		}
 	}
+}
 
+var normalizetests = []struct {
+	input    string
+	expected string
+}{
+	{"nonsense", "nonsense"},
+	{"darwin", "darwin"},
+	{"Darwin", "darwin"},
+	{"OSX", "darwin"},
+	{"macOS", "darwin"},
+	{"win", "windows"},
+}
+
+func TestNormalizeOS(t *testing.T) {
+	for _, tt := range normalizetests {
+		actual := normalizeOS(tt.input)
+		if tt.expected != actual {
+			t.Errorf(
+				"normalizeOS(%s): expected: %s, actual: %s",
+				tt.input, tt.expected, actual,
+			)
+		}
+	}
 }
