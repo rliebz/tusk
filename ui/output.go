@@ -9,16 +9,19 @@ import (
 )
 
 const (
-	commandActionString = "Running"
-	infoString          = "INFO"
-	warningString       = "WARNING"
-	errorString         = "ERROR"
-	outputPrefix        = "  =>"
+	infoString    = "INFO"
+	warningString = "WARNING"
+	errorString   = "ERROR"
 )
 
 var (
+	// Verbose enables verbose output.
+	Verbose = false
+
 	stdout = log.New(os.Stdout, "", 0)
 	stderr = log.New(os.Stderr, "", 0)
+
+	bold = color.New(color.Bold).SprintFunc()
 
 	blue   = color.New(color.FgBlue).SprintFunc()
 	cyan   = color.New(color.FgCyan).SprintFunc()
@@ -28,6 +31,16 @@ var (
 
 // Print prints a message
 func Print(a ...interface{}) {
+	message := fmt.Sprint(a...)
+	stdout.Println(message)
+}
+
+// Debug prints info only in verbose mode.
+func Debug(a ...interface{}) {
+	if !Verbose {
+		return
+	}
+
 	message := fmt.Sprint(a...)
 	stdout.Println(message)
 }

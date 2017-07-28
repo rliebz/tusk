@@ -2,10 +2,8 @@ package task
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -15,36 +13,18 @@ import (
 
 // Script is a single script within a task
 type Script struct {
-	When struct {
-		Exists []string `yaml:",omitempty"`
-		OS     []string `yaml:",omitempty"`
-		Test   []string `yaml:",omitempty"`
-	} `yaml:",omitempty"`
-	Run []string
+	When When `yaml:",omitempty"`
+	Run  []string
 }
 
 // Execute validates the When conditions and executes a Script.
 func (script Script) Execute() error {
 
-	for _, f := range script.When.Exists {
-		if _, err := os.Stat(f); os.IsNotExist(err) {
-			fmt.Printf("File not found: %s\n", f)
-			return nil
+	if err := script.When.Validate(); err != nil {
+		for _, command := range script.Run {
+			ui.PrintCommandSkipped(command, err.Error())
 		}
-	}
-
-	for _, os := range script.When.OS {
-		if runtime.GOOS != os {
-			fmt.Printf("Unexpected Architecture: %s\n", os)
-			return nil
-		}
-	}
-
-	for _, test := range script.When.Test {
-		if err := testCommand(test); err != nil {
-			fmt.Printf("Test failed: %s\n", test)
-			return nil
-		}
+		return nil
 	}
 
 	for _, command := range script.Run {
