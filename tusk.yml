@@ -1,4 +1,9 @@
 ---
+args:
+  fast:
+    usage: Skip slow linters/tests
+    type: bool
+
 tasks:
   bootstrap:
     usage: Set up the app for first time use
@@ -8,6 +13,20 @@ tasks:
           - go get -u github.com/golang/dep/cmd/dep
           - dep ensure -update
 
+  lint:
+    usage: Run the linter
+    script:
+      - when:
+          test:
+            - ${fast} = false
+        run:
+            - gometalinter.v1 --vendor ./...
+      - when:
+          test:
+            - ${fast} = true
+        run:
+          - gometalinter.v1 --vendor --fast ./...
+
   test:
     usage: Run the linter and tests
     args:
@@ -15,21 +34,11 @@ tasks:
         usage: Run the linter with the tests
         default: true
         type: bool
-      fast:
-        usage: Skip slow linters/tests
-        type: bool
+    pre:
+      - name: lint
+        when:
+          test:
+            - ${lint} = true
     script:
-      - when:
-          test:
-            - ${lint} = true
-            - ${fast} = false
-        run:
-            - gometalinter.v1 --vendor ./...
-      - when:
-          test:
-            - ${lint} = true
-            - ${fast} = true
-        run:
-            - gometalinter.v1 --vendor --fast ./...
       - run:
           - go test $(go list ./... | grep -v '/tusk/vendor/')

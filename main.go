@@ -16,6 +16,8 @@ import (
 	"gitlab.com/rliebz/tusk/ui"
 )
 
+type commandCreator func(app *cli.App, t *task.Task) (*cli.Command, error)
+
 func main() {
 	globalFlagApp := newSilentApp()
 
@@ -66,7 +68,7 @@ func main() {
 		return
 	}
 
-	if err := addTasks(app, appCfg); err != nil {
+	if err := addTasks(app, appCfg, createExecuteCommand); err != nil {
 		printErrorWithHelp(err)
 		return
 	}
@@ -128,7 +130,7 @@ func newFlagApp(cfgText []byte) (*cli.App, error) {
 
 	flagApp := newSilentApp()
 
-	if err = addFlagTasks(flagApp, flagCfg); err != nil {
+	if err = addTasks(flagApp, flagCfg, createMetadataBuildCommand); err != nil {
 		return nil, err
 	}
 
@@ -139,82 +141,74 @@ func newFlagApp(cfgText []byte) (*cli.App, error) {
 	return flagApp, nil
 }
 
-// addFlagTasks appends cli tasks that includes a map of all arguments.
-func addFlagTasks(app *cli.App, flagCfg *config.Config) error {
-
-	m := make(map[string]string)
-
-	// Create commands
-	for name, t := range flagCfg.Tasks {
-		t.Name = name
-
-		command, err := createCommand(t, getMapBuildAction(m))
-		if err != nil {
-			return errors.Wrapf(err, "could not create command `%s`", t.Name)
-		}
-
-		if err := addGlobalArgsUsed(command, t, flagCfg); err != nil {
-			return err
-		}
-
-		app.Commands = append(app.Commands, *command)
-	}
-
-	// Update pretasks
-	for _, t := range flagCfg.Tasks {
-		for _, name := range t.PreName {
-			t.PreTasks = append(t.PreTasks, flagCfg.Tasks[name])
-		}
-	}
-
-	app.Metadata = make(map[string]interface{})
-	app.Metadata["flagValues"] = m
-
-	return nil
-}
-
-// addTasks appends commands all tasks and pretasks to the app.
-func addTasks(app *cli.App, cfg *config.Config) error {
-
-	// Create commands
+func addTasks(app *cli.App, cfg *config.Config, create commandCreator) error {
 	for name, t := range cfg.Tasks {
 		t.Name = name
-
-		command, err := createCommand(t, getExecuteAction(t))
-		if err != nil {
-			return errors.Wrapf(err, "could not create command `%s`", t.Name)
-		}
-
-		if err := addGlobalArgsUsed(command, t, cfg); err != nil {
-			return err
-		}
-
-		app.Commands = append(app.Commands, *command)
-	}
-
-	// Update pretasks
-	for _, t := range cfg.Tasks {
-		for _, name := range t.PreName {
-			t.PreTasks = append(t.PreTasks, cfg.Tasks[name])
+		if err := addTask(app, cfg, t, create); err != nil {
+			return errors.Wrapf(err, "could not add task `%s`", t.Name)
 		}
 	}
 
 	return nil
 }
 
-func getExecuteAction(t *task.Task) func(*cli.Context) error {
-	return func(c *cli.Context) error {
-		return t.Execute()
+func addTask(app *cli.App, cfg *config.Config, t *task.Task, create commandCreator) error {
+	command, err := create(app, t)
+	if err != nil {
+		return errors.Wrapf(err, "could not create command `%s`", t.Name)
 	}
+
+	if err := addGlobalArgsUsed(command, t, cfg); err != nil {
+		return errors.Wrap(err, "could not add global args")
+	}
+
+	for _, pre := range t.Pre {
+		// TODO: This requires tasks to be defined in order
+		pt := cfg.Tasks[pre.Name]
+		if err := addGlobalArgsUsed(command, pt, cfg); err != nil {
+			return errors.Wrap(err, "could not add global args")
+		}
+		// TODO: Tasks don't have `When` clauses, only scripts/pre-tasks do.
+		// Tasks need `When` clauses
+		// Also, the print should be moved to execution, not during build.
+		if err := pre.When.Validate(); err != nil {
+			// ui.PrintCommandSkipped("pre-task: "+pre.Name, err.Error())
+		} else {
+			t.PreTasks = append(t.PreTasks, pt)
+		}
+	}
+
+	app.Commands = append(app.Commands, *command)
+
+	return nil
 }
 
-func getMapBuildAction(m map[string]string) func(*cli.Context) error {
-	return func(c *cli.Context) error {
+func createExecuteCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
+	return createCommand(t, func(c *cli.Context) error {
+		return t.Execute()
+	})
+}
+
+func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
+	if app.Metadata == nil {
+		app.Metadata = make(map[string]interface{})
+	}
+
+	if app.Metadata["flagValues"] == nil {
+		app.Metadata["flagValues"] = make(map[string]string)
+	}
+
+	flags, ok := app.Metadata["flagValues"].(map[string]string)
+	if !ok {
+		return nil, errors.New("could not read flags from metadata")
+	}
+
+	return createCommand(t, func(c *cli.Context) error {
 		for _, flagName := range c.FlagNames() {
-			m[flagName] = c.String(flagName)
+			flags[flagName] = c.String(flagName)
 		}
 		return nil
-	}
+	})
 }
 
 // createCommand creates a cli.Command from a task.Task.

@@ -3,15 +3,12 @@ package task
 // Task is a single task to be run by CLI
 type Task struct {
 	Args map[string]*Arg `yaml:",omitempty"`
-	// TODO: Pre tasks should allow when conditionals.
-	// Consider:
-	//	type PreTask struct {
-	//		When When // Factor out `When` struct for reusability
-	//		Task string // Same purpose as `PreName`
-	//	}
-	PreName []string `yaml:"pre,omitempty"`
-	Script  []Script
-	Usage   string `yaml:",omitempty"`
+	Pre  []struct {
+		Name string
+		When When
+	} `yaml:",omitempty"`
+	Script []Script
+	Usage  string `yaml:",omitempty"`
 
 	// Private members not specified in yaml file
 	Name     string  `yaml:"-"`
