@@ -9,6 +9,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"gitlab.com/rliebz/tusk/config"
+	"gitlab.com/rliebz/tusk/interp"
 	"gitlab.com/rliebz/tusk/task"
 )
 
@@ -33,7 +34,7 @@ func addGlobalFlagsUsed(cmd *cli.Command, t *task.Task, cfg *config.Config) erro
 	for name, arg := range cfg.Args {
 		arg.Name = name
 
-		pattern := config.InterpolationPattern(arg.Name)
+		pattern := interp.Pattern(arg.Name)
 		match, err := regexp.Match(pattern, marshalled)
 		if err != nil {
 			return err

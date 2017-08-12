@@ -3,12 +3,12 @@ package appcli
 import (
 	"io/ioutil"
 	"os"
-	"regexp"
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
 	"gitlab.com/rliebz/tusk/config"
+	"gitlab.com/rliebz/tusk/interp"
 )
 
 // NewBaseApp creates a basic cli.App with top-level flags.
@@ -74,7 +74,7 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 		return nil, errors.New("could not read flags from metadata")
 	}
 
-	cfgText, err = interpolate(cfgText, flags)
+	cfgText, err = interp.Map(cfgText, flags)
 	if err != nil {
 		return nil, err
 	}
@@ -93,19 +93,4 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 	copyFlags(app, flagApp)
 
 	return app, nil
-}
-
-func interpolate(cfgText []byte, flags map[string]string) ([]byte, error) {
-
-	for flagName, value := range flags {
-		pattern := config.InterpolationPattern(flagName)
-		re, err := regexp.Compile(pattern)
-		if err != nil {
-			return nil, err
-		}
-
-		cfgText = re.ReplaceAll(cfgText, []byte(value))
-	}
-
-	return cfgText, nil
 }
