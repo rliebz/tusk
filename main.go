@@ -168,14 +168,8 @@ func addTask(app *cli.App, cfg *config.Config, t *task.Task, create commandCreat
 		if err := addGlobalArgsUsed(command, pt, cfg); err != nil {
 			return errors.Wrap(err, "could not add global args")
 		}
-		// TODO: Tasks don't have `When` clauses, only scripts/pre-tasks do.
-		// Tasks need `When` clauses
-		// Also, the print should be moved to execution, not during build.
-		if err := pre.When.Validate(); err != nil {
-			// ui.PrintCommandSkipped("pre-task: "+pre.Name, err.Error())
-		} else {
-			t.PreTasks = append(t.PreTasks, pt)
-		}
+
+		t.PreTasks = append(t.PreTasks, pt)
 	}
 
 	app.Commands = append(app.Commands, *command)

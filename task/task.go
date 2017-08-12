@@ -1,5 +1,9 @@
 package task
 
+import (
+	"gitlab.com/rliebz/tusk/ui"
+)
+
 // Task is a single task to be run by CLI
 type Task struct {
 	Args map[string]*Arg `yaml:",omitempty"`
@@ -16,16 +20,30 @@ type Task struct {
 }
 
 // Execute runs the scripts in the task.
-func (task *Task) Execute() error {
+func (t *Task) Execute() error {
 	// TODO: Announce task
 
-	for _, preTask := range task.PreTasks {
+	for _, preTask := range t.PreTasks {
+
+		var when When
+		for _, p := range t.Pre {
+			if p.Name == preTask.Name {
+				when = p.When
+				break
+			}
+		}
+
+		if err := when.Validate(); err != nil {
+			ui.PrintCommandSkipped("pre-task: "+preTask.Name, err.Error())
+			continue
+		}
+
 		if err := preTask.Execute(); err != nil {
 			return err
 		}
 	}
 
-	for _, script := range task.Script {
+	for _, script := range t.Script {
 		if err := script.Execute(); err != nil {
 			return err
 		}
