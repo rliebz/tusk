@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"regexp"
 
-	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
 	"gitlab.com/rliebz/tusk/appcli"
@@ -14,6 +12,24 @@ import (
 )
 
 func main() {
+	cfgText, err := getConfigText(os.Args)
+	if err != nil {
+		printErrorWithHelp(err)
+		return
+	}
+
+	app, err := appcli.NewApp(cfgText)
+	if err != nil {
+		printErrorWithHelp(err)
+		return
+	}
+
+	if err := app.Run(os.Args); err != nil {
+		ui.Error(err)
+	}
+}
+
+func getConfigText(args []string) ([]byte, error) {
 	globalFlagApp := appcli.NewSilentApp()
 
 	var filename string
@@ -24,48 +40,9 @@ func main() {
 	}
 
 	// Only does partial parsing, so errors must be ignored
-	globalFlagApp.Run(os.Args) // nolint: gas, errcheck
+	globalFlagApp.Run(args) // nolint: gas, errcheck
 
-	cfgText, err := config.FindFile(filename)
-	if err != nil {
-		printErrorWithHelp(err)
-		return
-	}
-
-	flagApp, err := appcli.NewFlagApp(cfgText)
-	if err != nil {
-		printErrorWithHelp(err)
-		return
-	}
-
-	flags, ok := flagApp.Metadata["flagValues"].(map[string]string)
-	if !ok {
-		printErrorWithHelp(errors.New("could not read flags from metadata"))
-		return
-	}
-
-	for flagName, value := range flags {
-		pattern := config.InterpolationPattern(flagName)
-		re, reErr := regexp.Compile(pattern)
-		if reErr != nil {
-			printErrorWithHelp(reErr)
-			return
-		}
-
-		cfgText = re.ReplaceAll(cfgText, []byte(value))
-	}
-
-	app, err := appcli.NewExecutorApp(cfgText)
-	if err != nil {
-		printErrorWithHelp(err)
-		return
-	}
-
-	appcli.CopyFlags(app, flagApp)
-
-	if err := app.Run(os.Args); err != nil {
-		ui.Error(err)
-	}
+	return config.FindFile(filename)
 }
 
 // TODO: Move to UI

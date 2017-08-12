@@ -3,7 +3,9 @@ package appcli
 import (
 	"io/ioutil"
 	"os"
+	"regexp"
 
+	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
 	"gitlab.com/rliebz/tusk/config"
@@ -42,7 +44,6 @@ func NewSilentApp() *cli.App {
 
 // NewFlagApp creates a cli.App that can parse flags.
 func NewFlagApp(cfgText []byte) (*cli.App, error) {
-
 	flagCfg, err := config.Parse(cfgText)
 	if err != nil {
 		return nil, err
@@ -61,8 +62,22 @@ func NewFlagApp(cfgText []byte) (*cli.App, error) {
 	return flagApp, nil
 }
 
-// NewExecutorApp creates a cli.App that executes tasks.
-func NewExecutorApp(cfgText []byte) (*cli.App, error) {
+// NewApp creates a cli.App that executes tasks.
+func NewApp(cfgText []byte) (*cli.App, error) {
+	flagApp, err := NewFlagApp(cfgText)
+	if err != nil {
+		return nil, err
+	}
+
+	flags, ok := flagApp.Metadata["flagValues"].(map[string]string)
+	if !ok {
+		return nil, errors.New("could not read flags from metadata")
+	}
+
+	cfgText, err = interpolate(cfgText, flags)
+	if err != nil {
+		return nil, err
+	}
 
 	appCfg, err := config.Parse(cfgText)
 	if err != nil {
@@ -75,5 +90,22 @@ func NewExecutorApp(cfgText []byte) (*cli.App, error) {
 		return nil, err
 	}
 
+	copyFlags(app, flagApp)
+
 	return app, nil
+}
+
+func interpolate(cfgText []byte, flags map[string]string) ([]byte, error) {
+
+	for flagName, value := range flags {
+		pattern := config.InterpolationPattern(flagName)
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			return nil, err
+		}
+
+		cfgText = re.ReplaceAll(cfgText, []byte(value))
+	}
+
+	return cfgText, nil
 }

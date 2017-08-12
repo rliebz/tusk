@@ -12,8 +12,8 @@ import (
 	"gitlab.com/rliebz/tusk/task"
 )
 
-// CopyFlags copies all command flags from one cli.App to another.
-func CopyFlags(target *cli.App, source *cli.App) {
+// copyFlags copies all command flags from one cli.App to another.
+func copyFlags(target *cli.App, source *cli.App) {
 	for i, targetCommand := range target.Commands {
 		for _, sourceCommand := range source.Commands {
 			if targetCommand.Name == sourceCommand.Name {
