@@ -14,7 +14,7 @@ type Task struct {
 	Script []Script
 	Usage  string `yaml:",omitempty"`
 
-	// Private members not specified in yaml file
+	// Computed members not specified in yaml file
 	Name     string  `yaml:"-"`
 	PreTasks []*Task `yaml:"-"`
 }
