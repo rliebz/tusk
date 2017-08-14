@@ -1,8 +1,6 @@
 package appcli
 
 import (
-	"regexp"
-
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
@@ -34,8 +32,7 @@ func addGlobalFlagsUsed(cmd *cli.Command, t *task.Task, cfg *config.Config) erro
 	for name, arg := range cfg.Args {
 		arg.Name = name
 
-		pattern := interp.Pattern(arg.Name)
-		match, err := regexp.Match(pattern, marshalled)
+		match, err := interp.Contains(marshalled, name)
 		if err != nil {
 			return err
 		}
