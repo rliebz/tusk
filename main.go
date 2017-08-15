@@ -35,7 +35,6 @@ func getConfigText(args []string) ([]byte, error) {
 	var filename string
 	globalFlagApp.Action = func(c *cli.Context) error {
 		filename = c.String("file")
-		ui.Verbose = c.Bool("verbose")
 		return nil
 	}
 

@@ -9,6 +9,7 @@ import (
 
 	"gitlab.com/rliebz/tusk/config"
 	"gitlab.com/rliebz/tusk/interp"
+	"gitlab.com/rliebz/tusk/ui"
 )
 
 // NewBaseApp creates a basic cli.App with top-level flags.
@@ -27,6 +28,10 @@ func NewBaseApp() *cli.App {
 		cli.BoolFlag{
 			Name:  "verbose, v",
 			Usage: "Print verbose output",
+		},
+		cli.BoolFlag{
+			Name:  "version, V",
+			Usage: "Print version and exit",
 		},
 	)
 
@@ -53,6 +58,15 @@ func NewFlagApp(cfgText []byte) (*cli.App, error) {
 
 	if err = addTasks(flagApp, flagCfg, createMetadataBuildCommand); err != nil {
 		return nil, err
+	}
+
+	flagApp.Action = func(c *cli.Context) error {
+		ui.Verbose = c.Bool("verbose")
+		if c.Bool("version") {
+			ui.Print(c.App.Version)
+			os.Exit(0)
+		}
+		return nil
 	}
 
 	if err = flagApp.Run(os.Args); err != nil {
