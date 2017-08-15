@@ -49,18 +49,20 @@ func NewSilentApp() *cli.App {
 
 // NewFlagApp creates a cli.App that can parse flags.
 func NewFlagApp(cfgText []byte) (*cli.App, error) {
-	flagCfg, err := config.Parse(cfgText)
+	cfg, err := config.Parse(cfgText)
 	if err != nil {
 		return nil, err
 	}
 
-	flagApp := NewSilentApp()
+	app := NewSilentApp()
+	app.Metadata = make(map[string]interface{})
+	app.Metadata["flagValues"] = make(map[string]string)
 
-	if err = addTasks(flagApp, flagCfg, createMetadataBuildCommand); err != nil {
+	if err = addTasks(app, cfg, createMetadataBuildCommand); err != nil {
 		return nil, err
 	}
 
-	flagApp.Action = func(c *cli.Context) error {
+	app.Action = func(c *cli.Context) error {
 		ui.Verbose = c.Bool("verbose")
 		if c.Bool("version") {
 			ui.Print(c.App.Version)
@@ -69,17 +71,17 @@ func NewFlagApp(cfgText []byte) (*cli.App, error) {
 		return nil
 	}
 
-	if err = flagApp.Run(os.Args); err != nil {
-		return nil, err
-	}
-
-	return flagApp, nil
+	return app, nil
 }
 
 // NewApp creates a cli.App that executes tasks.
 func NewApp(cfgText []byte) (*cli.App, error) {
 	flagApp, err := NewFlagApp(cfgText)
 	if err != nil {
+		return nil, err
+	}
+
+	if err = flagApp.Run(os.Args); err != nil {
 		return nil, err
 	}
 
@@ -93,14 +95,14 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 		return nil, err
 	}
 
-	appCfg, err := config.Parse(cfgText)
+	cfg, err := config.Parse(cfgText)
 	if err != nil {
 		return nil, err
 	}
 
 	app := NewBaseApp()
 
-	if err := addTasks(app, appCfg, createExecuteCommand); err != nil {
+	if err := addTasks(app, cfg, createExecuteCommand); err != nil {
 		return nil, err
 	}
 

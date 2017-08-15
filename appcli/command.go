@@ -16,14 +16,6 @@ func createExecuteCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
 }
 
 func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
-	if app.Metadata == nil {
-		app.Metadata = make(map[string]interface{})
-	}
-
-	if app.Metadata["flagValues"] == nil {
-		app.Metadata["flagValues"] = make(map[string]string)
-	}
-
 	flags, ok := app.Metadata["flagValues"].(map[string]string)
 	if !ok {
 		return nil, errors.New("could not read flags from metadata")
