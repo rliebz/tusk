@@ -29,7 +29,6 @@ func addGlobalFlagsUsed(cmd *cli.Command, t *task.Task, cfg *config.Config) erro
 
 	for _, arg := range dependencies {
 
-		// TODO: Private args may still be accessible by environment variables
 		if arg.Private {
 			continue
 		}
