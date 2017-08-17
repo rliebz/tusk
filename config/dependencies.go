@@ -41,6 +41,11 @@ func recurseDependencies(
 candidates:
 	for _, item := range entry {
 		candidate := candidates[item]
+
+		if candidate == nil {
+			continue
+		}
+
 		for _, f := range found {
 			if f == candidate {
 				continue candidates
