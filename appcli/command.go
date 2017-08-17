@@ -23,7 +23,9 @@ func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error
 
 	return createCommand(t, func(c *cli.Context) error {
 		for _, flagName := range c.FlagNames() {
-			flags[flagName] = c.String(flagName)
+			if c.IsSet(flagName) {
+				flags[flagName] = c.String(flagName)
+			}
 		}
 		return nil
 	})

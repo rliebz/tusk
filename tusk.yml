@@ -3,6 +3,13 @@ args:
   fast:
     usage: Skip slow linters/tests
     type: bool
+  linter_opts:
+    usage: Ignore for now
+    computed: |
+      if test ${fast} = true; then
+        echo '--fast'
+      fi
+    private: true
 
 tasks:
   bootstrap:
@@ -16,16 +23,8 @@ tasks:
   lint:
     usage: Run the linter
     script:
-      - when:
-          test:
-            - ${fast} = false
-        run:
-            - gometalinter.v1 --vendor ./...
-      - when:
-          test:
-            - ${fast} = true
-        run:
-          - gometalinter.v1 --vendor --fast ./...
+      - run:
+          - gometalinter.v1 --vendor ${linter_opts} ./...
 
   test:
     usage: Run the linter and tests

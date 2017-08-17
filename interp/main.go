@@ -12,7 +12,7 @@ var escSeq = "{UNLIKELY_ESCAPE_SEQUENCE}"
 func Interpolate(text []byte, name string, value string) ([]byte, error) {
 	text = escapePattern(text)
 
-	re, err := regexp.Compile(Pattern(name))
+	re, err := Compile(name)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func Map(text []byte, m map[string]string) ([]byte, error) {
 func Contains(text []byte, name string) (bool, error) {
 	text = escapePattern(text)
 
-	re, err := regexp.Compile(Pattern(name))
+	re, err := Compile(name)
 	if err != nil {
 		return false, err
 	}
@@ -48,9 +48,15 @@ func Contains(text []byte, name string) (bool, error) {
 	return re.Match(text), nil
 }
 
-// Pattern returns the regexp pattern for a given name.
-func Pattern(name string) string {
-	return fmt.Sprintf(`\$({\s*%s\s*})`, name)
+// CompileGeneric returns the regexp pattern to identify a potential variable.
+func CompileGeneric() *regexp.Regexp {
+	return regexp.MustCompile(`\${(\w+)}`)
+}
+
+// Compile returns the regexp pattern for a given variable name.
+func Compile(name string) (*regexp.Regexp, error) {
+	pattern := fmt.Sprintf(`\$({%s})`, name)
+	return regexp.Compile(pattern)
 }
 
 func escapePattern(text []byte) []byte {

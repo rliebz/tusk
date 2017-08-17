@@ -2,20 +2,29 @@ package task
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
 
 // Arg represents an abstract command line argument.
 type Arg struct {
-	Short       string
-	Default     interface{}
-	Environment string
-	Type        string
-	Usage       string
+	Short   string
+	Type    string
+	Usage   string
+	Private bool
 
-	// Private members not specified in yaml file
+	// Used to determine value, in order of highest priority
+	// `Default` and `Computed` are mutually exclusive.
+	Passed      string `yaml:"-"`
+	Environment string
+	Default     interface{} // TODO: This can probably be a string
+	Computed    string
+
+	// Computed members not specified in yaml file
 	Name string `yaml:"-"`
 }
 
@@ -42,76 +51,59 @@ func CreateCLIFlag(arg *Arg) (cli.Flag, error) {
 }
 
 func createIntFlag(name string, arg *Arg) (cli.Flag, error) {
-	value, ok := arg.Default.(int)
-	if arg.Default != nil && !ok {
-		return nil, fmt.Errorf(
-			"default value `%s` for arg `%s` is not of type int",
-			arg.Default, name,
-		)
-	}
-
 	return cli.IntFlag{
-		Name:   name,
-		Value:  value,
-		Usage:  arg.Usage,
-		EnvVar: arg.Environment,
+		Name:  name,
+		Usage: arg.Usage,
 	}, nil
 }
 
 func createFloatFlag(name string, arg *Arg) (cli.Flag, error) {
-	value, ok := arg.Default.(float64)
-	if arg.Default != nil && !ok {
-		return nil, fmt.Errorf(
-			"default value `%s` for arg `%s` is not of type float",
-			arg.Default, name,
-		)
-	}
-
 	return cli.Float64Flag{
-		Name:   name,
-		Value:  value,
-		Usage:  arg.Usage,
-		EnvVar: arg.Environment,
+		Name:  name,
+		Usage: arg.Usage,
 	}, nil
 }
 
 func createBoolFlag(name string, arg *Arg) (cli.Flag, error) {
-	trueByDefault, ok := arg.Default.(bool)
-	if arg.Default != nil && !ok {
-		return nil, fmt.Errorf(
-			"default value `%s` for arg `%s` is not of type bool",
-			arg.Default, name,
-		)
-	}
-
-	if trueByDefault {
-		return cli.BoolTFlag{
-			Name:   name,
-			Usage:  arg.Usage,
-			EnvVar: arg.Environment,
-		}, nil
-	}
-
 	return cli.BoolFlag{
-		Name:   name,
-		Usage:  arg.Usage,
-		EnvVar: arg.Environment,
+		Name:  name,
+		Usage: arg.Usage,
 	}, nil
 }
 
 func createStringFlag(name string, arg *Arg) (cli.Flag, error) {
-	value, ok := arg.Default.(string)
-	if arg.Default != nil && !ok {
-		return nil, fmt.Errorf(
-			"default value `%s` for arg `%s` is not of type string",
-			arg.Default, name,
+	return cli.StringFlag{
+		Name:  name,
+		Usage: arg.Usage,
+	}, nil
+}
+
+// Value determines the final argument value based on all options.
+func (arg *Arg) Value() (string, error) {
+	if arg.Default != nil && arg.Computed != "" {
+		return "", fmt.Errorf(
+			"default and computed are both defined for flag: %v",
+			arg.Name,
 		)
 	}
 
-	return cli.StringFlag{
-		Name:   name,
-		Value:  value,
-		Usage:  arg.Usage,
-		EnvVar: arg.Environment,
-	}, nil
+	if arg.Passed != "" {
+		return arg.Passed, nil
+	}
+
+	envValue := os.Getenv(arg.Environment)
+	if envValue != "" {
+		return envValue, nil
+	}
+
+	if arg.Default != nil {
+		return fmt.Sprint(arg.Default), nil
+	}
+
+	out, err := exec.Command("sh", "-c", arg.Computed).Output() // nolint: gas
+	if err != nil {
+		return "", errors.Wrapf(err, "could not compute value for %s", arg.Name)
+	}
+
+	return strings.TrimSpace(string(out)), nil
 }

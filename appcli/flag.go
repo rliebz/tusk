@@ -4,10 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
-	yaml "gopkg.in/yaml.v2"
-
 	"gitlab.com/rliebz/tusk/config"
-	"gitlab.com/rliebz/tusk/interp"
 	"gitlab.com/rliebz/tusk/task"
 )
 
@@ -24,22 +21,20 @@ func copyFlags(target *cli.App, source *cli.App) {
 
 // addGlobalFlagsUsed adds the top-level flags to tasks where interpolation is used.
 func addGlobalFlagsUsed(cmd *cli.Command, t *task.Task, cfg *config.Config) error {
-	marshalled, err := yaml.Marshal(t)
+
+	dependencies, err := cfg.FindAllFlags(t)
 	if err != nil {
 		return err
 	}
 
-	for name, arg := range cfg.Args {
-		arg.Name = name
+	for _, arg := range dependencies {
 
-		match, err := interp.Contains(marshalled, name)
-		if err != nil {
-			return err
-		}
-
-		if !match {
+		// TODO: Private args may still be accessible by environment variables
+		if arg.Private {
 			continue
 		}
+
+		// TODO: Disallow multiple differing flag definitions
 
 		if err := addFlag(cmd, arg); err != nil {
 			return errors.Wrapf(
@@ -49,6 +44,7 @@ func addGlobalFlagsUsed(cmd *cli.Command, t *task.Task, cfg *config.Config) erro
 				t.Name,
 			)
 		}
+
 	}
 
 	return nil
@@ -59,6 +55,13 @@ func addFlag(command *cli.Command, arg *task.Arg) error {
 	if err != nil {
 		return err
 	}
+
+	for _, flag := range command.Flags {
+		if arg.Name == flag.GetName() {
+			return nil
+		}
+	}
+
 	command.Flags = append(command.Flags, flag)
 
 	return nil

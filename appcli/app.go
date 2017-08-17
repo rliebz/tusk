@@ -8,7 +8,6 @@ import (
 	"github.com/urfave/cli"
 
 	"gitlab.com/rliebz/tusk/config"
-	"gitlab.com/rliebz/tusk/interp"
 	"gitlab.com/rliebz/tusk/ui"
 )
 
@@ -90,7 +89,7 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 		return nil, errors.New("could not read flags from metadata")
 	}
 
-	cfgText, err = interp.Map(cfgText, flags)
+	cfgText, err = config.Interpolate(cfgText, flags)
 	if err != nil {
 		return nil, err
 	}
