@@ -8,7 +8,6 @@ import (
 	"github.com/urfave/cli"
 
 	"gitlab.com/rliebz/tusk/config"
-	"gitlab.com/rliebz/tusk/ui"
 )
 
 // NewBaseApp creates a basic cli.App with top-level flags.
@@ -37,8 +36,8 @@ func NewBaseApp() *cli.App {
 	return app
 }
 
-// NewSilentApp creates a cli.App that will never print to stderr / stdout.
-func NewSilentApp() *cli.App {
+// newSilentApp creates a cli.App that will never print to stderr / stdout.
+func newSilentApp() *cli.App {
 	app := NewBaseApp()
 	app.Writer = ioutil.Discard
 	app.ErrWriter = ioutil.Discard
@@ -46,14 +45,14 @@ func NewSilentApp() *cli.App {
 	return app
 }
 
-// NewFlagApp creates a cli.App that can parse flags.
-func NewFlagApp(cfgText []byte) (*cli.App, error) {
+// newFlagApp creates a cli.App that can parse flags.
+func newFlagApp(cfgText []byte) (*cli.App, error) {
 	cfg, err := config.Parse(cfgText)
 	if err != nil {
 		return nil, err
 	}
 
-	app := NewSilentApp()
+	app := newSilentApp()
 	app.Metadata = make(map[string]interface{})
 	app.Metadata["flagValues"] = make(map[string]string)
 
@@ -61,21 +60,12 @@ func NewFlagApp(cfgText []byte) (*cli.App, error) {
 		return nil, err
 	}
 
-	app.Action = func(c *cli.Context) error {
-		ui.Verbose = c.Bool("verbose")
-		if c.Bool("version") {
-			ui.Print(c.App.Version)
-			os.Exit(0)
-		}
-		return nil
-	}
-
 	return app, nil
 }
 
 // NewApp creates a cli.App that executes tasks.
 func NewApp(cfgText []byte) (*cli.App, error) {
-	flagApp, err := NewFlagApp(cfgText)
+	flagApp, err := newFlagApp(cfgText)
 	if err != nil {
 		return nil, err
 	}
@@ -108,4 +98,23 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 	copyFlags(app, flagApp)
 
 	return app, nil
+}
+
+// GetConfigMetadata returns a metadata object based on global flags.
+func GetConfigMetadata(args []string) *config.Metadata {
+	app := newSilentApp()
+
+	metadata := new(config.Metadata)
+
+	app.Action = func(c *cli.Context) error {
+		metadata.Filename = c.String("file")
+		metadata.Verbose = c.Bool("verbose")
+		metadata.RunVersion = c.Bool("version")
+		return nil
+	}
+
+	// Only does partial parsing, so errors must be ignored
+	app.Run(args) // nolint: gas, errcheck
+
+	return metadata
 }

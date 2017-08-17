@@ -12,7 +12,16 @@ import (
 )
 
 func main() {
-	cfgText, err := getConfigText(os.Args)
+	meta := appcli.GetConfigMetadata(os.Args)
+
+	ui.Verbose = meta.Verbose
+
+	if meta.RunVersion {
+		ui.Print("0.0.0")
+		os.Exit(0)
+	}
+
+	cfgText, err := config.FindAndReadFile(meta.Filename)
 	if err != nil {
 		printErrorWithHelp(err)
 		return
@@ -27,21 +36,6 @@ func main() {
 	if err := app.Run(os.Args); err != nil {
 		ui.Error(err)
 	}
-}
-
-func getConfigText(args []string) ([]byte, error) {
-	globalFlagApp := appcli.NewSilentApp()
-
-	var filename string
-	globalFlagApp.Action = func(c *cli.Context) error {
-		filename = c.String("file")
-		return nil
-	}
-
-	// Only does partial parsing, so errors must be ignored
-	globalFlagApp.Run(args) // nolint: gas, errcheck
-
-	return config.FindFile(filename)
 }
 
 // TODO: Move to UI

@@ -11,6 +11,13 @@ type Config struct {
 	Tasks map[string]*task.Task
 }
 
+// Metadata contains global configuration settings.
+type Metadata struct {
+	Filename   string
+	Verbose    bool
+	RunVersion bool
+}
+
 // New is the constructor for Config.
 func New() *Config {
 	return &Config{

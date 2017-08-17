@@ -12,10 +12,10 @@ import (
 // DefaultFile is the default name for a config file.
 var DefaultFile = "tusk.yml"
 
-// FindFile finds a config file and returns its contents.
+// FindAndReadFile finds a config file and returns its contents.
 // A blank filename can be passed, in which case a file will be searched for.
 // Not finding a file is equivalent to finding an empty file.
-func FindFile(filename string) ([]byte, error) {
+func FindAndReadFile(filename string) ([]byte, error) {
 	found := false
 	passed := false
 
