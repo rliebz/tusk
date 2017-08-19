@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"gitlab.com/rliebz/tusk/appyaml"
+
 	"github.com/urfave/cli"
 )
 
@@ -19,7 +21,7 @@ type Arg struct {
 	Passed      string `yaml:"-"`
 	Environment string
 	Computed    []struct {
-		When  When
+		When  appyaml.When
 		Value string
 	}
 	Default string

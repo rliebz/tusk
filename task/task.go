@@ -1,6 +1,7 @@
 package task
 
 import (
+	"gitlab.com/rliebz/tusk/appyaml"
 	"gitlab.com/rliebz/tusk/ui"
 )
 
@@ -9,7 +10,7 @@ type Task struct {
 	Args map[string]*Arg `yaml:",omitempty"`
 	Pre  []struct {
 		Name string
-		When When
+		When appyaml.When
 	} `yaml:",omitempty"`
 	Script []Script
 	Usage  string `yaml:",omitempty"`
@@ -25,7 +26,7 @@ func (t *Task) Execute() error {
 
 	for _, preTask := range t.PreTasks {
 
-		var when When
+		var when appyaml.When
 		for _, p := range t.Pre {
 			if p.Name == preTask.Name {
 				when = p.When

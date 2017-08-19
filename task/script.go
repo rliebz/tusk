@@ -4,16 +4,16 @@ import (
 	"bufio"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/pkg/errors"
 
+	"gitlab.com/rliebz/tusk/appyaml"
 	"gitlab.com/rliebz/tusk/ui"
 )
 
 // Script is a single script within a task
 type Script struct {
-	When When `yaml:",omitempty"`
+	When appyaml.When `yaml:",omitempty"`
 	Run  []string
 }
 
@@ -35,12 +35,6 @@ func (script Script) Execute() error {
 	}
 
 	return nil
-}
-
-func testCommand(test string) error {
-	args := strings.Fields(test)
-	_, err := exec.Command("test", args...).Output() // nolint: gas
-	return err
 }
 
 // TODO: Handle errors

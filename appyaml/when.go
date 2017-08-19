@@ -1,8 +1,9 @@
-package task
+package appyaml
 
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"runtime"
 	"strings"
 )
@@ -67,4 +68,10 @@ func normalizeOS(os string) string {
 	}
 
 	return lower
+}
+
+func testCommand(test string) error {
+	args := strings.Fields(test)
+	_, err := exec.Command("test", args...).Output() // nolint: gas
+	return err
 }
