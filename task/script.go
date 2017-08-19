@@ -14,20 +14,20 @@ import (
 // Script is a single script within a task
 type Script struct {
 	When appyaml.When `yaml:",omitempty"`
-	Run  []string
+	Run  appyaml.StringList
 }
 
 // Execute validates the When conditions and executes a Script.
 func (script Script) Execute() error {
 
 	if err := script.When.Validate(); err != nil {
-		for _, command := range script.Run {
+		for _, command := range script.Run.Values {
 			ui.PrintCommandSkipped(command, err.Error())
 		}
 		return nil
 	}
 
-	for _, command := range script.Run {
+	for _, command := range script.Run.Values {
 		err := execCommand(command)
 		if err != nil {
 			return err

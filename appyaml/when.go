@@ -10,24 +10,24 @@ import (
 
 // When defines the conditions for running a task.
 type When struct {
-	Exists []string `yaml:",omitempty"`
-	OS     []string `yaml:",omitempty"`
-	Test   []string `yaml:",omitempty"`
+	Exists StringList `yaml:",omitempty"`
+	OS     StringList `yaml:",omitempty"`
+	Test   StringList `yaml:",omitempty"`
 }
 
 // Validate returns an error if any when clauses fail.
 func (w *When) Validate() error {
-	for _, f := range w.Exists {
+	for _, f := range w.Exists.Values {
 		if _, err := os.Stat(f); os.IsNotExist(err) {
 			return fmt.Errorf("file %s does not exist", f)
 		}
 	}
 
-	if err := validateOS(runtime.GOOS, w.OS); err != nil {
+	if err := validateOS(runtime.GOOS, w.OS.Values); err != nil {
 		return err
 	}
 
-	for _, test := range w.Test {
+	for _, test := range w.Test.Values {
 		if err := testCommand(test); err != nil {
 			return fmt.Errorf("test failed: %s", test)
 		}

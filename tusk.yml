@@ -20,12 +20,10 @@ tasks:
         private: true
         computed:
           - when:
-              test:
-                - ${fast} = true
+              test: ${fast} = true
             value: --fast
     script:
-      - run:
-          - gometalinter.v1 --vendor ${opts} ./...
+      - run: gometalinter.v1 --vendor ${opts} ./...
 
   test:
     usage: Run the linter and tests
@@ -37,8 +35,6 @@ tasks:
     pre:
       - name: lint
         when:
-          test:
-            - ${lint} = true
+          test: ${lint} = true
     script:
-      - run:
-          - go test $(go list ./... | grep -v '/vendor/')
+      - run: go test $(go list ./... | grep -v '/vendor/')
