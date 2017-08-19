@@ -12,7 +12,7 @@ type commandCreator func(app *cli.App, t *task.Task) (*cli.Command, error)
 func createExecuteCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
 	return createCommand(t, func(c *cli.Context) error {
 		return t.Execute()
-	})
+	}), nil
 }
 
 func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
@@ -28,23 +28,14 @@ func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error
 			}
 		}
 		return nil
-	})
+	}), nil
 }
 
 // createCommand creates a cli.Command from a task.Task.
-func createCommand(t *task.Task, actionFunc func(*cli.Context) error) (*cli.Command, error) {
-	command := &cli.Command{
+func createCommand(t *task.Task, actionFunc func(*cli.Context) error) *cli.Command {
+	return &cli.Command{
 		Name:   t.Name,
 		Usage:  t.Usage,
 		Action: actionFunc,
 	}
-
-	for name, arg := range t.Args {
-		arg.Name = name
-		if err := addFlag(command, arg); err != nil {
-			return nil, err
-		}
-	}
-
-	return command, nil
 }
