@@ -20,28 +20,33 @@ type Option struct {
 	Private bool
 
 	// Used to determine value, in order of highest priority
-	// `Command` and `Default` are mutually exclusive
 	Environment string
-	Computed    []computed
-	Command     string
-	Default     string
+	Computed    []struct {
+		When    appyaml.When
+		content `yaml:",inline"`
+	}
+	content `yaml:",inline"`
 
 	// Computed members not specified in yaml file
 	Name   string `yaml:"-"`
 	Passed string `yaml:"-"`
 }
 
-func (o *Option) getCommand() string { return o.Command }
-func (o *Option) getDefault() string { return o.Default }
-
-type computed struct {
-	When    appyaml.When
+type content struct {
 	Command string
 	Default string
 }
 
-func (c *computed) getCommand() string { return c.Command }
-func (c *computed) getDefault() string { return c.Default }
+func (c *content) getCommand() string { return c.Command }
+func (c *content) getDefault() string { return c.Default }
+
+// valueGetter determines a value by running a command or using a default.
+// While both options are available, it is required that only one of the two
+// are defined, since neither has an innate priority over the other.
+type valueGetter interface {
+	getCommand() string
+	getDefault() string
+}
 
 // CreateCLIFlag converts an Option into a cli.Flag.
 func CreateCLIFlag(opt *Option) (cli.Flag, error) {
@@ -78,7 +83,13 @@ func CreateCLIFlag(opt *Option) (cli.Flag, error) {
 	}
 }
 
-// Value determines the final argument value based on all options.
+// Value determines an option's final value based on all configuration.
+//
+// For non-private variables, the order of priority is:
+//   1. Parameter that was passed
+//   2. Environment variable set
+//   3. The first item in the computed list with a valid when clause
+//   4. The default, which is either a plain string or the output of a command
 func (o *Option) Value() (string, error) {
 
 	if !o.Private {
@@ -113,14 +124,7 @@ func (o *Option) Value() (string, error) {
 	return value, nil
 }
 
-// valueGetter determines a value by running a command or using a default.
-// While both options are available, it is required that only one of the two
-// are defined, since neither has an innate priority over the other.
-type valueGetter interface {
-	getCommand() string
-	getDefault() string
-}
-
+// getCommandOrDefault validates a valueGetter structure, then gets the value.
 func getCommandOrDefault(vg valueGetter) (string, error) {
 
 	if vg.getDefault() != "" && vg.getCommand() != "" {
