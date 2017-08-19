@@ -54,7 +54,7 @@ func newFlagApp(cfgText []byte) (*cli.App, error) {
 
 	app := newSilentApp()
 	app.Metadata = make(map[string]interface{})
-	app.Metadata["flagValues"] = make(map[string]string)
+	app.Metadata["flagsPassed"] = make(map[string]string)
 
 	if err = addTasks(app, cfg, createMetadataBuildCommand); err != nil {
 		return nil, err
@@ -74,12 +74,12 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 		return nil, err
 	}
 
-	flags, ok := flagApp.Metadata["flagValues"].(map[string]string)
+	passed, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
 	if !ok {
 		return nil, errors.New("could not read flags from metadata")
 	}
 
-	cfgText, err = config.Interpolate(cfgText, flags)
+	cfgText, err = config.Interpolate(cfgText, passed)
 	if err != nil {
 		return nil, err
 	}

@@ -16,7 +16,7 @@ func createExecuteCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
 }
 
 func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
-	flags, ok := app.Metadata["flagValues"].(map[string]string)
+	passed, ok := app.Metadata["flagsPassed"].(map[string]string)
 	if !ok {
 		return nil, errors.New("could not read flags from metadata")
 	}
@@ -24,7 +24,7 @@ func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error
 	return createCommand(t, func(c *cli.Context) error {
 		for _, flagName := range c.FlagNames() {
 			if c.IsSet(flagName) {
-				flags[flagName] = c.String(flagName)
+				passed[flagName] = c.String(flagName)
 			}
 		}
 		return nil
