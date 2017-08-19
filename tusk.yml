@@ -21,7 +21,7 @@ tasks:
         computed:
           - when:
               test: ${fast} = true
-            value: --fast
+            default: --fast
     script:
       - run: gometalinter.v1 --vendor ${opts} ./...
 
