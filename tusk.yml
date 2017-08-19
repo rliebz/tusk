@@ -7,8 +7,8 @@ args:
 tasks:
   bootstrap:
     usage: Set up the app for first time use
-    script:
-      - run:
+    run:
+      - command:
           - go get -u gopkg.in/alecthomas/gometalinter.v1
           - go get -u github.com/golang/dep/cmd/dep
           - dep ensure
@@ -22,8 +22,8 @@ tasks:
           - when:
               test: ${fast} = true
             default: --fast
-    script:
-      - run: gometalinter.v1 --vendor ${opts} ./...
+    run:
+      - command: gometalinter.v1 --vendor ${opts} ./...
 
   test:
     usage: Run the linter and tests
@@ -36,5 +36,5 @@ tasks:
       - name: lint
         when:
           test: ${lint} = true
-    script:
-      - run: go test $(go list ./... | grep -v '/vendor/')
+    run:
+      - command: go test $(go list ./... | grep -v '/vendor/')

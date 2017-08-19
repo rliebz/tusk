@@ -5,22 +5,22 @@ import (
 	"gitlab.com/rliebz/tusk/ui"
 )
 
-// Task is a single task to be run by CLI
+// Task is a single task to be run by CLI.
 type Task struct {
 	Args map[string]*Arg `yaml:",omitempty"`
 	Pre  []struct {
 		Name string
 		When appyaml.When
 	} `yaml:",omitempty"`
-	Script []Script
-	Usage  string `yaml:",omitempty"`
+	Run   []Run
+	Usage string `yaml:",omitempty"`
 
 	// Computed members not specified in yaml file
 	Name     string  `yaml:"-"`
 	PreTasks []*Task `yaml:"-"`
 }
 
-// Execute runs the scripts in the task.
+// Execute runs the Run scripts in the task.
 func (t *Task) Execute() error {
 	// TODO: Announce task
 
@@ -44,8 +44,8 @@ func (t *Task) Execute() error {
 		}
 	}
 
-	for _, script := range t.Script {
-		if err := script.Execute(); err != nil {
+	for _, run := range t.Run {
+		if err := run.Execute(); err != nil {
 			return err
 		}
 	}

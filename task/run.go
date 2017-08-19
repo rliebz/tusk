@@ -11,23 +11,23 @@ import (
 	"gitlab.com/rliebz/tusk/ui"
 )
 
-// Script is a single script within a task
-type Script struct {
-	When appyaml.When `yaml:",omitempty"`
-	Run  appyaml.StringList
+// Run defines a a single runnable script within a task.
+type Run struct {
+	When    appyaml.When `yaml:",omitempty"`
+	Command appyaml.StringList
 }
 
-// Execute validates the When conditions and executes a Script.
-func (script Script) Execute() error {
+// Execute validates the When conditions and executes a Run script.
+func (run Run) Execute() error {
 
-	if err := script.When.Validate(); err != nil {
-		for _, command := range script.Run.Values {
+	if err := run.When.Validate(); err != nil {
+		for _, command := range run.Command.Values {
 			ui.PrintCommandSkipped(command, err.Error())
 		}
 		return nil
 	}
 
-	for _, command := range script.Run.Values {
+	for _, command := range run.Command.Values {
 		err := execCommand(command)
 		if err != nil {
 			return err
