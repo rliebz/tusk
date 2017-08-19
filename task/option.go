@@ -101,6 +101,13 @@ func (o *Option) Value() (string, error) {
 		if envValue != "" {
 			return envValue, nil
 		}
+	} else {
+		if o.Environment != "" {
+			return "", fmt.Errorf(
+				"environment `%s` defined for private option",
+				o.Environment,
+			)
+		}
 	}
 
 	for _, candidate := range o.Computed {
