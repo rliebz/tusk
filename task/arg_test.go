@@ -5,11 +5,11 @@ import (
 )
 
 func TestCreateCLIFlag_undefined(t *testing.T) {
-	arg := &Arg{
+	opt := &Option{
 		Type: "wrong",
 	}
 
-	flag, err := CreateCLIFlag(arg)
+	flag, err := CreateCLIFlag(opt)
 	if err == nil {
 		t.Fatalf("flag was wrongly created: %#v", flag)
 	}

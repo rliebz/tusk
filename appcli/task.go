@@ -29,7 +29,7 @@ func addTask(app *cli.App, cfg *config.Config, t *task.Task, create commandCreat
 	}
 
 	if err := addGlobalFlagsUsed(command, t, cfg); err != nil {
-		return errors.Wrap(err, "could not add global args")
+		return errors.Wrap(err, "could not add global flags")
 	}
 
 	for _, pre := range t.Pre {
@@ -40,7 +40,7 @@ func addTask(app *cli.App, cfg *config.Config, t *task.Task, create commandCreat
 		}
 
 		if err := addGlobalFlagsUsed(command, pt, cfg); err != nil {
-			return errors.Wrap(err, "could not add global args")
+			return errors.Wrap(err, "could not add global flags")
 		}
 
 		t.PreTasks = append(t.PreTasks, pt)

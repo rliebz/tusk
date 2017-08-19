@@ -100,7 +100,7 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 	return app, nil
 }
 
-// GetConfigMetadata returns a metadata object based on global flags.
+// GetConfigMetadata returns a metadata object based on global options passed.
 func GetConfigMetadata(args []string) *config.Metadata {
 	app := newSilentApp()
 

@@ -6,24 +6,24 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// FindAllFlags returns a list of flags relevant for a given task.
-func (cfg *Config) FindAllFlags(t *task.Task) ([]*task.Arg, error) {
+// FindAllOptions returns a list of flags relevant for a given task.
+func (cfg *Config) FindAllOptions(t *task.Task) ([]*task.Option, error) {
 	names, err := getDependencies(t)
 	if err != nil {
 		return nil, err
 	}
 
-	candidates := make(map[string]*task.Arg)
-	for name, arg := range cfg.Args {
-		arg.Name = name
-		candidates[name] = arg
+	candidates := make(map[string]*task.Option)
+	for name, opt := range cfg.Options {
+		opt.Name = name
+		candidates[name] = opt
 	}
 
-	var required []*task.Arg
-	for name, arg := range t.Args {
-		arg.Name = name
-		required = append(required, arg)
-		candidates[name] = arg
+	var required []*task.Option
+	for name, opt := range t.Options {
+		opt.Name = name
+		required = append(required, opt)
+		candidates[name] = opt
 	}
 
 	required, err = recurseDependencies(names, candidates, required)
@@ -35,8 +35,7 @@ func (cfg *Config) FindAllFlags(t *task.Task) ([]*task.Arg, error) {
 }
 
 func recurseDependencies(
-	entry []string, candidates map[string]*task.Arg, found []*task.Arg,
-) ([]*task.Arg, error) {
+	entry []string, candidates map[string]*task.Option, found []*task.Option) ([]*task.Option, error) {
 
 candidates:
 	for _, item := range entry {

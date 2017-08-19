@@ -21,7 +21,7 @@ tasks:
         run: bundle check --path vendor/gems >/dev/null 2>&1 || bundle install --path vendor/gems --quiet --without production
 
   console:
-    args:
+    options:
       - name: env
         default: local
         type: string

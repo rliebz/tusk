@@ -20,7 +20,7 @@ import (
 // dependent variables that are not overriden by command-line options.
 func Interpolate(cfgText []byte, passed map[string]string) ([]byte, error) {
 
-	ordered, err := getOrderedArgs(cfgText)
+	ordered, err := getOrderedOpts(cfgText)
 	if err != nil {
 		return nil, err
 	}
@@ -35,33 +35,33 @@ func Interpolate(cfgText []byte, passed map[string]string) ([]byte, error) {
 	return cfgText, nil
 }
 
-// getOrderedArgs returns a list of args in the order they appear.
-func getOrderedArgs(cfgText []byte) ([]string, error) {
+// getOrderedOpts returns a list of options in the order they appear.
+func getOrderedOpts(cfgText []byte) ([]string, error) {
 
 	ordered := new(struct {
-		Args  yaml.MapSlice
-		Tasks yaml.MapSlice
+		Options yaml.MapSlice
+		Tasks   yaml.MapSlice
 	})
 
 	if err := yaml.Unmarshal(cfgText, ordered); err != nil {
 		return nil, err
 	}
 
-	allArgs := ordered.Args
+	allOpts := ordered.Options
 
 	for _, mapslice := range ordered.Tasks {
 		for _, ms := range mapslice.Value.(yaml.MapSlice) {
 			name := ms.Key.(string)
-			if name != "args" {
+			if name != "options" {
 				continue
 			}
 
-			allArgs = append(allArgs, ms.Value.(yaml.MapSlice)...)
+			allOpts = append(allOpts, ms.Value.(yaml.MapSlice)...)
 		}
 	}
 
 	var output []string
-	for _, mapslice := range allArgs {
+	for _, mapslice := range allOpts {
 		name, ok := mapslice.Key.(string)
 		if !ok {
 			return nil, fmt.Errorf("failed to assert name as string: %v", mapslice.Key)
@@ -82,17 +82,17 @@ func interpolateFlag(cfgText []byte, passed map[string]string, name string) ([]b
 		return nil, err
 	}
 
-	arg, err := getArg(cfg, name)
+	opt, err := getOpt(cfg, name)
 	if err != nil {
 		return nil, err
 	}
 
 	valuePassed, ok := passed[name]
 	if ok {
-		arg.Passed = valuePassed
+		opt.Passed = valuePassed
 	}
 
-	value, err := arg.Value()
+	value, err := opt.Value()
 	if err != nil {
 		return nil, err
 	}
@@ -100,20 +100,20 @@ func interpolateFlag(cfgText []byte, passed map[string]string, name string) ([]b
 	return interp.Interpolate(cfgText, name, value)
 }
 
-// getArg gets an arg from a Config by name. Both global args and task-specific
-// args are checked.
-func getArg(cfg *Config, name string) (*task.Arg, error) {
+// getOpt gets an option from a Config by name. Both global options and
+// task-specific options are checked.
+func getOpt(cfg *Config, name string) (*task.Option, error) {
 
-	if value, ok := cfg.Args[name]; ok {
+	if value, ok := cfg.Options[name]; ok {
 		return value, nil
 	}
 
 	// TODO: Can we limit which tasks we check at this point?
 	for _, t := range cfg.Tasks {
-		if value, ok := t.Args[name]; ok {
+		if value, ok := t.Options[name]; ok {
 			return value, nil
 		}
 	}
 
-	return nil, fmt.Errorf("could not find arg %s", name)
+	return nil, fmt.Errorf("option required but not defined: %s", name)
 }

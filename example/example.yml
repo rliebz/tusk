@@ -1,5 +1,5 @@
 # Options can be defined at a global or task-specific level.
-args:
+options:
   global:
     # Usage text is visible in the help menu for relevant tasks.
     usage: This option is available globally
@@ -47,7 +47,7 @@ tasks:
     # Documentation for tasks should also be set.
     usage: run application tests
     # Options set per task are identical to the global ones in structure.
-    args:
+    options:
       local:
         usage: This option is specific to test
         # Global variables will also interpolate here.

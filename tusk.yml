@@ -1,5 +1,5 @@
 ---
-args:
+options:
   fast:
     usage: Skip slow linters/tests
     type: bool
@@ -15,7 +15,7 @@ tasks:
 
   lint:
     usage: Run the linter
-    args:
+    options:
       opts:
         private: true
         computed:
@@ -27,7 +27,7 @@ tasks:
 
   test:
     usage: Run the linter and tests
-    args:
+    options:
       lint:
         usage: Run the linter with the tests
         default: true

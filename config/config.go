@@ -7,8 +7,8 @@ import (
 
 // Config is a struct representing the format for configuration settings.
 type Config struct {
-	Args  map[string]*task.Arg
-	Tasks map[string]*task.Task
+	Options map[string]*task.Option
+	Tasks   map[string]*task.Task
 }
 
 // Metadata contains global configuration settings.
@@ -21,8 +21,8 @@ type Metadata struct {
 // New is the constructor for Config.
 func New() *Config {
 	return &Config{
-		Args:  make(map[string]*task.Arg),
-		Tasks: make(map[string]*task.Task),
+		Options: make(map[string]*task.Option),
+		Tasks:   make(map[string]*task.Task),
 	}
 }
 

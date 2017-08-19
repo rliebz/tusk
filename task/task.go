@@ -7,8 +7,8 @@ import (
 
 // Task is a single task to be run by CLI.
 type Task struct {
-	Args map[string]*Arg `yaml:",omitempty"`
-	Pre  []struct {
+	Options map[string]*Option `yaml:",omitempty"`
+	Pre     []struct {
 		Name string
 		When appyaml.When
 	} `yaml:",omitempty"`

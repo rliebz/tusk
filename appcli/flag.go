@@ -22,24 +22,24 @@ func copyFlags(target *cli.App, source *cli.App) {
 // addGlobalFlagsUsed adds the top-level flags to tasks where interpolation is used.
 func addGlobalFlagsUsed(cmd *cli.Command, t *task.Task, cfg *config.Config) error {
 
-	dependencies, err := cfg.FindAllFlags(t)
+	dependencies, err := cfg.FindAllOptions(t)
 	if err != nil {
 		return err
 	}
 
-	for _, arg := range dependencies {
+	for _, opt := range dependencies {
 
-		if arg.Private {
+		if opt.Private {
 			continue
 		}
 
 		// TODO: Disallow multiple differing flag definitions
 
-		if err := addFlag(cmd, arg); err != nil {
+		if err := addFlag(cmd, opt); err != nil {
 			return errors.Wrapf(
 				err,
 				"could not add flag `%s` to command `%s`",
-				arg.Name,
+				opt.Name,
 				t.Name,
 			)
 		}
@@ -49,14 +49,14 @@ func addGlobalFlagsUsed(cmd *cli.Command, t *task.Task, cfg *config.Config) erro
 	return nil
 }
 
-func addFlag(command *cli.Command, arg *task.Arg) error {
-	flag, err := task.CreateCLIFlag(arg)
+func addFlag(command *cli.Command, opt *task.Option) error {
+	flag, err := task.CreateCLIFlag(opt)
 	if err != nil {
 		return err
 	}
 
 	for _, flag := range command.Flags {
-		if arg.Name == flag.GetName() {
+		if opt.Name == flag.GetName() {
 			return nil
 		}
 	}

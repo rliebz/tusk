@@ -12,8 +12,8 @@ import (
 	"github.com/urfave/cli"
 )
 
-// Arg represents an abstract command line argument.
-type Arg struct {
+// Option represents an abstract command line option.
+type Option struct {
 	Short   string
 	Type    string
 	Usage   string
@@ -31,8 +31,8 @@ type Arg struct {
 	Passed string `yaml:"-"`
 }
 
-func (a *Arg) getCommand() string { return a.Command }
-func (a *Arg) getDefault() string { return a.Default }
+func (o *Option) getCommand() string { return o.Command }
+func (o *Option) getDefault() string { return o.Default }
 
 type computed struct {
 	When    appyaml.When
@@ -43,71 +43,71 @@ type computed struct {
 func (c *computed) getCommand() string { return c.Command }
 func (c *computed) getDefault() string { return c.Default }
 
-// CreateCLIFlag converts an Arg into a cli.Flag.
-func CreateCLIFlag(arg *Arg) (cli.Flag, error) {
+// CreateCLIFlag converts an Option into a cli.Flag.
+func CreateCLIFlag(opt *Option) (cli.Flag, error) {
 
-	name := arg.Name
-	if arg.Short != "" {
-		name = fmt.Sprintf("%s, %s", name, arg.Short)
+	name := opt.Name
+	if opt.Short != "" {
+		name = fmt.Sprintf("%s, %s", name, opt.Short)
 	}
 
-	arg.Type = strings.ToLower(arg.Type)
-	switch arg.Type {
+	opt.Type = strings.ToLower(opt.Type)
+	switch opt.Type {
 	case "int", "integer":
 		return cli.IntFlag{
 			Name:  name,
-			Usage: arg.Usage,
+			Usage: opt.Usage,
 		}, nil
 	case "float", "float64", "double":
 		return cli.Float64Flag{
 			Name:  name,
-			Usage: arg.Usage,
+			Usage: opt.Usage,
 		}, nil
 	case "bool", "boolean":
 		return cli.BoolFlag{
 			Name:  name,
-			Usage: arg.Usage,
+			Usage: opt.Usage,
 		}, nil
 	case "string", "":
 		return cli.StringFlag{
 			Name:  name,
-			Usage: arg.Usage,
+			Usage: opt.Usage,
 		}, nil
 	default:
-		return nil, fmt.Errorf("unsupported flag type `%s`", arg.Type)
+		return nil, fmt.Errorf("unsupported flag type `%s`", opt.Type)
 	}
 }
 
 // Value determines the final argument value based on all options.
-func (a *Arg) Value() (string, error) {
+func (o *Option) Value() (string, error) {
 
-	if !a.Private {
-		if a.Passed != "" {
-			return a.Passed, nil
+	if !o.Private {
+		if o.Passed != "" {
+			return o.Passed, nil
 		}
 
-		envValue := os.Getenv(a.Environment)
+		envValue := os.Getenv(o.Environment)
 		if envValue != "" {
 			return envValue, nil
 		}
 	}
 
-	for _, candidate := range a.Computed {
+	for _, candidate := range o.Computed {
 		if err := candidate.When.Validate(); err != nil {
 			continue
 		}
 
 		value, err := getCommandOrDefault(&candidate)
 		if err != nil {
-			return "", errors.Wrapf(err, "could not compute value for flag: %s", a.Name)
+			return "", errors.Wrapf(err, "could not compute value for flag: %s", o.Name)
 		}
 
 		return value, nil
 	}
 
-	value, err := getCommandOrDefault(a)
+	value, err := getCommandOrDefault(o)
 	if err != nil {
-		return "", errors.Wrapf(err, "could not compute value for flag: %s", a.Name)
+		return "", errors.Wrapf(err, "could not compute value for flag: %s", o.Name)
 	}
 
 	return value, nil
