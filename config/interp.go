@@ -9,7 +9,16 @@ import (
 )
 
 // Interpolate evaluates the variables given and returns interpolated text.
-func Interpolate(cfgText []byte, flags map[string]string) ([]byte, error) {
+//
+// cfgText should be a valid, uninterpolated yaml configuration. While
+// there is currently no distinct validation phase, it is likely that this
+// function would return an error for invalid interpolation syntax.
+//
+// passed is a map of variable names to values, which are the values of the
+// flags that were passed directly by CLI. These will be used in determining
+// their own values to interpolate, and also may have an impact on other
+// dependent variables that are not overriden by command-line options.
+func Interpolate(cfgText []byte, passed map[string]string) ([]byte, error) {
 
 	ordered, err := getOrderedArgs(cfgText)
 	if err != nil {
@@ -17,7 +26,7 @@ func Interpolate(cfgText []byte, flags map[string]string) ([]byte, error) {
 	}
 
 	for _, name := range ordered {
-		cfgText, err = interpolateFlag(cfgText, flags, name)
+		cfgText, err = interpolateFlag(cfgText, passed, name)
 		if err != nil {
 			return nil, err
 		}
@@ -65,7 +74,7 @@ func getOrderedArgs(cfgText []byte) ([]string, error) {
 }
 
 // interpolateFlag runs interpolation over config text for a given flag name.
-func interpolateFlag(cfgText []byte, flags map[string]string, name string) ([]byte, error) {
+func interpolateFlag(cfgText []byte, passed map[string]string, name string) ([]byte, error) {
 
 	cfg := New()
 
@@ -78,9 +87,9 @@ func interpolateFlag(cfgText []byte, flags map[string]string, name string) ([]by
 		return nil, err
 	}
 
-	passed, ok := flags[name]
+	valuePassed, ok := passed[name]
 	if ok {
-		arg.Passed = passed
+		arg.Passed = valuePassed
 	}
 
 	value, err := arg.Value()
@@ -91,6 +100,8 @@ func interpolateFlag(cfgText []byte, flags map[string]string, name string) ([]by
 	return interp.Interpolate(cfgText, name, value)
 }
 
+// getArg gets an arg from a Config by name. Both global args and task-specific
+// args are checked.
 func getArg(cfg *Config, name string) (*task.Arg, error) {
 
 	if value, ok := cfg.Args[name]; ok {
