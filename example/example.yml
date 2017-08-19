@@ -1,28 +1,77 @@
+# Options can be defined at a global or task-specific level.
+args:
+  global:
+    # Usage text is visible in the help menu for relevant tasks.
+    usage: This option is available globally
+    # A short flag can be set.
+    short: g
+    # Environment variables are also supported.
+    environment: MY_GLOBAL_VAR
+    # Supported types include boolean, float, int, and string (default).
+    # Boolean flags do not need an argument passed.
+    type: int
+    # Variables default to their zero-value (empty string, false, or 0).
+    # The default can be overridden.
+    default: 5
+  example:
+    usage: This is an example option
+    # Conditional logic is supported for setting variables.
+    computed:
+      # For variables, when clauses are evaluated until one of them passes.
+      - when:
+          # Clauses can take a string or a list of strings.
+          # For `exists` clauses, all files must exist.
+          exists: some_file.txt
+          # For `os`, only one needs to match.
+          os:
+            - linux
+            - darwin
+          # Shell exit codes can be used for more control.
+          # Any command passed to `test` will be run through the shell builtin.
+          test:
+            # Variables declared earlier in the config file are available.
+            - ${global} = 5
+        default: Global Is Five!
+      - when:
+          test: ${global} -gt 5
+        # Shell command stdout can be captured.
+        # Since interpolation shares syntax with shell variables, $varname
+        # or $${varname} can be used to avoid ambiguity.
+        command: let my_var=${global}/2; echo "Global Over Two Equals $${foo}"
+    # If no computed value passes, a default or command can be set here.
+    default: All When Clauses Fail
+
+# Tasks must be defined after global variables.
 tasks:
   test:
+    # Documentation for tasks should also be set.
     usage: run application tests
+    # Options set per task are identical to the global ones in structure.
     args:
-      env:
-        usage: An environment in which to run
-        default: local
-        environment: TUSK_ENV
+      local:
+        usage: This option is specific to test
+        # Global variables will also interpolate here.
+        default: ${global}
+    # Pre tasks are avaiable to run beforehand.
     pre:
-      - bootstrap
-    script:
+      # When clauses here must validate for the pre-task to run.
       - when:
-          test:
-            - 1 = 1
-        run:
-          - echo "Hello, world!"
-          - echo "We can do two lines!"
+          os: darwin
+        # It is not necessary to declare pre-tasks in order.
+        name: bootstrap
+    # Run clauses give the actual functionality.
+    run:
+      # In this case, each item in the list evaluates its when clause to
+      # determine if the command should run.
       - when:
-          exists:
-            - foo.json
-          os:
-            - darwin
-          test:
-            - -z "$RAILS_ENV"
-            - -z "$RACK_ENV"
-        run:
-          # Only things for a development environment will run here
-          - echo "Foo exists!"
+          test: 1 = 0
+        command:
+          - echo "This won't run!"
+          - echo "But we can do two lines!"
+      # Subsequent commands can run if the previous one did not pass its when
+      # clause. Each item still has to pass its own whens, however.
+      - when:
+          test: 1 = 1
+        command: exit 1
+      # If the previous command fails, the entire run section is aborted.
+      - command: echo "This is never run!"

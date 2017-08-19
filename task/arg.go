@@ -21,14 +21,14 @@ type Arg struct {
 
 	// Used to determine value, in order of highest priority
 	// `Command` and `Default` are mutually exclusive
-	Passed      string `yaml:"-"`
 	Environment string
 	Computed    []computed
 	Command     string
 	Default     string
 
 	// Computed members not specified in yaml file
-	Name string `yaml:"-"`
+	Name   string `yaml:"-"`
+	Passed string `yaml:"-"`
 }
 
 func (a *Arg) getCommand() string { return a.Command }

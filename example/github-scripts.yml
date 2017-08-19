@@ -3,29 +3,22 @@ tasks:
   bootstrap:
     # Default is working directory
     directory: ${tusk_root}
-    script:
+    run:
       - when:
-          exists:
-            - Brewfile
-          os:
-            - Darwin
-        run:
-          - brew bundle
+          exists: Brewfile
+          os: darwin
+        command: brew bundle
 
       - when:
-          exists:
-            - .ruby-version
-          test:
-            - -z "$(rbenv version-name 2>/dev/null)"
+          exists: .ruby-version
+          test: -z "$(rbenv version-name 2>/dev/null)"
         run:
           - rbenv install --skip-existing
           - which bundle >/dev/null 2>&1 || { gem install bundler; rbenv rehash }
 
       - when:
-          exists:
-            - ./Gemfile
-        run:
-          - bundle check --path vendor/gems >/dev/null 2>&1 || bundle install --path vendor/gems --quiet --without production
+          exists: ./Gemfile
+        run: bundle check --path vendor/gems >/dev/null 2>&1 || bundle install --path vendor/gems --quiet --without production
 
   console:
     args:
@@ -34,7 +27,6 @@ tasks:
         type: string
     directory: ${tusk_root}
     script:
-      # TODO: Support `else`
       - when:
           test: ${env} = production
         run: heroku run rails console --app heroku-app-name-staging
@@ -50,7 +42,7 @@ tasks:
   test:
     directory: ${tusk_root}
     pre:
-      - bootstrap
+      - name: bootstrap
     script:
       - run: bin/rake db:create db:reset
       - when:
