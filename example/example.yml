@@ -52,13 +52,6 @@ tasks:
         usage: This option is specific to test
         # Global variables will also interpolate here.
         default: ${global}
-    # Pre tasks are avaiable to run beforehand.
-    pre:
-      # When clauses here must validate for the pre-task to run.
-      - when:
-          os: darwin
-        # It is not necessary to declare pre-tasks in order.
-        name: bootstrap
     # Run clauses give the actual functionality.
     run:
       # In this case, each item in the list evaluates its when clause to
@@ -75,3 +68,12 @@ tasks:
         command: exit 1
       # If the previous command fails, the entire run section is aborted.
       - command: echo "This is never run!"
+  moretests:
+    usage: Also run the tests
+    # Pre tasks are avaiable to run beforehand.
+    pre:
+      # When clauses here must validate for the pre-task to run.
+      - when:
+          os: darwin
+        # Pre-tasks can be referenced by just name, but must be defined first.
+        name: test

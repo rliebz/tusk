@@ -1,6 +1,8 @@
 package appcli
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
@@ -32,7 +34,11 @@ func addTask(app *cli.App, cfg *config.Config, t *task.Task, create commandCreat
 
 	for _, pre := range t.Pre {
 		// TODO: This requires tasks to be defined in order
-		pt := cfg.Tasks[pre.Name]
+		pt, ok := cfg.Tasks[pre.Name]
+		if !ok {
+			return fmt.Errorf("pre-task %s was referenced before definition", pre.Name)
+		}
+
 		if err := addGlobalFlagsUsed(command, pt, cfg); err != nil {
 			return errors.Wrap(err, "could not add global args")
 		}
