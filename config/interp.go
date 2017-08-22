@@ -18,21 +18,67 @@ import (
 // flags that were passed directly by CLI. These will be used in determining
 // their own values to interpolate, and also may have an impact on other
 // dependent variables that are not overriden by command-line options.
-func Interpolate(cfgText []byte, passed map[string]string) ([]byte, error) {
+//
+// taskName is the name of the task being run. This is used to determine the
+// list of options which require interpolation.
+func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]byte, error) {
 
 	ordered, err := getOrderedOpts(cfgText)
 	if err != nil {
 		return nil, err
 	}
 
+	required, err := getRequiredOpts(cfgText, taskName)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, name := range ordered {
-		cfgText, err = interpolateFlag(cfgText, passed, name)
-		if err != nil {
-			return nil, err
+		for _, opt := range required {
+			if opt != name {
+				continue
+			}
+
+			cfgText, err = interpolateFlag(cfgText, passed, name)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
 	return cfgText, nil
+}
+
+func getRequiredOpts(cfgText []byte, taskName string) ([]string, error) {
+	if taskName == "" {
+		return []string{}, nil
+	}
+
+	cfg, err := Parse(cfgText)
+	if err != nil {
+		return nil, err
+	}
+
+	t, ok := cfg.Tasks[taskName]
+	if !ok {
+		return nil, fmt.Errorf("could not find task `%s`", taskName)
+	}
+
+	if err = AddPreTasks(cfg, t); err != nil {
+		return nil, err
+	}
+
+	required, err := cfg.FindAllOptions(t)
+	if err != nil {
+		return nil, err
+	}
+
+	var output []string
+	for _, opt := range required {
+		output = append(output, opt.Name)
+	}
+
+	return output, nil
 }
 
 // getOrderedOpts returns a list of options in the order they appear.

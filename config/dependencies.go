@@ -1,12 +1,32 @@
 package config
 
 import (
+	"fmt"
+
 	"gitlab.com/rliebz/tusk/interp"
 	"gitlab.com/rliebz/tusk/task"
 	yaml "gopkg.in/yaml.v2"
 )
 
-// FindAllOptions returns a list of flags relevant for a given task.
+// AddPreTasks will recursively add task objects to the task's list of pretasks.
+func AddPreTasks(cfg *Config, t *task.Task) error {
+	for _, pre := range t.Pre {
+		// TODO: This requires tasks to be defined in order
+		pt, ok := cfg.Tasks[pre.Name]
+		if !ok {
+			return fmt.Errorf("pre-task %s was referenced before definition", pre.Name)
+		}
+
+		t.PreTasks = append(t.PreTasks, pt)
+		if err := AddPreTasks(cfg, pt); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// FindAllOptions returns a list of options relevant for a given task.
 func (cfg *Config) FindAllOptions(t *task.Task) ([]*task.Option, error) {
 	names, err := getDependencies(t)
 	if err != nil {
@@ -29,6 +49,15 @@ func (cfg *Config) FindAllOptions(t *task.Task) ([]*task.Option, error) {
 	required, err = recurseDependencies(names, candidates, required)
 	if err != nil {
 		return nil, err
+	}
+
+	for _, pt := range t.PreTasks {
+		prerequired, err := cfg.FindAllOptions(pt)
+		if err != nil {
+			return nil, err
+		}
+
+		required = joinListsUnique(required, prerequired)
 	}
 
 	return required, nil
@@ -82,4 +111,21 @@ func getDependencies(item interface{}) ([]string, error) {
 	}
 
 	return names, nil
+}
+
+func joinListsUnique(l1 []*task.Option, l2 []*task.Option) []*task.Option {
+	set := make(map[*task.Option]struct{})
+	for _, t := range l1 {
+		set[t] = struct{}{}
+	}
+	for _, t := range l2 {
+		set[t] = struct{}{}
+	}
+
+	var output []*task.Option
+	for t := range set {
+		output = append(output, t)
+	}
+
+	return output
 }

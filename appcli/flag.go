@@ -20,7 +20,7 @@ func copyFlags(target *cli.App, source *cli.App) {
 }
 
 // addGlobalFlagsUsed adds the top-level flags to tasks where interpolation is used.
-func addGlobalFlagsUsed(cmd *cli.Command, t *task.Task, cfg *config.Config) error {
+func addGlobalFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) error {
 
 	dependencies, err := cfg.FindAllOptions(t)
 	if err != nil {

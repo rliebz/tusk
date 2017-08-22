@@ -79,7 +79,13 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 		return nil, errors.New("could not read flags from metadata")
 	}
 
-	cfgText, err = config.Interpolate(cfgText, passed)
+	var taskName string
+	command, ok := flagApp.Metadata["command"].(*cli.Command)
+	if ok {
+		taskName = command.Name
+	}
+
+	cfgText, err = config.Interpolate(cfgText, passed, taskName)
 	if err != nil {
 		return nil, err
 	}
