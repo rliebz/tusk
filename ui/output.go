@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	debugString   = "DEBUG"
 	infoString    = "INFO"
 	warningString = "WARNING"
 	errorString   = "ERROR"
@@ -42,13 +43,17 @@ func Debug(a ...interface{}) {
 	}
 
 	message := fmt.Sprint(a...)
-	stdout.Println(message)
+	stderr.Printf(
+		"[%s] %s\n",
+		cyan(debugString),
+		message,
+	)
 }
 
 // Info prints application info.
 func Info(a ...interface{}) {
 	message := fmt.Sprint(a...)
-	stdout.Printf(
+	stderr.Printf(
 		"[%s] %s\n",
 		blue(infoString),
 		message,
@@ -58,7 +63,7 @@ func Info(a ...interface{}) {
 // Warn prints an application warning.
 func Warn(a ...interface{}) {
 	message := fmt.Sprint(a...)
-	stdout.Printf(
+	stderr.Printf(
 		"[%s] %s\n",
 		yellow(warningString),
 		message,

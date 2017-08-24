@@ -1,7 +1,5 @@
 package ui
 
-import "fmt"
-
 const (
 	commandActionString  = "Running"
 	commandSkippedString = "Skipping"
@@ -11,12 +9,11 @@ const (
 
 // PrintCommand prints the command to be executed.
 func PrintCommand(command string) {
-	message := fmt.Sprintf(
+	stderr.Printf(
 		"[%s] %s\n",
 		blue(commandActionString),
 		bold(command),
 	)
-	stdout.Printf(message)
 }
 
 // PrintCommandSkipped prints the command skipped and the reason.
@@ -25,24 +22,22 @@ func PrintCommandSkipped(command string, reason string) {
 		return
 	}
 
-	message := fmt.Sprintf(
+	stderr.Printf(
 		"[%s] %s\n%s %s\n",
 		yellow(commandSkippedString),
 		bold(command),
 		cyan(outputPrefix),
 		reason,
 	)
-	stdout.Printf(message)
 }
 
 // PrintCommandOutput prints output from a running command.
 func PrintCommandOutput(text string) {
-	message := fmt.Sprintf(
+	stderr.Printf(
 		"%s %s\n",
 		cyan(outputPrefix),
 		text,
 	)
-	stdout.Printf(message)
 }
 
 // PrintCommandError prints an error from a running command.
