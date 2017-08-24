@@ -13,7 +13,8 @@ type Config struct {
 
 // Metadata contains global configuration settings.
 type Metadata struct {
-	Filename   string
+	CfgText    []byte
+	Directory  string
 	Verbose    bool
 	RunVersion bool
 }

@@ -7,27 +7,28 @@ import (
 	"github.com/urfave/cli"
 
 	"gitlab.com/rliebz/tusk/appcli"
-	"gitlab.com/rliebz/tusk/config"
 	"gitlab.com/rliebz/tusk/ui"
 )
 
 func main() {
-	meta := appcli.GetConfigMetadata(os.Args)
+	meta, err := appcli.GetConfigMetadata(os.Args)
+	if err != nil {
+		printErrorWithHelp(err)
+		return
+	}
 
 	ui.Verbose = meta.Verbose
+	if err = os.Chdir(meta.Directory); err != nil {
+		ui.Error(err)
+		return
+	}
 
 	if meta.RunVersion {
 		ui.Print("0.0.0")
 		os.Exit(0)
 	}
 
-	cfgText, err := config.FindAndReadFile(meta.Filename)
-	if err != nil {
-		printErrorWithHelp(err)
-		return
-	}
-
-	app, err := appcli.NewApp(cfgText)
+	app, err := appcli.NewApp(meta.CfgText)
 	if err != nil {
 		printErrorWithHelp(err)
 		return

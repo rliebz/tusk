@@ -1,58 +1,27 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
-
-	"github.com/pkg/errors"
 )
 
 // DefaultFile is the default name for a config file.
 var DefaultFile = "tusk.yml"
 
-// FindAndReadFile finds a config file and returns its contents.
-// A blank filename can be passed, in which case a file will be searched for.
-// Not finding a file is equivalent to finding an empty file.
-func FindAndReadFile(filename string) ([]byte, error) {
-	found := false
-	passed := false
-
-	if filename != "" {
-		passed = true
-	}
-
-	if !passed {
-		var err error
-		filename, found, err = searchForFile()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if !passed && !found {
-		return []byte{}, nil
-	}
-
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to parse %s", filename)
-	}
-
-	return data, nil
-}
-
-func searchForFile() (filename string, found bool, err error) {
+// SearchForFile checks the working directory and every parent directory to
+// find a configuration file with the default name.
+// This should be called when an explicit file is not passed in to determine
+// the full path to the relevant config file.
+func SearchForFile() (fullPath string, found bool, err error) {
 	dirpath, err := os.Getwd()
 	if err != nil {
 		return "", false, err
 	}
 
 	for dirpath != "/" {
-		filename, found, err = findFileInDir(dirpath)
+		fullPath, found, err = findFileInDir(dirpath)
 		if err != nil || found {
-			return filename, found, err
+			return fullPath, found, err
 		}
 		dirpath = filepath.Dir(dirpath)
 	}
@@ -60,15 +29,15 @@ func searchForFile() (filename string, found bool, err error) {
 	return "", false, nil
 }
 
-func findFileInDir(dirpath string) (filename string, found bool, err error) {
+func findFileInDir(dirpath string) (fullPath string, found bool, err error) {
 
-	filename = path.Join(dirpath, DefaultFile)
-	if _, err := os.Stat(filename); err != nil {
+	fullPath = filepath.Join(dirpath, DefaultFile)
+	if _, err := os.Stat(fullPath); err != nil {
 		if os.IsNotExist(err) {
 			return "", false, nil
 		}
 		return "", false, err
 	}
 
-	return filename, true, nil
+	return fullPath, true, nil
 }

@@ -3,6 +3,7 @@ package appcli
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -107,20 +108,46 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 }
 
 // GetConfigMetadata returns a metadata object based on global options passed.
-func GetConfigMetadata(args []string) *config.Metadata {
-	app := newSilentApp()
+func GetConfigMetadata(args []string) (*config.Metadata, error) {
 
+	var err error
+
+	app := newSilentApp()
 	metadata := new(config.Metadata)
 
+	// To prevent app from exiting, the app.Action must return nil on error.
+	// The enclosing function will still return the error.
 	app.Action = func(c *cli.Context) error {
-		metadata.Filename = c.String("file")
+
+		fullPath := c.String("file")
+		if fullPath != "" {
+			metadata.CfgText, err = ioutil.ReadFile(fullPath)
+			if err != nil {
+				return nil
+			}
+		} else {
+			var found bool
+			fullPath, found, err = config.SearchForFile()
+			if err != nil {
+				return nil
+			}
+
+			if found {
+				metadata.CfgText, err = ioutil.ReadFile(fullPath)
+				if err != nil {
+					return nil
+				}
+			}
+		}
+
+		metadata.Directory = filepath.Dir(fullPath)
 		metadata.Verbose = c.Bool("verbose")
 		metadata.RunVersion = c.Bool("version")
-		return nil
+		return err
 	}
 
 	// Only does partial parsing, so errors must be ignored
 	app.Run(args) // nolint: gas, errcheck
 
-	return metadata
+	return metadata, err
 }
