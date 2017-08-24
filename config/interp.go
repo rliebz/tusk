@@ -17,7 +17,7 @@ import (
 // passed is a map of variable names to values, which are the values of the
 // flags that were passed directly by CLI. These will be used in determining
 // their own values to interpolate, and also may have an impact on other
-// dependent variables that are not overriden by command-line options.
+// dependent variables that are not overridden by command-line options.
 //
 // taskName is the name of the task being run. This is used to determine the
 // list of options which require interpolation.

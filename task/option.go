@@ -37,17 +37,6 @@ type content struct {
 	Default string
 }
 
-func (c *content) getCommand() string { return c.Command }
-func (c *content) getDefault() string { return c.Default }
-
-// valueGetter determines a value by running a command or using a default.
-// While both options are available, it is required that only one of the two
-// are defined, since neither has an innate priority over the other.
-type valueGetter interface {
-	getCommand() string
-	getDefault() string
-}
-
 // CreateCLIFlag converts an Option into a cli.Flag.
 func CreateCLIFlag(opt *Option) (cli.Flag, error) {
 
@@ -115,7 +104,7 @@ func (o *Option) Value() (string, error) {
 			continue
 		}
 
-		value, err := getCommandOrDefault(&candidate)
+		value, err := candidate.commandValueOrDefault()
 		if err != nil {
 			return "", errors.Wrapf(err, "could not compute value for flag: %s", o.Name)
 		}
@@ -123,7 +112,7 @@ func (o *Option) Value() (string, error) {
 		return value, nil
 	}
 
-	value, err := getCommandOrDefault(o)
+	value, err := o.commandValueOrDefault()
 	if err != nil {
 		return "", errors.Wrapf(err, "could not compute value for flag: %s", o.Name)
 	}
@@ -131,18 +120,18 @@ func (o *Option) Value() (string, error) {
 	return value, nil
 }
 
-// getCommandOrDefault validates a valueGetter structure, then gets the value.
-func getCommandOrDefault(vg valueGetter) (string, error) {
+// commandValueOrDefault validates a content definition, then gets the value.
+func (vg *content) commandValueOrDefault() (string, error) {
 
-	if vg.getDefault() != "" && vg.getCommand() != "" {
+	if vg.Default != "" && vg.Command != "" {
 		return "", fmt.Errorf(
 			"default (%s) and command (%s) are both defined",
-			vg.getDefault(), vg.getCommand(),
+			vg.Default, vg.Command,
 		)
 	}
 
-	if vg.getCommand() != "" {
-		out, err := exec.Command("sh", "-c", vg.getCommand()).Output() // nolint: gas
+	if vg.Command != "" {
+		out, err := exec.Command("sh", "-c", vg.Command).Output() // nolint: gas
 		if err != nil {
 			return "", err
 		}
@@ -150,5 +139,5 @@ func getCommandOrDefault(vg valueGetter) (string, error) {
 		return strings.TrimSpace(string(out)), nil
 	}
 
-	return vg.getDefault(), nil
+	return vg.Default, nil
 }

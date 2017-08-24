@@ -37,7 +37,6 @@ func (run Run) Execute() error {
 	return nil
 }
 
-// TODO: Handle errors
 func execCommand(command string) error {
 	ui.PrintCommand(command)
 
@@ -50,7 +49,6 @@ func execCommand(command string) error {
 	defer closeFile(pr)
 	defer closeFile(pw)
 
-	// TODO: Is it possible to keep the output ordered and separate?
 	cmd.Stdout = pw
 	cmd.Stderr = pw
 

@@ -36,7 +36,7 @@ func (w *When) Validate() error {
 	return nil
 }
 
-func validateOS(os string, required []string) error {
+func validateOS(os string, required []string) error { // nolint: unparam
 	// Nothing specified means any OS is fine
 	if len(required) == 0 {
 		return nil

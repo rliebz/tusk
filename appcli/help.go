@@ -3,6 +3,7 @@ package appcli
 import "github.com/urfave/cli"
 
 // init sets the help templates for urfave/cli.
+// nolint: lll
 func init() {
 	cli.AppHelpTemplate = `{{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
 

@@ -2,7 +2,7 @@ package appyaml
 
 import "errors"
 
-// StringList is a list of strings optinally represented in yaml as a string.
+// StringList is a list of strings optionally represented in yaml as a string.
 // A single string in yaml will be unmarshalled as the first entry in a list,
 // so the internal representation is always a list.
 type StringList struct {

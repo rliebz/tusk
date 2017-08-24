@@ -23,7 +23,7 @@ tasks:
               test: ${fast} = true
             default: --fast
     run:
-      - command: gometalinter.v1 --vendor ${opts} ./...
+      - command: gometalinter.v1 --config .gometalinter.json ${opts} ./...
 
   test:
     usage: Run the linter and tests
