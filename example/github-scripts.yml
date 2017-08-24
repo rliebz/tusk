@@ -1,8 +1,6 @@
 ---
 tasks:
   bootstrap:
-    # Default is working directory
-    directory: ${tusk_root}
     run:
       - when:
           exists: Brewfile
@@ -40,7 +38,6 @@ tasks:
           - bin/rails console
 
   test:
-    directory: ${tusk_root}
     pre:
       - name: bootstrap
     script:

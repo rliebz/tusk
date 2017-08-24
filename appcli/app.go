@@ -21,7 +21,7 @@ func NewBaseApp() *cli.App {
 		cli.HelpFlag,
 		cli.StringFlag{
 			Name:  "file, f",
-			Usage: "Set `FILE` to use as the config file",
+			Usage: "Set `file` to use as the config file",
 		},
 		cli.BoolFlag{
 			Name:  "verbose, v",
