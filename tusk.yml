@@ -37,4 +37,4 @@ tasks:
         when:
           test: ${lint} = true
     run:
-      - command: go test $(go list ./... | grep -v '/vendor/')
+      - command: go test -cover $(go list ./... | grep -v '/vendor/')
