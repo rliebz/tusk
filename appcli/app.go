@@ -146,8 +146,9 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 		return err
 	}
 
-	// Only does partial parsing, so errors must be ignored
-	app.Run(args) // nolint: gas, errcheck
+	if err = app.Run(args); err != nil {
+		return nil, err
+	}
 
 	return metadata, err
 }
