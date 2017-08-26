@@ -26,7 +26,7 @@ func addTask(app *cli.App, cfg *config.Config, t *task.Task, create commandCreat
 		return errors.Wrapf(err, "could not create command `%s`", t.Name)
 	}
 
-	if err := config.AddPreTasks(cfg, t); err != nil {
+	if err := config.AddSubTasks(cfg, t); err != nil {
 		return errors.Wrap(err, "could not add pretasks")
 	}
 

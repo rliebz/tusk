@@ -150,7 +150,7 @@ tasks:
 `,
 	},
 
-	// Pre-task dependencies
+	// Sub-task dependencies
 	{
 		`
 options:
@@ -162,10 +162,8 @@ tasks:
     run:
       - command: echo ${foo}
   mytask:
-    pre:
-      - name: pretask
     run:
-      - command: echo 'yes'
+      - task: pretask
 `,
 		map[string]string{"fast": "true"},
 		"mytask",
@@ -179,14 +177,12 @@ tasks:
     run:
       - command: echo foovalue
   mytask:
-    pre:
-      - name: pretask
     run:
-      - command: echo 'yes'
+      - task: pretask
 `,
 	},
 
-	// Nested pre-task dependencies
+	// Nested sub-task dependencies
 	{
 		`
 options:
@@ -198,13 +194,11 @@ tasks:
     run:
       - command: echo ${foo}
   pretask:
-    pre:
-      - name: roottask
-  mytask:
-    pre:
-      - name: pretask
     run:
-      - command: echo 'yes'
+      - task: roottask
+  mytask:
+    run:
+      - task: pretask
 `,
 		map[string]string{"fast": "true"},
 		"mytask",
@@ -218,13 +212,11 @@ tasks:
     run:
       - command: echo foovalue
   pretask:
-    pre:
-      - name: roottask
-  mytask:
-    pre:
-      - name: pretask
     run:
-      - command: echo 'yes'
+      - task: roottask
+  mytask:
+    run:
+      - task: pretask
 `,
 	},
 }
@@ -240,16 +232,18 @@ func TestInterpolate(t *testing.T) {
 
 		actualBytes, err := Interpolate([]byte(tt.cfgText), tt.passed, tt.taskName)
 		if err != nil {
-			t.Fatalf("%s\nunexpected error: %e", errString, err)
+			t.Errorf("%s\nunexpected error: %s", errString, err)
+			continue
 		}
 
 		actual := string(actualBytes)
 
 		if tt.expected != actual {
-			t.Fatalf(
+			t.Errorf(
 				"%s\nexpected: `%s`\nactual: `%s`\n",
 				errString, tt.expected, actual,
 			)
+			continue
 		}
 
 	}

@@ -70,10 +70,7 @@ tasks:
       - command: echo "This is never run!"
   moretests:
     usage: Also run the tests
-    # Pre tasks are avaiable to run beforehand.
-    pre:
-      # When clauses here must validate for the pre-task to run.
-      - when:
-          os: darwin
-        # Pre-tasks can be referenced by just name, but must be defined first.
-        name: test
+    # Sub tasks are avaiable.
+    run:
+      # Sub-tasks can be referenced by just name, but must be defined first.
+      - task: test

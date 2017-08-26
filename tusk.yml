@@ -32,9 +32,8 @@ tasks:
         usage: Run the linter with the tests
         default: true
         type: bool
-    pre:
-      - name: lint
-        when:
-          test: ${lint} = true
     run:
+      - when:
+          test: ${lint} = true
+        task: lint
       - command: go test -cover $(go list ./... | grep -v '/vendor/')

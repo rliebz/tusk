@@ -38,14 +38,13 @@ tasks:
           - bin/rails console
 
   test:
-    pre:
-      - name: bootstrap
-    script:
-      - run: bin/rake db:create db:reset
+    run:
+      - task: bootstrap
+      - command: commandbin/rake db:create db:reset
       - when:
           test:
             - -z "$RAILS_ENV"
             - -z "$RACK_ENV"
-        run:
+        command:
           # Only things for a development environment will run here
           - true

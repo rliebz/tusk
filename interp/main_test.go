@@ -62,7 +62,8 @@ func TestMap(t *testing.T) {
 	for _, tt := range maptests {
 		actual, err := Map(tt.input, tt.vars)
 		if err != nil {
-			t.Errorf("Unexpected err: %e", err)
+			t.Errorf("Unexpected err: %s", err)
+			continue
 		}
 
 		if !bytes.Equal(tt.expected, actual) {
@@ -90,7 +91,8 @@ func TestContains(t *testing.T) {
 	for _, tt := range containstests {
 		actual, err := Contains(tt.input, tt.name)
 		if err != nil {
-			t.Errorf("Unexpected err: %e", err)
+			t.Errorf("Unexpected err: %s", err)
+			continue
 		}
 
 		if tt.expected != actual {

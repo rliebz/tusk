@@ -13,28 +13,9 @@ import (
 
 // Run defines a a single runnable script within a task.
 type Run struct {
-	When    appyaml.When `yaml:",omitempty"`
-	Command appyaml.StringList
-}
-
-// Execute validates the When conditions and executes a Run script.
-func (run Run) Execute() error {
-
-	if err := run.When.Validate(); err != nil {
-		for _, command := range run.Command.Values {
-			ui.PrintCommandSkipped(command, err.Error())
-		}
-		return nil
-	}
-
-	for _, command := range run.Command.Values {
-		err := execCommand(command)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	When    *appyaml.When      `yaml:",omitempty"`
+	Command appyaml.StringList `yaml:",omitempty"`
+	Task    appyaml.StringList `yaml:",omitempty"`
 }
 
 func execCommand(command string) error {

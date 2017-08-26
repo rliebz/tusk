@@ -16,11 +16,11 @@ func TestStringList(t *testing.T) {
 	h2 := StringListHolder{}
 
 	if err := yaml.Unmarshal(s1, &h1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %e", s1, err)
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
 	}
 
 	if err := yaml.Unmarshal(s2, &h2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %e", s2, err)
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(h1, h2) {

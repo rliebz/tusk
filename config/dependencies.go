@@ -8,18 +8,21 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// AddPreTasks will recursively add task objects to the task's list of pretasks.
-func AddPreTasks(cfg *Config, t *task.Task) error {
-	for _, pre := range t.Pre {
-		// TODO: This requires tasks to be defined in order
-		pt, ok := cfg.Tasks[pre.Name]
-		if !ok {
-			return fmt.Errorf("pre-task %s was referenced before definition", pre.Name)
-		}
+// AddSubTasks will recursively add task objects to the task's list of pretasks.
+func AddSubTasks(cfg *Config, t *task.Task) error {
 
-		t.PreTasks = append(t.PreTasks, pt)
-		if err := AddPreTasks(cfg, pt); err != nil {
-			return err
+	for _, run := range t.Run {
+		for _, subTaskName := range run.Task.Values {
+			// TODO: This requires tasks to be defined in order
+			subTask, ok := cfg.Tasks[subTaskName]
+			if !ok {
+				return fmt.Errorf("sub-task %s was referenced before definition", subTaskName)
+			}
+
+			t.SubTasks = append(t.SubTasks, subTask)
+			if err := AddSubTasks(cfg, subTask); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -42,8 +45,8 @@ func (cfg *Config) FindAllOptions(t *task.Task) ([]*task.Option, error) {
 	var required []*task.Option
 	for name, opt := range t.Options {
 		opt.Name = name
-		required = append(required, opt)
 		candidates[name] = opt
+		required = append(required, opt)
 	}
 
 	required, err = recurseDependencies(names, candidates, required)
@@ -51,20 +54,21 @@ func (cfg *Config) FindAllOptions(t *task.Task) ([]*task.Option, error) {
 		return nil, err
 	}
 
-	for _, pt := range t.PreTasks {
-		prerequired, err := cfg.FindAllOptions(pt)
+	for _, subTask := range t.SubTasks {
+		nested, err := cfg.FindAllOptions(subTask)
 		if err != nil {
 			return nil, err
 		}
 
-		required = joinListsUnique(required, prerequired)
+		required = joinListsUnique(required, nested)
 	}
 
 	return required, nil
 }
 
 func recurseDependencies(
-	entry []string, candidates map[string]*task.Option, found []*task.Option) ([]*task.Option, error) {
+	entry []string, candidates map[string]*task.Option, found []*task.Option,
+) ([]*task.Option, error) {
 
 candidates:
 	for _, item := range entry {

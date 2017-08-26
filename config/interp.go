@@ -64,7 +64,7 @@ func getRequiredOpts(cfgText []byte, taskName string) ([]string, error) {
 		return nil, fmt.Errorf("could not find task `%s`", taskName)
 	}
 
-	if err = AddPreTasks(cfg, t); err != nil {
+	if err = AddSubTasks(cfg, t); err != nil {
 		return nil, err
 	}
 
