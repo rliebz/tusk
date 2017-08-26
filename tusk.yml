@@ -9,7 +9,7 @@ tasks:
     usage: Set up the app for first time use
     run:
       - command:
-          - go get -u gopkg.in/alecthomas/gometalinter.v1
+          - go get -u github.com/alecthomas/gometalinter
           - go get -u github.com/golang/dep/cmd/dep
           - dep ensure
 
@@ -23,7 +23,7 @@ tasks:
               test: ${fast} = true
             default: --fast
     run:
-      - command: gometalinter.v1 --config .gometalinter.json ${opts} ./...
+      - command: gometalinter --config .gometalinter.json ${opts} ./...
 
   test:
     usage: Run the linter and tests
