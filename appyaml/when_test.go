@@ -12,6 +12,12 @@ var whentests = []struct {
 	// Empty
 	{When{}, false},
 
+	// Command Clauses
+	{When{Command: StringList{[]string{"test 1 = 1"}}}, false},
+	{When{Command: StringList{[]string{"test 1 = 0"}}}, true},
+	{When{Command: StringList{[]string{"test 1 = 1", "test 0 = 0"}}}, false},
+	{When{Command: StringList{[]string{"test 1 = 1", "test 1 = 0"}}}, true},
+
 	// Exist Clauses
 	{When{Exists: StringList{[]string{"when_test.go"}}}, false},
 	{When{Exists: StringList{[]string{"fakefile"}}}, true},
@@ -22,12 +28,6 @@ var whentests = []struct {
 	{When{OS: StringList{[]string{"fake"}}}, true},
 	{When{OS: StringList{[]string{runtime.GOOS, "fake"}}}, false},
 	{When{OS: StringList{[]string{"fake", runtime.GOOS}}}, false},
-
-	// Test Clauses
-	{When{Test: StringList{[]string{"1 = 1"}}}, false},
-	{When{Test: StringList{[]string{"1 = 0"}}}, true},
-	{When{Test: StringList{[]string{"1 = 1", "0 = 0"}}}, false},
-	{When{Test: StringList{[]string{"1 = 1", "1 = 0"}}}, true},
 }
 
 func TestWhen_Validate(t *testing.T) {

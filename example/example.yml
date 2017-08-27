@@ -27,13 +27,13 @@ options:
             - linux
             - darwin
           # Shell exit codes can be used for more control.
-          # Any command passed to `test` will be run through the shell builtin.
-          test:
+          # Any command passed to will be run through the shell.
+          command:
             # Variables declared earlier in the config file are available.
-            - ${global} = 5
+            - test ${global} = 5
         default: Global Is Five!
       - when:
-          test: ${global} -gt 5
+          command: test ${global} -gt 5
         # Shell command stdout can be captured.
         # Since interpolation shares syntax with shell variables, $varname
         # or $${varname} can be used to avoid ambiguity.
@@ -60,14 +60,14 @@ tasks:
       # In this case, each item in the list evaluates its when clause to
       # determine if the command should run.
       - when:
-          test: 1 = 0
+          command: test 1 = 0
         command:
           - echo "This won't run!"
           - echo "But we can do two lines!"
       # Subsequent commands can run if the previous one did not pass its when
       # clause. Each item still has to pass its own whens, however.
       - when:
-          test: 1 = 1
+          command: test 1 = 1
         command: exit 1
       # If the previous command fails, the entire run section is aborted.
       - command: echo "This is never run!"

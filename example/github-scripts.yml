@@ -11,7 +11,7 @@ tasks:
 
       - when:
           exists: .ruby-version
-          test: -z "$(rbenv version-name 2>/dev/null)"
+          command: test -z "$(rbenv version-name 2>/dev/null)"
         run:
           - rbenv install --skip-existing
           - which bundle >/dev/null 2>&1 || { gem install bundler; rbenv rehash }
@@ -33,13 +33,13 @@ tasks:
     directory: ${tusk_root}
     script:
       - when:
-          test: ${env} = production
+          command: test ${env} = production
         run: heroku run rails console --app heroku-app-name-staging
       - when:
-          test: ${env} = staging
+          command: test ${env} = staging
         run: heroku run rails console --app heroku-app-name-staging
       - when:
-          test: ${env} = local
+          command: test ${env} = local
         run:
           - script/update
           - bin/rails console
@@ -53,9 +53,9 @@ tasks:
       - task: bootstrap
       - command: commandbin/rake db:create db:reset
       - when:
-          test:
-            - -z "$RAILS_ENV"
-            - -z "$RACK_ENV"
+          command:
+            - test -z "$RAILS_ENV"
+            - test -z "$RACK_ENV"
         command:
           # Only things for a development environment will run here
           - true
@@ -71,12 +71,10 @@ tasks:
         usage: test file to run
     run:
       - when:
-          # TODO: This is clumsy at best. Support `any: true`
-          test: '"$RAILS_ENV" = "test" || test "$RACK_ENV" = "test"'
+          command: test "$RAILS_ENV" = "test" || test "$RACK_ENV" = "test"
         task: setup
       - when:
-          # TODO: Think about `else` logic
-          test: '"$RAILS_ENV" != "test" && test "$RACK_ENV" != "test"'
+          command: test "$RAILS_ENV" != "test" && test "$RACK_ENV" != "test"
         # TODO: We need to set environment variables here
         task: update
       # TODO: Support positional args

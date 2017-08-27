@@ -24,7 +24,7 @@ tasks:
         private: true
         computed:
           - when:
-              test: ${fast} = true
+              command: test ${fast} = true
             default: --fast
     run:
       - command: gometalinter --config .gometalinter.json ${opts} ./...
@@ -41,6 +41,6 @@ tasks:
         type: bool
     run:
       - when:
-          test: ${lint} = true
+          command: test ${lint} = true
         task: lint
       - command: go test -cover ./...

@@ -14,10 +14,10 @@ var shouldtests = []struct {
 	{"nil when clause", &Run{When: nil}, true},
 	{"empty when clause", &Run{When: &appyaml.When{}}, true},
 	{"true when clause", &Run{When: &appyaml.When{
-		Test: appyaml.StringList{Values: []string{"1 = 1"}},
+		Command: appyaml.StringList{Values: []string{"test 1 = 1"}},
 	}}, true},
 	{"false when clause", &Run{When: &appyaml.When{
-		Test: appyaml.StringList{Values: []string{"1 = 0"}},
+		Command: appyaml.StringList{Values: []string{"test 1 = 0"}},
 	}}, false},
 }
 

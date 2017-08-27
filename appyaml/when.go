@@ -10,9 +10,9 @@ import (
 
 // When defines the conditions for running a task.
 type When struct {
-	Exists StringList `yaml:",omitempty"`
-	OS     StringList `yaml:",omitempty"`
-	Test   StringList `yaml:",omitempty"`
+	Command StringList `yaml:",omitempty"`
+	Exists  StringList `yaml:",omitempty"`
+	OS      StringList `yaml:",omitempty"`
 }
 
 // Validate returns an error if any when clauses fail.
@@ -27,9 +27,9 @@ func (w *When) Validate() error {
 		return err
 	}
 
-	for _, test := range w.Test.Values {
-		if err := testCommand(test); err != nil {
-			return fmt.Errorf("test failed: %s", test)
+	for _, command := range w.Command.Values {
+		if err := testCommand(command); err != nil {
+			return fmt.Errorf("test failed: %s", command)
 		}
 	}
 
@@ -70,8 +70,7 @@ func normalizeOS(os string) string {
 	return lower
 }
 
-func testCommand(test string) error {
-	args := strings.Fields(test)
-	_, err := exec.Command("test", args...).Output() // nolint: gas
+func testCommand(command string) error {
+	_, err := exec.Command("sh", "-c", command).Output() // nolint: gas
 	return err
 }
