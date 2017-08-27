@@ -2,8 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"log"
-	"os"
 
 	"github.com/fatih/color"
 )
@@ -16,11 +14,13 @@ const (
 )
 
 var (
+	// HasPrinted indicates whether any output has been printed to the console.
+	// This can be used to determine if a blank line should be printed before
+	// new output.
+	HasPrinted = false
+
 	// Verbose enables verbose output.
 	Verbose = false
-
-	stdout = log.New(os.Stdout, "", 0)
-	stderr = log.New(os.Stderr, "", 0)
 
 	bold = color.New(color.Bold).SprintFunc()
 
@@ -33,7 +33,7 @@ var (
 // Print prints a message
 func Print(a ...interface{}) {
 	message := fmt.Sprint(a...)
-	stdout.Println(message)
+	println(stdout, message)
 }
 
 // Debug prints info only in verbose mode.
@@ -43,7 +43,8 @@ func Debug(a ...interface{}) {
 	}
 
 	message := fmt.Sprint(a...)
-	stderr.Printf(
+	printf(
+		stderr,
 		"[%s] %s\n",
 		cyan(debugString),
 		message,
@@ -53,7 +54,8 @@ func Debug(a ...interface{}) {
 // Info prints application info.
 func Info(a ...interface{}) {
 	message := fmt.Sprint(a...)
-	stderr.Printf(
+	printf(
+		stderr,
 		"[%s] %s\n",
 		blue(infoString),
 		message,
@@ -63,7 +65,8 @@ func Info(a ...interface{}) {
 // Warn prints an application warning.
 func Warn(a ...interface{}) {
 	message := fmt.Sprint(a...)
-	stderr.Printf(
+	printf(
+		stderr,
 		"[%s] %s\n",
 		yellow(warningString),
 		message,
@@ -73,7 +76,8 @@ func Warn(a ...interface{}) {
 // Error prints an application error.
 func Error(a ...interface{}) {
 	message := fmt.Sprint(a...)
-	stderr.Printf(
+	printf(
+		stderr,
 		"[%s] %s\n",
 		red(errorString),
 		message,

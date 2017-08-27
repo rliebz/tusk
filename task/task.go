@@ -72,10 +72,10 @@ func (t *Task) shouldRun(run *Run) (ok bool) {
 
 	if err := run.When.Validate(); err != nil {
 		for _, command := range run.Command.Values {
-			ui.PrintCommandSkipped(command, err.Error())
+			ui.PrintSkipped(command, err.Error())
 		}
 		for _, subTaskName := range run.Task.Values {
-			ui.PrintCommandSkipped("subtask "+subTaskName, err.Error())
+			ui.PrintSkipped("task: "+subTaskName, err.Error())
 		}
 		return false
 	}

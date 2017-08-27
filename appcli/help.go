@@ -1,6 +1,8 @@
 package appcli
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli"
 	"gitlab.com/rliebz/tusk/ui"
 )
@@ -68,6 +70,10 @@ Options:
 
 // ShowDefaultHelp shows the default help message for an app
 func ShowDefaultHelp() {
+	if ui.HasPrinted {
+		fmt.Println()
+	}
+
 	defaultApp := NewBaseApp()
 	context := cli.NewContext(defaultApp, nil, nil)
 	if err := cli.ShowAppHelp(context); err != nil {

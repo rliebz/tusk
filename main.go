@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"gitlab.com/rliebz/tusk/appcli"
@@ -11,7 +10,8 @@ import (
 func main() {
 	meta, err := appcli.GetConfigMetadata(os.Args)
 	if err != nil {
-		printErrorWithHelp(err)
+		ui.Error(err)
+		appcli.ShowDefaultHelp()
 		return
 	}
 
@@ -28,18 +28,12 @@ func main() {
 
 	app, err := appcli.NewApp(meta.CfgText)
 	if err != nil {
-		printErrorWithHelp(err)
+		ui.Error(err)
+		appcli.ShowDefaultHelp()
 		return
 	}
 
 	if err := app.Run(os.Args); err != nil {
 		ui.Error(err)
 	}
-}
-
-// TODO: Move to UI
-func printErrorWithHelp(err error) {
-	ui.Error(err)
-	fmt.Println()
-	appcli.ShowDefaultHelp()
 }
