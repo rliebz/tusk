@@ -33,7 +33,7 @@ var (
 // Print prints a message
 func Print(a ...interface{}) {
 	message := fmt.Sprint(a...)
-	println(stdout, message)
+	println(Stdout, message)
 }
 
 // Debug prints info only in verbose mode.
@@ -44,7 +44,7 @@ func Debug(a ...interface{}) {
 
 	message := fmt.Sprint(a...)
 	printf(
-		stderr,
+		Stderr,
 		"[%s] %s\n",
 		cyan(debugString),
 		message,
@@ -55,7 +55,7 @@ func Debug(a ...interface{}) {
 func Info(a ...interface{}) {
 	message := fmt.Sprint(a...)
 	printf(
-		stderr,
+		Stderr,
 		"[%s] %s\n",
 		blue(infoString),
 		message,
@@ -66,7 +66,7 @@ func Info(a ...interface{}) {
 func Warn(a ...interface{}) {
 	message := fmt.Sprint(a...)
 	printf(
-		stderr,
+		Stderr,
 		"[%s] %s\n",
 		yellow(warningString),
 		message,
@@ -77,7 +77,7 @@ func Warn(a ...interface{}) {
 func Error(a ...interface{}) {
 	message := fmt.Sprint(a...)
 	printf(
-		stderr,
+		Stderr,
 		"[%s] %s\n",
 		red(errorString),
 		message,

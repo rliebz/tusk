@@ -6,8 +6,10 @@ import (
 )
 
 var (
-	stdout = log.New(os.Stdout, "", 0)
-	stderr = log.New(os.Stderr, "", 0)
+	// Stdout is a logger that prints to stdout.
+	Stdout = log.New(os.Stdout, "", 0)
+	// Stderr is a logger that prints to stderr.
+	Stderr = log.New(os.Stderr, "", 0)
 )
 
 func println(l *log.Logger, v ...interface{}) {

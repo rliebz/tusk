@@ -10,7 +10,7 @@ const (
 // PrintCommand prints the command to be executed.
 func PrintCommand(command string) {
 	printf(
-		stderr,
+		Stderr,
 		"[%s] %s\n",
 		blue(commandActionString),
 		bold(command),
@@ -24,7 +24,7 @@ func PrintSkipped(command string, reason string) {
 	}
 
 	printf(
-		stderr,
+		Stderr,
 		"[%s] %s\n%s %s\n",
 		yellow(skippedString),
 		bold(command),
@@ -36,7 +36,7 @@ func PrintSkipped(command string, reason string) {
 // PrintCommandOutput prints output from a running command.
 func PrintCommandOutput(text string) {
 	printf(
-		stderr,
+		Stderr,
 		"%s %s\n",
 		cyan(outputPrefix),
 		text,
@@ -46,7 +46,7 @@ func PrintCommandOutput(text string) {
 // PrintCommandError prints an error from a running command.
 func PrintCommandError(err error) {
 	printf(
-		stderr,
+		Stderr,
 		"%s [%s] %s\n",
 		red(outputPrefix),
 		red(errorString),
