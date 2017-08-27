@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/urfave/cli"
-
 	"gitlab.com/rliebz/tusk/appcli"
 	"gitlab.com/rliebz/tusk/ui"
 )
@@ -43,13 +41,5 @@ func main() {
 func printErrorWithHelp(err error) {
 	ui.Error(err)
 	fmt.Println()
-	showDefaultHelp()
-}
-
-func showDefaultHelp() {
-	defaultApp := appcli.NewBaseApp()
-	context := cli.NewContext(defaultApp, nil, nil)
-	if err := cli.ShowAppHelp(context); err != nil {
-		ui.Error(err)
-	}
+	appcli.ShowDefaultHelp()
 }

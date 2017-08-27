@@ -1,6 +1,9 @@
 package appcli
 
-import "github.com/urfave/cli"
+import (
+	"github.com/urfave/cli"
+	"gitlab.com/rliebz/tusk/ui"
+)
 
 // init sets the help templates for urfave/cli.
 // nolint: lll
@@ -61,4 +64,13 @@ Options:
    {{range  $index, $option := .VisibleFlags}}{{if $index}}
    {{end}}{{$option}}{{end}}{{end}}
 `
+}
+
+// ShowDefaultHelp shows the default help message for an app
+func ShowDefaultHelp() {
+	defaultApp := NewBaseApp()
+	context := cli.NewContext(defaultApp, nil, nil)
+	if err := cli.ShowAppHelp(context); err != nil {
+		ui.Error(err)
+	}
 }
