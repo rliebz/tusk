@@ -45,7 +45,10 @@ options:
 tasks:
   test:
     # Documentation for tasks should also be set.
-    usage: run application tests
+    usage: a simple, one-line explanation
+    description: |
+      This description gives even more context for the task. If the usage section
+      isn't big enough, feel free to take up as much space as you need here.
     # Options set per task are identical to the global ones in structure.
     options:
       local:

@@ -20,7 +20,7 @@ tasks:
 
   console:
     options:
-      - name: env
+      env:
         default: local
         type: string
     directory: ${tusk_root}

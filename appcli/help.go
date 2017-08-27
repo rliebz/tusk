@@ -2,6 +2,8 @@ package appcli
 
 import (
 	"fmt"
+	"io"
+	"strings"
 
 	"github.com/urfave/cli"
 	"gitlab.com/rliebz/tusk/ui"
@@ -10,20 +12,19 @@ import (
 // init sets the help templates for urfave/cli.
 // nolint: lll
 func init() {
+
+	cli.HelpPrinter = helpPrinter
+
 	cli.AppHelpTemplate = `{{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
 
 Usage:
-   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .VisibleFlags}}[global options]{{end}}{{if .Commands}} task [options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{end}}{{end}}{{if .Version}}{{if not .HideVersion}}
+   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .VisibleFlags}}[global options]{{end}}{{if .Commands}} <task> [options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{end}}{{end}}{{if .Version}}{{if not .HideVersion}}
 
 Version:
    {{.Version}}{{end}}{{end}}{{if .Description}}
 
 Description:
-   {{.Description}}{{end}}{{if len .Authors}}
-
-Author{{with $length := len .Authors}}{{if ne 1 $length}}S{{end}}{{end}}:
-   {{range $index, $author := .Authors}}{{if $index}}
-   {{end}}{{$author}}{{end}}{{end}}{{if .VisibleCommands}}
+{{indent 3 .Description}}{{end}}{{if .VisibleCommands}}
 
 Tasks:{{range .VisibleCategories}}{{if .Name}}
    {{.Name}}:{{end}}{{range .VisibleCommands}}
@@ -37,7 +38,7 @@ Copyright:
    {{.Copyright}}{{end}}
 `
 
-	cli.CommandHelpTemplate = `{{.HelpName}} - {{.Usage}}
+	cli.CommandHelpTemplate = `{{.HelpName}}{{if .Usage}} - {{.Usage}}{{end}}
 
 Usage:
    {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}}{{if .VisibleFlags}} [options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{end}}{{end}}{{if .Category}}
@@ -46,29 +47,15 @@ Category:
    {{.Category}}{{end}}{{if .Description}}
 
 Description:
-   {{.Description}}{{end}}{{if .VisibleFlags}}
+{{indent 3 .Description}}{{end}}{{if .VisibleFlags}}
 
-Options:
-   {{range  $index, $option := .VisibleFlags}}{{if $index}}
-   {{end}}{{$option}}{{end}}{{end}}
-`
-
-	cli.SubcommandHelpTemplate = `{{.HelpName}} - {{if .Description}}{{.Description}}{{else}}{{.Usage}}{{end}}
-
-Usage:
-   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} command{{if .VisibleFlags}} [command options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{end}}{{end}}
-
-Commands:{{range .VisibleCategories}}{{if .Name}}
-   {{.Name}}:{{end}}{{range .VisibleCommands}}
-     {{join .Names ", "}}{{"\t"}}{{.Usage}}{{end}}
-{{end}}{{if .VisibleFlags}}
 Options:
    {{range  $index, $option := .VisibleFlags}}{{if $index}}
    {{end}}{{$option}}{{end}}{{end}}
 `
 }
 
-// ShowDefaultHelp shows the default help message for an app
+// ShowDefaultHelp shows the default help message for an app.
 func ShowDefaultHelp() {
 	if ui.HasPrinted {
 		fmt.Println()
@@ -79,4 +66,16 @@ func ShowDefaultHelp() {
 	if err := cli.ShowAppHelp(context); err != nil {
 		ui.Error(err)
 	}
+}
+
+// helpPrinter includes the custom indent template function.
+func helpPrinter(out io.Writer, templ string, data interface{}) {
+	customFunc := map[string]interface{}{
+		"indent": func(spaces int, text string) string {
+			padding := strings.Repeat(" ", spaces)
+			return padding + strings.Replace(text, "\n", "\n"+padding, -1)
+		},
+	}
+
+	cli.HelpPrinterCustom(out, templ, data, customFunc)
 }

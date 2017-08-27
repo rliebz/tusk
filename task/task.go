@@ -8,9 +8,10 @@ import (
 
 // Task is a single task to be run by CLI.
 type Task struct {
-	Options map[string]*Option `yaml:",omitempty"`
-	Run     []*Run
-	Usage   string `yaml:",omitempty"`
+	Options     map[string]*Option `yaml:",omitempty"`
+	Run         []*Run
+	Usage       string `yaml:",omitempty"`
+	Description string `yaml:",omitempty"`
 
 	// Computed members not specified in yaml file
 	Name     string  `yaml:"-"`

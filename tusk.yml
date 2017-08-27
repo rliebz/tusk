@@ -7,6 +7,8 @@ options:
 tasks:
   bootstrap:
     usage: Set up the app for first time use
+    description: |
+      Install all dependencies for building and testing the application.
     run:
       - command:
           - go get -u github.com/alecthomas/gometalinter
@@ -15,6 +17,8 @@ tasks:
 
   lint:
     usage: Run the linter
+    description: |
+      Runs gometalinter using the configuration specified in .gometalinter.json.
     options:
       opts:
         private: true
@@ -26,7 +30,10 @@ tasks:
       - command: gometalinter --config .gometalinter.json ${opts} ./...
 
   test:
-    usage: Run the linter and tests
+    usage: Run tests
+    description: |
+      Runs the full test suite using `go test -cover ./...`. Also runs the
+      linter by default, and linter errors are considered failed tests.
     options:
       lint:
         usage: Run the linter with the tests
@@ -36,4 +43,4 @@ tasks:
       - when:
           test: ${lint} = true
         task: lint
-      - command: go test -cover $(go list ./... | grep -v '/vendor/')
+      - command: go test -cover ./...
