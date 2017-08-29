@@ -30,10 +30,13 @@ options:
           # Any command passed to will be run through the shell.
           command:
             # Variables declared earlier in the config file are available.
-            - test ${global} = 5
+            -  test ${global} -gt 5
         default: Global Is Five!
       - when:
-          command: test ${global} -gt 5
+          # `equal` and `not_equal` are available for quick equality checks.
+          equal:
+            # Interpolation syntax is not needed for map keys.
+            global: 5
         # Shell command stdout can be captured.
         # Since interpolation shares syntax with shell variables, $varname
         # or $${varname} can be used to avoid ambiguity.

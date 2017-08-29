@@ -13,12 +13,47 @@ type When struct {
 	Command StringList `yaml:",omitempty"`
 	Exists  StringList `yaml:",omitempty"`
 	OS      StringList `yaml:",omitempty"`
+
+	Equal    map[string]StringList `yaml:",omitempty"`
+	NotEqual map[string]StringList `yaml:"not_equal,omitempty"`
+}
+
+// Dependencies returns a list of options that are required explicitly.
+// This does not include interpolations.
+func (w *When) Dependencies() []string {
+
+	var options []string
+
+	if w == nil {
+		return options
+	}
+
+	// Use a map to prevent duplicates
+	references := make(map[string]struct{})
+
+	for opt := range w.Equal {
+		references[opt] = struct{}{}
+	}
+	for opt := range w.NotEqual {
+		references[opt] = struct{}{}
+	}
+
+	for opt := range references {
+		options = append(options, opt)
+	}
+
+	return options
 }
 
 // Validate returns an error if any when clauses fail.
-func (w *When) Validate() error {
+func (w *When) Validate(vars map[string]string) error {
+	if w == nil {
+		return nil
+	}
+
 	for _, f := range w.Exists.Values {
-		if _, err := os.Stat(f); os.IsNotExist(err) {
+		// TODO: Should not exists errors be treated differently?
+		if _, err := os.Stat(f); err != nil {
 			return fmt.Errorf("file %s does not exist", f)
 		}
 	}
@@ -31,6 +66,18 @@ func (w *When) Validate() error {
 		if err := testCommand(command); err != nil {
 			return fmt.Errorf("test failed: %s", command)
 		}
+	}
+
+	if err := validateEquality(vars, w.Equal, func(a, b string) bool {
+		return a == b
+	}); err != nil {
+		return err
+	}
+
+	if err := validateEquality(vars, w.NotEqual, func(a, b string) bool {
+		return a != b
+	}); err != nil {
+		return err
 	}
 
 	return nil
@@ -49,7 +96,7 @@ func validateOS(os string, required []string) error { // nolint: unparam
 		}
 	}
 
-	return fmt.Errorf("current OS %s not listed in %v", os, required)
+	return fmt.Errorf("current OS \"%s\" not listed in %v", os, required)
 }
 
 func normalizeOS(os string) string {
@@ -73,4 +120,27 @@ func normalizeOS(os string) string {
 func testCommand(command string) error {
 	_, err := exec.Command("sh", "-c", command).Output() // nolint: gas
 	return err
+}
+
+func validateEquality(
+	options map[string]string,
+	cases map[string]StringList,
+	compare func(string, string) bool,
+) error {
+
+	for name, values := range cases {
+		for _, expected := range values.Values {
+
+			actual, ok := options[name]
+			if !ok {
+				return fmt.Errorf("option \"%s\" not defined", name)
+			}
+
+			if !compare(expected, actual) {
+				return fmt.Errorf("option \"%s\" has value: %s", name, actual)
+			}
+		}
+	}
+
+	return nil
 }

@@ -16,6 +16,22 @@ type Task struct {
 	// Computed members not specified in yaml file
 	Name     string  `yaml:"-"`
 	SubTasks []*Task `yaml:"-"`
+	Vars     map[string]string
+}
+
+// Dependencies returns a list of options that are required explicitly.
+// This does not include interpolations.
+func (t *Task) Dependencies() []string {
+	var options []string
+
+	for _, opt := range t.Options {
+		options = append(options, opt.Dependencies()...)
+	}
+	for _, run := range t.Run {
+		options = append(options, run.When.Dependencies()...)
+	}
+
+	return options
 }
 
 // Execute runs the Run scripts in the task.
@@ -71,7 +87,7 @@ func (t *Task) shouldRun(run *Run) (ok bool) {
 		return true
 	}
 
-	if err := run.When.Validate(); err != nil {
+	if err := run.When.Validate(t.Vars); err != nil {
 		for _, command := range run.Command.Values {
 			ui.PrintSkipped(command, err.Error())
 		}

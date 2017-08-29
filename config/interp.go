@@ -21,16 +21,18 @@ import (
 //
 // taskName is the name of the task being run. This is used to determine the
 // list of options which require interpolation.
-func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]byte, error) {
+func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]byte, map[string]string, error) {
+
+	options := make(map[string]string)
 
 	ordered, err := getOrderedOpts(cfgText)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	required, err := getRequiredOpts(cfgText, taskName)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	for _, name := range ordered {
@@ -39,14 +41,22 @@ func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]b
 				continue
 			}
 
-			cfgText, err = interpolateFlag(cfgText, passed, name)
+			value, err := getFlagValue(cfgText, passed, options, name)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
+			}
+
+			options[name] = value
+
+			cfgText, err = interp.Interpolate(cfgText, name, value)
+			if err != nil {
+				return nil, nil, err
 			}
 		}
 	}
 
-	return cfgText, nil
+	// TODO: Can this return only options?
+	return cfgText, options, nil
 }
 
 func getRequiredOpts(cfgText []byte, taskName string) ([]string, error) {
@@ -119,31 +129,27 @@ func getOrderedOpts(cfgText []byte) ([]string, error) {
 	return output, nil
 }
 
-// interpolateFlag runs interpolation over config text for a given flag name.
-func interpolateFlag(cfgText []byte, passed map[string]string, name string) ([]byte, error) {
+func getFlagValue(cfgText []byte, passed map[string]string, options map[string]string, name string) (string, error) {
 
 	cfg := New()
 
 	if err := yaml.Unmarshal(cfgText, &cfg); err != nil {
-		return nil, err
+		return "", err
 	}
 
 	opt, err := getOpt(cfg, name)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
+
+	opt.Vars = options
 
 	valuePassed, ok := passed[name]
 	if ok {
 		opt.Passed = valuePassed
 	}
 
-	value, err := opt.Value()
-	if err != nil {
-		return nil, err
-	}
-
-	return interp.Interpolate(cfgText, name, value)
+	return opt.Value()
 }
 
 // getOpt gets an option from a Config by name. Both global options and
@@ -161,5 +167,5 @@ func getOpt(cfg *Config, name string) (*task.Option, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("option required but not defined: %s", name)
+	return nil, fmt.Errorf("option \"%s\" required but not defined", name)
 }

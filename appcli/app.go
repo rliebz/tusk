@@ -11,8 +11,8 @@ import (
 	"gitlab.com/rliebz/tusk/config"
 )
 
-// NewBaseApp creates a basic cli.App with top-level flags.
-func NewBaseApp() *cli.App {
+// newBaseApp creates a basic cli.App with top-level flags.
+func newBaseApp() *cli.App {
 	app := cli.NewApp()
 	app.Usage = "a task runner built with simple configuration in mind"
 	app.HideVersion = true
@@ -39,7 +39,7 @@ func NewBaseApp() *cli.App {
 
 // newSilentApp creates a cli.App that will never print to stderr / stdout.
 func newSilentApp() *cli.App {
-	app := NewBaseApp()
+	app := newBaseApp()
 	app.Writer = ioutil.Discard
 	app.ErrWriter = ioutil.Discard
 	app.CommandNotFound = func(c *cli.Context, command string) {}
@@ -86,7 +86,7 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 		taskName = command.Name
 	}
 
-	cfgText, err = config.Interpolate(cfgText, passed, taskName)
+	cfgText, flags, err := config.Interpolate(cfgText, passed, taskName)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,11 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 		return nil, err
 	}
 
-	app := NewBaseApp()
+	for _, t := range cfg.Tasks {
+		t.Vars = flags
+	}
+
+	app := newBaseApp()
 
 	if err := addTasks(app, cfg, createExecuteCommand); err != nil {
 		return nil, err

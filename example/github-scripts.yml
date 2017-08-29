@@ -33,13 +33,16 @@ tasks:
     directory: ${tusk_root}
     script:
       - when:
-          command: test ${env} = production
+          equal:
+            env: production
         run: heroku run rails console --app heroku-app-name-staging
       - when:
-          command: test ${env} = staging
+          equal:
+            env: staging
         run: heroku run rails console --app heroku-app-name-staging
       - when:
-          command: test ${env} = local
+          equal:
+            env: local
         run:
           - script/update
           - bin/rails console

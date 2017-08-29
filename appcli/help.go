@@ -61,7 +61,7 @@ func ShowDefaultHelp() {
 		fmt.Println()
 	}
 
-	defaultApp := NewBaseApp()
+	defaultApp := newBaseApp()
 	context := cli.NewContext(defaultApp, nil, nil)
 	if err := cli.ShowAppHelp(context); err != nil {
 		ui.Error(err)

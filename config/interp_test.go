@@ -22,7 +22,7 @@ tasks:
     run:
       - command: echo ${foo}
 `,
-		make(map[string]string),
+		map[string]string{},
 		"mytask",
 		`
 options:
@@ -32,6 +32,30 @@ tasks:
   mytask:
     run:
       - command: echo bar
+`,
+	},
+
+	// Happy path with options
+	{
+		`
+options:
+  foo:
+    default: bar
+tasks:
+  mytask:
+    run:
+      - command: echo ${foo}
+`,
+		map[string]string{"foo": "passed"},
+		"mytask",
+		`
+options:
+  foo:
+    default: bar
+tasks:
+  mytask:
+    run:
+      - command: echo passed
 `,
 	},
 
@@ -51,7 +75,7 @@ tasks:
     run:
       - command: echo ${bar}
 `,
-		make(map[string]string),
+		map[string]string{},
 		"mytask",
 		`
 options:
@@ -79,7 +103,7 @@ tasks:
     run:
       - command: echo ${foo}
 `,
-		make(map[string]string),
+		map[string]string{},
 		"",
 		`
 options:
@@ -105,7 +129,7 @@ tasks:
     run:
       - command: echo ${bar}
 `,
-		make(map[string]string),
+		map[string]string{},
 		"mytask",
 		`
 options:
@@ -134,7 +158,7 @@ tasks:
     run:
       - command: echo ${bar}
 `,
-		make(map[string]string),
+		map[string]string{},
 		"mytask",
 		`
 options:
@@ -165,7 +189,7 @@ tasks:
     run:
       - task: pretask
 `,
-		map[string]string{"fast": "true"},
+		map[string]string{},
 		"mytask",
 		`
 options:
@@ -200,7 +224,7 @@ tasks:
     run:
       - task: pretask
 `,
-		map[string]string{"fast": "true"},
+		map[string]string{},
 		"mytask",
 		`
 options:
@@ -219,6 +243,90 @@ tasks:
       - task: pretask
 `,
 	},
+
+	// Nested sub-task dependencies with passed value
+	{
+		`
+options:
+  foo:
+    default: foovalue
+
+tasks:
+  roottask:
+    run:
+      - command: echo ${foo}
+  pretask:
+    run:
+      - task: roottask
+  mytask:
+    run:
+      - task: pretask
+`,
+		map[string]string{"foo": "passed"},
+		"mytask",
+		`
+options:
+  foo:
+    default: foovalue
+
+tasks:
+  roottask:
+    run:
+      - command: echo passed
+  pretask:
+    run:
+      - task: roottask
+  mytask:
+    run:
+      - task: pretask
+`,
+	},
+
+	// When dependencies
+	{
+		`
+options:
+  bar:
+    default: foovalue
+
+tasks:
+  mytask:
+    options:
+      foo:
+        computed:
+          - when:
+              equal:
+                foo: true
+            default: foovalue
+    run:
+      - when:
+          equal:
+            foo: true
+        command: echo yo
+`,
+		map[string]string{},
+		"mytask",
+		`
+options:
+  bar:
+    default: foovalue
+
+tasks:
+  mytask:
+    options:
+      foo:
+        computed:
+          - when:
+              equal:
+                foo: true
+            default: foovalue
+    run:
+      - when:
+          equal:
+            foo: true
+        command: echo yo
+`,
+	},
 }
 
 func TestInterpolate(t *testing.T) {
@@ -230,7 +338,7 @@ func TestInterpolate(t *testing.T) {
 			tt.cfgText, tt.passed, tt.taskName,
 		)
 
-		actualBytes, err := Interpolate([]byte(tt.cfgText), tt.passed, tt.taskName)
+		actualBytes, _, err := Interpolate([]byte(tt.cfgText), tt.passed, tt.taskName)
 		if err != nil {
 			t.Errorf("%s\nunexpected error: %s", errString, err)
 			continue

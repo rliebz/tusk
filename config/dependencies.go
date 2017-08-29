@@ -85,11 +85,16 @@ candidates:
 		}
 
 		found = append(found, candidate)
-		dependencies, err := getDependencies(found)
-		if err != nil {
-			return nil, err
+		var dependencies []string
+		for _, opt := range found {
+			nested, err := getDependencies(opt)
+			if err != nil {
+				return nil, err
+			}
+			dependencies = append(dependencies, nested...)
 		}
 
+		var err error
 		found, err = recurseDependencies(dependencies, candidates, found)
 		if err != nil {
 			return nil, err
@@ -99,7 +104,11 @@ candidates:
 	return found, nil
 }
 
-func getDependencies(item interface{}) ([]string, error) {
+type dependencyGetter interface {
+	Dependencies() []string
+}
+
+func getDependencies(item dependencyGetter) ([]string, error) {
 
 	marshalled, err := yaml.Marshal(item)
 	if err != nil {
@@ -113,6 +122,8 @@ func getDependencies(item interface{}) ([]string, error) {
 	for _, group := range groups {
 		names = append(names, group[1])
 	}
+
+	names = append(names, item.Dependencies()...)
 
 	return names, nil
 }

@@ -29,11 +29,24 @@ type Option struct {
 	// Computed members not specified in yaml file
 	Name   string `yaml:"-"`
 	Passed string `yaml:"-"`
+	Vars   map[string]string
 }
 
 type content struct {
 	Command string
 	Default string
+}
+
+// Dependencies returns a list of options that are required explicitly.
+// This does not include interpolations.
+func (o *Option) Dependencies() []string {
+	var options []string
+
+	for _, computed := range o.Computed {
+		options = append(options, computed.When.Dependencies()...)
+	}
+
+	return options
 }
 
 // Value determines an option's final value based on all configuration.
@@ -64,7 +77,7 @@ func (o *Option) Value() (string, error) {
 	}
 
 	for _, candidate := range o.Computed {
-		if err := candidate.When.Validate(); err != nil {
+		if err := candidate.When.Validate(o.Vars); err != nil {
 			continue
 		}
 
