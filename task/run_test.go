@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/pkg/errors"
-	"gitlab.com/rliebz/tusk/ui"
+	"github.com/rliebz/tusk/ui"
 )
 
 func TestExecCommand_output(t *testing.T) {

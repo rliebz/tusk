@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"gitlab.com/rliebz/tusk/appyaml"
+	"github.com/rliebz/tusk/appyaml"
 
 	"github.com/pkg/errors"
 )

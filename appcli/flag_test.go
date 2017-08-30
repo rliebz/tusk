@@ -3,7 +3,7 @@ package appcli
 import (
 	"testing"
 
-	"gitlab.com/rliebz/tusk/task"
+	"github.com/rliebz/tusk/task"
 )
 
 func TestCreateCLIFlag_undefined(t *testing.T) {

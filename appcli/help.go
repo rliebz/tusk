@@ -5,8 +5,8 @@ import (
 	"io"
 	"strings"
 
+	"github.com/rliebz/tusk/ui"
 	"github.com/urfave/cli"
-	"gitlab.com/rliebz/tusk/ui"
 )
 
 // init sets the help templates for urfave/cli.

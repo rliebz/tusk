@@ -3,7 +3,7 @@ package task
 import (
 	"fmt"
 
-	"gitlab.com/rliebz/tusk/ui"
+	"github.com/rliebz/tusk/ui"
 )
 
 // Task is a single task to be run by CLI.

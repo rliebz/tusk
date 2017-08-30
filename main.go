@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"gitlab.com/rliebz/tusk/appcli"
-	"gitlab.com/rliebz/tusk/ui"
+	"github.com/rliebz/tusk/appcli"
+	"github.com/rliebz/tusk/ui"
 )
 
 func main() {

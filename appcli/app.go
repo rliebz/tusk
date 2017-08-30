@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
-	"gitlab.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/config"
 )
 
 // newBaseApp creates a basic cli.App with top-level flags.

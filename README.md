@@ -13,7 +13,7 @@ should be considered unstable and subject to change.
 With a [Go][go] environment set up, simply run:
 
 ```bash
-go get -u gitlab.com/rliebz/tusk
+go get -u github.com/rliebz/tusk
 ```
 
 ### Usage

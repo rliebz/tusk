@@ -7,8 +7,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
-	"gitlab.com/rliebz/tusk/config"
-	"gitlab.com/rliebz/tusk/task"
+	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/task"
 )
 
 // copyFlags copies all command flags from one cli.App to another.

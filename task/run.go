@@ -7,8 +7,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"gitlab.com/rliebz/tusk/appyaml"
-	"gitlab.com/rliebz/tusk/ui"
+	"github.com/rliebz/tusk/appyaml"
+	"github.com/rliebz/tusk/ui"
 )
 
 // Run defines a a single runnable script within a task.

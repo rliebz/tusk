@@ -1,7 +1,7 @@
 package config
 
 import (
-	"gitlab.com/rliebz/tusk/task"
+	"github.com/rliebz/tusk/task"
 	yaml "gopkg.in/yaml.v2"
 )
 

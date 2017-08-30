@@ -3,7 +3,7 @@ package task
 import (
 	"testing"
 
-	"gitlab.com/rliebz/tusk/appyaml"
+	"github.com/rliebz/tusk/appyaml"
 )
 
 var shouldtests = []struct {
