@@ -1,30 +1,21 @@
 version: 2
 job:
   build:
-    working_directory: /go/src/github.com/rliebz/tusk
     docker:
-      - image: circleci/golang:1.8
+      - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/rliebz/tusk
     steps:
       - checkout
       - run: mkdir -p $TEST_RESULTS
-      - restore_cache:
-          key: vendor-{{ checksum "Gopkg.lock" }}
       - run:
           name: Install dependencies
-          command: |
-            go get -u gopkg.in/alecthomas/gometalinter.v1
-            go get -u github.com/golang/dep/cmd/dep
-            dep ensure
-      - save_cache:
-          key: vendor-{{ checksum "Gopkg.lock" }}
-          paths:
-            - "vendor"
+          command: go get -u github.com/alecthomas/gometalinter
       - run:
           name: Run gometalinter
-          command: gometalinter.v1 --config .gometalinter.json ${opts} ./... | tee ${TEST_RESULTS}/gometalinter.out
+          command: gometalinter --config .gometalinter.json ./... | tee ${TEST_RESULTS}/gometalinter.out
       - run:
           name: Run go test
-          command: go test -cover $(go list ./... | grep -v '/vendor/') | tee ${TEST_RESULTS/go-test.out
+          command: go test -v -cover ./... | tee ${TEST_RESULTS/go-test.out
       - store_test_results:
           path: /tmp/test-results
 
