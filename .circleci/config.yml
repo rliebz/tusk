@@ -6,16 +6,15 @@ jobs:
     working_directory: /go/src/github.com/rliebz/tusk
     steps:
       - checkout
-      - run: mkdir -p $TEST_RESULTS
+      - run: mkdir -p ~/test-results
       - run:
           name: Install dependencies
           command: go get -u github.com/alecthomas/gometalinter
       - run:
           name: Run gometalinter
-          command: gometalinter --config .gometalinter.json ./... | tee ${TEST_RESULTS}/gometalinter.out
+          command: gometalinter --config .gometalinter.json ./... | tee ~/test-results/gometalinter.out
       - run:
           name: Run go test
-          command: go test -v -cover ./... | tee ${TEST_RESULTS/go-test.out
+          command: go test -v -cover -race ./... | tee ~/test-results/go-test.out
       - store_test_results:
-          path: /tmp/test-results
-
+          path: ~/test-results
