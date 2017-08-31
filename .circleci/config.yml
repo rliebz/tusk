@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/rliebz/tusk
+    steps:
+      - checkout
+      - run: mkdir -p ~/test-results
+      - run:
+          name: Install dependencies
+          command: |
+            go get -u github.com/alecthomas/gometalinter
+            gometalinter --install
+      - run:
+          name: Install the application
+          command: go install
+      - run:
+          name: Run gometalinter
+          command: gometalinter --config .gometalinter.json ./... | tee ~/test-results/gometalinter.out
+      - run:
+          name: Run go test
+          command: go test -v -cover -race ./... | tee ~/test-results/go-test.out
+      - store_test_results:
+          path: ~/test-results
