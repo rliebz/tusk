@@ -1,5 +1,8 @@
 # Tusk
 
+[![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk.svg)]()
+[![license](https://img.shields.io/github/license/rliebz/tusk.svg)](https://opensource.org/licenses/MIT)
+
 Tusk is a yaml-based task runner. By creating a `tusk.yml` in the root of a
 repository, Tusk becomes a custom command line tool with minimal configuration.
 
