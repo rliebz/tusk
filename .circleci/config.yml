@@ -9,7 +9,9 @@ jobs:
       - run: mkdir -p ~/test-results
       - run:
           name: Install dependencies
-          command: go get -u github.com/alecthomas/gometalinter
+          command: |
+            go get -u github.com/alecthomas/gometalinter
+            gometalinter --install
       - run:
           name: Run gometalinter
           command: gometalinter --config .gometalinter.json ./... | tee ~/test-results/gometalinter.out
