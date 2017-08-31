@@ -58,6 +58,10 @@ func (o *Option) Dependencies() []string {
 //   4. The default, which is either a plain string or the output of a command
 func (o *Option) Value() (string, error) {
 
+	if o == nil {
+		return "", nil
+	}
+
 	if !o.Private {
 		if o.Passed != "" {
 			return o.Passed, nil
