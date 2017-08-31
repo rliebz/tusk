@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 
+	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/interp"
-	"github.com/rliebz/tusk/task"
 	yaml "gopkg.in/yaml.v2"
 )
 

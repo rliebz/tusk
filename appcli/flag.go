@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/config"
-	"github.com/rliebz/tusk/task"
+	"github.com/rliebz/tusk/config/task"
 )
 
 // copyFlags copies all command flags from one cli.App to another.

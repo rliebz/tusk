@@ -5,7 +5,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/config"
-	"github.com/rliebz/tusk/task"
+	"github.com/rliebz/tusk/config/task"
 )
 
 // addTasks adds a series of tasks to a cli.App using a command creator.
