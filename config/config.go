@@ -16,7 +16,7 @@ type Metadata struct {
 	CfgText    []byte
 	Directory  string
 	RunVersion bool
-	Ugly       bool
+	Quiet      bool
 	Verbose    bool
 }
 

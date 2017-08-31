@@ -28,8 +28,8 @@ func newBaseApp() *cli.App {
 			Usage: "Set `file` to use as the config file",
 		},
 		cli.BoolFlag{
-			Name:  "u, ugly",
-			Usage: "Disable color and symbols in output",
+			Name:  "q, quiet",
+			Usage: "Only print command output and application errors",
 		},
 		cli.BoolFlag{
 			Name:  "v, verbose",
@@ -153,7 +153,7 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 
 		metadata.Directory = filepath.Dir(fullPath)
 		metadata.RunVersion = c.Bool("version")
-		metadata.Ugly = c.Bool("ugly")
+		metadata.Quiet = c.Bool("quiet")
 		metadata.Verbose = c.Bool("verbose")
 		return err
 	}

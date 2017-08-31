@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	// Ugly simplifies output to remove color, boldness, and other flashiness.
-	Ugly = false
+	// Quiet removes all additional formatting
+	Quiet = false
 
 	// Verbose enables verbose output.
 	Verbose = false
@@ -45,7 +45,7 @@ type formatter func(a ...interface{}) string
 
 func conditionalColor(value ...color.Attribute) formatter {
 	return func(a ...interface{}) string {
-		if Ugly {
+		if Quiet {
 			return color.New().SprintFunc()(a...)
 		}
 

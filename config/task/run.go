@@ -32,7 +32,7 @@ func (w waitWriter) Write(p []byte) (int, error) {
 }
 
 func execCommand(command string) error {
-	if ui.Ugly {
+	if ui.Quiet {
 		return execCommandQuiet(command)
 	}
 

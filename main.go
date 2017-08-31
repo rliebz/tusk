@@ -15,8 +15,8 @@ func main() {
 		return
 	}
 
+	ui.Quiet = meta.Quiet
 	ui.Verbose = meta.Verbose
-	ui.Ugly = meta.Ugly
 	if err = os.Chdir(meta.Directory); err != nil {
 		ui.Error(err)
 		return
@@ -35,6 +35,7 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
+		// TODO: Determine when this should print
 		ui.Error(err)
 	}
 }

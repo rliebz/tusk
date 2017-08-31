@@ -10,6 +10,10 @@ const (
 
 // PrintCommand prints the command to be executed.
 func PrintCommand(command string) {
+	if Quiet {
+		return
+	}
+
 	printf(
 		Stderr,
 		"[%s] %s\n",
@@ -46,6 +50,10 @@ func PrintCommandOutput(text string) {
 
 // PrintCommandError prints an error from a running command.
 func PrintCommandError(err error) {
+	if Quiet {
+		return
+	}
+
 	printf(
 		Stderr,
 		"%s[%s] %s\n",
@@ -56,7 +64,7 @@ func PrintCommandError(err error) {
 }
 
 func prefixOutput() string {
-	if Ugly {
+	if Quiet {
 		return ""
 	}
 
