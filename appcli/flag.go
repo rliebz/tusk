@@ -74,7 +74,7 @@ func createCLIFlag(opt *task.Option) (cli.Flag, error) {
 
 	name := opt.Name
 	if opt.Short != "" {
-		name = fmt.Sprintf("%s, %s", name, opt.Short)
+		name = fmt.Sprintf("%s, %s", opt.Short, name)
 	}
 
 	opt.Type = strings.ToLower(opt.Type)
