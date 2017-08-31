@@ -40,9 +40,21 @@ tasks:
         usage: Run the linter with the tests
         default: true
         type: bool
+      verbose:
+        usage: Run the tests in verbose mode
+        short: v
+        default: false
+        type: bool
+      verbose_string:
+        private: true
+        computed:
+          - when:
+              equal:
+                verbose: true
+            default: -v
     run:
       - when:
           equal:
             lint: true
         task: lint
-      - command: go test -cover -race ./...
+      - command: go test -cover -race ${verbose_string} ./...
