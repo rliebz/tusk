@@ -13,6 +13,9 @@ jobs:
             go get -u github.com/alecthomas/gometalinter
             gometalinter --install
       - run:
+          name: Install the application
+          command: go install
+      - run:
           name: Run gometalinter
           command: gometalinter --config .gometalinter.json ./... | tee ~/test-results/gometalinter.out
       - run:
