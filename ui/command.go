@@ -2,9 +2,10 @@ package ui
 
 const (
 	commandActionString = "Running"
+	commandErrorString  = "Error"
 	skippedString       = "Skipping"
 
-	outputPrefix = "  =>"
+	outputPrefix = "  => "
 )
 
 // PrintCommand prints the command to be executed.
@@ -25,10 +26,10 @@ func PrintSkipped(command string, reason string) {
 
 	printf(
 		Stderr,
-		"[%s] %s\n%s %s\n",
+		"[%s] %s\n%s%s\n",
 		yellow(skippedString),
 		bold(command),
-		cyan(outputPrefix),
+		cyan(prefixOutput()),
 		reason,
 	)
 }
@@ -37,8 +38,8 @@ func PrintSkipped(command string, reason string) {
 func PrintCommandOutput(text string) {
 	printf(
 		Stderr,
-		"%s %s\n",
-		cyan(outputPrefix),
+		"%s%s\n",
+		cyan(prefixOutput()),
 		text,
 	)
 }
@@ -47,9 +48,17 @@ func PrintCommandOutput(text string) {
 func PrintCommandError(err error) {
 	printf(
 		Stderr,
-		"%s [%s] %s\n",
-		red(outputPrefix),
-		red(errorString),
+		"%s[%s] %s\n",
+		red(prefixOutput()),
+		red(commandErrorString),
 		err.Error(),
 	)
+}
+
+func prefixOutput() string {
+	if Ugly {
+		return ""
+	}
+
+	return outputPrefix
 }

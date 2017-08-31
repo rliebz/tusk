@@ -15,8 +15,9 @@ type Config struct {
 type Metadata struct {
 	CfgText    []byte
 	Directory  string
-	Verbose    bool
 	RunVersion bool
+	Ugly       bool
+	Verbose    bool
 }
 
 // New is the constructor for Config.

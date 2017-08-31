@@ -19,17 +19,24 @@ func newBaseApp() *cli.App {
 	app.HideHelp = true
 
 	app.Flags = append(app.Flags,
-		cli.HelpFlag,
+		cli.BoolFlag{
+			Name:  "h, help",
+			Usage: "Show help",
+		},
 		cli.StringFlag{
-			Name:  "file, f",
+			Name:  "f, file",
 			Usage: "Set `file` to use as the config file",
 		},
 		cli.BoolFlag{
-			Name:  "verbose, v",
+			Name:  "u, ugly",
+			Usage: "Disable color and symbols in output",
+		},
+		cli.BoolFlag{
+			Name:  "v, verbose",
 			Usage: "Print verbose output",
 		},
 		cli.BoolFlag{
-			Name:  "version, V",
+			Name:  "V, version",
 			Usage: "Print version and exit",
 		},
 	)
@@ -145,8 +152,9 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 		}
 
 		metadata.Directory = filepath.Dir(fullPath)
-		metadata.Verbose = c.Bool("verbose")
 		metadata.RunVersion = c.Bool("version")
+		metadata.Ugly = c.Bool("ugly")
+		metadata.Verbose = c.Bool("verbose")
 		return err
 	}
 

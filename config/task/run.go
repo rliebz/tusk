@@ -32,6 +32,25 @@ func (w waitWriter) Write(p []byte) (int, error) {
 }
 
 func execCommand(command string) error {
+	if ui.Ugly {
+		return execCommandQuiet(command)
+	}
+
+	return execCommandWithStyle(command)
+}
+
+func execCommandQuiet(command string) error {
+	ui.PrintCommand(command)
+
+	cmd := exec.Command("sh", "-c", command) // nolint: gas
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd.Run()
+}
+
+func execCommandWithStyle(command string) error {
 	ui.PrintCommand(command)
 
 	cmd := exec.Command("sh", "-c", command) // nolint: gas
@@ -45,6 +64,7 @@ func execCommand(command string) error {
 	wg := sync.WaitGroup{}
 	ww := waitWriter{pw, &wg}
 
+	cmd.Stdin = os.Stdin
 	cmd.Stdout = ww
 	cmd.Stderr = ww
 

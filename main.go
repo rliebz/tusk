@@ -16,6 +16,7 @@ func main() {
 	}
 
 	ui.Verbose = meta.Verbose
+	ui.Ugly = meta.Ugly
 	if err = os.Chdir(meta.Directory); err != nil {
 		ui.Error(err)
 		return
