@@ -30,12 +30,31 @@ func TestOption_Dependencies(t *testing.T) {
 
 	expected := []string{"foo", "bar", "baz"}
 	actual := option.Dependencies()
-	if !reflect.DeepEqual(expected, actual) {
+	if !equalUnordered(expected, actual) {
 		t.Errorf(
 			"Option.Dependencies(): expected %s, actual %s",
 			expected, actual,
 		)
 	}
+}
+
+// nolint: dupl
+func equalUnordered(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	aMap := make(map[string]interface{})
+	for _, val := range a {
+		aMap[val] = struct{}{}
+	}
+
+	bMap := make(map[string]interface{})
+	for _, val := range b {
+		bMap[val] = struct{}{}
+	}
+
+	return reflect.DeepEqual(aMap, bMap)
 }
 
 // TODO: Make these more accessible to other tests
