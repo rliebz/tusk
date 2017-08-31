@@ -2,11 +2,41 @@ package task
 
 import (
 	"os"
+	"reflect"
 	"runtime"
 	"testing"
 
 	"github.com/rliebz/tusk/appyaml"
 )
+
+func TestOption_Dependencies(t *testing.T) {
+	option := &Option{Computed: []struct {
+		When    appyaml.When
+		content `yaml:",inline"`
+	}{
+		{When: falseWhen, content: content{Default: "foo"}},
+		{When: appyaml.When{
+			Equal: map[string]appyaml.StringList{
+				"foo": {Values: []string{"foovalue"}},
+				"bar": {Values: []string{"barvalue"}},
+			},
+		}, content: content{Default: "bar"}},
+		{When: appyaml.When{
+			NotEqual: map[string]appyaml.StringList{
+				"baz": {Values: []string{"bazvalue"}},
+			},
+		}, content: content{Default: "bar"}},
+	}}
+
+	expected := []string{"foo", "bar", "baz"}
+	actual := option.Dependencies()
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf(
+			"Option.Dependencies(): expected %s, actual %s",
+			expected, actual,
+		)
+	}
+}
 
 // TODO: Make these more accessible to other tests
 var trueWhen = appyaml.When{OS: appyaml.StringList{Values: []string{runtime.GOOS}}}
