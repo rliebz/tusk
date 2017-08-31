@@ -40,7 +40,6 @@ func execCommand(command string) error {
 	if err != nil {
 		return err
 	}
-	defer closeFile(pr)
 	defer closeFile(pw)
 
 	wg := sync.WaitGroup{}
