@@ -2,11 +2,12 @@ package task
 
 import (
 	"bufio"
+	"io"
 	"os"
 	"os/exec"
+	"sync"
 
 	"github.com/pkg/errors"
-
 	"github.com/rliebz/tusk/appyaml"
 	"github.com/rliebz/tusk/ui"
 )
@@ -16,6 +17,18 @@ type Run struct {
 	When    *appyaml.When      `yaml:",omitempty"`
 	Command appyaml.StringList `yaml:",omitempty"`
 	Task    appyaml.StringList `yaml:",omitempty"`
+}
+
+// waitWriter wraps a writer with a wait group.
+// This ca ensure there are no additional writes pending.
+type waitWriter struct {
+	writer    io.Writer
+	waitGroup *sync.WaitGroup
+}
+
+func (w waitWriter) Write(p []byte) (int, error) {
+	w.waitGroup.Add(len(p))
+	return w.writer.Write(p)
 }
 
 func execCommand(command string) error {
@@ -30,13 +43,20 @@ func execCommand(command string) error {
 	defer closeFile(pr)
 	defer closeFile(pw)
 
-	cmd.Stdout = pw
-	cmd.Stderr = pw
+	wg := sync.WaitGroup{}
+	ww := waitWriter{pw, &wg}
+
+	cmd.Stdout = ww
+	cmd.Stderr = ww
 
 	scanner := bufio.NewScanner(pr)
 	go func() {
 		for scanner.Scan() {
-			ui.PrintCommandOutput(scanner.Text())
+			text := scanner.Text()
+			ui.PrintCommandOutput(text)
+			for i := 0; i <= len(text); i++ {
+				wg.Done()
+			}
 		}
 	}()
 
@@ -45,6 +65,7 @@ func execCommand(command string) error {
 		return err
 	}
 
+	wg.Wait()
 	return nil
 }
 
