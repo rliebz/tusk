@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"os/exec"
+	"syscall"
 
 	"github.com/rliebz/tusk/appcli"
 	"github.com/rliebz/tusk/ui"
@@ -35,7 +37,12 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		// TODO: Determine when this should print
-		ui.Error(err)
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			ws := exitErr.Sys().(syscall.WaitStatus)
+			os.Exit(ws.ExitStatus())
+		} else {
+			ui.Error(err)
+			os.Exit(1)
+		}
 	}
 }
