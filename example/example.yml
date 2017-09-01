@@ -16,8 +16,8 @@ options:
   example:
     usage: This is an example option
     # Conditional logic is supported for setting variables.
-    computed:
-      # For variables, when clauses are evaluated until one of them passes.
+    use:
+      # In a use clause, when clauses are evaluated until one of them passes.
       - when:
           # Clauses can take a string or a list of strings.
           # For `exists` clauses, all files must exist.
@@ -41,7 +41,7 @@ options:
         # Since interpolation shares syntax with shell variables, $varname
         # or $${varname} can be used to avoid ambiguity.
         command: let my_var=${global}/2; echo "Global Over Two Equals $${foo}"
-    # If no computed value passes, a default or command can be set here.
+    # If no use value passes, a default or command can be set here.
     default: All When Clauses Fail
 
 # Tasks must be defined after global variables.

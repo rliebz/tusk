@@ -10,7 +10,7 @@ import (
 )
 
 func TestOption_Dependencies(t *testing.T) {
-	option := &Option{Computed: []struct {
+	option := &Option{Use: []struct {
 		When    appyaml.When
 		content `yaml:",inline"`
 	}{
@@ -90,8 +90,8 @@ var valuetests = []struct {
 		"passed",
 	},
 	{
-		"computed value",
-		&Option{Computed: []struct {
+		"conditional value",
+		&Option{Use: []struct {
 			When    appyaml.When
 			content `yaml:",inline"`
 		}{
@@ -102,8 +102,8 @@ var valuetests = []struct {
 		"bar",
 	},
 	{
-		"computed fallthrough to default",
-		&Option{content: content{Default: "default"}, Computed: []struct {
+		"conditional fallthrough to default",
+		&Option{content: content{Default: "default"}, Use: []struct {
 			When    appyaml.When
 			content `yaml:",inline"`
 		}{
@@ -116,7 +116,7 @@ var valuetests = []struct {
 		&Option{
 			content:     content{Default: "default"},
 			Environment: "OPTION_VAR",
-			Computed: []struct {
+			Use: []struct {
 				When    appyaml.When
 				content `yaml:",inline"`
 			}{

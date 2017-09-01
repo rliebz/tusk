@@ -293,7 +293,7 @@ tasks:
   mytask:
     options:
       foo:
-        computed:
+        use:
           - when:
               equal:
                 foo: true
@@ -315,7 +315,7 @@ tasks:
   mytask:
     options:
       foo:
-        computed:
+        use:
           - when:
               equal:
                 foo: true

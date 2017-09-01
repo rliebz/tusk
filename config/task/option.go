@@ -20,7 +20,7 @@ type Option struct {
 
 	// Used to determine value, in order of highest priority
 	Environment string
-	Computed    []struct {
+	Use         []struct {
 		When    appyaml.When
 		content `yaml:",inline"`
 	}
@@ -42,8 +42,8 @@ type content struct {
 func (o *Option) Dependencies() []string {
 	var options []string
 
-	for _, computed := range o.Computed {
-		options = append(options, computed.When.Dependencies()...)
+	for _, use := range o.Use {
+		options = append(options, use.When.Dependencies()...)
 	}
 
 	return options
@@ -54,7 +54,7 @@ func (o *Option) Dependencies() []string {
 // For non-private variables, the order of priority is:
 //   1. Parameter that was passed
 //   2. Environment variable set
-//   3. The first item in the computed list with a valid when clause
+//   3. The first item in the use list with a valid when clause
 //   4. The default, which is either a plain string or the output of a command
 func (o *Option) Value() (string, error) {
 
@@ -80,7 +80,7 @@ func (o *Option) Value() (string, error) {
 		}
 	}
 
-	for _, candidate := range o.Computed {
+	for _, candidate := range o.Use {
 		if err := candidate.When.Validate(o.Vars); err != nil {
 			continue
 		}

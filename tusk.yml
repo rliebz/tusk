@@ -22,7 +22,7 @@ tasks:
     options:
       opts:
         private: true
-        computed:
+        use:
           - when:
               equal:
                 fast: true
@@ -47,7 +47,7 @@ tasks:
         type: bool
       verbose_string:
         private: true
-        computed:
+        use:
           - when:
               equal:
                 verbose: true
