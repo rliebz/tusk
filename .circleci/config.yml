@@ -17,9 +17,9 @@ jobs:
           command: go install
       - run:
           name: Run gometalinter
-          command: gometalinter --config .gometalinter.json ./... | tee ~/test-results/gometalinter.out
+          command: tusk -q lint | tee ~/test-results/gometalinter.out
       - run:
           name: Run go test
-          command: go test -v -cover -race ./... | tee ~/test-results/go-test.out
+          command: tusk -q test --lint=false | tee ~/test-results/go-test.out
       - store_test_results:
           path: ~/test-results
