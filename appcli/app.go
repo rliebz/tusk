@@ -9,7 +9,6 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/config"
-	"github.com/rliebz/tusk/ui"
 )
 
 // newBaseApp creates a basic cli.App with top-level flags.
@@ -74,14 +73,6 @@ func newFlagApp(cfgText []byte) (*cli.App, error) {
 
 // NewApp creates a cli.App that executes tasks.
 func NewApp(cfgText []byte) (*cli.App, error) {
-	// Because flag redefinitions cause a panic, recover gracefully.
-	defer func() {
-		if r := recover(); r != nil {
-			ui.Error(r)
-			os.Exit(1)
-		}
-	}()
-
 	flagApp, err := newFlagApp(cfgText)
 	if err != nil {
 		return nil, err
