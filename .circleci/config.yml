@@ -3,23 +3,41 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.9
+
     working_directory: /go/src/github.com/rliebz/tusk
+
+    environment:
+      TEST_RESULTS: /tmp/test-results
+
     steps:
       - checkout
-      - run: mkdir -p ~/test-results
+
+      - run: mkdir -p $TEST_RESULTS
+
       - run:
-          name: Install dependencies
+          name: Install testing dependencies
           command: |
-            go get -u github.com/alecthomas/gometalinter
+            go get github.com/jstemmer/go-junit-report
+            go get github.com/alecthomas/gometalinter
             gometalinter --install
+
       - run:
           name: Install the application
           command: go install
+
       - run:
           name: Run gometalinter
-          command: gometalinter --config .gometalinter.json ./... | tee ~/test-results/gometalinter.out
+          command: tusk -q lint | tee $TEST_RESULTS/gometalinter.out
+
       - run:
           name: Run go test
-          command: go test -v -cover -race ./... | tee ~/test-results/go-test.out
+          command: |
+            trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+            tusk -q test --verbose --lint=false | tee $TEST_RESULTS/go-test.out
+
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: raw-test-output
+
       - store_test_results:
-          path: ~/test-results
+          path: /tmp/test-results

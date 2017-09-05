@@ -53,18 +53,18 @@ func addGlobalFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) erro
 }
 
 func addFlag(command *cli.Command, opt *task.Option) error {
-	flag, err := createCLIFlag(opt)
+	newFlag, err := createCLIFlag(opt)
 	if err != nil {
 		return err
 	}
 
-	for _, flag := range command.Flags {
-		if opt.Name == flag.GetName() {
+	for _, oldFlag := range command.Flags {
+		if oldFlag.GetName() == newFlag.GetName() {
 			return nil
 		}
 	}
 
-	command.Flags = append(command.Flags, flag)
+	command.Flags = append(command.Flags, newFlag)
 
 	return nil
 }
@@ -74,7 +74,7 @@ func createCLIFlag(opt *task.Option) (cli.Flag, error) {
 
 	name := opt.Name
 	if opt.Short != "" {
-		name = fmt.Sprintf("%s, %s", opt.Short, name)
+		name = fmt.Sprintf("%s, %s", name, opt.Short)
 	}
 
 	opt.Type = strings.ToLower(opt.Type)

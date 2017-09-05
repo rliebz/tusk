@@ -10,6 +10,13 @@ import (
 )
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			ui.Error("recovered from panic: ", r)
+			os.Exit(1)
+		}
+	}()
+
 	meta, err := appcli.GetConfigMetadata(os.Args)
 	if err != nil {
 		ui.Error(err)
