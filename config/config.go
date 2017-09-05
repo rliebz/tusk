@@ -32,7 +32,7 @@ func New() *Config {
 func Parse(text []byte) (*Config, error) {
 	cfg := New()
 
-	if err := yaml.Unmarshal(text, &cfg); err != nil {
+	if err := yaml.UnmarshalStrict(text, &cfg); err != nil {
 		return nil, err
 	}
 

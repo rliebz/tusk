@@ -12,13 +12,13 @@ tasks:
       - when:
           exists: .ruby-version
           command: test -z "$(rbenv version-name 2>/dev/null)"
-        run:
+        command:
           - rbenv install --skip-existing
           - which bundle >/dev/null 2>&1 || { gem install bundler; rbenv rehash }
 
       - when:
           exists: ./Gemfile
-        run: bundle check --path vendor/gems >/dev/null 2>&1 || bundle install --path vendor/gems --quiet --without production
+        command: bundle check --path vendor/gems >/dev/null 2>&1 || bundle install --path vendor/gems --quiet --without production
 
   console:
     usage: Launch a console for the application
@@ -30,20 +30,19 @@ tasks:
       env:
         default: local
         type: string
-    directory: ${tusk_root}
-    script:
+    run:
       - when:
           equal:
             env: production
-        run: heroku run rails console --app heroku-app-name-staging
+        command: heroku run rails console --app heroku-app-name-staging
       - when:
           equal:
             env: staging
-        run: heroku run rails console --app heroku-app-name-staging
+        command: heroku run rails console --app heroku-app-name-staging
       - when:
           equal:
             env: local
-        run:
+        command:
           - script/update
           - bin/rails console
 

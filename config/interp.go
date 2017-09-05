@@ -131,9 +131,8 @@ func getOrderedOpts(cfgText []byte) ([]string, error) {
 
 func getFlagValue(cfgText []byte, passed map[string]string, options map[string]string, name string) (string, error) {
 
-	cfg := New()
-
-	if err := yaml.Unmarshal(cfgText, &cfg); err != nil {
+	cfg, err := Parse(cfgText)
+	if err != nil {
 		return "", err
 	}
 
