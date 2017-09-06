@@ -14,10 +14,10 @@ var shouldtests = []struct {
 	{"nil when clause", &run{When: nil}, true},
 	{"empty when clause", &run{When: &appyaml.When{}}, true},
 	{"true when clause", &run{When: &appyaml.When{
-		Command: appyaml.StringList{Values: []string{"test 1 = 1"}},
+		Command: appyaml.StringList{"test 1 = 1"},
 	}}, true},
 	{"false when clause", &run{When: &appyaml.When{
-		Command: appyaml.StringList{Values: []string{"test 1 = 0"}},
+		Command: appyaml.StringList{"test 1 = 0"},
 	}}, false},
 }
 
@@ -43,14 +43,14 @@ var validatetests = []struct {
 }{
 	{"neither command nor task values defined", &run{}, false},
 	{"command values defined", &run{
-		Command: appyaml.StringList{Values: []string{"foo"}},
+		Command: appyaml.StringList{"foo"},
 	}, false},
 	{"task values defined", &run{
-		Task: appyaml.StringList{Values: []string{"foo"}},
+		Task: appyaml.StringList{"foo"},
 	}, false},
 	{"both command and task values defined", &run{
-		Command: appyaml.StringList{Values: []string{"foo"}},
-		Task:    appyaml.StringList{Values: []string{"foo"}},
+		Command: appyaml.StringList{"foo"},
+		Task:    appyaml.StringList{"foo"},
 	}, true},
 }
 

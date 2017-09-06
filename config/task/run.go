@@ -24,7 +24,7 @@ type run struct {
 func (r *run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var command string
 	if err := unmarshal(&command); err == nil {
-		*r = run{Command: appyaml.StringList{Values: []string{command}}}
+		*r = run{Command: appyaml.StringList{command}}
 		return nil
 	}
 

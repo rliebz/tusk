@@ -17,13 +17,13 @@ func TestOption_Dependencies(t *testing.T) {
 		{When: falseWhen, content: content{Default: "foo"}},
 		{When: appyaml.When{
 			Equal: map[string]appyaml.StringList{
-				"foo": {Values: []string{"foovalue"}},
-				"bar": {Values: []string{"barvalue"}},
+				"foo": {"foovalue"},
+				"bar": {"barvalue"},
 			},
 		}, content: content{Default: "bar"}},
 		{When: appyaml.When{
 			NotEqual: map[string]appyaml.StringList{
-				"baz": {Values: []string{"bazvalue"}},
+				"baz": {"bazvalue"},
 			},
 		}, content: content{Default: "bar"}},
 	}}
@@ -58,8 +58,8 @@ func equalUnordered(a, b []string) bool {
 }
 
 // TODO: Make these more accessible to other tests
-var trueWhen = appyaml.When{OS: appyaml.StringList{Values: []string{runtime.GOOS}}}
-var falseWhen = appyaml.When{OS: appyaml.StringList{Values: []string{"FAKE"}}}
+var trueWhen = appyaml.When{OS: appyaml.StringList{runtime.GOOS}}
+var falseWhen = appyaml.When{OS: appyaml.StringList{"FAKE"}}
 
 // Env var `OPTION_VAR` will be set to `option_val`
 var valuetests = []struct {

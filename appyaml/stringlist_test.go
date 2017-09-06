@@ -30,17 +30,17 @@ func TestStringList(t *testing.T) {
 		)
 	}
 
-	if len(h1.Foo.Values) != 1 {
+	if len(h1.Foo) != 1 {
 		t.Errorf(
 			"yaml.Unmarshal(%s, ...): expected 1 item, actual %d",
-			s1, len(h1.Foo.Values),
+			s1, len(h1.Foo),
 		)
 	}
 
-	if h1.Foo.Values[0] != "example" {
+	if h1.Foo[0] != "example" {
 		t.Errorf(
 			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
-			s1, "example", h1.Foo.Values[0],
+			s1, "example", h1.Foo[0],
 		)
 	}
 }

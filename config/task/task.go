@@ -71,10 +71,10 @@ func (t *Task) run(r *run) error {
 }
 
 func (t *Task) validateRun(r *run) error {
-	if len(r.Command.Values) != 0 && len(r.Task.Values) != 0 {
+	if len(r.Command) != 0 && len(r.Task) != 0 {
 		return fmt.Errorf(
 			"subtask (%s) and command (%s) are both defined",
-			r.Command.Values, r.Task.Values,
+			r.Command, r.Task,
 		)
 	}
 
@@ -88,10 +88,10 @@ func (t *Task) shouldRun(r *run) (ok bool) {
 	}
 
 	if err := r.When.Validate(t.Vars); err != nil {
-		for _, command := range r.Command.Values {
+		for _, command := range r.Command {
 			ui.PrintSkipped(command, err.Error())
 		}
-		for _, subTaskName := range r.Task.Values {
+		for _, subTaskName := range r.Task {
 			ui.PrintSkipped("task: "+subTaskName, err.Error())
 		}
 		return false
@@ -101,7 +101,7 @@ func (t *Task) shouldRun(r *run) (ok bool) {
 }
 
 func (t *Task) runCommands(r *run) error {
-	for _, command := range r.Command.Values {
+	for _, command := range r.Command {
 		if err := execCommand(command); err != nil {
 			return err
 		}
@@ -111,7 +111,7 @@ func (t *Task) runCommands(r *run) error {
 }
 
 func (t *Task) runSubTasks(r *run) error {
-	for _, subTaskName := range r.Task.Values {
+	for _, subTaskName := range r.Task {
 		for _, subTask := range t.SubTasks {
 			if subTask.Name == subTaskName {
 				if err := subTask.Execute(); err != nil {
