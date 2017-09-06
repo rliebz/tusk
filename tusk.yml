@@ -10,10 +10,9 @@ tasks:
     description: |
       Install all dependencies for building and testing the application.
     run:
-      - command:
-          - go get -u github.com/alecthomas/gometalinter
-          - go get -u github.com/golang/dep/cmd/dep
-          - dep ensure
+      - go get -u github.com/alecthomas/gometalinter
+      - go get -u github.com/golang/dep/cmd/dep
+      - dep ensure
 
   lint:
     usage: Run the linter
@@ -27,8 +26,7 @@ tasks:
               equal:
                 fast: true
             default: --fast
-    run:
-      - command: gometalinter --config .gometalinter.json ${opts} ./...
+    run: gometalinter --config .gometalinter.json ${opts} ./...
 
   test:
     usage: Run tests
@@ -57,4 +55,4 @@ tasks:
           equal:
             lint: true
         task: lint
-      - command: go test -cover -race ${verbose_string} ./...
+      - go test -cover -race ${verbose_string} ./...
