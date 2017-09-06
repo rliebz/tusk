@@ -10,22 +10,19 @@ import (
 )
 
 func TestOption_Dependencies(t *testing.T) {
-	option := &Option{Use: []struct {
-		When    appyaml.When
-		content `yaml:",inline"`
-	}{
-		{When: falseWhen, content: content{Default: "foo"}},
+	option := &Option{DefaultValues: valueList{
+		{When: falseWhen, Value: "foo"},
 		{When: appyaml.When{
 			Equal: map[string]appyaml.StringList{
 				"foo": {"foovalue"},
 				"bar": {"barvalue"},
 			},
-		}, content: content{Default: "bar"}},
+		}, Value: "bar"},
 		{When: appyaml.When{
 			NotEqual: map[string]appyaml.StringList{
 				"baz": {"bazvalue"},
 			},
-		}, content: content{Default: "bar"}},
+		}, Value: "bar"},
 	}}
 
 	expected := []string{"foo", "bar", "baz"}
@@ -71,12 +68,16 @@ var valuetests = []struct {
 	{"empty option", &Option{}, ""},
 	{
 		"default only",
-		&Option{content: content{Default: "default"}},
+		&Option{DefaultValues: valueList{
+			{Value: "default"},
+		}},
 		"default",
 	},
 	{
 		"command only",
-		&Option{content: content{Command: "echo command"}},
+		&Option{DefaultValues: valueList{
+			{Command: "echo command"},
+		}},
 		"command",
 	},
 	{
@@ -91,36 +92,19 @@ var valuetests = []struct {
 	},
 	{
 		"conditional value",
-		&Option{Use: []struct {
-			When    appyaml.When
-			content `yaml:",inline"`
-		}{
-			{When: falseWhen, content: content{Default: "foo"}},
-			{When: trueWhen, content: content{Default: "bar"}},
-			{When: falseWhen, content: content{Default: "baz"}},
+		&Option{DefaultValues: valueList{
+			{When: falseWhen, Value: "foo"},
+			{When: trueWhen, Value: "bar"},
+			{When: falseWhen, Value: "baz"},
 		}},
 		"bar",
 	},
 	{
-		"conditional fallthrough to default",
-		&Option{content: content{Default: "default"}, Use: []struct {
-			When    appyaml.When
-			content `yaml:",inline"`
-		}{
-			{When: falseWhen, content: content{Default: "false when"}},
-		}},
-		"default",
-	},
-	{
 		"passed when all settings are defined",
 		&Option{
-			content:     content{Default: "default"},
 			Environment: "OPTION_VAR",
-			Use: []struct {
-				When    appyaml.When
-				content `yaml:",inline"`
-			}{
-				{When: trueWhen, content: content{Default: "when"}},
+			DefaultValues: valueList{
+				{When: trueWhen, Value: "when"},
 			},
 			Passed: "passed",
 		},
@@ -152,7 +136,9 @@ func TestOption_Value(t *testing.T) {
 	}
 }
 func TestOption_Value_default_and_command(t *testing.T) {
-	option := Option{content: content{Default: "foo", Command: "echo bar"}}
+	option := Option{DefaultValues: valueList{
+		{Value: "foo", Command: "echo bar"},
+	}}
 	_, err := option.Value()
 	if err == nil {
 		t.Fatalf(

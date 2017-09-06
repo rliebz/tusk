@@ -48,9 +48,9 @@ func (rl *runList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return nil
 	}
 
-	var runList []*run
-	if err := unmarshal(&runList); err == nil {
-		*rl = runList
+	var runSlice []*run
+	if err := unmarshal(&runSlice); err == nil {
+		*rl = runSlice
 		return nil
 	}
 

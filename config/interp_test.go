@@ -293,11 +293,11 @@ tasks:
   mytask:
     options:
       foo:
-        use:
+        default:
           - when:
               equal:
                 foo: true
-            default: foovalue
+            value: foovalue
     run:
       - when:
           equal:
@@ -315,11 +315,11 @@ tasks:
   mytask:
     options:
       foo:
-        use:
+        default:
           - when:
               equal:
                 foo: true
-            default: foovalue
+            value: foovalue
     run:
       - when:
           equal:

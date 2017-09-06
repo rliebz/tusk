@@ -21,11 +21,11 @@ tasks:
     options:
       opts:
         private: true
-        use:
-          - when:
-              equal:
-                fast: true
-            default: --fast
+        default:
+          when:
+            equal:
+              fast: true
+          value: --fast
     run: gometalinter --config .gometalinter.json ${opts} ./...
 
   test:
@@ -45,11 +45,11 @@ tasks:
         type: bool
       verbose_string:
         private: true
-        use:
-          - when:
-              equal:
-                verbose: true
-            default: -v
+        default:
+          when:
+            equal:
+              verbose: true
+          value: -v
     run:
       - when:
           equal:

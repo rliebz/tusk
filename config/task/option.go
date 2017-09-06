@@ -19,12 +19,8 @@ type Option struct {
 	Private bool
 
 	// Used to determine value, in order of highest priority
-	Environment string
-	Use         []struct {
-		When    appyaml.When
-		content `yaml:",inline"`
-	}
-	content `yaml:",inline"`
+	Environment   string
+	DefaultValues valueList `yaml:"default"`
 
 	// Computed members not specified in yaml file
 	Name   string `yaml:"-"`
@@ -32,18 +28,13 @@ type Option struct {
 	Vars   map[string]string
 }
 
-type content struct {
-	Command string
-	Default string
-}
-
 // Dependencies returns a list of options that are required explicitly.
 // This does not include interpolations.
 func (o *Option) Dependencies() []string {
 	var options []string
 
-	for _, use := range o.Use {
-		options = append(options, use.When.Dependencies()...)
+	for _, value := range o.DefaultValues {
+		options = append(options, value.When.Dependencies()...)
 	}
 
 	return options
@@ -54,8 +45,7 @@ func (o *Option) Dependencies() []string {
 // For non-private variables, the order of priority is:
 //   1. Parameter that was passed
 //   2. Environment variable set
-//   3. The first item in the use list with a valid when clause
-//   4. The default, which is either a plain string or the output of a command
+//   3. The first item in the default value list with a valid when clause
 func (o *Option) Value() (string, error) {
 
 	if o == nil {
@@ -80,7 +70,7 @@ func (o *Option) Value() (string, error) {
 		}
 	}
 
-	for _, candidate := range o.Use {
+	for _, candidate := range o.DefaultValues {
 		if err := candidate.When.Validate(o.Vars); err != nil {
 			continue
 		}
@@ -93,26 +83,27 @@ func (o *Option) Value() (string, error) {
 		return value, nil
 	}
 
-	value, err := o.commandValueOrDefault()
-	if err != nil {
-		return "", errors.Wrapf(err, "could not compute value for flag: %s", o.Name)
-	}
+	return "", nil
+}
 
-	return value, nil
+type value struct {
+	When    appyaml.When
+	Command string
+	Value   string
 }
 
 // commandValueOrDefault validates a content definition, then gets the value.
-func (vg *content) commandValueOrDefault() (string, error) {
+func (v *value) commandValueOrDefault() (string, error) {
 
-	if vg.Default != "" && vg.Command != "" {
+	if v.Value != "" && v.Command != "" {
 		return "", fmt.Errorf(
-			"default (%s) and command (%s) are both defined",
-			vg.Default, vg.Command,
+			"value (%s) and command (%s) are both defined",
+			v.Value, v.Command,
 		)
 	}
 
-	if vg.Command != "" {
-		out, err := exec.Command("sh", "-c", vg.Command).Output() // nolint: gas
+	if v.Command != "" {
+		out, err := exec.Command("sh", "-c", v.Command).Output() // nolint: gas
 		if err != nil {
 			return "", err
 		}
@@ -120,5 +111,43 @@ func (vg *content) commandValueOrDefault() (string, error) {
 		return strings.TrimSpace(string(out)), nil
 	}
 
-	return vg.Default, nil
+	return v.Value, nil
+}
+
+// UnmarshalYAML allows plain strings to represent a full struct. The value of
+// the string is used as the Default field.
+func (v *value) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var valueString string
+	if err := unmarshal(&valueString); err == nil {
+		*v = value{Value: valueString}
+		return nil
+	}
+
+	type valueType value // Use new type to avoid recursion
+	var valueItem *valueType
+	if err := unmarshal(&valueItem); err == nil {
+		*v = *(*value)(valueItem)
+		return nil
+	}
+
+	return errors.New("could not parse value item")
+}
+
+type valueList []value
+
+// UnmarshalYAML allows single items to be used as lists.
+func (vl *valueList) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var valueItem value
+	if err := unmarshal(&valueItem); err == nil {
+		*vl = valueList{valueItem}
+		return nil
+	}
+
+	var valueSlice []value
+	if err := unmarshal(&valueSlice); err == nil {
+		*vl = valueSlice
+		return nil
+	}
+
+	return errors.New("could not parse value list")
 }

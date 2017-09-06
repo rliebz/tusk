@@ -13,11 +13,12 @@ options:
     # Variables default to their zero-value (empty string, false, or 0).
     # The default can be overridden.
     default: 5
+
   example:
     usage: This is an example option
     # Conditional logic is supported for setting variables.
-    use:
-      # In a use clause, when clauses are evaluated until one of them passes.
+    default:
+      # In a default clause, when clauses are evaluated until one of them passes.
       - when:
           # Clauses can take a string or a list of strings.
           # For `exists` clauses, all files must exist.
@@ -31,7 +32,7 @@ options:
           command:
             # Variables declared earlier in the config file are available.
             -  test ${global} -gt 5
-        default: Global Is Five!
+        value: Global Is Five!
       - when:
           # `equal` and `not_equal` are available for quick equality checks.
           equal:
@@ -41,8 +42,7 @@ options:
         # Since interpolation shares syntax with shell variables, $varname
         # or $${varname} can be used to avoid ambiguity.
         command: let my_var=${global}/2; echo "Global Over Two Equals $${foo}"
-    # If no use value passes, a default or command can be set here.
-    default: All When Clauses Fail
+      - value: All When Clauses Fail
 
 # Tasks must be defined after global variables.
 tasks:
@@ -74,9 +74,28 @@ tasks:
         command: exit 1
       # If the previous command fails, the entire run section is aborted.
       - command: echo "This is never run!"
+
   moretests:
     usage: Also run the tests
     # Sub tasks are avaiable.
     run:
       # Sub-tasks can be referenced by just name, but must be defined first.
       - task: test
+
+  short:
+    options:
+      info:
+        default:
+          # If there is only one `value` clause, using a list is optional.
+          when:
+            os: linux
+          value: Wow!
+    # Run commands can be shortened to strings.
+    run:
+      - echo "OS Info:"
+      - echo "${info}"
+
+  shorter:
+    # If there is only one item in `run`, using a list is optional.
+    run:
+      task: short
