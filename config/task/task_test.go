@@ -8,16 +8,16 @@ import (
 
 var shouldtests = []struct {
 	desc     string
-	input    *Run
+	input    *run
 	expected bool
 }{
-	{"nil when clause", &Run{When: nil}, true},
-	{"empty when clause", &Run{When: &appyaml.When{}}, true},
-	{"true when clause", &Run{When: &appyaml.When{
-		Command: appyaml.StringList{Values: []string{"test 1 = 1"}},
+	{"nil when clause", &run{When: nil}, true},
+	{"empty when clause", &run{When: &appyaml.When{}}, true},
+	{"true when clause", &run{When: &appyaml.When{
+		Command: appyaml.StringList{"test 1 = 1"},
 	}}, true},
-	{"false when clause", &Run{When: &appyaml.When{
-		Command: appyaml.StringList{Values: []string{"test 1 = 0"}},
+	{"false when clause", &run{When: &appyaml.When{
+		Command: appyaml.StringList{"test 1 = 0"},
 	}}, false},
 }
 
@@ -38,19 +38,19 @@ func TestTask_shouldRun(t *testing.T) {
 
 var validatetests = []struct {
 	desc      string
-	input     *Run
+	input     *run
 	shouldErr bool
 }{
-	{"neither command nor task values defined", &Run{}, false},
-	{"command values defined", &Run{
-		Command: appyaml.StringList{Values: []string{"foo"}},
+	{"neither command nor task values defined", &run{}, false},
+	{"command values defined", &run{
+		Command: appyaml.StringList{"foo"},
 	}, false},
-	{"task values defined", &Run{
-		Task: appyaml.StringList{Values: []string{"foo"}},
+	{"task values defined", &run{
+		Task: appyaml.StringList{"foo"},
 	}, false},
-	{"both command and task values defined", &Run{
-		Command: appyaml.StringList{Values: []string{"foo"}},
-		Task:    appyaml.StringList{Values: []string{"foo"}},
+	{"both command and task values defined", &run{
+		Command: appyaml.StringList{"foo"},
+		Task:    appyaml.StringList{"foo"},
 	}, true},
 }
 

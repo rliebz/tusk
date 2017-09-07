@@ -7,25 +7,23 @@ import (
 	"testing"
 
 	"github.com/rliebz/tusk/appyaml"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func TestOption_Dependencies(t *testing.T) {
-	option := &Option{Use: []struct {
-		When    appyaml.When
-		content `yaml:",inline"`
-	}{
-		{When: falseWhen, content: content{Default: "foo"}},
+	option := &Option{DefaultValues: valueList{
+		{When: falseWhen, Value: "foo"},
 		{When: appyaml.When{
 			Equal: map[string]appyaml.StringList{
-				"foo": {Values: []string{"foovalue"}},
-				"bar": {Values: []string{"barvalue"}},
+				"foo": {"foovalue"},
+				"bar": {"barvalue"},
 			},
-		}, content: content{Default: "bar"}},
+		}, Value: "bar"},
 		{When: appyaml.When{
 			NotEqual: map[string]appyaml.StringList{
-				"baz": {Values: []string{"bazvalue"}},
+				"baz": {"bazvalue"},
 			},
-		}, content: content{Default: "bar"}},
+		}, Value: "bar"},
 	}}
 
 	expected := []string{"foo", "bar", "baz"}
@@ -58,8 +56,8 @@ func equalUnordered(a, b []string) bool {
 }
 
 // TODO: Make these more accessible to other tests
-var trueWhen = appyaml.When{OS: appyaml.StringList{Values: []string{runtime.GOOS}}}
-var falseWhen = appyaml.When{OS: appyaml.StringList{Values: []string{"FAKE"}}}
+var trueWhen = appyaml.When{OS: appyaml.StringList{runtime.GOOS}}
+var falseWhen = appyaml.When{OS: appyaml.StringList{"FAKE"}}
 
 // Env var `OPTION_VAR` will be set to `option_val`
 var valuetests = []struct {
@@ -71,12 +69,16 @@ var valuetests = []struct {
 	{"empty option", &Option{}, ""},
 	{
 		"default only",
-		&Option{content: content{Default: "default"}},
+		&Option{DefaultValues: valueList{
+			{Value: "default"},
+		}},
 		"default",
 	},
 	{
 		"command only",
-		&Option{content: content{Command: "echo command"}},
+		&Option{DefaultValues: valueList{
+			{Command: "echo command"},
+		}},
 		"command",
 	},
 	{
@@ -91,36 +93,19 @@ var valuetests = []struct {
 	},
 	{
 		"conditional value",
-		&Option{Use: []struct {
-			When    appyaml.When
-			content `yaml:",inline"`
-		}{
-			{When: falseWhen, content: content{Default: "foo"}},
-			{When: trueWhen, content: content{Default: "bar"}},
-			{When: falseWhen, content: content{Default: "baz"}},
+		&Option{DefaultValues: valueList{
+			{When: falseWhen, Value: "foo"},
+			{When: trueWhen, Value: "bar"},
+			{When: falseWhen, Value: "baz"},
 		}},
 		"bar",
 	},
 	{
-		"conditional fallthrough to default",
-		&Option{content: content{Default: "default"}, Use: []struct {
-			When    appyaml.When
-			content `yaml:",inline"`
-		}{
-			{When: falseWhen, content: content{Default: "false when"}},
-		}},
-		"default",
-	},
-	{
 		"passed when all settings are defined",
 		&Option{
-			content:     content{Default: "default"},
 			Environment: "OPTION_VAR",
-			Use: []struct {
-				When    appyaml.When
-				content `yaml:",inline"`
-			}{
-				{When: trueWhen, content: content{Default: "when"}},
+			DefaultValues: valueList{
+				{When: trueWhen, Value: "when"},
 			},
 			Passed: "passed",
 		},
@@ -152,7 +137,9 @@ func TestOption_Value(t *testing.T) {
 	}
 }
 func TestOption_Value_default_and_command(t *testing.T) {
-	option := Option{content: content{Default: "foo", Command: "echo bar"}}
+	option := Option{DefaultValues: valueList{
+		{Value: "foo", Command: "echo bar"},
+	}}
 	_, err := option.Value()
 	if err == nil {
 		t.Fatalf(
@@ -169,6 +156,71 @@ func TestOption_Value_private_and_environment(t *testing.T) {
 		t.Fatalf(
 			"option.Value() for %s: expected err, actual nil",
 			"both Private and Environment variable defined",
+		)
+	}
+}
+
+func TestValue_UnmarshalYAML(t *testing.T) {
+	s1 := []byte(`value: example`)
+	s2 := []byte(`example`)
+	v1 := value{}
+	v2 := value{}
+
+	if err := yaml.Unmarshal(s1, &v1); err != nil {
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
+	}
+
+	if err := yaml.Unmarshal(s2, &v2); err != nil {
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s2, err)
+	}
+
+	if !reflect.DeepEqual(v1, v2) {
+		t.Errorf(
+			"Unmarshalling of values `%s` and `%s` not equal:\n%#v != %#v",
+			s1, s2, v1, v2,
+		)
+	}
+
+	if v1.Value != "example" {
+		t.Errorf(
+			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
+			s1, "example", v1.Command,
+		)
+	}
+}
+
+func TestValueList_UnmarshalYAML(t *testing.T) {
+	s1 := []byte(`example`)
+	s2 := []byte(`[example]`)
+	v1 := valueList{}
+	v2 := valueList{}
+
+	if err := yaml.Unmarshal(s1, &v1); err != nil {
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
+	}
+
+	if err := yaml.Unmarshal(s2, &v2); err != nil {
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s2, err)
+	}
+
+	if !reflect.DeepEqual(v1, v2) {
+		t.Errorf(
+			"Unmarshalling of valueLists `%s` and `%s` not equal:\n%#v != %#v",
+			s1, s2, v1, v2,
+		)
+	}
+
+	if len(v1) != 1 {
+		t.Errorf(
+			"yaml.Unmarshal(%s, ...): expected 1 item, actual %d",
+			s1, len(v1),
+		)
+	}
+
+	if v1[0].Value != "example" {
+		t.Errorf(
+			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
+			s1, "example", v1[0].Value,
 		)
 	}
 }

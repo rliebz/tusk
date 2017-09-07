@@ -51,18 +51,18 @@ func (w *When) Validate(vars map[string]string) error {
 		return nil
 	}
 
-	for _, f := range w.Exists.Values {
+	for _, f := range w.Exists {
 		// TODO: Should not exists errors be treated differently?
 		if _, err := os.Stat(f); err != nil {
 			return fmt.Errorf("file %s does not exist", f)
 		}
 	}
 
-	if err := validateOS(runtime.GOOS, w.OS.Values); err != nil {
+	if err := validateOS(runtime.GOOS, w.OS); err != nil {
 		return err
 	}
 
-	for _, command := range w.Command.Values {
+	for _, command := range w.Command {
 		if err := testCommand(command); err != nil {
 			return fmt.Errorf("test failed: %s", command)
 		}
@@ -129,7 +129,7 @@ func validateEquality(
 ) error {
 
 	for name, values := range cases {
-		for _, expected := range values.Values {
+		for _, expected := range values {
 
 			actual, ok := options[name]
 			if !ok {

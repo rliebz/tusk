@@ -12,7 +12,7 @@ import (
 func AddSubTasks(cfg *Config, t *task.Task) error {
 
 	for _, run := range t.Run {
-		for _, subTaskName := range run.Task.Values {
+		for _, subTaskName := range run.Task {
 			// TODO: This requires tasks to be defined in order
 			subTask, ok := cfg.Tasks[subTaskName]
 			if !ok {
