@@ -18,7 +18,7 @@ type Option struct {
 	Usage   string
 	Private bool
 
-	// Used to determine value, in order of highest priority
+	// Used to determine value
 	Environment   string
 	DefaultValues valueList `yaml:"default"`
 
