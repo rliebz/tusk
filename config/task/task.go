@@ -3,13 +3,15 @@ package task
 import (
 	"fmt"
 
+	"github.com/rliebz/tusk/config/task/option"
+	"github.com/rliebz/tusk/config/task/run"
 	"github.com/rliebz/tusk/ui"
 )
 
 // Task is a single task to be run by CLI.
 type Task struct {
-	Options     map[string]*Option `yaml:",omitempty"`
-	Run         runList
+	Options     map[string]*option.Option `yaml:",omitempty"`
+	Run         run.List
 	Usage       string `yaml:",omitempty"`
 	Description string `yaml:",omitempty"`
 
@@ -38,8 +40,8 @@ func (t *Task) Dependencies() []string {
 func (t *Task) Execute() error {
 	// TODO: Announce task
 
-	for _, run := range t.Run {
-		if err := t.run(run); err != nil {
+	for _, r := range t.Run {
+		if err := t.run(r); err != nil {
 			return err
 		}
 	}
@@ -48,7 +50,7 @@ func (t *Task) Execute() error {
 }
 
 // run executes a Run struct.
-func (t *Task) run(r *run) error {
+func (t *Task) run(r *run.Run) error {
 
 	// TODO: Validation logic should happen before runtime.
 	if err := t.validateRun(r); err != nil {
@@ -70,7 +72,7 @@ func (t *Task) run(r *run) error {
 	return nil
 }
 
-func (t *Task) validateRun(r *run) error {
+func (t *Task) validateRun(r *run.Run) error {
 	if len(r.Command) != 0 && len(r.Task) != 0 {
 		return fmt.Errorf(
 			"subtask (%s) and command (%s) are both defined",
@@ -81,7 +83,7 @@ func (t *Task) validateRun(r *run) error {
 	return nil
 }
 
-func (t *Task) shouldRun(r *run) (ok bool) {
+func (t *Task) shouldRun(r *run.Run) (ok bool) {
 
 	if r.When == nil {
 		return true
@@ -100,9 +102,9 @@ func (t *Task) shouldRun(r *run) (ok bool) {
 	return true
 }
 
-func (t *Task) runCommands(r *run) error {
+func (t *Task) runCommands(r *run.Run) error {
 	for _, command := range r.Command {
-		if err := execCommand(command); err != nil {
+		if err := run.ExecCommand(command); err != nil {
 			return err
 		}
 	}
@@ -110,7 +112,7 @@ func (t *Task) runCommands(r *run) error {
 	return nil
 }
 
-func (t *Task) runSubTasks(r *run) error {
+func (t *Task) runSubTasks(r *run.Run) error {
 	for _, subTaskName := range r.Task {
 		for _, subTask := range t.SubTasks {
 			if subTask.Name == subTaskName {

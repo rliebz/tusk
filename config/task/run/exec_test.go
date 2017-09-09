@@ -1,4 +1,4 @@
-package task
+package run
 
 import (
 	"bytes"
@@ -29,7 +29,7 @@ echo four
 
 	bufActual := new(bytes.Buffer)
 	ui.Stderr = log.New(bufActual, "", 0)
-	if err := execCommand(command); err != nil {
+	if err := ExecCommand(command); err != nil {
 		t.Fatalf(`execCommand("%s"): unexpected err: %s`, command, err)
 	}
 	actual := bufActual.String()
@@ -56,7 +56,7 @@ func TestExecCommand_error(t *testing.T) {
 
 	bufActual := new(bytes.Buffer)
 	ui.Stderr = log.New(bufActual, "", 0)
-	if err := execCommand(command); err.Error() != errExpected.Error() {
+	if err := ExecCommand(command); err.Error() != errExpected.Error() {
 		t.Fatalf(`execCommand("%s"): expected error "%s", actual "%s"`,
 			command, errExpected, err,
 		)

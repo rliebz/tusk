@@ -1,47 +1,49 @@
-package task
+package run
 
 import (
 	"github.com/pkg/errors"
-	"github.com/rliebz/tusk/appyaml"
+	"github.com/rliebz/tusk/config/task/appyaml"
+	"github.com/rliebz/tusk/config/task/when"
 )
 
-// run defines a a single runnable script within a task.
-type run struct {
-	When    *appyaml.When      `yaml:",omitempty"`
+// Run defines a a single runnable script within a task.
+type Run struct {
+	When    *when.When         `yaml:",omitempty"`
 	Command appyaml.StringList `yaml:",omitempty"`
 	Task    appyaml.StringList `yaml:",omitempty"`
 }
 
 // UnmarshalYAML allows plain strings to represent a run struct. The value of
 // the string is used as the Command field.
-func (r *run) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var command string
 	if err := unmarshal(&command); err == nil {
-		*r = run{Command: appyaml.StringList{command}}
+		*r = Run{Command: appyaml.StringList{command}}
 		return nil
 	}
 
-	type runType run // Use new type to avoid recursion
+	type runType Run // Use new type to avoid recursion
 	var runItem *runType
 	if err := unmarshal(&runItem); err == nil {
-		*r = *(*run)(runItem)
+		*r = *(*Run)(runItem)
 		return nil
 	}
 
 	return errors.New("could not parse run item")
 }
 
-type runList []*run
+// List is a list of run items with custom yaml unmarshalling.
+type List []*Run
 
 // UnmarshalYAML allows single items to be used as lists.
-func (rl *runList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var runItem *run
+func (rl *List) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var runItem *Run
 	if err := unmarshal(&runItem); err == nil {
-		*rl = runList{runItem}
+		*rl = List{runItem}
 		return nil
 	}
 
-	var runSlice []*run
+	var runSlice []*Run
 	if err := unmarshal(&runSlice); err == nil {
 		*rl = runSlice
 		return nil

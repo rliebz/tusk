@@ -9,6 +9,7 @@ import (
 
 	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/config/task/option"
 )
 
 // copyFlags copies all command flags from one cli.App to another.
@@ -52,7 +53,7 @@ func addGlobalFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) erro
 	return nil
 }
 
-func addFlag(command *cli.Command, opt *task.Option) error {
+func addFlag(command *cli.Command, opt *option.Option) error {
 	newFlag, err := createCLIFlag(opt)
 	if err != nil {
 		return err
@@ -70,7 +71,7 @@ func addFlag(command *cli.Command, opt *task.Option) error {
 }
 
 // createCLIFlag converts an Option into a cli.Flag.
-func createCLIFlag(opt *task.Option) (cli.Flag, error) {
+func createCLIFlag(opt *option.Option) (cli.Flag, error) {
 
 	name := opt.Name
 	if opt.Short != "" {

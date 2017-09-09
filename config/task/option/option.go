@@ -1,4 +1,4 @@
-package task
+package option
 
 import (
 	"fmt"
@@ -6,9 +6,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/rliebz/tusk/appyaml"
-
 	"github.com/pkg/errors"
+	"github.com/rliebz/tusk/config/task/when"
 )
 
 // Option represents an abstract command line option.
@@ -87,7 +86,7 @@ func (o *Option) Value() (string, error) {
 }
 
 type value struct {
-	When    appyaml.When
+	When    when.When
 	Command string
 	Value   string
 }

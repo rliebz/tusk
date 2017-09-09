@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/config/task/option"
 	"github.com/rliebz/tusk/interp"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -30,19 +31,19 @@ func AddSubTasks(cfg *Config, t *task.Task) error {
 }
 
 // FindAllOptions returns a list of options relevant for a given task.
-func (cfg *Config) FindAllOptions(t *task.Task) ([]*task.Option, error) {
+func (cfg *Config) FindAllOptions(t *task.Task) ([]*option.Option, error) {
 	names, err := getDependencies(t)
 	if err != nil {
 		return nil, err
 	}
 
-	candidates := make(map[string]*task.Option)
+	candidates := make(map[string]*option.Option)
 	for name, opt := range cfg.Options {
 		opt.Name = name
 		candidates[name] = opt
 	}
 
-	var required []*task.Option
+	var required []*option.Option
 	for name, opt := range t.Options {
 		opt.Name = name
 		candidates[name] = opt
@@ -67,8 +68,8 @@ func (cfg *Config) FindAllOptions(t *task.Task) ([]*task.Option, error) {
 }
 
 func recurseDependencies(
-	entry []string, candidates map[string]*task.Option, found []*task.Option,
-) ([]*task.Option, error) {
+	entry []string, candidates map[string]*option.Option, found []*option.Option,
+) ([]*option.Option, error) {
 
 candidates:
 	for _, item := range entry {
@@ -128,8 +129,8 @@ func getDependencies(item dependencyGetter) ([]string, error) {
 	return names, nil
 }
 
-func joinListsUnique(l1 []*task.Option, l2 []*task.Option) []*task.Option {
-	set := make(map[*task.Option]struct{})
+func joinListsUnique(l1 []*option.Option, l2 []*option.Option) []*option.Option {
+	set := make(map[*option.Option]struct{})
 	for _, t := range l1 {
 		set[t] = struct{}{}
 	}
@@ -137,7 +138,7 @@ func joinListsUnique(l1 []*task.Option, l2 []*task.Option) []*task.Option {
 		set[t] = struct{}{}
 	}
 
-	var output []*task.Option
+	var output []*option.Option
 	for t := range set {
 		output = append(output, t)
 	}

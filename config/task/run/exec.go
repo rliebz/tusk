@@ -1,4 +1,4 @@
-package task
+package run
 
 import (
 	"bufio"
@@ -23,7 +23,8 @@ func (w waitWriter) Write(p []byte) (int, error) {
 	return w.writer.Write(p)
 }
 
-func execCommand(command string) error {
+// ExecCommand executes a shell command.
+func ExecCommand(command string) error {
 	if ui.Quiet {
 		return execCommandQuiet(command)
 	}

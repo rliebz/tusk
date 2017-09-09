@@ -3,12 +3,12 @@ package appcli
 import (
 	"testing"
 
-	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/config/task/option"
 	"github.com/urfave/cli"
 )
 
 func TestCreateCLIFlag_undefined(t *testing.T) {
-	opt := &task.Option{
+	opt := &option.Option{
 		Type: "wrong",
 	}
 
@@ -22,7 +22,7 @@ func TestAddFlag_no_duplicates(t *testing.T) {
 
 	command := &cli.Command{}
 
-	opt := &task.Option{
+	opt := &option.Option{
 		Name:  "foo",
 		Short: "f",
 	}

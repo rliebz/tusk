@@ -2,12 +2,13 @@ package config
 
 import (
 	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/config/task/option"
 	yaml "gopkg.in/yaml.v2"
 )
 
 // Config is a struct representing the format for configuration settings.
 type Config struct {
-	Options map[string]*task.Option
+	Options map[string]*option.Option
 	Tasks   map[string]*task.Task
 }
 
@@ -23,7 +24,7 @@ type Metadata struct {
 // New is the constructor for Config.
 func New() *Config {
 	return &Config{
-		Options: make(map[string]*task.Option),
+		Options: make(map[string]*option.Option),
 		Tasks:   make(map[string]*task.Task),
 	}
 }

@@ -1,4 +1,4 @@
-package task
+package run
 
 import "testing"
 import "gopkg.in/yaml.v2"
@@ -7,8 +7,8 @@ import "reflect"
 func TestRun_UnmarshalYAML(t *testing.T) {
 	s1 := []byte(`command: example`)
 	s2 := []byte(`example`)
-	r1 := run{}
-	r2 := run{}
+	r1 := Run{}
+	r2 := Run{}
 
 	if err := yaml.Unmarshal(s1, &r1); err != nil {
 		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
@@ -41,7 +41,7 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 }
 
 type runListHolder struct {
-	Foo runList
+	Foo List
 }
 
 func TestRunList_UnmarshalYAML(t *testing.T) {

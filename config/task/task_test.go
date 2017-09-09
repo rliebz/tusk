@@ -3,20 +3,22 @@ package task
 import (
 	"testing"
 
-	"github.com/rliebz/tusk/appyaml"
+	"github.com/rliebz/tusk/config/task/appyaml"
+	"github.com/rliebz/tusk/config/task/run"
+	"github.com/rliebz/tusk/config/task/when"
 )
 
 var shouldtests = []struct {
 	desc     string
-	input    *run
+	input    *run.Run
 	expected bool
 }{
-	{"nil when clause", &run{When: nil}, true},
-	{"empty when clause", &run{When: &appyaml.When{}}, true},
-	{"true when clause", &run{When: &appyaml.When{
+	{"nil when clause", &run.Run{When: nil}, true},
+	{"empty when clause", &run.Run{When: &when.When{}}, true},
+	{"true when clause", &run.Run{When: &when.When{
 		Command: appyaml.StringList{"test 1 = 1"},
 	}}, true},
-	{"false when clause", &run{When: &appyaml.When{
+	{"false when clause", &run.Run{When: &when.When{
 		Command: appyaml.StringList{"test 1 = 0"},
 	}}, false},
 }
@@ -38,17 +40,17 @@ func TestTask_shouldRun(t *testing.T) {
 
 var validatetests = []struct {
 	desc      string
-	input     *run
+	input     *run.Run
 	shouldErr bool
 }{
-	{"neither command nor task values defined", &run{}, false},
-	{"command values defined", &run{
+	{"neither command nor task values defined", &run.Run{}, false},
+	{"command values defined", &run.Run{
 		Command: appyaml.StringList{"foo"},
 	}, false},
-	{"task values defined", &run{
+	{"task values defined", &run.Run{
 		Task: appyaml.StringList{"foo"},
 	}, false},
-	{"both command and task values defined", &run{
+	{"both command and task values defined", &run.Run{
 		Command: appyaml.StringList{"foo"},
 		Task:    appyaml.StringList{"foo"},
 	}, true},

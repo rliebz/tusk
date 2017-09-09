@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/config/task/option"
 	"github.com/rliebz/tusk/interp"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -153,7 +153,7 @@ func getFlagValue(cfgText []byte, passed map[string]string, options map[string]s
 
 // getOpt gets an option from a Config by name. Both global options and
 // task-specific options are checked.
-func getOpt(cfg *Config, name string) (*task.Option, error) {
+func getOpt(cfg *Config, name string) (*option.Option, error) {
 
 	if value, ok := cfg.Options[name]; ok {
 		return value, nil

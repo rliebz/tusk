@@ -1,14 +1,16 @@
-package appyaml
+package when
 
 import (
 	"reflect"
 	"runtime"
 	"testing"
+
+	"github.com/rliebz/tusk/config/task/appyaml"
 )
 
 // Define convenience aliases.
-type eqMap = map[string]StringList
-type sl = StringList
+type eqMap = map[string]appyaml.StringList
+type sl = appyaml.StringList
 
 var dependenciestests = []struct {
 	when     *When

@@ -1,4 +1,4 @@
-package appyaml
+package when
 
 import (
 	"fmt"
@@ -6,16 +6,18 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+
+	"github.com/rliebz/tusk/config/task/appyaml"
 )
 
 // When defines the conditions for running a task.
 type When struct {
-	Command StringList `yaml:",omitempty"`
-	Exists  StringList `yaml:",omitempty"`
-	OS      StringList `yaml:",omitempty"`
+	Command appyaml.StringList `yaml:",omitempty"`
+	Exists  appyaml.StringList `yaml:",omitempty"`
+	OS      appyaml.StringList `yaml:",omitempty"`
 
-	Equal    map[string]StringList `yaml:",omitempty"`
-	NotEqual map[string]StringList `yaml:"not_equal,omitempty"`
+	Equal    map[string]appyaml.StringList `yaml:",omitempty"`
+	NotEqual map[string]appyaml.StringList `yaml:"not_equal,omitempty"`
 }
 
 // Dependencies returns a list of options that are required explicitly.
@@ -124,7 +126,7 @@ func testCommand(command string) error {
 
 func validateEquality(
 	options map[string]string,
-	cases map[string]StringList,
+	cases map[string]appyaml.StringList,
 	compare func(string, string) bool,
 ) error {
 

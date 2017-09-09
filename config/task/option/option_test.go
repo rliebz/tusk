@@ -1,4 +1,4 @@
-package task
+package option
 
 import (
 	"os"
@@ -6,20 +6,21 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/rliebz/tusk/appyaml"
+	"github.com/rliebz/tusk/config/task/appyaml"
+	"github.com/rliebz/tusk/config/task/when"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func TestOption_Dependencies(t *testing.T) {
 	option := &Option{DefaultValues: valueList{
 		{When: falseWhen, Value: "foo"},
-		{When: appyaml.When{
+		{When: when.When{
 			Equal: map[string]appyaml.StringList{
 				"foo": {"foovalue"},
 				"bar": {"barvalue"},
 			},
 		}, Value: "bar"},
-		{When: appyaml.When{
+		{When: when.When{
 			NotEqual: map[string]appyaml.StringList{
 				"baz": {"bazvalue"},
 			},
@@ -56,8 +57,8 @@ func equalUnordered(a, b []string) bool {
 }
 
 // TODO: Make these more accessible to other tests
-var trueWhen = appyaml.When{OS: appyaml.StringList{runtime.GOOS}}
-var falseWhen = appyaml.When{OS: appyaml.StringList{"FAKE"}}
+var trueWhen = when.When{OS: appyaml.StringList{runtime.GOOS}}
+var falseWhen = when.When{OS: appyaml.StringList{"FAKE"}}
 
 // Env var `OPTION_VAR` will be set to `option_val`
 var valuetests = []struct {
