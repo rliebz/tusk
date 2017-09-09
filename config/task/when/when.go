@@ -7,17 +7,17 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/rliebz/tusk/config/task/appyaml"
+	"github.com/rliebz/tusk/config/task/marshal"
 )
 
 // When defines the conditions for running a task.
 type When struct {
-	Command appyaml.StringList `yaml:",omitempty"`
-	Exists  appyaml.StringList `yaml:",omitempty"`
-	OS      appyaml.StringList `yaml:",omitempty"`
+	Command marshal.StringList `yaml:",omitempty"`
+	Exists  marshal.StringList `yaml:",omitempty"`
+	OS      marshal.StringList `yaml:",omitempty"`
 
-	Equal    map[string]appyaml.StringList `yaml:",omitempty"`
-	NotEqual map[string]appyaml.StringList `yaml:"not_equal,omitempty"`
+	Equal    map[string]marshal.StringList `yaml:",omitempty"`
+	NotEqual map[string]marshal.StringList `yaml:"not_equal,omitempty"`
 }
 
 // Dependencies returns a list of options that are required explicitly.
@@ -126,7 +126,7 @@ func testCommand(command string) error {
 
 func validateEquality(
 	options map[string]string,
-	cases map[string]appyaml.StringList,
+	cases map[string]marshal.StringList,
 	compare func(string, string) bool,
 ) error {
 

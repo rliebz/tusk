@@ -3,7 +3,7 @@ package task
 import (
 	"testing"
 
-	"github.com/rliebz/tusk/config/task/appyaml"
+	"github.com/rliebz/tusk/config/task/marshal"
 	"github.com/rliebz/tusk/config/task/run"
 	"github.com/rliebz/tusk/config/task/when"
 )
@@ -16,10 +16,10 @@ var shouldtests = []struct {
 	{"nil when clause", &run.Run{When: nil}, true},
 	{"empty when clause", &run.Run{When: &when.When{}}, true},
 	{"true when clause", &run.Run{When: &when.When{
-		Command: appyaml.StringList{"test 1 = 1"},
+		Command: marshal.StringList{"test 1 = 1"},
 	}}, true},
 	{"false when clause", &run.Run{When: &when.When{
-		Command: appyaml.StringList{"test 1 = 0"},
+		Command: marshal.StringList{"test 1 = 0"},
 	}}, false},
 }
 
@@ -45,14 +45,14 @@ var validatetests = []struct {
 }{
 	{"neither command nor task values defined", &run.Run{}, false},
 	{"command values defined", &run.Run{
-		Command: appyaml.StringList{"foo"},
+		Command: marshal.StringList{"foo"},
 	}, false},
 	{"task values defined", &run.Run{
-		Task: appyaml.StringList{"foo"},
+		Task: marshal.StringList{"foo"},
 	}, false},
 	{"both command and task values defined", &run.Run{
-		Command: appyaml.StringList{"foo"},
-		Task:    appyaml.StringList{"foo"},
+		Command: marshal.StringList{"foo"},
+		Task:    marshal.StringList{"foo"},
 	}, true},
 }
 

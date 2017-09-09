@@ -5,12 +5,12 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/rliebz/tusk/config/task/appyaml"
+	"github.com/rliebz/tusk/config/task/marshal"
 )
 
 // Define convenience aliases.
-type eqMap = map[string]appyaml.StringList
-type sl = appyaml.StringList
+type eqMap = map[string]marshal.StringList
+type sl = marshal.StringList
 
 var dependenciestests = []struct {
 	when     *When

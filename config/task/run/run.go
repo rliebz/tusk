@@ -2,15 +2,15 @@ package run
 
 import (
 	"github.com/pkg/errors"
-	"github.com/rliebz/tusk/config/task/appyaml"
+	"github.com/rliebz/tusk/config/task/marshal"
 	"github.com/rliebz/tusk/config/task/when"
 )
 
 // Run defines a a single runnable script within a task.
 type Run struct {
 	When    *when.When         `yaml:",omitempty"`
-	Command appyaml.StringList `yaml:",omitempty"`
-	Task    appyaml.StringList `yaml:",omitempty"`
+	Command marshal.StringList `yaml:",omitempty"`
+	Task    marshal.StringList `yaml:",omitempty"`
 }
 
 // UnmarshalYAML allows plain strings to represent a run struct. The value of
@@ -18,7 +18,7 @@ type Run struct {
 func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var command string
 	if err := unmarshal(&command); err == nil {
-		*r = Run{Command: appyaml.StringList{command}}
+		*r = Run{Command: marshal.StringList{command}}
 		return nil
 	}
 

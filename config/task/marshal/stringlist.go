@@ -1,4 +1,4 @@
-package appyaml
+package marshal
 
 import "errors"
 

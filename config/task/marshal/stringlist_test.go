@@ -1,4 +1,4 @@
-package appyaml
+package marshal
 
 import "testing"
 import "gopkg.in/yaml.v2"
