@@ -158,8 +158,9 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 		return err
 	}
 
-	if err = app.Run(args); err != nil {
-		return nil, err
+	// Other run errors should not shadow app.Action errors.
+	if runErr := app.Run(args); runErr != nil {
+		return nil, runErr
 	}
 
 	return metadata, err
