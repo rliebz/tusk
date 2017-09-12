@@ -3,17 +3,17 @@ package option
 import (
 	"os"
 	"reflect"
-	"runtime"
 	"testing"
 
 	"github.com/rliebz/tusk/config/configyaml/marshal"
 	"github.com/rliebz/tusk/config/configyaml/when"
+	"github.com/rliebz/tusk/config/configyaml/whentest"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func TestOption_Dependencies(t *testing.T) {
 	option := &Option{DefaultValues: valueList{
-		{When: falseWhen, Value: "foo"},
+		{When: whentest.False, Value: "foo"},
 		{When: when.When{
 			Equal: map[string]marshal.StringList{
 				"foo": {"foovalue"},
@@ -56,10 +56,6 @@ func equalUnordered(a, b []string) bool {
 	return reflect.DeepEqual(aMap, bMap)
 }
 
-// TODO: Make these more accessible to other tests
-var trueWhen = when.When{OS: marshal.StringList{runtime.GOOS}}
-var falseWhen = when.When{OS: marshal.StringList{"FAKE"}}
-
 // Env var `OPTION_VAR` will be set to `option_val`
 var valuetests = []struct {
 	desc     string
@@ -95,9 +91,9 @@ var valuetests = []struct {
 	{
 		"conditional value",
 		&Option{DefaultValues: valueList{
-			{When: falseWhen, Value: "foo"},
-			{When: trueWhen, Value: "bar"},
-			{When: falseWhen, Value: "baz"},
+			{When: whentest.False, Value: "foo"},
+			{When: whentest.True, Value: "bar"},
+			{When: whentest.False, Value: "baz"},
 		}},
 		"bar",
 	},
@@ -106,7 +102,7 @@ var valuetests = []struct {
 		&Option{
 			Environment: "OPTION_VAR",
 			DefaultValues: valueList{
-				{When: trueWhen, Value: "when"},
+				{When: whentest.True, Value: "when"},
 			},
 			Passed: "passed",
 		},
