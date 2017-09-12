@@ -6,21 +6,21 @@ import (
 )
 
 var interpolatetests = []struct {
+	testCase string
 	cfgText  string
 	passed   map[string]string
 	taskName string
 	expected string
 }{
-	// Happy path test case
 	{
+		"happy path",
 		`
 options:
   foo:
     default: bar
 tasks:
   mytask:
-    run:
-      - command: echo ${foo}
+    run: echo ${foo}
 `,
 		map[string]string{},
 		"mytask",
@@ -30,21 +30,19 @@ options:
     default: bar
 tasks:
   mytask:
-    run:
-      - command: echo bar
+    run: echo bar
 `,
 	},
 
-	// Happy path with options
 	{
+		"value passed",
 		`
 options:
   foo:
     default: bar
 tasks:
   mytask:
-    run:
-      - command: echo ${foo}
+    run: echo ${foo}
 `,
 		map[string]string{"foo": "passed"},
 		"mytask",
@@ -54,13 +52,12 @@ options:
     default: bar
 tasks:
   mytask:
-    run:
-      - command: echo passed
+    run: echo passed
 `,
 	},
 
-	// One unused variable
 	{
+		"unused variable",
 		`
 options:
   foo:
@@ -69,11 +66,9 @@ options:
     default: barvalue
 tasks:
   mytask:
-    run:
-      - command: echo ${foo}
+    run: echo ${foo}
   unused:
-    run:
-      - command: echo ${bar}
+    run: echo ${bar}
 `,
 		map[string]string{},
 		"mytask",
@@ -85,23 +80,20 @@ options:
     default: barvalue
 tasks:
   mytask:
-    run:
-      - command: echo foovalue
+    run: echo foovalue
   unused:
-    run:
-      - command: echo ${bar}
+    run: echo ${bar}
 `},
 
-	// No task specified
 	{
+		"no task specified",
 		`
 options:
   foo:
     default: bar
 tasks:
   mytask:
-    run:
-      - command: echo ${foo}
+    run: echo ${foo}
 `,
 		map[string]string{},
 		"",
@@ -111,13 +103,12 @@ options:
     default: bar
 tasks:
   mytask:
-    run:
-      - command: echo ${foo}
+    run: echo ${foo}
 `,
 	},
 
-	// Multiple interpolation - top level
 	{
+		"multiple interpolation - top level",
 		`
 options:
   foo:
@@ -126,8 +117,7 @@ options:
     default: ${foo}
 tasks:
   mytask:
-    run:
-      - command: echo ${bar}
+    run: echo ${bar}
 `,
 		map[string]string{},
 		"mytask",
@@ -139,13 +129,12 @@ options:
     default: foovalue
 tasks:
   mytask:
-    run:
-      - command: echo foovalue
+    run: echo foovalue
 `,
 	},
 
-	// Multiple interpolation - task specific
 	{
+		"multiple interpolation - task specific",
 		`
 options:
   foo:
@@ -155,8 +144,7 @@ tasks:
     options:
       bar:
         default: ${foo}
-    run:
-      - command: echo ${bar}
+    run: echo ${bar}
 `,
 		map[string]string{},
 		"mytask",
@@ -169,13 +157,12 @@ tasks:
     options:
       bar:
         default: foovalue
-    run:
-      - command: echo foovalue
+    run: echo foovalue
 `,
 	},
 
-	// Sub-task dependencies
 	{
+		"sub-task dependencies",
 		`
 options:
   foo:
@@ -183,11 +170,10 @@ options:
 
 tasks:
   pretask:
-    run:
-      - command: echo ${foo}
+    run: echo ${foo}
   mytask:
     run:
-      - task: pretask
+      task: pretask
 `,
 		map[string]string{},
 		"mytask",
@@ -198,16 +184,15 @@ options:
 
 tasks:
   pretask:
-    run:
-      - command: echo foovalue
+    run: echo foovalue
   mytask:
     run:
-      - task: pretask
+      task: pretask
 `,
 	},
 
-	// Nested sub-task dependencies
 	{
+		"nested sub-task dependencies",
 		`
 options:
   foo:
@@ -215,14 +200,13 @@ options:
 
 tasks:
   roottask:
-    run:
-      - command: echo ${foo}
+    run: echo ${foo}
   pretask:
     run:
-      - task: roottask
+      task: roottask
   mytask:
     run:
-      - task: pretask
+      task: pretask
 `,
 		map[string]string{},
 		"mytask",
@@ -233,19 +217,18 @@ options:
 
 tasks:
   roottask:
-    run:
-      - command: echo foovalue
+    run: echo foovalue
   pretask:
     run:
-      - task: roottask
+      task: roottask
   mytask:
     run:
-      - task: pretask
+      task: pretask
 `,
 	},
 
-	// Nested sub-task dependencies with passed value
 	{
+		"nested sub-task dependencies with passed value",
 		`
 options:
   foo:
@@ -253,14 +236,13 @@ options:
 
 tasks:
   roottask:
-    run:
-      - command: echo ${foo}
+    run: echo ${foo}
   pretask:
     run:
-      - task: roottask
+      task: roottask
   mytask:
     run:
-      - task: pretask
+      task: pretask
 `,
 		map[string]string{"foo": "passed"},
 		"mytask",
@@ -271,60 +253,59 @@ options:
 
 tasks:
   roottask:
-    run:
-      - command: echo passed
+    run: echo passed
   pretask:
     run:
-      - task: roottask
+      task: roottask
   mytask:
     run:
-      - task: pretask
+      task: pretask
 `,
 	},
 
-	// When dependencies
 	{
+		"when dependencies",
 		`
 options:
   bar:
-    default: foovalue
+    default: barvalue
 
 tasks:
   mytask:
     options:
       foo:
         default:
-          - when:
-              equal:
-                foo: true
-            value: foovalue
+          when:
+            equal:
+              foo: true
+          value: ${bar}
     run:
-      - when:
-          equal:
-            foo: true
-        command: echo yo
+      when:
+        equal:
+          foo: true
+      command: echo yo
 `,
 		map[string]string{},
 		"mytask",
 		`
 options:
   bar:
-    default: foovalue
+    default: barvalue
 
 tasks:
   mytask:
     options:
       foo:
         default:
-          - when:
-              equal:
-                foo: true
-            value: foovalue
+          when:
+            equal:
+              foo: true
+          value: barvalue
     run:
-      - when:
-          equal:
-            foo: true
-        command: echo yo
+      when:
+        equal:
+          foo: true
+      command: echo yo
 `,
 	},
 }
@@ -333,9 +314,9 @@ func TestInterpolate(t *testing.T) {
 	for _, tt := range interpolatetests {
 
 		errString := fmt.Sprintf(
-			"Interpolate(cfgText, passed, taskName) failed.\n"+
+			"Interpolate(cfgText, passed, taskName) for %s:\n"+
 				"cfgText: `%s`\npassed: %v\ntaskName: %s",
-			tt.cfgText, tt.passed, tt.taskName,
+			tt.testCase, tt.cfgText, tt.passed, tt.taskName,
 		)
 
 		actualBytes, _, err := Interpolate([]byte(tt.cfgText), tt.passed, tt.taskName)
