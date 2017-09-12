@@ -3,8 +3,8 @@ package task
 import (
 	"fmt"
 
-	"github.com/rliebz/tusk/config/task/option"
-	"github.com/rliebz/tusk/config/task/run"
+	"github.com/rliebz/tusk/config/configyaml/option"
+	"github.com/rliebz/tusk/config/configyaml/run"
 	"github.com/rliebz/tusk/ui"
 )
 

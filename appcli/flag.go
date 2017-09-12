@@ -8,8 +8,8 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/config"
-	"github.com/rliebz/tusk/config/task"
-	"github.com/rliebz/tusk/config/task/option"
+	"github.com/rliebz/tusk/config/configyaml/option"
+	"github.com/rliebz/tusk/config/configyaml/task"
 )
 
 // copyFlags copies all command flags from one cli.App to another.

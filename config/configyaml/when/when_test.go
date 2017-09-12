@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/rliebz/tusk/config/task/marshal"
+	"github.com/rliebz/tusk/config/configyaml/marshal"
 )
 
 // Define convenience aliases.

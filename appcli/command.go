@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
-	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/config/configyaml/task"
 )
 
 type commandCreator func(app *cli.App, t *task.Task) (*cli.Command, error)

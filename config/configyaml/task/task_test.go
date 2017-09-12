@@ -3,9 +3,9 @@ package task
 import (
 	"testing"
 
-	"github.com/rliebz/tusk/config/task/marshal"
-	"github.com/rliebz/tusk/config/task/run"
-	"github.com/rliebz/tusk/config/task/when"
+	"github.com/rliebz/tusk/config/configyaml/marshal"
+	"github.com/rliebz/tusk/config/configyaml/run"
+	"github.com/rliebz/tusk/config/configyaml/when"
 )
 
 var shouldtests = []struct {

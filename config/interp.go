@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/rliebz/tusk/config/task/option"
+	"github.com/rliebz/tusk/config/configyaml/option"
 	"github.com/rliebz/tusk/interp"
 	yaml "gopkg.in/yaml.v2"
 )

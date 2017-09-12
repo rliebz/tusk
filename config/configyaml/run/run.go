@@ -2,8 +2,8 @@ package run
 
 import (
 	"github.com/pkg/errors"
-	"github.com/rliebz/tusk/config/task/marshal"
-	"github.com/rliebz/tusk/config/task/when"
+	"github.com/rliebz/tusk/config/configyaml/marshal"
+	"github.com/rliebz/tusk/config/configyaml/when"
 )
 
 // Run defines a a single runnable script within a task.

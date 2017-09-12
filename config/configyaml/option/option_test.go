@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/rliebz/tusk/config/task/marshal"
-	"github.com/rliebz/tusk/config/task/when"
+	"github.com/rliebz/tusk/config/configyaml/marshal"
+	"github.com/rliebz/tusk/config/configyaml/when"
 	yaml "gopkg.in/yaml.v2"
 )
 
