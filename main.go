@@ -9,6 +9,8 @@ import (
 	"github.com/rliebz/tusk/ui"
 )
 
+var version = "dev"
+
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -32,7 +34,7 @@ func main() {
 	}
 
 	if meta.RunVersion {
-		ui.Print("0.0.0")
+		ui.Print(version)
 		os.Exit(0)
 	}
 

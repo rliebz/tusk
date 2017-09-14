@@ -1,0 +1,48 @@
+---
+project_name: tusk
+builds:
+  - main: .
+    binary: tusk
+    ldflags: -s -w -X main.version={{.Version}}
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+      - arm64
+    ignore:
+      - goos: darwin
+        goarch: 386
+archive:
+  name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
+  files:
+    - LICENSE
+    - README.md
+snapshot:
+  name_template: SNAPSHOT-{{ .Commit }}
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
+release:
+  github:
+    owner: rliebz
+    name: tusk
+brew:
+  github:
+    owner: rliebz
+    name: homebrew-tusk
+  description: A tusk runner built with simplicity in mind
+  install: bin.install "tusk"
+  test: tusk --version
+fpm:
+  maintainer: Robert Liebowitz <rliebz@gmail.com>
+  description: A task runner built with simplicity in mind
+  license: MIT
+  formats:
+    - deb
+    - rpm
