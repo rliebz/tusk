@@ -432,7 +432,7 @@ func TestInterpolate(t *testing.T) {
 	}
 }
 
-func TestInterpolate_redefiningSubTasksDisallowed(t *testing.T) {
+func TestInterpolate_no_redefining_sub_tasks(t *testing.T) {
 
 	cfgText := `
 tasks:
