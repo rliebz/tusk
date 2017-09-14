@@ -18,8 +18,6 @@
     "megacheck",
     "misspell",
     "structcheck",
-    "test",
-    "testify",
     "unconvert",
     "unparam",
     "varcheck",
