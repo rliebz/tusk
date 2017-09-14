@@ -56,8 +56,7 @@ func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]b
 		}
 	}
 
-	// TODO: Can this return only options?
-	return cfgText, options, nil
+	return interp.Escape(cfgText), options, nil
 }
 
 func getRequiredOpts(cfgText []byte, taskName string) ([]string, error) {

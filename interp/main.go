@@ -6,9 +6,14 @@ import (
 	"regexp"
 )
 
-var escSeq = "{UNLIKELY_ESCAPE_SEQUENCE}"
+var escSeq = []byte("{UNLIKELY_ESCAPE_SEQUENCE}")
 
-// Interpolate runs the interpolation
+// Escape escapes all instances of $$ with $.
+func Escape(text []byte) []byte {
+	return bytes.Replace(text, []byte("$$"), []byte("$"), -1)
+}
+
+// Interpolate replaces instances of the name pattern with the value.
 func Interpolate(text []byte, name string, value string) ([]byte, error) {
 	text = escapePattern(text)
 
@@ -59,10 +64,12 @@ func Compile(name string) (*regexp.Regexp, error) {
 	return regexp.Compile(pattern)
 }
 
+// escapePattern escapes unwanted potential interpolation targets.
 func escapePattern(text []byte) []byte {
-	return bytes.Replace(text, []byte("$$"), []byte(escSeq), -1)
+	return bytes.Replace(text, []byte("$$"), escSeq, -1)
 }
 
+// unescapePattern returns unwanted potential interpolation targets.
 func unescapePattern(text []byte) []byte {
-	return bytes.Replace(text, []byte(escSeq), []byte("$"), -1)
+	return bytes.Replace(text, escSeq, []byte("$$"), -1)
 }

@@ -86,6 +86,37 @@ tasks:
 `},
 
 	{
+		"escaped interpolation over multiple iterations",
+		`
+options:
+  foo:
+    default: foovalue
+  bar:
+    default: ${foo}
+tasks:
+  pretask:
+    run: echo $${bar}
+  mytask:
+    run:
+      task: pretask
+`,
+		map[string]string{},
+		"mytask",
+		`
+options:
+  foo:
+    default: foovalue
+  bar:
+    default: foovalue
+tasks:
+  pretask:
+    run: echo ${bar}
+  mytask:
+    run:
+      task: pretask
+`},
+
+	{
 		"no task specified",
 		`
 options:

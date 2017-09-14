@@ -5,6 +5,29 @@ import (
 	"testing"
 )
 
+var escapetests = []struct {
+	input    string
+	expected string
+}{
+	{"$", "$"},
+	{"$$", "$"},
+	{"$$$", "$$"},
+}
+
+func TestEscape(t *testing.T) {
+	for _, tt := range escapetests {
+		escaped := Escape([]byte(tt.input))
+		actual := string(escaped)
+
+		if tt.expected != actual {
+			t.Errorf(
+				"Escape(%s): expected: %s, actual: %s",
+				tt.input, tt.expected, actual,
+			)
+		}
+	}
+}
+
 var maptests = []struct {
 	input    []byte
 	vars     map[string]string
@@ -38,13 +61,13 @@ var maptests = []struct {
 	{
 		[]byte("$${foo}"),
 		map[string]string{"foo": "bar"},
-		[]byte("${foo}"),
+		[]byte("$${foo}"),
 	},
 
 	{
 		[]byte("$$${foo}"),
 		map[string]string{"foo": "bar"},
-		[]byte("$bar"),
+		[]byte("$$bar"),
 	},
 	{
 		[]byte("$"),
@@ -54,7 +77,7 @@ var maptests = []struct {
 	{
 		[]byte("$$"),
 		map[string]string{"foo": "bar"},
-		[]byte("$"),
+		[]byte("$$"),
 	},
 }
 
