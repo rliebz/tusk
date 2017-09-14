@@ -63,7 +63,7 @@ func (o *Option) Value() (string, error) {
 	} else {
 		if o.Environment != "" {
 			return "", fmt.Errorf(
-				"environment `%s` defined for private option",
+				`environment "%s" defined for private option`,
 				o.Environment,
 			)
 		}

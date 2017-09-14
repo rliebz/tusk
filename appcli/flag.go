@@ -23,8 +23,8 @@ func copyFlags(target *cli.App, source *cli.App) {
 	}
 }
 
-// addGlobalFlagsUsed adds the top-level flags to tasks where interpolation is used.
-func addGlobalFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) error {
+// addAllFlagsUsed adds the top-level flags to tasks where interpolation is used.
+func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) error {
 
 	dependencies, err := cfg.FindAllOptions(t)
 	if err != nil {
@@ -37,12 +37,10 @@ func addGlobalFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) erro
 			continue
 		}
 
-		// TODO: Disallow multiple differing flag definitions
-
 		if err := addFlag(cmd, opt); err != nil {
 			return errors.Wrapf(
 				err,
-				"could not add flag `%s` to command `%s`",
+				`could not add flag "%s" to command "%s"`,
 				opt.Name,
 				t.Name,
 			)
@@ -101,6 +99,6 @@ func createCLIFlag(opt *option.Option) (cli.Flag, error) {
 			Usage: opt.Usage,
 		}, nil
 	default:
-		return nil, fmt.Errorf("unsupported flag type `%s`", opt.Type)
+		return nil, fmt.Errorf(`unsupported flag type "%s"`, opt.Type)
 	}
 }

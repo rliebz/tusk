@@ -17,7 +17,7 @@ func AddSubTasks(cfg *Config, t *task.Task) error {
 			// TODO: This requires tasks to be defined in order
 			subTask, ok := cfg.Tasks[subTaskName]
 			if !ok {
-				return fmt.Errorf("sub-task %s was referenced before definition", subTaskName)
+				return fmt.Errorf(`sub-task "%s" was referenced before definition`, subTaskName)
 			}
 
 			t.SubTasks = append(t.SubTasks, subTask)
