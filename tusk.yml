@@ -11,6 +11,7 @@ tasks:
       Install all dependencies for building and testing the application.
     run:
       - go get -u github.com/alecthomas/gometalinter
+      - gometalinter --install --update
       - go get -u github.com/golang/dep/cmd/dep
       - dep ensure
 
