@@ -162,6 +162,66 @@ tasks:
 	},
 
 	{
+		"override global options with task-specific",
+		`
+options:
+  foo:
+    default: foovalue
+tasks:
+  mytask:
+    options:
+      foo:
+        default: newvalue
+    run: echo ${foo}
+`,
+		map[string]string{},
+		"mytask",
+		`
+options:
+  foo:
+    default: foovalue
+tasks:
+  mytask:
+    options:
+      foo:
+        default: newvalue
+    run: echo newvalue
+`,
+	},
+
+	{
+		"shared option defined per task",
+		`
+tasks:
+  unused:
+    options:
+      foo:
+        default: foovalue
+    run: echo ${foo}
+  mytask:
+    options:
+      foo:
+        default: barvalue
+    run: echo ${foo}
+`,
+		map[string]string{},
+		"mytask",
+		`
+tasks:
+  unused:
+    options:
+      foo:
+        default: foovalue
+    run: echo barvalue
+  mytask:
+    options:
+      foo:
+        default: barvalue
+    run: echo barvalue
+`,
+	},
+
+	{
 		"sub-task dependencies",
 		`
 options:
@@ -264,6 +324,40 @@ tasks:
 	},
 
 	{
+		"nested sub-task dependencies with sub-task-level options",
+		`
+tasks:
+  roottask:
+    options:
+      foo:
+        default: foovalue
+    run: echo ${foo}
+  pretask:
+    run:
+      task: roottask
+  mytask:
+    run:
+      task: pretask
+`,
+		map[string]string{},
+		"mytask",
+		`
+tasks:
+  roottask:
+    options:
+      foo:
+        default: foovalue
+    run: echo foovalue
+  pretask:
+    run:
+      task: roottask
+  mytask:
+    run:
+      task: pretask
+`,
+	},
+
+	{
 		"when dependencies",
 		`
 options:
@@ -336,4 +430,26 @@ func TestInterpolate(t *testing.T) {
 		}
 
 	}
+}
+
+func TestInterpolate_redefiningSubTasksDisallowed(t *testing.T) {
+
+	cfgText := `
+tasks:
+  one:
+    options:
+      foo:
+        default: foovalue
+  two:
+    options:
+      foo:
+        default: barvalue
+    run:
+      task: one
+  `
+
+	if _, _, err := Interpolate([]byte(cfgText), nil, "foo"); err == nil {
+		t.Errorf("Interpolate(cfgText, ...): expected error, got nil")
+	}
+
 }

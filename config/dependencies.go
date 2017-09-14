@@ -61,7 +61,10 @@ func (cfg *Config) FindAllOptions(t *task.Task) ([]*option.Option, error) {
 			return nil, err
 		}
 
-		required = joinListsUnique(required, nested)
+		required, err = addNestedDependencies(required, nested)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return required, nil
@@ -129,19 +132,18 @@ func getDependencies(item dependencyGetter) ([]string, error) {
 	return names, nil
 }
 
-func joinListsUnique(l1 []*option.Option, l2 []*option.Option) []*option.Option {
-	set := make(map[*option.Option]struct{})
-	for _, t := range l1 {
-		set[t] = struct{}{}
+func addNestedDependencies(dependencies, nested []*option.Option) ([]*option.Option, error) {
+	set := make(map[string]struct{})
+	for _, opt := range dependencies {
+		set[opt.Name] = struct{}{}
 	}
-	for _, t := range l2 {
-		set[t] = struct{}{}
+	for _, opt := range nested {
+		if _, found := set[opt.Name]; found {
+			return nil, fmt.Errorf(
+				`cannot redefine option "%s" in sub-task`, opt.Name,
+			)
+		}
 	}
 
-	var output []*option.Option
-	for t := range set {
-		output = append(output, t)
-	}
-
-	return output
+	return append(dependencies, nested...), nil
 }

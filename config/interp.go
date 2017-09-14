@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/rliebz/tusk/config/configyaml/option"
+	"github.com/rliebz/tusk/config/configyaml/task"
 	"github.com/rliebz/tusk/interp"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -35,20 +36,20 @@ func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]b
 		return nil, nil, err
 	}
 
-	for _, name := range ordered {
-		for _, opt := range required {
-			if opt != name {
+	for _, optName := range ordered {
+		for _, r := range required {
+			if r != optName {
 				continue
 			}
 
-			value, err := getFlagValue(cfgText, passed, options, name)
+			value, err := getOptValue(cfgText, passed, options, optName, taskName)
 			if err != nil {
 				return nil, nil, err
 			}
 
-			options[name] = value
+			options[optName] = value
 
-			cfgText, err = interp.Interpolate(cfgText, name, value)
+			cfgText, err = interp.Interpolate(cfgText, optName, value)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -129,21 +130,36 @@ func getOrderedOpts(cfgText []byte) ([]string, error) {
 	return output, nil
 }
 
-func getFlagValue(cfgText []byte, passed map[string]string, options map[string]string, name string) (string, error) {
+func getOptValue(
+	cfgText []byte,
+	passed map[string]string,
+	options map[string]string,
+	optName string,
+	taskName string,
+) (string, error) {
 
 	cfg, err := Parse(cfgText)
 	if err != nil {
 		return "", err
 	}
 
-	opt, err := getOpt(cfg, name)
+	t, ok := cfg.Tasks[taskName]
+	if !ok {
+		return "", fmt.Errorf(`could not find task "%s"`, taskName)
+	}
+
+	if err = AddSubTasks(cfg, t); err != nil {
+		return "", err
+	}
+
+	opt, err := getOpt(cfg, optName, taskName)
 	if err != nil {
 		return "", err
 	}
 
 	opt.Vars = options
 
-	valuePassed, ok := passed[name]
+	valuePassed, ok := passed[optName]
 	if ok {
 		opt.Passed = valuePassed
 	}
@@ -151,20 +167,35 @@ func getFlagValue(cfgText []byte, passed map[string]string, options map[string]s
 	return opt.Value()
 }
 
-// getOpt gets an option from a Config by name. Both global options and
-// task-specific options are checked.
-func getOpt(cfg *Config, name string) (*option.Option, error) {
+// getOpt gets an option from a Config by name. Task-specific options, sub-
+// task options, and global options are checked, in that order.
+func getOpt(cfg *Config, optName string, taskName string) (*option.Option, error) {
 
-	if value, ok := cfg.Options[name]; ok {
-		return value, nil
-	}
-
-	// TODO: Can we limit which tasks we check at this point?
-	for _, t := range cfg.Tasks {
-		if value, ok := t.Options[name]; ok {
+	if t, ok := cfg.Tasks[taskName]; ok {
+		if value, found := checkTaskForOpt(t, optName); found {
 			return value, nil
 		}
 	}
 
-	return nil, fmt.Errorf("option \"%s\" required but not defined", name)
+	if value, ok := cfg.Options[optName]; ok {
+		return value, nil
+	}
+
+	return nil, fmt.Errorf(`option "%s" required but not defined`, optName)
+}
+
+// checkTaskForOpt checks a task and its sub-tasks for an option.
+func checkTaskForOpt(t *task.Task, optName string) (*option.Option, bool) {
+
+	if value, ok := t.Options[optName]; ok {
+		return value, true
+	}
+
+	for _, subTask := range t.SubTasks {
+		if opt, found := checkTaskForOpt(subTask, optName); found {
+			return opt, true
+		}
+	}
+
+	return nil, false
 }
