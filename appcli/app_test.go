@@ -7,6 +7,8 @@ import (
 	"path"
 	"reflect"
 	"testing"
+
+	"github.com/urfave/cli"
 )
 
 func TestNewFlagApp(t *testing.T) {
@@ -17,8 +19,7 @@ func TestNewFlagApp(t *testing.T) {
 
 tasks:
   mytask:
-    run:
-      - command: echo ${foo}
+    run: echo ${foo}
 `)
 
 	flagApp, err := newFlagApp(cfgText)
@@ -37,22 +38,98 @@ tasks:
 		)
 	}
 
-	actual, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
+	command, ok := flagApp.Metadata["command"].(*cli.Command)
 	if !ok {
 		t.Fatalf(
-			"flagApp.Metadata:\nconfig: `%s`\nMetadata did not contain flagsPassed",
-			string(cfgText),
+			"flagApp.Metadata:\nconfig: `%s`\nMetadata command not a *cli.Command: %#v",
+			string(cfgText), flagApp.Metadata["command"],
 		)
 	}
 
-	expected := map[string]string{
+	commandName := command.Name
+	commandExpected := "mytask"
+
+	if commandExpected != commandName {
+		t.Errorf(
+			"flagApp.Metadata[\"command\"] for args(%s):\n expected: %s\nactual: %s",
+			args, commandExpected, commandName,
+		)
+	}
+
+	flagsActual, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
+	if !ok {
+		t.Fatalf(
+			"flagApp.Metadata:\nconfig: `%s`\nMetadata flagsPassed not a map: %#v",
+			string(cfgText), flagApp.Metadata["flagsPassed"],
+		)
+	}
+
+	flagsExpected := map[string]string{
 		"foo": "other",
 	}
 
-	if !reflect.DeepEqual(expected, actual) {
+	if !reflect.DeepEqual(flagsExpected, flagsActual) {
 		t.Errorf(
 			"flagApp.Metadata for args(%s):\n expected: %#v\nactual: %#v",
-			args, expected, actual,
+			args, flagsExpected, flagsActual,
+		)
+	}
+}
+
+func TestNewFlagApp_no_options(t *testing.T) {
+	cfgText := []byte(`tasks:
+  mytask:
+    run: echo foo
+`)
+
+	flagApp, err := newFlagApp(cfgText)
+	if err != nil {
+		t.Fatalf(
+			"newFlagApp():\nconfig: `%s`\nunexpected err: %s",
+			string(cfgText), err,
+		)
+	}
+
+	args := []string{"tusk", "mytask"}
+	if err = flagApp.Run(args); err != nil {
+		t.Fatalf(
+			"flagApp.Run():\nconfig: `%s`\nunexpected err: %s",
+			string(cfgText), err,
+		)
+	}
+
+	command, ok := flagApp.Metadata["command"].(*cli.Command)
+	if !ok {
+		t.Fatalf(
+			"flagApp.Metadata:\nconfig: `%s`\nMetadata command not a *cli.Command: %#v",
+			string(cfgText), flagApp.Metadata["command"],
+		)
+	}
+
+	commandName := command.Name
+	commandExpected := "mytask"
+
+	if commandExpected != commandName {
+		t.Errorf(
+			"flagApp.Metadata[\"command\"] for args(%s):\n expected: %s\nactual: %s",
+			args, commandExpected, commandName,
+		)
+	}
+
+	flagsActual, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
+	if !ok {
+		t.Fatalf(
+			"flagApp.Metadata:\nconfig: `%s`\nMetadata flagsPassed not a map: %#v",
+			string(cfgText), flagApp.Metadata["flagsPassed"],
+		)
+	}
+
+	flagsExpected := map[string]string{}
+
+	if !reflect.DeepEqual(flagsExpected, flagsActual) {
+		t.Errorf(
+			"flagApp.Metadata for args(%s):\n expected: %#v\nactual: %#v",
+			args, flagsExpected, flagsActual,
 		)
 	}
 }
