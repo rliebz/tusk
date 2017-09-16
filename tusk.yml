@@ -42,7 +42,6 @@ tasks:
       verbose:
         usage: Run the tests in verbose mode
         short: v
-        default: false
         type: bool
       verbose_string:
         private: true
@@ -57,3 +56,10 @@ tasks:
             lint: true
         task: lint
       - command: go test -cover -race ${verbose_string} ./...
+
+  release:
+    usage: Release the latest version with goreleaser
+    run: |
+      header='^## [0-9]+\.[0-9]+\.[0-9]+'
+      awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
+          goreleaser --rm-dist --release-notes /dev/stdin

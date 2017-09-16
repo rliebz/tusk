@@ -1,28 +1,21 @@
 # Tusk
 
-[![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk.svg)](https://circleci.com/gh/rliebz/tusk)
+[![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk.svg)][circle]
 [![license](https://img.shields.io/github/license/rliebz/tusk.svg)](LICENSE)
 
 Tusk is a yaml-based task runner. By creating a `tusk.yml` in the root of a
 repository, Tusk becomes a custom command line tool with minimal configuration.
 
-Note that as Tusk is currently unversioned, the CLI and `tusk.yml` file format
-should be considered unstable and subject to change.
-
 ## Getting Started
 
 ### Installation
 
-With a [Go][go] environment set up, simply run:
+The latest version can be installed from the [releases page][releases].
+
+On macOS, installation is also available through [homebrew][homebrew].
 
 ```bash
-go get -u github.com/rliebz/tusk
-```
-
-Also make sure that `$GOPATH/bin` is on your path:
-
-```bash
-export PATH=$PATH:$GOPATH/bin
+brew install rliebz/tusk/tusk
 ```
 
 #### Supported Platforms
@@ -376,4 +369,6 @@ requests for any fixes or new feature requests, and if you are not sure about
 anything, open it anyway. Issues in pull requests are also great venues for
 discussion.
 
-[go]: https://golang.org
+[circle]: https://circleci.com/gh/rliebz/tusk
+[homebrew]: https://brew.sh
+[releases]: https://github.com/rliebz/tusk/releases
