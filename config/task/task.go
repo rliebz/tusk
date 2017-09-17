@@ -21,6 +21,24 @@ type Task struct {
 	Vars     map[string]string
 }
 
+// UnmarshalYAML unmarshals and assigns names to options.
+func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	type taskType Task // User new type to avoid recursion
+	var taskItem *taskType
+	if err := unmarshal(&taskItem); err != nil {
+		return err
+	}
+
+	*t = *(*Task)(taskItem)
+
+	for name, opt := range t.Options {
+		opt.Name = name
+	}
+
+	return nil
+}
+
 // Dependencies returns a list of options that are required explicitly.
 // This does not include interpolations.
 func (t *Task) Dependencies() []string {

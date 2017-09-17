@@ -12,15 +12,6 @@ type Config struct {
 	Tasks   map[string]*task.Task
 }
 
-// Metadata contains global configuration settings.
-type Metadata struct {
-	CfgText    []byte
-	Directory  string
-	RunVersion bool
-	Quiet      bool
-	Verbose    bool
-}
-
 // New is the constructor for Config.
 func New() *Config {
 	return &Config{
@@ -38,4 +29,35 @@ func Parse(text []byte) (*Config, error) {
 	}
 
 	return cfg, nil
+}
+
+// UnmarshalYAML unmarshals and assigns names to options and tasks.
+func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	type configType Config // Use new type to avoid recursion
+	var configItem *configType
+	if err := unmarshal(&configItem); err != nil {
+		return err
+	}
+
+	*c = *(*Config)(configItem)
+
+	for name, opt := range c.Options {
+		opt.Name = name
+	}
+
+	for name, t := range c.Tasks {
+		t.Name = name
+	}
+
+	return nil
+}
+
+// Metadata contains global configuration settings.
+type Metadata struct {
+	CfgText    []byte
+	Directory  string
+	RunVersion bool
+	Quiet      bool
+	Verbose    bool
 }

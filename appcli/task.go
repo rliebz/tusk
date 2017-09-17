@@ -10,8 +10,7 @@ import (
 
 // addTasks adds a series of tasks to a cli.App using a command creator.
 func addTasks(app *cli.App, cfg *config.Config, create commandCreator) error {
-	for name, t := range cfg.Tasks {
-		t.Name = name
+	for _, t := range cfg.Tasks {
 		if err := addTask(app, cfg, t, create); err != nil {
 			return errors.Wrapf(err, `could not add task "%s"`, t.Name)
 		}

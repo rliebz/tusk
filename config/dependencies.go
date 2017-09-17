@@ -39,13 +39,11 @@ func (cfg *Config) FindAllOptions(t *task.Task) ([]*option.Option, error) {
 
 	candidates := make(map[string]*option.Option)
 	for name, opt := range cfg.Options {
-		opt.Name = name
 		candidates[name] = opt
 	}
 
 	var required []*option.Option
 	for name, opt := range t.Options {
-		opt.Name = name
 		candidates[name] = opt
 		required = append(required, opt)
 	}
