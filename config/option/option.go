@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/rliebz/tusk/config/configyaml/when"
+	"github.com/rliebz/tusk/config/when"
 )
 
 // Option represents an abstract command line option.

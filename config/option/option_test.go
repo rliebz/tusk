@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rliebz/tusk/config/configyaml/marshal"
-	"github.com/rliebz/tusk/config/configyaml/when"
-	"github.com/rliebz/tusk/config/configyaml/whentest"
+	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/config/when"
+	"github.com/rliebz/tusk/config/whentest"
 	yaml "gopkg.in/yaml.v2"
 )
 

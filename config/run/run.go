@@ -1,8 +1,8 @@
 package run
 
 import (
-	"github.com/rliebz/tusk/config/configyaml/marshal"
-	"github.com/rliebz/tusk/config/configyaml/when"
+	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/config/when"
 )
 
 // Run defines a a single runnable script within a task.

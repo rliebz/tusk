@@ -1,8 +1,8 @@
 // Package whentest includes constructs used in testing when clauses.
 package whentest
 
-import "github.com/rliebz/tusk/config/configyaml/when"
-import "github.com/rliebz/tusk/config/configyaml/marshal"
+import "github.com/rliebz/tusk/config/when"
+import "github.com/rliebz/tusk/config/marshal"
 
 // True is a when.When that always evaluates to true.
 var True = when.When{}

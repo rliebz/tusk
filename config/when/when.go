@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/rliebz/tusk/config/configyaml/marshal"
+	"github.com/rliebz/tusk/config/marshal"
 )
 
 // When defines the conditions for running a task.

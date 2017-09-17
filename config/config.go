@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/rliebz/tusk/config/configyaml/option"
-	"github.com/rliebz/tusk/config/configyaml/task"
+	"github.com/rliebz/tusk/config/option"
+	"github.com/rliebz/tusk/config/task"
 	yaml "gopkg.in/yaml.v2"
 )
 

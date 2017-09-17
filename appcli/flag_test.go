@@ -3,7 +3,7 @@ package appcli
 import (
 	"testing"
 
-	"github.com/rliebz/tusk/config/configyaml/option"
+	"github.com/rliebz/tusk/config/option"
 	"github.com/urfave/cli"
 )
 
