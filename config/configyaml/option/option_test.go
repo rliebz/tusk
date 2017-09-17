@@ -133,23 +133,11 @@ func TestOption_Value(t *testing.T) {
 		}
 	}
 }
-func TestOption_Value_default_and_command(t *testing.T) {
-	option := Option{DefaultValues: valueList{
-		{Value: "foo", Command: "echo bar"},
-	}}
-	_, err := option.Value()
-	if err == nil {
-		t.Fatalf(
-			"option.Value() for %s: expected err, actual nil",
-			"both Default and Command defined",
-		)
-	}
-}
 
 func TestOption_Value_private_and_environment(t *testing.T) {
 	option := Option{Private: true, Environment: "OPTION_VAR"}
-	_, err := option.Value()
-	if err == nil {
+
+	if _, err := option.Value(); err == nil {
 		t.Fatalf(
 			"option.Value() for %s: expected err, actual nil",
 			"both Private and Environment variable defined",
@@ -164,11 +152,11 @@ func TestValue_UnmarshalYAML(t *testing.T) {
 	v2 := value{}
 
 	if err := yaml.Unmarshal(s1, &v1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
 	}
 
 	if err := yaml.Unmarshal(s2, &v2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s2, err)
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(v1, v2) {
@@ -182,6 +170,17 @@ func TestValue_UnmarshalYAML(t *testing.T) {
 		t.Errorf(
 			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
 			s1, "example", v1.Command,
+		)
+	}
+}
+
+func TestValue_UnmarshalYAML_value_and_command(t *testing.T) {
+	s := []byte(`{value: "example", command: "echo hello"}`)
+	v := value{}
+
+	if err := yaml.Unmarshal(s, &v); err == nil {
+		t.Fatalf(
+			"yaml.Unmarshal(%s, ...): expected err, actual nil", s,
 		)
 	}
 }

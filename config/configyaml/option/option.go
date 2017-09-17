@@ -94,13 +94,6 @@ type value struct {
 // commandValueOrDefault validates a content definition, then gets the value.
 func (v *value) commandValueOrDefault() (string, error) {
 
-	if v.Value != "" && v.Command != "" {
-		return "", fmt.Errorf(
-			"value (%s) and command (%s) are both defined",
-			v.Value, v.Command,
-		)
-	}
-
 	if v.Command != "" {
 		out, err := exec.Command("sh", "-c", v.Command).Output() // nolint: gas
 		if err != nil {
@@ -116,37 +109,51 @@ func (v *value) commandValueOrDefault() (string, error) {
 // UnmarshalYAML allows plain strings to represent a full struct. The value of
 // the string is used as the Default field.
 func (v *value) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	var err error
+
 	var valueString string
-	if err := unmarshal(&valueString); err == nil {
+	if err = unmarshal(&valueString); err == nil {
 		*v = value{Value: valueString}
 		return nil
 	}
 
 	type valueType value // Use new type to avoid recursion
 	var valueItem *valueType
-	if err := unmarshal(&valueItem); err == nil {
+	if err = unmarshal(&valueItem); err == nil {
 		*v = *(*value)(valueItem)
+
+		if v.Value != "" && v.Command != "" {
+			return fmt.Errorf(
+				"value (%s) and command (%s) are both defined",
+				v.Value, v.Command,
+			)
+		}
+
 		return nil
 	}
 
-	return errors.New("could not parse value item")
+	return err
 }
 
 type valueList []value
 
 // UnmarshalYAML allows single items to be used as lists.
 func (vl *valueList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var valueItem value
-	if err := unmarshal(&valueItem); err == nil {
-		*vl = valueList{valueItem}
-		return nil
-	}
+
+	var err error
 
 	var valueSlice []value
-	if err := unmarshal(&valueSlice); err == nil {
+	if err = unmarshal(&valueSlice); err == nil {
 		*vl = valueSlice
 		return nil
 	}
 
-	return errors.New("could not parse value list")
+	var valueItem value
+	if err = unmarshal(&valueItem); err == nil {
+		*vl = valueList{valueItem}
+		return nil
+	}
+
+	return err
 }
