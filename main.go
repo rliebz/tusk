@@ -23,14 +23,14 @@ func main() {
 	if err != nil {
 		ui.Error(err)
 		appcli.ShowDefaultHelp()
-		return
+		os.Exit(1)
 	}
 
 	ui.Quiet = meta.Quiet
 	ui.Verbose = meta.Verbose
 	if err = os.Chdir(meta.Directory); err != nil {
 		ui.Error(err)
-		return
+		os.Exit(1)
 	}
 
 	if meta.RunVersion {
@@ -42,7 +42,7 @@ func main() {
 	if err != nil {
 		ui.Error(err)
 		appcli.ShowDefaultHelp()
-		return
+		os.Exit(1)
 	}
 
 	if err := app.Run(os.Args); err != nil {

@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Changed
 - Improve error handling in custom yaml unmarshalling.
 - Exit for unexpected errors occuring during when clause validation.
+- Use exit code 1 for all unexpected errors.
 
 ## 0.1.1 (2017-09-16)
 ### Changed
