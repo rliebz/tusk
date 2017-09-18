@@ -28,7 +28,14 @@ func TestTask_shouldRun(t *testing.T) {
 	var task Task
 
 	for _, tt := range shouldtests {
-		actual := task.shouldRun(tt.input)
+		actual, err := task.shouldRun(tt.input)
+		if err != nil {
+			t.Errorf(
+				"task.shouldRun() for %s: unexpected error: %s",
+				tt.desc, err,
+			)
+			continue
+		}
 		if tt.expected != actual {
 			t.Errorf(
 				"task.shouldRun() for %s: expected: %t, actual: %t",

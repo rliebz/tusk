@@ -71,6 +71,9 @@ func (o *Option) Value() (string, error) {
 
 	for _, candidate := range o.DefaultValues {
 		if err := candidate.When.Validate(o.Vars); err != nil {
+			if !when.IsFailedCondition(err) {
+				return "", err
+			}
 			continue
 		}
 

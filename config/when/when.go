@@ -1,7 +1,6 @@
 package when
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
@@ -54,9 +53,11 @@ func (w *When) Validate(vars map[string]string) error {
 	}
 
 	for _, f := range w.Exists {
-		// TODO: Should not exists errors be treated differently?
 		if _, err := os.Stat(f); err != nil {
-			return fmt.Errorf("file %s does not exist", f)
+			if os.IsNotExist(err) {
+				return newCondFailErrorf(`file "%s" does not exist`, f)
+			}
+			return err
 		}
 	}
 
@@ -66,7 +67,7 @@ func (w *When) Validate(vars map[string]string) error {
 
 	for _, command := range w.Command {
 		if err := testCommand(command); err != nil {
-			return fmt.Errorf("test failed: %s", command)
+			return newCondFailErrorf(`test failed: %s`, command)
 		}
 	}
 
@@ -98,7 +99,7 @@ func validateOS(os string, required []string) error { // nolint: unparam
 		}
 	}
 
-	return fmt.Errorf("current OS \"%s\" not listed in %v", os, required)
+	return newCondFailErrorf(`current OS "%s" not listed in %v`, os, required)
 }
 
 func normalizeOS(os string) string {
@@ -135,11 +136,11 @@ func validateEquality(
 
 			actual, ok := options[name]
 			if !ok {
-				return fmt.Errorf("option \"%s\" not defined", name)
+				return newCondFailErrorf(`option "%s" not defined`, name)
 			}
 
 			if !compare(expected, actual) {
-				return fmt.Errorf("option \"%s\" has value: %s", name, actual)
+				return newCondFailErrorf(`option "%s" has value: %s`, name, actual)
 			}
 		}
 	}

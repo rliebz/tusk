@@ -5,6 +5,7 @@ import (
 
 	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/config/run"
+	"github.com/rliebz/tusk/config/when"
 	"github.com/rliebz/tusk/ui"
 )
 
@@ -75,10 +76,9 @@ func (t *Task) run(r *run.Run) error {
 		return err
 	}
 
-	if ok := t.shouldRun(r); !ok {
-		return nil
+	if ok, err := t.shouldRun(r); !ok || err != nil {
+		return err
 	}
-
 	if err := t.runCommands(r); err != nil {
 		return err
 	}
@@ -101,23 +101,27 @@ func (t *Task) validateRun(r *run.Run) error {
 	return nil
 }
 
-func (t *Task) shouldRun(r *run.Run) (ok bool) {
+func (t *Task) shouldRun(r *run.Run) (bool, error) {
 
 	if r.When == nil {
-		return true
+		return true, nil
 	}
 
 	if err := r.When.Validate(t.Vars); err != nil {
+		if !when.IsFailedCondition(err) {
+			return false, err
+		}
+
 		for _, command := range r.Command {
 			ui.PrintSkipped(command, err.Error())
 		}
 		for _, subTaskName := range r.Task {
 			ui.PrintSkipped("task: "+subTaskName, err.Error())
 		}
-		return false
+		return false, nil
 	}
 
-	return true
+	return true, nil
 }
 
 func (t *Task) runCommands(r *run.Run) error {
