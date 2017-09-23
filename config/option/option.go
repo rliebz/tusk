@@ -41,12 +41,18 @@ func (o *Option) Dependencies() []string {
 }
 
 // UnmarshalYAML ensures that the option definition is valid.
-// TODO: Disallow "short" names longer than one character
 func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	type optionType Option // Use new type to avoid recursion
 	if err := unmarshal((*optionType)(o)); err != nil {
 		return err
+	}
+
+	if len(o.Short) > 1 {
+		return fmt.Errorf(
+			`option short name "%s" cannot exceed one character`,
+			o.Short,
+		)
 	}
 
 	if o.Private && o.Required {

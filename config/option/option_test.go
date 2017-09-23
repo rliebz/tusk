@@ -213,6 +213,10 @@ var unmarshalOptionErrorTests = []struct {
 		"string only",
 	},
 	{
+		"short name exceeds one character",
+		"{short: foo}",
+	},
+	{
 		"private and required defined",
 		"{private: true, required: true}",
 	},

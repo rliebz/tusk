@@ -10,6 +10,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Exit for unexpected errors occuring during when clause validation.
 - Use exit code 1 for all unexpected errors.
 
+### Fixed
+- Short names cannot exceed one character in length.
+
 ## 0.1.1 (2017-09-16)
 ### Changed
 - The recommended way to install the latest stable version is now Homebrew or
