@@ -1,6 +1,7 @@
 package appcli
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -13,6 +14,9 @@ type commandCreator func(app *cli.App, t *task.Task) (*cli.Command, error)
 
 func createExecuteCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
 	return createCommand(t, func(c *cli.Context) error {
+		if c.Args().Present() {
+			return fmt.Errorf("unexpected argument: %s", c.Args().First())
+		}
 		return t.Execute()
 	}), nil
 }
