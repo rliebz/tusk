@@ -134,14 +134,108 @@ func TestOption_Value(t *testing.T) {
 	}
 }
 
-func TestOption_Value_private_and_environment(t *testing.T) {
-	option := Option{Private: true, Environment: "OPTION_VAR"}
+func TestOption_Value_required_nothing_passed(t *testing.T) {
+	option := Option{Required: true}
 
 	if _, err := option.Value(); err == nil {
-		t.Fatalf(
-			"option.Value() for %s: expected err, actual nil",
-			"both Private and Environment variable defined",
+		t.Fatal(
+			"Option.Value() for required option: expected err, actual nil",
 		)
+	}
+}
+
+func TestOption_Value_required_with_passed(t *testing.T) {
+	expected := "foo"
+	option := Option{Required: true, Passed: expected}
+
+	actual, err := option.Value()
+	if err != nil {
+		t.Fatalf("Option.Value(): unexpected error: %s", err)
+	}
+
+	if expected != actual {
+		t.Errorf(
+			`Option.Value(): expected "%s", actual "%s"`,
+			expected, actual,
+		)
+	}
+}
+
+func TestOption_Value_required_with_environment(t *testing.T) {
+	envVar := "OPTION_VAR"
+	expected := "foo"
+
+	option := Option{Required: true, Environment: envVar}
+	if err := os.Setenv(envVar, expected); err != nil {
+		t.Fatalf("unexpected err setting environment variable: %s", err)
+	}
+
+	actual, err := option.Value()
+	if err != nil {
+		t.Fatalf("Option.Value(): unexpected error: %s", err)
+	}
+
+	if expected != actual {
+		t.Errorf(
+			`Option.Value(): expected "%s", actual "%s"`,
+			expected, actual,
+		)
+	}
+}
+
+func TestOption_UnmarshalYAML(t *testing.T) {
+	s := []byte(`{usage: foo, name: ignored}`)
+	expected := Option{
+		Usage: "foo",
+		Name:  "",
+	}
+	actual := Option{}
+
+	if err := yaml.Unmarshal(s, &actual); err != nil {
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s, err)
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf(
+			`yaml.Unmarshal(%s, ...): expected "%#v", actual "%#v"`,
+			s, expected, actual,
+		)
+	}
+
+}
+
+var unmarshalOptionErrorTests = []struct {
+	desc  string
+	input string
+}{
+	{
+		"invalid option definition",
+		"string only",
+	},
+	{
+		"private and required defined",
+		"{private: true, required: true}",
+	},
+	{
+		"private and environment defined",
+		"{private: true, environment: ENV_VAR}",
+	},
+	{
+		"required and default defined",
+		"{required: true, default: foo}",
+	},
+}
+
+func TestOption_UnmarshalYAML_invalid_definitions(t *testing.T) {
+	o := Option{}
+
+	for _, tt := range unmarshalOptionErrorTests {
+		if err := yaml.Unmarshal([]byte(tt.input), &o); err == nil {
+			t.Errorf(
+				"yaml.Unmarshal(%s, ...): expected error for %s, actual nil",
+				tt.input, tt.desc,
+			)
+		}
 	}
 }
 

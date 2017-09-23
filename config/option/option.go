@@ -12,10 +12,11 @@ import (
 
 // Option represents an abstract command line option.
 type Option struct {
-	Short   string
-	Type    string
-	Usage   string
-	Private bool
+	Short    string
+	Type     string
+	Usage    string
+	Private  bool
+	Required bool
 
 	// Used to determine value
 	Environment   string
@@ -39,6 +40,33 @@ func (o *Option) Dependencies() []string {
 	return options
 }
 
+// UnmarshalYAML ensures that the option definition is valid.
+// TODO: Disallow "short" names longer than one character
+func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	type optionType Option // Use new type to avoid recursion
+	if err := unmarshal((*optionType)(o)); err != nil {
+		return err
+	}
+
+	if o.Private && o.Required {
+		return errors.New("option cannot be both private and required")
+	}
+
+	if o.Private && o.Environment != "" {
+		return fmt.Errorf(
+			`environment variable "%s" defined for private option`,
+			o.Environment,
+		)
+	}
+
+	if o.Required && len(o.DefaultValues) > 0 {
+		return errors.New("default value defined for required option")
+	}
+
+	return nil
+}
+
 // Value determines an option's final value based on all configuration.
 //
 // For non-private variables, the order of priority is:
@@ -60,13 +88,10 @@ func (o *Option) Value() (string, error) {
 		if envValue != "" {
 			return envValue, nil
 		}
-	} else {
-		if o.Environment != "" {
-			return "", fmt.Errorf(
-				`environment "%s" defined for private option`,
-				o.Environment,
-			)
-		}
+	}
+
+	if o.Required {
+		return "", fmt.Errorf("no value passed for required option: %s", o.Name)
 	}
 
 	for _, candidate := range o.DefaultValues {
@@ -79,7 +104,7 @@ func (o *Option) Value() (string, error) {
 
 		value, err := candidate.commandValueOrDefault()
 		if err != nil {
-			return "", errors.Wrapf(err, "could not compute value for flag: %s", o.Name)
+			return "", errors.Wrapf(err, "could not compute value for option: %s", o.Name)
 		}
 
 		return value, nil
@@ -122,9 +147,7 @@ func (v *value) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	type valueType value // Use new type to avoid recursion
-	var valueItem *valueType
-	if err = unmarshal(&valueItem); err == nil {
-		*v = *(*value)(valueItem)
+	if err = unmarshal((*valueType)(v)); err == nil {
 
 		if v.Value != "" && v.Command != "" {
 			return fmt.Errorf(
