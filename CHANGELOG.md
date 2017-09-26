@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.1.2 (2017-09-26)
 ### Added
 - Options may now be required.
 - Options can be exported to environment variables.

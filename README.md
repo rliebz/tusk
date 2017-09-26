@@ -77,7 +77,7 @@ The commands can be run with no additional configuration:
 ```
 $ tusk hello
 [Running] echo "Hello, world!"
-  => Hello, world!
+Hello, world!
 ```
 
 Tasks can be documented with a one-line `usage` string and a slightly longer
@@ -289,6 +289,34 @@ options:
       - value: User
 ```
 
+#### Exporting
+
+The ultimate value of an option can be exported to an environment variable:
+
+```yaml
+options:
+  tmpdir:
+    default: /tmp/
+    export: TMPDIR
+```
+
+All environment variables are evaluated during the interpolation phase, which
+means that they will all be set before any `run` commands are executed. For more
+granular control, variables can be manually exported during a `run` command.
+
+#### Required Options
+
+Options may be required if there is no sane default value. For a required flag,
+the task will not execute unless the flag is passed:
+
+```yaml
+options:
+  file:
+    required: true
+```
+
+A required option cannot be private or have any default values.
+
 #### Private Options
 
 Sometimes it may be desirable to have a variable that cannot be directly
@@ -305,9 +333,10 @@ options:
 A private option will not accept environment variables or command line flags,
 and it will not appear in the help documentation.
 
-#### Global Options
+#### Shared Options
 
-Options may also be defined globally to share between tasks:
+Options may also be defined at the root of the config file to be shared between
+tasks:
 
 ```yaml
 options:
@@ -321,6 +350,9 @@ tasks:
   goodbye:
     run: echo "Goodbye, ${name}!"
 ```
+
+A shared option is only considered an option for a particular task if it is
+referenced at some point in that task or one of its subtasks.
 
 #### Interpolation
 
