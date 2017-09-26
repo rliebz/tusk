@@ -1,7 +1,6 @@
 {
   "deadline": "3m",
   "enable": [
-    "aligncheck",
     "deadcode",
     "dupl",
     "errcheck",
