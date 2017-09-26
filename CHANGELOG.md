@@ -11,6 +11,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Exit for unexpected errors occuring during when clause validation.
 - Use exit code 1 for all unexpected errors.
 - Unexpected arguments now cause an error.
+- Remove piping of command stdout/stderr to improve support for interactive
+  tasks.
 
 ### Fixed
 - Short names cannot exceed one character in length.

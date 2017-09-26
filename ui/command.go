@@ -2,10 +2,9 @@ package ui
 
 const (
 	commandActionString = "Running"
-	commandErrorString  = "Error"
 	skippedString       = "Skipping"
 
-	outputPrefix = "  => "
+	outputPrefix = "=> "
 )
 
 // PrintCommand prints the command to be executed.
@@ -38,16 +37,6 @@ func PrintSkipped(command string, reason string) {
 	)
 }
 
-// PrintCommandOutput prints output from a running command.
-func PrintCommandOutput(text string) {
-	printf(
-		Stderr,
-		"%s%s\n",
-		cyan(prefixOutput()),
-		text,
-	)
-}
-
 // PrintCommandError prints an error from a running command.
 func PrintCommandError(err error) {
 	if Quiet {
@@ -56,9 +45,8 @@ func PrintCommandError(err error) {
 
 	printf(
 		Stderr,
-		"%s[%s] %s\n",
+		"%s%s\n",
 		red(prefixOutput()),
-		red(commandErrorString),
 		err.Error(),
 	)
 }
