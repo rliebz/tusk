@@ -1,8 +1,6 @@
 package task
 
 import (
-	"fmt"
-
 	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/config/run"
 	"github.com/rliebz/tusk/config/when"
@@ -71,31 +69,16 @@ func (t *Task) Execute() error {
 // run executes a Run struct.
 func (t *Task) run(r *run.Run) error {
 
-	// TODO: Validation logic should happen before runtime.
-	if err := t.validateRun(r); err != nil {
-		return err
-	}
-
 	if ok, err := t.shouldRun(r); !ok || err != nil {
 		return err
 	}
+
 	if err := t.runCommands(r); err != nil {
 		return err
 	}
 
 	if err := t.runSubTasks(r); err != nil {
 		return err
-	}
-
-	return nil
-}
-
-func (t *Task) validateRun(r *run.Run) error {
-	if len(r.Command) != 0 && len(r.Task) != 0 {
-		return fmt.Errorf(
-			"subtask (%s) and command (%s) are both defined",
-			r.Command, r.Task,
-		)
 	}
 
 	return nil

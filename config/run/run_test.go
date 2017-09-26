@@ -40,6 +40,18 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 	}
 }
 
+func TestRun_UnmarshalYAML_command_and_subtask(t *testing.T) {
+	s := []byte(`{command: example, task: echo 'hello'}`)
+	r := Run{}
+
+	if err := yaml.Unmarshal(s, &r); err == nil {
+		t.Fatalf(
+			"yaml.Unmarshal(%s, ...): expected error, received nil",
+			string(s),
+		)
+	}
+}
+
 type runListHolder struct {
 	Foo List
 }
@@ -52,11 +64,11 @@ func TestRunList_UnmarshalYAML(t *testing.T) {
 	h2 := runListHolder{}
 
 	if err := yaml.Unmarshal(s1, &h1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
 	}
 
 	if err := yaml.Unmarshal(s2, &h2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s2, err)
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(h1, h2) {

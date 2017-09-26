@@ -1,6 +1,8 @@
 package run
 
 import (
+	"fmt"
+
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
 )
@@ -25,13 +27,18 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	type runType Run // Use new type to avoid recursion
-	var runItem *runType
-	if err = unmarshal(&runItem); err == nil {
-		*r = *(*Run)(runItem)
-		return nil
+	if err = unmarshal((*runType)(r)); err != nil {
+		return err
 	}
 
-	return err
+	if len(r.Command) != 0 && len(r.Task) != 0 {
+		return fmt.Errorf(
+			"command (%s) and subtask (%s) are both defined",
+			r.Command, r.Task,
+		)
+	}
+
+	return nil
 }
 
 // List is a list of run items with custom yaml unmarshalling.
