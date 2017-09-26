@@ -110,16 +110,16 @@ var valuetests = []struct {
 	},
 }
 
-func TestOption_Value(t *testing.T) {
+func TestOption_Evaluate(t *testing.T) {
 	if err := os.Setenv("OPTION_VAR", "option_val"); err != nil {
 		t.Fatalf("unexpected err setting environment variable: %s", err)
 	}
 
 	for _, tt := range valuetests {
-		actual, err := tt.input.Value()
+		actual, err := tt.input.Evaluate()
 		if err != nil {
 			t.Errorf(
-				`Option.Value() for %s: unexpected err: %s`,
+				`Option.Evaluate() for %s: unexpected err: %s`,
 				tt.desc, err,
 			)
 			continue
@@ -127,41 +127,65 @@ func TestOption_Value(t *testing.T) {
 
 		if tt.expected != actual {
 			t.Errorf(
-				`Option.Value() for %s: expected "%s", actual "%s"`,
+				`Option.Evaluate() for %s: expected "%s", actual "%s"`,
 				tt.desc, tt.expected, actual,
 			)
 		}
 	}
 }
 
-func TestOption_Value_required_nothing_passed(t *testing.T) {
-	option := Option{Required: true}
+func TestOption_Evaluate_sets_environment_variable(t *testing.T) {
+	expected := "test value"
+	envName := "EVALUATE_OUTPUT_VAR"
+	o := Option{
+		Passed: expected,
+		Export: envName,
+	}
 
-	if _, err := option.Value(); err == nil {
-		t.Fatal(
-			"Option.Value() for required option: expected err, actual nil",
+	if err := os.Unsetenv(envName); err != nil {
+		t.Errorf(`os.Unsetenv(%s): unexpected err: %s`, envName, err)
+	}
+
+	if _, err := o.Evaluate(); err != nil {
+		t.Errorf(`Option.Evaluate(): unexpected err: %s`, err)
+	}
+
+	if actual := os.Getenv(envName); actual != expected {
+		t.Errorf(
+			`Option.Evaluate() exported var "%s": expected "%s", actual "%s"`,
+			envName, expected, actual,
 		)
 	}
 }
 
-func TestOption_Value_required_with_passed(t *testing.T) {
+func TestOption_Evaluate_required_nothing_passed(t *testing.T) {
+	option := Option{Required: true}
+
+	if _, err := option.Evaluate(); err == nil {
+		t.Fatal(
+			"Option.Evaluate() for required option: expected err, actual nil",
+		)
+	}
+}
+
+func TestOption_Evaluate_required_with_passed(t *testing.T) {
 	expected := "foo"
 	option := Option{Required: true, Passed: expected}
 
-	actual, err := option.Value()
+	actual, err := option.Evaluate()
 	if err != nil {
-		t.Fatalf("Option.Value(): unexpected error: %s", err)
+		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
 	}
 
 	if expected != actual {
 		t.Errorf(
-			`Option.Value(): expected "%s", actual "%s"`,
+			`Option.Evaluate(): expected "%s", actual "%s"`,
 			expected, actual,
 		)
 	}
 }
 
-func TestOption_Value_required_with_environment(t *testing.T) {
+func TestOption_Evaluate_required_with_environment(t *testing.T) {
 	envVar := "OPTION_VAR"
 	expected := "foo"
 
@@ -170,14 +194,14 @@ func TestOption_Value_required_with_environment(t *testing.T) {
 		t.Fatalf("unexpected err setting environment variable: %s", err)
 	}
 
-	actual, err := option.Value()
+	actual, err := option.Evaluate()
 	if err != nil {
-		t.Fatalf("Option.Value(): unexpected error: %s", err)
+		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
 	}
 
 	if expected != actual {
 		t.Errorf(
-			`Option.Value(): expected "%s", actual "%s"`,
+			`Option.Evaluate(): expected "%s", actual "%s"`,
 			expected, actual,
 		)
 	}

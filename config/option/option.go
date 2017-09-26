@@ -13,6 +13,7 @@ type Option struct {
 	Short    string
 	Type     string
 	Usage    string
+	Export   string
 	Private  bool
 	Required bool
 
@@ -73,7 +74,7 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-// Value determines an option's final value based on all configuration.
+// Evaluate determines an option's value and sets an environment variable.
 //
 // The order of priority is:
 //   1. Command-line option passed
@@ -81,12 +82,34 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 //   3. The first item in the default value list with a valid when clause
 //
 // Values may also be cached to avoid re-running commands.
-func (o *Option) Value() (string, error) {
-
+func (o *Option) Evaluate() (string, error) {
 	if o == nil {
 		return "", nil
 	}
 
+	value, err := o.getValue()
+	if err != nil {
+		return "", err
+	}
+
+	o.cache(value)
+
+	if err := o.setenv(value); err != nil {
+		return "", err
+	}
+
+	return value, nil
+}
+
+func (o *Option) setenv(value string) error {
+	if o.Export == "" {
+		return nil
+	}
+
+	return os.Setenv(o.Export, value)
+}
+
+func (o *Option) getValue() (string, error) {
 	if o.isCacheSet {
 		return o.cacheValue, nil
 	}
@@ -123,7 +146,6 @@ func (o *Option) getDefaultValue() (string, error) {
 			return "", errors.Wrapf(err, "could not compute value for option: %s", o.Name)
 		}
 
-		o.cache(value)
 		return value, nil
 	}
 

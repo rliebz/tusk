@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ## Unreleased
 ### Added
 - Options may now be required.
+- Options can be exported to environment variables.
 
 ### Changed
 - Improve error handling in custom yaml unmarshalling.

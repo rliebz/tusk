@@ -163,7 +163,7 @@ func getOptValue(
 		opt.Passed = valuePassed
 	}
 
-	return opt.Value()
+	return opt.Evaluate()
 }
 
 // getOpt gets an option from a Config by name. Task-specific options, sub-
