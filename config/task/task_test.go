@@ -6,7 +6,31 @@ import (
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/run"
 	"github.com/rliebz/tusk/config/when"
+	yaml "gopkg.in/yaml.v2"
 )
+
+func TestTask_UnmarshalYAML(t *testing.T) {
+	y := []byte(`options: { one: {}, two: {} }`)
+	task := Task{}
+
+	if err := yaml.Unmarshal(y, &task); err != nil {
+		t.Fatalf(
+			`yaml.Unmarshal("%s", %+v): unexpected error: %s`,
+			string(y), task, err,
+		)
+	}
+
+	for _, expected := range []string{"one", "two"} {
+
+		actual := task.Options[expected].Name
+		if expected != actual {
+			t.Errorf(
+				`yaml.Unmarshal("%s", %+v): expected option name: %s, actual: %s`,
+				string(y), task, expected, actual,
+			)
+		}
+	}
+}
 
 var shouldtests = []struct {
 	desc     string

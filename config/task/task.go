@@ -24,12 +24,9 @@ type Task struct {
 func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	type taskType Task // User new type to avoid recursion
-	var taskItem *taskType
-	if err := unmarshal(&taskItem); err != nil {
+	if err := unmarshal((*taskType)(t)); err != nil {
 		return err
 	}
-
-	*t = *(*Task)(taskItem)
 
 	for name, opt := range t.Options {
 		opt.Name = name
