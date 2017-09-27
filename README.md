@@ -1,5 +1,6 @@
 # Tusk
 
+[![GitHub release](https://img.shields.io/github/release/rliebz/tusk.svg)][releases]
 [![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk.svg)][circle]
 [![license](https://img.shields.io/github/license/rliebz/tusk.svg)](LICENSE)
 
