@@ -4,7 +4,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/rliebz/tusk/ui"
 	"github.com/urfave/cli"
 )
 
@@ -54,21 +53,10 @@ Options:
 `
 }
 
-// ShowDefaultHelp shows the default help message for an app.
-func ShowDefaultHelp() {
-	if ui.Silent {
-		return
-	}
-
-	if ui.HasPrinted {
-		ui.Print()
-	}
-
-	defaultApp := newBaseApp()
-	context := cli.NewContext(defaultApp, nil, nil)
-	if err := cli.ShowAppHelp(context); err != nil {
-		ui.Error(err)
-	}
+// ShowAppHelp shows the help for a given app.
+func ShowAppHelp(app *cli.App) {
+	app.Setup()
+	cli.HelpPrinter(app.Writer, cli.AppHelpTemplate, app)
 }
 
 // helpPrinter includes the custom indent template function.

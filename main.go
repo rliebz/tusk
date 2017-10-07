@@ -12,12 +12,7 @@ import (
 var version = "dev"
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			ui.Error("recovered from panic: ", r)
-			os.Exit(1)
-		}
-	}()
+	defer gracefulRecover()
 
 	args := os.Args
 	if args[len(args)-1] == appcli.CompletionFlag {
@@ -27,7 +22,6 @@ func main() {
 	meta, err := appcli.GetConfigMetadata(args)
 	if err != nil {
 		ui.Error(err)
-		appcli.ShowDefaultHelp()
 		os.Exit(1)
 	}
 
@@ -38,12 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if meta.PrintHelp {
-		appcli.ShowDefaultHelp()
-		os.Exit(0)
-	}
-
-	if meta.PrintVersion {
+	if meta.PrintVersion && !meta.PrintHelp {
 		ui.Print(version)
 		os.Exit(0)
 	}
@@ -51,8 +40,12 @@ func main() {
 	app, err := appcli.NewApp(meta)
 	if err != nil {
 		ui.Error(err)
-		appcli.ShowDefaultHelp()
 		os.Exit(1)
+	}
+
+	if meta.PrintHelp {
+		appcli.ShowAppHelp(app)
+		os.Exit(0)
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -63,5 +56,12 @@ func main() {
 			ui.Error(err)
 			os.Exit(1)
 		}
+	}
+}
+
+func gracefulRecover() {
+	if r := recover(); r != nil {
+		ui.Error("recovered from panic: ", r)
+		os.Exit(1)
 	}
 }
