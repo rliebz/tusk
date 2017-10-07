@@ -19,7 +19,12 @@ func main() {
 		}
 	}()
 
-	meta, err := appcli.GetConfigMetadata(os.Args)
+	args := os.Args
+	if args[len(args)-1] == appcli.CompletionFlag {
+		ui.Silent = true
+	}
+
+	meta, err := appcli.GetConfigMetadata(args)
 	if err != nil {
 		ui.Error(err)
 		appcli.ShowDefaultHelp()
@@ -33,12 +38,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	if meta.RunVersion {
+	if meta.PrintHelp {
+		appcli.ShowDefaultHelp()
+		os.Exit(0)
+	}
+
+	if meta.PrintVersion {
 		ui.Print(version)
 		os.Exit(0)
 	}
 
-	app, err := appcli.NewApp(meta.CfgText)
+	app, err := appcli.NewApp(meta)
 	if err != nil {
 		ui.Error(err)
 		appcli.ShowDefaultHelp()

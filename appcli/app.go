@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -17,6 +18,7 @@ func newBaseApp() *cli.App {
 	app.Usage = "a task runner built with simplicity in mind"
 	app.HideVersion = true
 	app.HideHelp = true
+	app.EnableBashCompletion = true
 
 	app.Flags = append(app.Flags,
 		cli.BoolFlag{
@@ -72,8 +74,8 @@ func newFlagApp(cfgText []byte) (*cli.App, error) {
 }
 
 // NewApp creates a cli.App that executes tasks.
-func NewApp(cfgText []byte) (*cli.App, error) {
-	flagApp, err := newFlagApp(cfgText)
+func NewApp(meta *config.Metadata) (*cli.App, error) {
+	flagApp, err := newFlagApp(meta.CfgText)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +95,7 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 		taskName = command.Name
 	}
 
-	cfgText, flags, err := config.Interpolate(cfgText, passed, taskName)
+	cfgText, flags, err := config.Interpolate(meta.CfgText, passed, taskName)
 	if err != nil {
 		return nil, err
 	}
@@ -115,6 +117,8 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 
 	copyFlags(app, flagApp)
 
+	app.BashComplete = createBashComplete(app, meta)
+
 	return app, nil
 }
 
@@ -122,14 +126,12 @@ func NewApp(cfgText []byte) (*cli.App, error) {
 func GetConfigMetadata(args []string) (*config.Metadata, error) {
 
 	var err error
-
 	app := newSilentApp()
 	metadata := new(config.Metadata)
 
 	// To prevent app from exiting, the app.Action must return nil on error.
 	// The enclosing function will still return the error.
 	app.Action = func(c *cli.Context) error {
-
 		fullPath := c.String("file")
 		if fullPath != "" {
 			metadata.CfgText, err = ioutil.ReadFile(fullPath)
@@ -152,16 +154,35 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 		}
 
 		metadata.Directory = filepath.Dir(fullPath)
-		metadata.RunVersion = c.Bool("version")
+		metadata.PrintHelp = c.Bool("help")
+		metadata.PrintVersion = c.Bool("version")
 		metadata.Quiet = c.Bool("quiet")
 		metadata.Verbose = c.Bool("verbose")
 		return err
 	}
 
-	// Other run errors should not shadow app.Action errors.
-	if runErr := app.Run(args); runErr != nil {
+	completionMeta, runErr := runApp(app, args)
+	if runErr != nil {
 		return nil, runErr
 	}
 
+	metadata.Completion = completionMeta
+
 	return metadata, err
+}
+
+func runApp(app *cli.App, args []string) (config.CompletionMetadata, error) {
+	args, isCompleting := removeCompletionArg(args)
+	completionMeta := config.CompletionMetadata{
+		IsCompleting: isCompleting,
+	}
+	if err := app.Run(args); err != nil {
+		if strings.HasPrefix(err.Error(), "flag needs an argument") {
+			completionMeta.IsFlagValue = true
+			return completionMeta, app.Run(args[:len(args)-1])
+		}
+		return completionMeta, err
+	}
+
+	return completionMeta, nil
 }

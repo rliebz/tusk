@@ -1,0 +1,6 @@
+#compdef tusk
+
+local -a _tasks
+_tasks=( $(${words} --generate-bash-completion) )
+
+_describe 'task' _tasks

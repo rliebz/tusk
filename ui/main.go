@@ -8,6 +8,9 @@ import (
 )
 
 var (
+	// Silent prevents any output from printing.
+	Silent = false
+
 	// Quiet removes all additional formatting
 	Quiet = false
 
@@ -32,11 +35,19 @@ var (
 )
 
 func println(l *log.Logger, v ...interface{}) {
+	if Silent {
+		return
+	}
+
 	l.Println(v...)
 	HasPrinted = true
 }
 
 func printf(l *log.Logger, format string, v ...interface{}) {
+	if Silent {
+		return
+	}
+
 	l.Printf(format, v...)
 	HasPrinted = true
 }

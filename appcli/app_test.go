@@ -159,7 +159,7 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 		)
 	}
 
-	if metadata.RunVersion {
+	if metadata.PrintVersion {
 		t.Errorf(
 			"GetConfigMetadata(%s): expected RunVersion: false, actual: true",
 			args,
@@ -244,7 +244,7 @@ func TestGetConfigMetadata_version(t *testing.T) {
 		)
 	}
 
-	if !metadata.RunVersion {
+	if !metadata.PrintVersion {
 		t.Errorf(
 			"GetConfigMetadata(%s): expected RunVersion: true, actual: false",
 			args,

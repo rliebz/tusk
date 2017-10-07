@@ -55,9 +55,17 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // Metadata contains global configuration settings.
 type Metadata struct {
-	CfgText    []byte
-	Directory  string
-	RunVersion bool
-	Quiet      bool
-	Verbose    bool
+	CfgText      []byte
+	Directory    string
+	PrintHelp    bool
+	PrintVersion bool
+	Quiet        bool
+	Verbose      bool
+	Completion   CompletionMetadata
+}
+
+// CompletionMetadata contains metadata regarding auto-complete.
+type CompletionMetadata struct {
+	IsCompleting bool
+	IsFlagValue  bool
 }

@@ -1,7 +1,6 @@
 package appcli
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -57,8 +56,12 @@ Options:
 
 // ShowDefaultHelp shows the default help message for an app.
 func ShowDefaultHelp() {
+	if ui.Silent {
+		return
+	}
+
 	if ui.HasPrinted {
-		fmt.Println()
+		ui.Print()
 	}
 
 	defaultApp := newBaseApp()
