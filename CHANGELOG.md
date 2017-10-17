@@ -2,6 +2,17 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Completions for Bash and Zsh are now bundled with releases and automatically
+  installed with Homebrew.
+- Homepage is now listed for Homebrew formula.
+
+### Changed
+- Help documentation is no longer displayed during incorrect usage.
+
+### Fixed
+- Passing the help flag now prevents code execution and prints help.
+- Homebrew test command is now functional.
 
 ## 0.1.2 (2017-09-26)
 ### Added
