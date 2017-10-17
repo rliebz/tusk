@@ -1,6 +1,20 @@
 #compdef tusk
 
-local -a _tasks
-_tasks=( $(${words} --generate-bash-completion) )
+local meta end
+local -a _words _options
 
-_describe 'task' _tasks
+let end=$CURRENT-1
+_words=( $(${words[@]:0:$end} --generate-bash-completion) )
+
+# Split words into completion type and options
+meta="${_words[1]}"
+_options=( "${_words[@]:1}" )
+
+case "${meta}" in
+    "file")
+        _files
+        ;;
+    "tasks")
+        _describe 'task' _options
+        ;;
+esac

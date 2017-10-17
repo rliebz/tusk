@@ -10,18 +10,27 @@ import (
 // CompletionFlag is the flag passed when performing shell completions.
 var CompletionFlag = "--" + cli.BashCompletionFlag.GetName()
 
+// createBashComplete prints as the completion type then a list of options.
+// Currently, the only available completion types are "file" and "tasks".
 func createBashComplete(app *cli.App, meta *config.Metadata) func(c *cli.Context) {
 	return func(c *cli.Context) {
-		if meta.Completion.IsFlagValue {
+		if c.NArg() > 0 {
 			return
 		}
 
-		for _, command := range app.Commands {
-			if command.Hidden {
-				continue
+		if !meta.Completion.IsFlagValue {
+			fmt.Println("tasks")
+			for _, command := range app.Commands {
+				if command.Hidden {
+					continue
+				}
+				fmt.Println(command.Name)
 			}
-			fmt.Println(command.Name)
+			return
 		}
+
+		// Default to file completion
+		fmt.Println("file")
 	}
 }
 
