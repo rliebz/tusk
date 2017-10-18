@@ -6,7 +6,7 @@ options:
 
 tasks:
   bootstrap:
-    usage: Set up the app for first time use
+    usage: Set up app dependencies for first time use
     description: |
       Install all dependencies for building and testing the application.
     run:
@@ -16,7 +16,7 @@ tasks:
       - dep ensure
 
   lint:
-    usage: Run the linter
+    usage: Run gometalinter for static analysis
     description: |
       Runs gometalinter using the configuration specified in .gometalinter.json.
     options:
@@ -30,7 +30,7 @@ tasks:
     run: gometalinter --config .gometalinter.json ${opts} ./...
 
   test:
-    usage: Run tests
+    usage: Run go test and gometalinter
     description: |
       Runs the full test suite using `go test -cover ./...`. Also runs the
       linter by default, and linter errors are considered failed tests.

@@ -4,7 +4,7 @@ local meta end
 local -a _words _options
 
 let end=$CURRENT-1
-_words=( $(${words[@]:0:$end} --generate-bash-completion) )
+IFS=$'\n' _words=( $(${words[@]:0:$end} --generate-bash-completion) )
 
 # Split words into completion type and options
 meta="${_words[1]}"

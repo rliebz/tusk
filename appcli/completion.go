@@ -25,7 +25,11 @@ func createBashComplete(app *cli.App, meta *config.Metadata) func(c *cli.Context
 				if command.Hidden {
 					continue
 				}
-				fmt.Println(command.Name)
+				fmt.Printf(
+					"%s:%s\n",
+					command.Name,
+					strings.Replace(command.Usage, "\n", "", -1),
+				)
 			}
 			for _, flag := range app.Flags {
 				values := strings.Split(flag.GetName(), ", ")

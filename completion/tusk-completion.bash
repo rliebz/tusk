@@ -4,7 +4,7 @@ _tusk_bash_autocomplete() {
     local cur words opts meta
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    words="$( "${COMP_WORDS[@]:0:$COMP_CWORD}" --generate-bash-completion )"
+    words="$( "${COMP_WORDS[@]:0:$COMP_CWORD}" --generate-bash-completion | cut -f1 -d":")"
 
     # Split words into completion type and options
     meta="$( echo "${words}" | head -n1 )"
