@@ -15,6 +15,15 @@ case "${meta}" in
         _files
         ;;
     "tasks")
-        _describe 'task' _options
+        local -a _tasks _flags
+        for option in "${_options[@]}"; do
+            if [[ "${option}" = --* ]]; then
+                _flags+=("${option}")
+            else
+                _tasks+=("${option}")
+            fi
+        done
+        _describe -t tasks 'tasks' _tasks
+        _describe -t flags 'flags' _flags
         ;;
 esac

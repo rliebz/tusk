@@ -2,6 +2,7 @@ package appcli
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/rliebz/tusk/config"
 	"github.com/urfave/cli"
@@ -25,6 +26,15 @@ func createBashComplete(app *cli.App, meta *config.Metadata) func(c *cli.Context
 					continue
 				}
 				fmt.Println(command.Name)
+			}
+			for _, flag := range app.Flags {
+				values := strings.Split(flag.GetName(), ", ")
+				for _, value := range values {
+					if len(value) == 1 || c.IsSet(value) {
+						continue
+					}
+					fmt.Printf("--%s\n", value)
+				}
 			}
 			return
 		}

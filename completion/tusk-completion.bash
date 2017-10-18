@@ -15,7 +15,21 @@ _tusk_bash_autocomplete() {
             COMPREPLY=( $(compgen -f -- "${cur}") )
             ;;
         tasks)
-            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+            declare -a values tasks flags
+            values=( ${opts} )
+            for option in "${values[@]}"; do
+                if [[ "${option}" = --* ]]; then
+                    flags+=("${option}")
+                else
+                    tasks+=("${option}")
+                fi
+            done
+
+            if [[ "${cur}" = --* ]]; then
+                COMPREPLY=( $(compgen -W "${flags[*]}" -- "${cur}") )
+            else
+                COMPREPLY=( $(compgen -W "${tasks[*]}" -- "${cur}") )
+            fi
             ;;
     esac
 

@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- Bash and Zsh completion now includes global flags.
+
 
 ## 0.1.3 (2017-10-16)
 ### Added

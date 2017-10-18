@@ -161,29 +161,24 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 		return err
 	}
 
-	completionMeta, runErr := populateMetadata(app, args)
-	if runErr != nil {
+	if runErr := populateMetadata(app, metadata, args); runErr != nil {
 		return nil, runErr
 	}
-
-	metadata.Completion = completionMeta
 
 	return metadata, err
 }
 
-func populateMetadata(app *cli.App, args []string) (config.CompletionMetadata, error) {
+func populateMetadata(app *cli.App, meta *config.Metadata, args []string) error {
 	args, isCompleting := removeCompletionArg(args)
-	completionMeta := config.CompletionMetadata{
-		IsCompleting: isCompleting,
-	}
+	meta.Completion.IsCompleting = isCompleting
 
 	if err := app.Run(args); err != nil {
 		if strings.HasPrefix(err.Error(), "flag needs an argument") {
-			completionMeta.IsFlagValue = true
-			return completionMeta, app.Run(args[:len(args)-1])
+			meta.Completion.IsFlagValue = true
+			return app.Run(args[:len(args)-1])
 		}
-		return completionMeta, err
+		return err
 	}
 
-	return completionMeta, nil
+	return nil
 }
