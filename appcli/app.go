@@ -117,7 +117,10 @@ func NewApp(meta *config.Metadata) (*cli.App, error) {
 
 	copyFlags(app, flagApp)
 
-	app.BashComplete = createBashComplete(app, meta)
+	app.BashComplete = createDefaultComplete(app, meta)
+	for i := range app.Commands {
+		app.Commands[i].BashComplete = createCommandComplete(&app.Commands[i], meta)
+	}
 
 	return app, nil
 }

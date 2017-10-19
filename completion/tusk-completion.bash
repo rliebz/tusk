@@ -11,10 +11,7 @@ _tusk_bash_autocomplete() {
     opts="$( echo "${words}" | tail -n +2 )"
 
     case "${meta}" in
-        file)
-            COMPREPLY=( $(compgen -f -- "${cur}") )
-            ;;
-        tasks)
+        normal)
             declare -a values tasks flags
             values=( ${opts} )
             for option in "${values[@]}"; do
@@ -30,6 +27,9 @@ _tusk_bash_autocomplete() {
             else
                 COMPREPLY=( $(compgen -W "${tasks[*]}" -- "${cur}") )
             fi
+            ;;
+        file)
+            COMPREPLY=( $(compgen -f -- "${cur}") )
             ;;
     esac
 

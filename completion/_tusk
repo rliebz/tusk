@@ -11,10 +11,7 @@ meta="${_words[1]}"
 _options=( "${_words[@]:1}" )
 
 case "${meta}" in
-    "file")
-        _files
-        ;;
-    "tasks")
+    "normal")
         local -a _tasks _flags
         for option in "${_options[@]}"; do
             if [[ "${option}" = --* ]]; then
@@ -25,5 +22,8 @@ case "${meta}" in
         done
         _describe -t tasks 'tasks' _tasks
         _describe -t flags 'flags' _flags
+        ;;
+    "file")
+        _files
         ;;
 esac
