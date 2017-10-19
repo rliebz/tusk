@@ -60,7 +60,10 @@ jobs:
 
       - run:
           name: Run goreleaser
-          command: curl -sL https://git.io/goreleaser | sudo "PATH=$PATH" --preserve-env bash
+          command: |
+            curl -sL https://git.io/goreleaser > /tmp/goreleaser
+            sudo chmod +x /tmp/goreleaser
+            sudo "PATH=$PATH" -E /tmp/goreleaser
 
 workflows:
   version: 2
