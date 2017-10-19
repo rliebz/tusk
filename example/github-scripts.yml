@@ -14,34 +14,37 @@ tasks:
           command: test -z "$(rbenv version-name 2>/dev/null)"
         command:
           - rbenv install --skip-existing
-          - which bundle >/dev/null 2>&1 || { gem install bundler; rbenv rehash }
+
+      - when:
+          command: ! which bundle
+        command:
+          - gem install bundler
+          - rbenv rehash
 
       - when:
           exists: ./Gemfile
-        command: bundle check --path vendor/gems >/dev/null 2>&1 || bundle install --path vendor/gems --quiet --without production
+          command: ! bundle check --path vendor/gems
+        command: bundle install --path vendor/gems --quiet --without production
 
   console:
     usage: Launch a console for the application
     description: |
-      Launch a console for the application. Optionally allow an environment to be
-      passed in to let the script handle the specific requirements for connecting
-      to a console for that environment.
+      Launch a console for the application. Optionally allow an environment to
+      be passed in to let the script handle the specific requirements for
+      connecting to a console for that environment.
     options:
       env:
         default: local
         type: string
     run:
       - when:
-          equal:
-            env: production
+          equal: {env: production}
         command: heroku run rails console --app heroku-app-name-staging
       - when:
-          equal:
-            env: staging
+          equal: {env: staging}
         command: heroku run rails console --app heroku-app-name-staging
       - when:
-          equal:
-            env: local
+          equal: {env: local}
         command:
           - script/update
           - bin/rails console
@@ -71,12 +74,16 @@ tasks:
       file:
         short: f
         usage: test file to run
+      is_test_env:
+        private: true
+        default:
+          command: test "$RAILS_ENV" = "test" || test "$RACK_ENV" = "test"
     run:
       - when:
-          command: test "$RAILS_ENV" = "test" || test "$RACK_ENV" = "test"
+          equal: {is_test_env: true}
         task: setup
       - when:
-          command: test "$RAILS_ENV" != "test" && test "$RACK_ENV" != "test"
+          equal: {is_test_env: false}
         # TODO: We need to set environment variables here
         task: update
       # TODO: Support positional args

@@ -31,7 +31,7 @@ options:
           # Any command passed to will be run through the shell.
           command:
             # Variables declared earlier in the config file are available.
-            -  test ${global} -gt 5
+            - test ${global} -gt 5
         value: Global Is Five!
       - when:
           # `equal` and `not_equal` are available for quick equality checks.
@@ -50,8 +50,9 @@ tasks:
     # Documentation for tasks should also be set.
     usage: a simple, one-line explanation
     description: |
-      This description gives even more context for the task. If the usage section
-      isn't big enough, feel free to take up as much space as you need here.
+      This description gives even more context for the task. If the usage
+      section isn't big enough, feel free to take up as much space as you need
+      here.
     # Options set per task are identical to the global ones in structure.
     options:
       local:

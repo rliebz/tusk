@@ -13,7 +13,7 @@ repository, Tusk becomes a custom command line tool with minimal configuration.
 
 The latest version can be installed from the [releases page][releases].
 
-On macOS, installation is also available through [homebrew][homebrew].
+On macOS, installation is also available through [homebrew][homebrew]:
 
 ```bash
 brew install rliebz/tusk/tusk
@@ -171,8 +171,7 @@ tasks:
         command: echo "This is a linux machine"
       - when:
           exists: my_file.txt
-          equal:
-            cat: true
+          equal: {cat: true}
           command: command -v cat
         command: cat my_file.txt
 ```
@@ -219,12 +218,10 @@ tasks:
         type: bool
     run:
       - when:
-          equal:
-            loud: true
+          equal: {loud: true}
         command: echo "HELLO!"
       - when:
-          equal:
-            loud: false
+          equal: {loud: false}
         command: echo "Hello."
 ```
 
@@ -361,7 +358,7 @@ The interpolation syntax for a variable `foo` is `${foo}`.
 
 Interpolation is done iteratively in the order that variables are defined, with
 global variables being evaluated first. This means that options can reference
-other options.
+other options:
 
 ```yaml
 options:

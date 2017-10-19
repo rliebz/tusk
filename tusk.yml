@@ -24,8 +24,7 @@ tasks:
         private: true
         default:
           when:
-            equal:
-              fast: true
+            equal: {fast: true}
           value: --fast
     run: gometalinter --config .gometalinter.json ${opts} ./...
 
@@ -47,13 +46,11 @@ tasks:
         private: true
         default:
           when:
-            equal:
-              verbose: true
+            equal: {verbose: true}
           value: -v
     run:
       - when:
-          equal:
-            lint: true
+          equal: {lint: true}
         task: lint
       - command: go test -cover -race ${verbose_string} ./...
 
