@@ -433,6 +433,40 @@ tasks:
       command: echo yo
 `,
 	},
+
+	{
+		"reference same global option in task/sub-task",
+		`
+options:
+  foo:
+    default: foovalue
+
+tasks:
+  one:
+    run:
+      - command: echo ${foo}
+  two:
+    run:
+      - command: echo ${foo}
+      - task: one
+`,
+		map[string]string{},
+		"two",
+		`
+options:
+  foo:
+    default: foovalue
+
+tasks:
+  one:
+    run:
+      - command: echo foovalue
+  two:
+    run:
+      - command: echo foovalue
+      - task: one
+`,
+	},
 }
 
 func TestInterpolate(t *testing.T) {

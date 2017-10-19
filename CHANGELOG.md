@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Bash and Zsh completions now complete global flags and task flags.
 - Zsh completion now includes usage information.
 
+### Fixed
+- Application no longer errors when referencing the same global option in both
+  a task and its subtask. Redefinitions are still disallowed.
+
 
 ## 0.1.3 (2017-10-16)
 ### Added

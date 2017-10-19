@@ -131,17 +131,22 @@ func getDependencies(item dependencyGetter) ([]string, error) {
 }
 
 func addNestedDependencies(dependencies, nested []*option.Option) ([]*option.Option, error) {
-	set := make(map[string]struct{})
+	set := make(map[string]*option.Option)
 	for _, opt := range dependencies {
-		set[opt.Name] = struct{}{}
+		set[opt.Name] = opt
 	}
-	for _, opt := range nested {
-		if _, found := set[opt.Name]; found {
-			return nil, fmt.Errorf(
-				`cannot redefine option "%s" in sub-task`, opt.Name,
-			)
+	for _, newOpt := range nested {
+		if found, ok := set[newOpt.Name]; ok {
+			if newOpt != found {
+				return nil, fmt.Errorf(
+					`cannot redefine option "%s" in sub-task`, newOpt.Name,
+				)
+			}
+			continue
 		}
+
+		dependencies = append(dependencies, newOpt)
 	}
 
-	return append(dependencies, nested...), nil
+	return dependencies, nil
 }
