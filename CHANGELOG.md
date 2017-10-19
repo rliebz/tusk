@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.1.4 (2017-10-19)
 ### Changed
 - Bash and Zsh completions now complete global flags and task flags.
 - Zsh completion now includes usage information.
