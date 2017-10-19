@@ -48,11 +48,17 @@ tasks:
           when:
             equal: {verbose: true}
           value: -v
+      short_string:
+        private: true
+        default:
+          when:
+            equal: {fast: true}
+          value: -short
     run:
       - when:
           equal: {lint: true}
         task: lint
-      - command: go test -cover -race ${verbose_string} ./...
+      - command: go test -cover -race ${verbose_string} ${short_string} ./...
 
   release:
     usage: Release the latest version with goreleaser
