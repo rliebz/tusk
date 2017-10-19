@@ -60,7 +60,7 @@ jobs:
 
       - run:
           name: Run goreleaser
-          command: curl -sL https://git.io/goreleaser | sudo bash
+          command: curl -sL https://git.io/goreleaser | bash
 
 workflows:
   version: 2
