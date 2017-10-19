@@ -41,3 +41,41 @@ jobs:
 
       - store_test_results:
           path: /tmp/test-results
+
+  release:
+    docker:
+      - image: circleci/golang:1.9
+
+    working_directory: /go/src/github.com/rliebz/tusk
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install fpm
+          command: |
+            apt-get update
+            apt-get -y install ruby ruby-dev rubygems build-essential
+            gem install --no-ri --no-rdoc fpm
+
+      - run:
+          name: Run goreleaser
+          # TODO: Remove -s and everything after
+          command: curl -sL https://git.io/goreleaser | bash -s --skip-validate --skip-publish --snapshot --rm-dist --debug
+
+workflows:
+  version: 2
+  build-and-release:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - release:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
