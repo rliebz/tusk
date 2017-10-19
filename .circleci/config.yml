@@ -55,7 +55,7 @@ jobs:
           name: Install fpm
           command: |
             sudo apt-get update
-            sudo apt-get -y install ruby ruby-dev rubygems build-essential
+            sudo apt-get -y install ruby ruby-dev rubygems build-essential rpm
             sudo gem install --no-ri --no-rdoc fpm
 
       - run:
