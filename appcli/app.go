@@ -23,7 +23,7 @@ func newBaseApp() *cli.App {
 	app.Flags = append(app.Flags,
 		cli.BoolFlag{
 			Name:  "h, help",
-			Usage: "Show help",
+			Usage: "Show help and exit",
 		},
 		cli.StringFlag{
 			Name:  "f, file",
