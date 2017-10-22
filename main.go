@@ -16,7 +16,7 @@ func main() {
 
 	args := os.Args
 	if args[len(args)-1] == appcli.CompletionFlag {
-		ui.Silent = true
+		ui.SetSilent()
 	}
 
 	meta, err := appcli.GetConfigMetadata(args)
@@ -25,8 +25,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	ui.Quiet = meta.Quiet
-	ui.Verbose = meta.Verbose
+	if !ui.IsSilent() {
+		if meta.Quiet {
+			ui.SetQuiet()
+		} else if meta.Verbose {
+			ui.SetVerbose()
+		}
+	}
+
 	if err = os.Chdir(meta.Directory); err != nil {
 		ui.Error(err)
 		os.Exit(1)
