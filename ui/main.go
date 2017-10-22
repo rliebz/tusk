@@ -49,6 +49,24 @@ func IsVerbose() bool {
 	return !IsQuiet() && Verbose
 }
 
+// SetSilent sets the logging kevel to silent
+func SetSilent() {
+	Silent = true
+}
+
+// SetQuiet sets the logging kevel to quiet
+func SetQuiet() {
+	Silent = false
+	Quiet = true
+}
+
+// SetVerbose sets the logging level to verbose
+func SetVerbose() {
+	Silent = false
+	Quiet = false
+	Verbose = true
+}
+
 func println(l *log.Logger, v ...interface{}) {
 	if IsSilent() {
 		return
