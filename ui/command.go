@@ -9,7 +9,7 @@ const (
 
 // PrintCommand prints the command to be executed.
 func PrintCommand(command string) {
-	if Quiet {
+	if IsQuiet() {
 		return
 	}
 
@@ -23,7 +23,7 @@ func PrintCommand(command string) {
 
 // PrintSkipped prints the command skipped and the reason.
 func PrintSkipped(command string, reason string) {
-	if !Verbose {
+	if !IsVerbose() {
 		return
 	}
 
@@ -39,7 +39,7 @@ func PrintSkipped(command string, reason string) {
 
 // PrintCommandError prints an error from a running command.
 func PrintCommandError(err error) {
-	if Quiet {
+	if IsQuiet() {
 		return
 	}
 
@@ -52,7 +52,7 @@ func PrintCommandError(err error) {
 }
 
 func prefixOutput() string {
-	if Quiet {
+	if IsQuiet() {
 		return ""
 	}
 

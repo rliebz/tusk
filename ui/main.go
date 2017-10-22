@@ -34,8 +34,23 @@ var (
 	yellow = conditionalColor(color.FgYellow)
 )
 
+// IsSilent returns true iff using silent logging level
+func IsSilent() bool {
+	return Silent
+}
+
+// IsQuiet returns true iff output is limited (quiet ot silent logging level)
+func IsQuiet() bool {
+	return IsSilent() || Quiet
+}
+
+// IsVerbose returns true iff usng verbose logging level
+func IsVerbose() bool {
+	return !IsQuiet() && Verbose
+}
+
 func println(l *log.Logger, v ...interface{}) {
-	if Silent {
+	if IsSilent() {
 		return
 	}
 
@@ -44,7 +59,7 @@ func println(l *log.Logger, v ...interface{}) {
 }
 
 func printf(l *log.Logger, format string, v ...interface{}) {
-	if Silent {
+	if IsSilent() {
 		return
 	}
 
@@ -56,7 +71,7 @@ type formatter func(a ...interface{}) string
 
 func conditionalColor(value ...color.Attribute) formatter {
 	return func(a ...interface{}) string {
-		if Quiet {
+		if IsQuiet() {
 			return color.New().SprintFunc()(a...)
 		}
 
