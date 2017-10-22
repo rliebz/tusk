@@ -7,15 +7,15 @@ import (
 	"github.com/fatih/color"
 )
 
+const (
+	logLevelSilent  = iota
+	logLevelQuiet   = iota
+	logLevelNormal  = iota
+	logLevelVerbose = iota
+)
+
 var (
-	// Silent prevents any output from printing.
-	Silent = false
-
-	// Quiet removes all additional formatting
-	Quiet = false
-
-	// Verbose enables verbose output.
-	Verbose = false
+	logLevel = logLevelNormal
 
 	// HasPrinted indicates whether any output has been printed to the console.
 	// This can be used to determine if a blank line should be printed before
@@ -36,35 +36,32 @@ var (
 
 // IsSilent returns true iff using silent logging level
 func IsSilent() bool {
-	return Silent
+	return logLevel == logLevelSilent
 }
 
 // IsQuiet returns true iff output is limited (quiet ot silent logging level)
 func IsQuiet() bool {
-	return IsSilent() || Quiet
+	return IsSilent() || logLevel == logLevelQuiet
 }
 
 // IsVerbose returns true iff usng verbose logging level
 func IsVerbose() bool {
-	return !IsQuiet() && Verbose
+	return logLevel == logLevelVerbose
 }
 
 // SetSilent sets the logging kevel to silent
 func SetSilent() {
-	Silent = true
+	logLevel = logLevelSilent
 }
 
 // SetQuiet sets the logging kevel to quiet
 func SetQuiet() {
-	Silent = false
-	Quiet = true
+	logLevel = logLevelQuiet
 }
 
 // SetVerbose sets the logging level to verbose
 func SetVerbose() {
-	Silent = false
-	Quiet = false
-	Verbose = true
+	logLevel = logLevelVerbose
 }
 
 func println(l *log.Logger, v ...interface{}) {
