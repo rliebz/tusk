@@ -11,6 +11,7 @@ import (
 
 var version = "dev"
 
+// nolint: gocyclo
 func main() {
 	defer gracefulRecover()
 
@@ -26,7 +27,9 @@ func main() {
 	}
 
 	if !ui.IsSilent() {
-		if meta.Quiet {
+		if meta.Silent {
+			ui.SetSilent()
+		} else if meta.Quiet {
 			ui.SetQuiet()
 		} else if meta.Verbose {
 			ui.SetVerbose()

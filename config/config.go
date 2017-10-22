@@ -57,5 +57,6 @@ type Metadata struct {
 	PrintHelp    bool
 	PrintVersion bool
 	Quiet        bool
+	Silent       bool
 	Verbose      bool
 }

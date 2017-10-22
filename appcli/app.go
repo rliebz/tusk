@@ -34,6 +34,10 @@ func newBaseApp() *cli.App {
 			Usage: "Only print command output and application errors",
 		},
 		cli.BoolFlag{
+			Name:  "s, silent",
+			Usage: "Print no output",
+		},
+		cli.BoolFlag{
 			Name:  "v, verbose",
 			Usage: "Print verbose output",
 		},
@@ -161,6 +165,7 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 		metadata.PrintHelp = c.Bool("help")
 		metadata.PrintVersion = c.Bool("version")
 		metadata.Quiet = c.Bool("quiet")
+		metadata.Silent = c.Bool("silent")
 		metadata.Verbose = c.Bool("verbose")
 		return err
 	}
