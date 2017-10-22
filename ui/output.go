@@ -19,7 +19,7 @@ func Print(a ...interface{}) {
 
 // Debug prints info only in verbose mode.
 func Debug(a ...interface{}) {
-	if Quiet || !Verbose {
+	if !IsVerbose() {
 		return
 	}
 
@@ -28,7 +28,7 @@ func Debug(a ...interface{}) {
 
 // Info prints application info.
 func Info(a ...interface{}) {
-	if Quiet {
+	if IsQuiet() {
 		return
 	}
 
@@ -37,7 +37,7 @@ func Info(a ...interface{}) {
 
 // Warn prints an application warning.
 func Warn(a ...interface{}) {
-	if Quiet {
+	if IsQuiet() {
 		return
 	}
 	logInStyle(warningString, yellow, a...)
