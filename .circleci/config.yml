@@ -67,7 +67,7 @@ jobs:
           command: |
             curl -sL https://git.io/goreleaser > /tmp/goreleaser
             sudo chmod +x /tmp/goreleaser
-            sudo "PATH=$PATH" -E tusk -q release
+            sudo "PATH=$PATH" -E tusk -q release --goreleaser-bin /tmp/goreleaser
 
 workflows:
   version: 2
