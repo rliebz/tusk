@@ -1,7 +1,7 @@
 # Tusk
 
 [![GitHub release](https://img.shields.io/github/release/rliebz/tusk.svg)][releases]
-[![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk.svg)][circle]
+[![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk/master.svg)][circle]
 [![license](https://img.shields.io/github/license/rliebz/tusk.svg)](LICENSE)
 
 Tusk is a yaml-based task runner. By creating a `tusk.yml` in the root of a
@@ -399,6 +399,6 @@ requests for any fixes or new feature requests, and if you are not sure about
 anything, open it anyway. Issues in pull requests are also great venues for
 discussion.
 
-[circle]: https://circleci.com/gh/rliebz/tusk
+[circle]: https://circleci.com/gh/rliebz/tusk/tree/master
 [homebrew]: https://brew.sh
 [releases]: https://github.com/rliebz/tusk/releases
