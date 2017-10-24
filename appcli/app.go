@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -117,9 +116,9 @@ func NewApp(meta *config.Metadata) (*cli.App, error) {
 
 	copyFlags(app, flagApp)
 
-	app.BashComplete = createDefaultComplete(app, meta)
+	app.BashComplete = createDefaultComplete(app)
 	for i := range app.Commands {
-		app.Commands[i].BashComplete = createCommandComplete(&app.Commands[i], meta)
+		app.Commands[i].BashComplete = createCommandComplete(&app.Commands[i])
 	}
 
 	return app, nil
@@ -164,22 +163,23 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 		return err
 	}
 
-	if runErr := populateMetadata(app, metadata, args); runErr != nil {
+	if runErr := populateMetadata(app, args); runErr != nil {
 		return nil, runErr
 	}
 
 	return metadata, err
 }
 
-func populateMetadata(app *cli.App, meta *config.Metadata, args []string) error {
-	args, isCompleting := removeCompletionArg(args)
-	meta.Completion.IsCompleting = isCompleting
+// populateMetadata runs the app to populate the metadata struct.
+func populateMetadata(app *cli.App, args []string) error {
+	args = removeCompletionArg(args)
 
 	if err := app.Run(args); err != nil {
-		if strings.HasPrefix(err.Error(), "flag needs an argument") {
-			meta.Completion.IsFlagValue = true
+		// Ignore flags without arguments during metadata creation
+		if isFlagArgumentError(err) {
 			return app.Run(args[:len(args)-1])
 		}
+
 		return err
 	}
 

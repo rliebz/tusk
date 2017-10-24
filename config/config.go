@@ -61,11 +61,4 @@ type Metadata struct {
 	PrintVersion bool
 	Quiet        bool
 	Verbose      bool
-	Completion   CompletionMetadata
-}
-
-// CompletionMetadata contains metadata regarding auto-complete.
-type CompletionMetadata struct {
-	IsCompleting bool
-	IsFlagValue  bool
 }

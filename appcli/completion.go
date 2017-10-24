@@ -2,9 +2,9 @@ package appcli
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
-	"github.com/rliebz/tusk/config"
 	"github.com/urfave/cli"
 )
 
@@ -15,13 +15,13 @@ var CompletionFlag = "--" + cli.BashCompletionFlag.GetName()
 // The metadata includes the completion type followed by a list of options.
 // The available completion types are "normal" and "file". Normal will return
 // tasks and flags, while file allows completion engines to use system files.
-func createDefaultComplete(app *cli.App, meta *config.Metadata) func(c *cli.Context) {
+func createDefaultComplete(app *cli.App) func(c *cli.Context) {
 	return func(c *cli.Context) {
 		if c.NArg() > 0 {
 			return
 		}
 
-		if !meta.Completion.IsFlagValue {
+		if !isCompletingFlag(app.Flags, os.Args[len(os.Args)-2]) {
 			fmt.Println("normal")
 			for _, command := range app.Commands {
 				printCommand(command)
@@ -41,9 +41,10 @@ func createDefaultComplete(app *cli.App, meta *config.Metadata) func(c *cli.Cont
 // The metadata includes the completion type followed by a list of options.
 // The available completion types are "normal" and "file". Normal will return
 // task-specific flags, while file allows completion engines to use system files.
-func createCommandComplete(command *cli.Command, meta *config.Metadata) func(c *cli.Context) {
+func createCommandComplete(command *cli.Command) func(c *cli.Context) {
 	return func(c *cli.Context) {
-		if !meta.Completion.IsFlagValue {
+
+		if !isCompletingFlag(command.Flags, os.Args[len(os.Args)-2]) {
 			fmt.Println("normal")
 			for _, flag := range command.Flags {
 				printFlag(c, flag)
@@ -85,16 +86,45 @@ func getDescription(flag cli.Flag) string {
 	return strings.SplitN(flag.String(), "\t", 2)[1]
 }
 
-func removeCompletionArg(args []string) ([]string, bool) {
+func removeCompletionArg(args []string) []string {
 	var output []string
-	isCompleting := false
 	for _, arg := range args {
 		if arg != CompletionFlag {
 			output = append(output, arg)
-		} else {
-			isCompleting = true
 		}
 	}
 
-	return output, isCompleting
+	return output
+}
+
+// isCompletingFlag tells if the trailing arg is an incomplete flag.
+func isCompletingFlag(flags []cli.Flag, arg string) bool {
+
+	if !strings.HasPrefix(arg, "-") {
+		return false
+	}
+
+	name := strings.TrimLeft(arg, "-")
+
+	for _, flag := range flags {
+		if _, ok := flag.(cli.BoolFlag); ok {
+			continue
+		}
+
+		if _, ok := flag.(cli.BoolTFlag); ok {
+			continue
+		}
+
+		for _, candidate := range strings.Split(flag.GetName(), ", ") {
+			if name == candidate {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func isFlagArgumentError(err error) bool {
+	return strings.HasPrefix(err.Error(), "flag needs an argument")
 }
