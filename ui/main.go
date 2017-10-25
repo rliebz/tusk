@@ -7,15 +7,22 @@ import (
 	"github.com/fatih/color"
 )
 
+// VerbosityLevel describes amount of output
+type VerbosityLevel uint8
+
 const (
-	logLevelSilent  = iota
-	logLevelQuiet   = iota
-	logLevelNormal  = iota
-	logLevelVerbose = iota
+	// VerbosityLevelSilent means sending no output from tusk
+	VerbosityLevelSilent VerbosityLevel = iota
+	// VerbosityLevelQuiet means sending limited output from tusk
+	VerbosityLevelQuiet VerbosityLevel = iota
+	// VerbosityLevelNormal means normal output from tusk
+	VerbosityLevelNormal VerbosityLevel = iota
+	// VerbosityLevelVerbose means extra output from tusk
+	VerbosityLevelVerbose VerbosityLevel = iota
 )
 
 var (
-	logLevel = logLevelNormal
+	verbosity = VerbosityLevelNormal
 
 	// HasPrinted indicates whether any output has been printed to the console.
 	// This can be used to determine if a blank line should be printed before
@@ -36,32 +43,32 @@ var (
 
 // IsSilent returns true iff using silent logging level
 func IsSilent() bool {
-	return logLevel == logLevelSilent
+	return verbosity == VerbosityLevelSilent
 }
 
 // IsQuiet returns true iff output is limited (quiet ot silent logging level)
 func IsQuiet() bool {
-	return IsSilent() || logLevel == logLevelQuiet
+	return verbosity <= VerbosityLevelQuiet
 }
 
 // IsVerbose returns true iff usng verbose logging level
 func IsVerbose() bool {
-	return logLevel == logLevelVerbose
+	return verbosity == VerbosityLevelVerbose
 }
 
 // SetSilent sets the logging kevel to silent
 func SetSilent() {
-	logLevel = logLevelSilent
+	verbosity = VerbosityLevelSilent
 }
 
 // SetQuiet sets the logging kevel to quiet
 func SetQuiet() {
-	logLevel = logLevelQuiet
+	verbosity = VerbosityLevelQuiet
 }
 
 // SetVerbose sets the logging level to verbose
 func SetVerbose() {
-	logLevel = logLevelVerbose
+	verbosity = VerbosityLevelVerbose
 }
 
 func println(l *log.Logger, v ...interface{}) {
