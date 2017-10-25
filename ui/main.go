@@ -22,7 +22,8 @@ const (
 )
 
 var (
-	verbosity = VerbosityLevelNormal
+	// Verbosity is the amount to print for tusk output
+	Verbosity = VerbosityLevelNormal
 
 	// HasPrinted indicates whether any output has been printed to the console.
 	// This can be used to determine if a blank line should be printed before
@@ -41,38 +42,8 @@ var (
 	yellow = conditionalColor(color.FgYellow)
 )
 
-// IsSilent returns true iff using silent logging level
-func IsSilent() bool {
-	return verbosity == VerbosityLevelSilent
-}
-
-// IsQuiet returns true iff output is limited (quiet ot silent logging level)
-func IsQuiet() bool {
-	return verbosity <= VerbosityLevelQuiet
-}
-
-// IsVerbose returns true iff usng verbose logging level
-func IsVerbose() bool {
-	return verbosity == VerbosityLevelVerbose
-}
-
-// SetSilent sets the logging kevel to silent
-func SetSilent() {
-	verbosity = VerbosityLevelSilent
-}
-
-// SetQuiet sets the logging kevel to quiet
-func SetQuiet() {
-	verbosity = VerbosityLevelQuiet
-}
-
-// SetVerbose sets the logging level to verbose
-func SetVerbose() {
-	verbosity = VerbosityLevelVerbose
-}
-
 func println(l *log.Logger, v ...interface{}) {
-	if IsSilent() {
+	if Verbosity == VerbosityLevelSilent {
 		return
 	}
 
@@ -81,7 +52,7 @@ func println(l *log.Logger, v ...interface{}) {
 }
 
 func printf(l *log.Logger, format string, v ...interface{}) {
-	if IsSilent() {
+	if Verbosity == VerbosityLevelSilent {
 		return
 	}
 
@@ -93,7 +64,7 @@ type formatter func(a ...interface{}) string
 
 func conditionalColor(value ...color.Attribute) formatter {
 	return func(a ...interface{}) string {
-		if IsQuiet() {
+		if Verbosity <= VerbosityLevelQuiet {
 			return color.New().SprintFunc()(a...)
 		}
 

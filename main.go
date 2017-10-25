@@ -17,7 +17,7 @@ func main() {
 
 	args := os.Args
 	if args[len(args)-1] == appcli.CompletionFlag {
-		ui.SetSilent()
+		ui.Verbosity = ui.VerbosityLevelSilent
 	}
 
 	meta, err := appcli.GetConfigMetadata(args)
@@ -26,13 +26,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	if !ui.IsSilent() {
+	if ui.Verbosity != ui.VerbosityLevelSilent {
 		if meta.Silent {
-			ui.SetSilent()
+			ui.Verbosity = ui.VerbosityLevelSilent
 		} else if meta.Quiet {
-			ui.SetQuiet()
+			ui.Verbosity = ui.VerbosityLevelQuiet
 		} else if meta.Verbose {
-			ui.SetVerbose()
+			ui.Verbosity = ui.VerbosityLevelVerbose
 		}
 	}
 
