@@ -10,6 +10,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/ui"
 )
 
 // newBaseApp creates a basic cli.App with top-level flags.
@@ -164,9 +165,17 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 		metadata.Directory = filepath.Dir(fullPath)
 		metadata.PrintHelp = c.Bool("help")
 		metadata.PrintVersion = c.Bool("version")
-		metadata.Quiet = c.Bool("quiet")
-		metadata.Silent = c.Bool("silent")
-		metadata.Verbose = c.Bool("verbose")
+
+		if c.Bool("silent") {
+			metadata.Verbosity = ui.VerbosityLevelSilent
+		} else if c.Bool("quiet") {
+			metadata.Verbosity = ui.VerbosityLevelQuiet
+		} else if c.Bool("verbose") {
+			metadata.Verbosity = ui.VerbosityLevelVerbose
+		} else {
+			metadata.Verbosity = ui.VerbosityLevelNormal
+		}
+
 		return err
 	}
 

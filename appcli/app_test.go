@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/rliebz/tusk/ui"
 	"github.com/urfave/cli"
 )
 
@@ -166,17 +167,12 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 		)
 	}
 
-	if metadata.Quiet {
+	if metadata.Verbosity != ui.VerbosityLevelNormal {
 		t.Errorf(
-			"GetConfigMetadata(%s): expected Quiet: false, actual: true",
+			"GetConfigMetadata(%s): expected: %s, actual: %s",
 			args,
-		)
-	}
-
-	if metadata.Verbose {
-		t.Errorf(
-			"GetConfigMetadata(%s): expected Verbose: false, actual: true",
-			args,
+			ui.VerbosityLevelNormal,
+			metadata.Verbosity,
 		)
 	}
 }
@@ -252,9 +248,7 @@ func TestGetConfigMetadata_version(t *testing.T) {
 	}
 }
 
-func TestGetConfigMetadata_quiet(t *testing.T) {
-	args := []string{"tusk", "--quiet"}
-
+func helperTestGetConfigMetadataVerbosity(t *testing.T, args []string, expected ui.VerbosityLevel) {
 	metadata, err := GetConfigMetadata(args)
 	if err != nil {
 		t.Fatalf(
@@ -263,29 +257,31 @@ func TestGetConfigMetadata_quiet(t *testing.T) {
 		)
 	}
 
-	if !metadata.Quiet {
+	if metadata.Verbosity != expected {
 		t.Errorf(
-			"GetConfigMetadata(%s): expected Quiet: true, actual: false",
+			"GetConfigMetadata(%s): expected %s, actual: %s",
 			args,
-		)
+			expected.String(),
+			metadata.Verbosity.String())
 	}
+}
+
+func TestGetConfigMetadata_quiet(t *testing.T) {
+	args := []string{"tusk", "--quiet"}
+
+	helperTestGetConfigMetadataVerbosity(t, args, ui.VerbosityLevelQuiet)
 }
 
 func TestGetConfigMetadata_verbose(t *testing.T) {
 	args := []string{"tusk", "--verbose"}
 
-	metadata, err := GetConfigMetadata(args)
-	if err != nil {
-		t.Fatalf(
-			"GetConfigMetadata(%s):\nunexpected err: %s",
-			args, err,
-		)
-	}
+	helperTestGetConfigMetadataVerbosity(t, args, ui.VerbosityLevelVerbose)
 
-	if !metadata.Verbose {
-		t.Errorf(
-			"GetConfigMetadata(%s): expected Verbose: true, actual: false",
-			args,
-		)
-	}
+}
+
+func TestGetConfigMetadata_silent(t *testing.T) {
+	args := []string{"tusk", "--silent"}
+
+	helperTestGetConfigMetadataVerbosity(t, args, ui.VerbosityLevelSilent)
+
 }

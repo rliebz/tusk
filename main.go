@@ -27,13 +27,7 @@ func main() {
 	}
 
 	if ui.Verbosity != ui.VerbosityLevelSilent {
-		if meta.Silent {
-			ui.Verbosity = ui.VerbosityLevelSilent
-		} else if meta.Quiet {
-			ui.Verbosity = ui.VerbosityLevelQuiet
-		} else if meta.Verbose {
-			ui.Verbosity = ui.VerbosityLevelVerbose
-		}
+		ui.Verbosity = meta.Verbosity
 	}
 
 	if err = os.Chdir(meta.Directory); err != nil {

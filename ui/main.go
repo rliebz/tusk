@@ -21,6 +21,21 @@ const (
 	VerbosityLevelVerbose VerbosityLevel = iota
 )
 
+func (v VerbosityLevel) String() string {
+	switch v {
+	case VerbosityLevelSilent:
+		return "Silent"
+	case VerbosityLevelQuiet:
+		return "Quiet"
+	case VerbosityLevelNormal:
+		return "Normal"
+	case VerbosityLevelVerbose:
+		return "Verbose"
+	default:
+		return "Unknown"
+	}
+}
+
 var (
 	// Verbosity is the amount to print for tusk output
 	Verbosity = VerbosityLevelNormal
