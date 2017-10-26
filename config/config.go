@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -56,7 +57,5 @@ type Metadata struct {
 	Directory    string
 	PrintHelp    bool
 	PrintVersion bool
-	Quiet        bool
-	Silent       bool
-	Verbose      bool
+	Verbosity    ui.VerbosityLevel
 }
