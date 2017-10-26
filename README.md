@@ -394,10 +394,8 @@ using quotes when appropriate.
 
 ## Contributing
 
-All contributions are greatly appreciated. Feel free to open issues or pull
-requests for any fixes or new feature requests, and if you are not sure about
-anything, open it anyway. Issues in pull requests are also great venues for
-discussion.
+Set-up instructions for a development environment and contribution guidelines
+can be found in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 [circle]: https://circleci.com/gh/rliebz/tusk/tree/master
 [homebrew]: https://brew.sh
