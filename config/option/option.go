@@ -3,6 +3,7 @@ package option
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/rliebz/tusk/config/when"
@@ -149,10 +150,36 @@ func (o *Option) getDefaultValue() (string, error) {
 		return value, nil
 	}
 
+	if o.isNumeric() {
+		return "0", nil
+	}
+
+	if o.isBoolean() {
+		return "false", nil
+	}
+
 	return "", nil
 }
 
 func (o *Option) cache(value string) {
 	o.isCacheSet = true
 	o.cacheValue = value
+}
+
+func (o *Option) isNumeric() bool {
+	switch strings.ToLower(o.Type) {
+	case "int", "integer", "float", "float64", "double":
+		return true
+	default:
+		return false
+	}
+}
+
+func (o *Option) isBoolean() bool {
+	switch strings.ToLower(o.Type) {
+	case "bool", "boolean":
+		return true
+	default:
+		return false
+	}
 }

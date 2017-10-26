@@ -207,6 +207,38 @@ func TestOption_Evaluate_required_with_environment(t *testing.T) {
 	}
 }
 
+var evaluteTypeDefaultTests = []struct {
+	typeName string
+	expected string
+}{
+	{"int", "0"},
+	{"INTEGER", "0"},
+	{"Float", "0"},
+	{"float64", "0"},
+	{"double", "0"},
+	{"bool", "false"},
+	{"boolean", "false"},
+	{"", ""},
+}
+
+func TestOption_Evaluate_type_defaults(t *testing.T) {
+	for _, tt := range evaluteTypeDefaultTests {
+		opt := Option{Type: tt.typeName}
+		actual, err := opt.Evaluate()
+		if err != nil {
+			t.Errorf("Option.Evaluate(): unexpected error: %s", err)
+			continue
+		}
+
+		if tt.expected != actual {
+			t.Errorf(
+				`Option.Evaluate(): expected "%s", actual "%s"`,
+				tt.expected, actual,
+			)
+		}
+	}
+}
+
 func TestOption_UnmarshalYAML(t *testing.T) {
 	s := []byte(`{usage: foo, name: ignored}`)
 	expected := Option{

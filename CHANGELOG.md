@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Fixed
 - Bash and Zsh completions offer file completion for subcommand flags that take
   a value rather than re-offering flag names.
+- The default value for numeric types is now `0`, and the default for booleans
+  is now `false`. Previously, it was an empty string for both.
 
 
 ## 0.1.4 (2017-10-19)
