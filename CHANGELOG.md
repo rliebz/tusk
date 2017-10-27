@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- Include expected value for skipped run clauses during verbose logging.
 
 ### Fixed
 - Bash and Zsh completions offer file completion for subcommand flags that take

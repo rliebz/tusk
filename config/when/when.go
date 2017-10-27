@@ -140,7 +140,10 @@ func validateEquality(
 			}
 
 			if !compare(expected, actual) {
-				return newCondFailErrorf(`option "%s" has value: %s`, name, actual)
+				return newCondFailErrorf(
+					`option "%s" expected value "%s", but received "%s"`,
+					name, expected, actual,
+				)
 			}
 		}
 	}
