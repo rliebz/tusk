@@ -50,7 +50,7 @@ defaults:
     command: |
       curl -sL https://git.io/goreleaser > /tmp/goreleaser
       sudo chmod +x /tmp/goreleaser
-      sudo "PATH=$PATH" -E tusk --quiet release --goreleaser-bin /tmp/goreleaser
+      sudo /go/bin/tusk --quiet release --goreleaser-bin /tmp/goreleaser
 
 version: 2
 jobs:
