@@ -33,7 +33,7 @@ jobs:
           name: Run go test
           command: |
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-            tusk -q test --verbose --lint=false | tee $TEST_RESULTS/go-test.out
+            tusk -q test --verbose --no-lint | tee $TEST_RESULTS/go-test.out
 
       - store_artifacts:
           path: /tmp/test-results
