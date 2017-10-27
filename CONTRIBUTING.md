@@ -95,4 +95,15 @@ for that line:
 cmd := exec.Command("sh", "-c", command) // nolint: gas
 ```
 
+For a slightly higher-fidelity test suite, you can [configure the `circleci`
+command line tool][circleci-cli] along with docker to run your tests locally in
+containers the same way they would be run against a pull request.
+
+Once installed, with docker running locally:
+
+```bash
+circleci build
+```
+
+[circleci-cli]: https://circleci.com/docs/2.0/local-jobs/#installing-the-cli-locally
 [GOPATH]: https://golang.org/doc/code.html#GOPATH
