@@ -34,21 +34,21 @@ tasks:
       Runs the full test suite using `go test -cover ./...`. Also runs the
       linter by default, and linter errors are considered failed tests.
     options:
-      lint:
-        usage: Run the linter with the tests
-        default: true
+      no-lint:
+        usage: Skip running gometalinter
+        default: false
         type: bool
       verbose:
         usage: Run the tests in verbose mode
         short: v
         type: bool
-      verbose_string:
+      verbose-string:
         private: true
         default:
           when:
             equal: {verbose: true}
           value: -v
-      short_string:
+      short-string:
         private: true
         default:
           when:
@@ -56,9 +56,9 @@ tasks:
           value: -short
     run:
       - when:
-          equal: {lint: true}
+          equal: {no-lint: false}
         task: lint
-      - command: go test -cover -race ${verbose_string} ${short_string} ./...
+      - command: go test -cover -race ${verbose-string} ${short-string} ./...
 
   release:
     usage: Release the latest version with goreleaser
