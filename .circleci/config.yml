@@ -1,59 +1,71 @@
-version: 2
-jobs:
-  build:
+defaults:
+  job_defaults: &job_defaults
+    working_directory: /go/src/github.com/rliebz/tusk
     docker:
       - image: circleci/golang:1.9
-
-    working_directory: /go/src/github.com/rliebz/tusk
-
     environment:
       TEST_RESULTS: /tmp/test-results
+  mktestdir: &mktestdir
+    name: Create the test directory
+    command: mkdir -p $TEST_RESULTS
+  install: &install
+    name: Install the application
+    command: go install
+  store_artifacts: &store_artifacts
+    path: /tmp/test-results
+    destination: raw-test-output
+  store_test_results: &store_test_results
+    path: /tmp/test-results
 
+
+version: 2
+jobs:
+  lint:
+    <<: *job_defaults
     steps:
       - checkout
-
-      - run: mkdir -p $TEST_RESULTS
+      - run: *mktestdir
+      - run: *install
 
       - run:
-          name: Install testing dependencies
+          name: Install linting dependencies
           command: |
-            go get github.com/jstemmer/go-junit-report
             go get github.com/alecthomas/gometalinter
             gometalinter --install
 
       - run:
-          name: Install the application
-          command: go install
+          name: Run gometalinter
+          command: tusk --quiet lint | tee $TEST_RESULTS/gometalinter.out
+
+      - store_artifacts: *store_artifacts
+      - store_test_results: *store_test_results
+
+  test:
+    <<: *job_defaults
+    steps:
+      - checkout
+      - run: *mktestdir
+      - run: *install
 
       - run:
-          name: Run gometalinter
-          command: tusk -q lint | tee $TEST_RESULTS/gometalinter.out
+          name: Install testing dependencies
+          command: go get github.com/jstemmer/go-junit-report
 
       - run:
           name: Run go test
           command: |
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-            tusk -q test --verbose --no-lint | tee $TEST_RESULTS/go-test.out
+            tusk --quiet test --verbose --no-lint | tee $TEST_RESULTS/go-test.out
 
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: raw-test-output
-
-      - store_test_results:
-          path: /tmp/test-results
+      - store_artifacts: *store_artifacts
+      - store_test_results: *store_test_results
 
   release:
-    docker:
-      - image: circleci/golang:1.9
-
-    working_directory: /go/src/github.com/rliebz/tusk
+    <<: *job_defaults
 
     steps:
       - checkout
-
-      - run:
-          name: Install the application
-          command: go install
+      - run: *install
 
       - run:
           name: Install fpm
@@ -67,19 +79,24 @@ jobs:
           command: |
             curl -sL https://git.io/goreleaser > /tmp/goreleaser
             sudo chmod +x /tmp/goreleaser
-            sudo "PATH=$PATH" -E tusk -q release --goreleaser-bin /tmp/goreleaser
+            sudo "PATH=$PATH" -E tusk --quiet release --goreleaser-bin /tmp/goreleaser
 
 workflows:
   version: 2
-  build-and-release:
+  pipeline:
     jobs:
-      - build:
+      - lint:
+          filters:
+            tags:
+              only: /.*/
+      - test:
           filters:
             tags:
               only: /.*/
       - release:
           requires:
-            - build
+            - lint
+            - test
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(-.*)*/
