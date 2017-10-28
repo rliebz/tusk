@@ -1,6 +1,10 @@
 package marshal
 
-import yaml "gopkg.in/yaml.v2"
+import (
+	"errors"
+
+	yaml "gopkg.in/yaml.v2"
+)
 
 // Candidate is a candidate for unmarshalling.
 // Candidates should only be defined inside of an UnmarshalYAML function.
@@ -25,7 +29,7 @@ type Candidate struct {
 // immediately. If no candidates are valid, the error from the last candidate
 // passed will be returned.
 func OneOf(candidates ...Candidate) error {
-	var err error
+	err := errors.New("no candidates passed")
 
 	for _, c := range candidates {
 		if err = c.Unmarshal(); err != nil {
