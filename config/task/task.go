@@ -15,9 +15,10 @@ type Task struct {
 	Description string `yaml:",omitempty"`
 
 	// Computed members not specified in yaml file
-	Name     string  `yaml:"-"`
-	SubTasks []*Task `yaml:"-"`
-	Vars     map[string]string
+	Name     string            `yaml:"-"`
+	Position int               `yaml:"-"`
+	SubTasks []*Task           `yaml:"-"`
+	Vars     map[string]string `yaml:"-"`
 }
 
 // UnmarshalYAML unmarshals and assigns names to options.

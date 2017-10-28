@@ -28,6 +28,10 @@ func Parse(text []byte) (*Config, error) {
 		return nil, err
 	}
 
+	if err := addTaskPositions(text, cfg); err != nil {
+		return nil, err
+	}
+
 	return cfg, nil
 }
 
@@ -48,6 +52,24 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	for name, t := range c.Tasks {
 		t.Name = name
+	}
+
+	return nil
+}
+
+func addTaskPositions(cfgText []byte, c *Config) error {
+	ordered := new(struct {
+		Tasks yaml.MapSlice
+	})
+
+	if err := yaml.Unmarshal(cfgText, ordered); err != nil {
+		return err
+	}
+
+	for i, mapslice := range ordered.Tasks {
+		name := mapslice.Key.(string)
+		t := c.Tasks[name]
+		t.Position = i
 	}
 
 	return nil

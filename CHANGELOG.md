@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- Help flag lists tasks in order of definition instead of randomly.
 
 ## 0.1.5 (2017-10-26)
 ### Changed

@@ -1,6 +1,8 @@
 package appcli
 
 import (
+	"sort"
+
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
@@ -8,15 +10,39 @@ import (
 	"github.com/rliebz/tusk/config/task"
 )
 
+type taskList []*task.Task
+
+func (t taskList) Len() int {
+	return len(t)
+}
+
+func (t taskList) Less(i, j int) bool {
+	return t[i].Position < t[j].Position
+}
+
+func (t taskList) Swap(i, j int) {
+	t[i], t[j] = t[j], t[i]
+}
+
 // addTasks adds a series of tasks to a cli.App using a command creator.
 func addTasks(app *cli.App, cfg *config.Config, create commandCreator) error {
-	for _, t := range cfg.Tasks {
+	for _, t := range orderedTasks(cfg.Tasks) {
 		if err := addTask(app, cfg, t, create); err != nil {
 			return errors.Wrapf(err, `could not add task "%s"`, t.Name)
 		}
 	}
 
 	return nil
+}
+
+func orderedTasks(tasks map[string]*task.Task) []*task.Task {
+	var output taskList
+	for _, t := range tasks {
+		output = append(output, t)
+	}
+	sort.Sort(output)
+
+	return output
 }
 
 func addTask(app *cli.App, cfg *config.Config, t *task.Task, create commandCreator) error {
