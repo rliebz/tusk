@@ -7,20 +7,17 @@ type StringList []string
 
 // UnmarshalYAML unmarshals a string or list of strings always into a list.
 func (sl *StringList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
-	var err error
-
 	var single string
-	if err = unmarshal(&single); err == nil {
-		*sl = []string{single}
-		return nil
+	singleCandidate := Candidate{
+		Unmarshal: func() error { return unmarshal(&single) },
+		Assign:    func() { *sl = []string{single} },
 	}
 
 	var list []string
-	if err = unmarshal(&list); err == nil {
-		*sl = list
-		return nil
+	listCandidate := Candidate{
+		Unmarshal: func() error { return unmarshal(&list) },
+		Assign:    func() { *sl = list },
 	}
 
-	return err
+	return OneOf(singleCandidate, listCandidate)
 }

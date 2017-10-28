@@ -18,27 +18,30 @@ type Run struct {
 // the string is used as the Command field.
 func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
-	var err error
-
 	var command string
-	if err = unmarshal(&command); err == nil {
-		*r = Run{Command: marshal.StringList{command}}
-		return nil
+	commandCandidate := marshal.Candidate{
+		Unmarshal: func() error { return unmarshal(&command) },
+		Assign:    func() { *r = Run{Command: marshal.StringList{command}} },
 	}
 
 	type runType Run // Use new type to avoid recursion
-	if err = unmarshal((*runType)(r)); err != nil {
-		return err
+	var runItem runType
+	runCandidate := marshal.Candidate{
+		Unmarshal: func() error { return unmarshal(&runItem) },
+		Assign:    func() { *r = Run(runItem) },
+		Validate: func() error {
+			if len(runItem.Command) != 0 && len(runItem.Task) != 0 {
+				return fmt.Errorf(
+					"command (%s) and subtask (%s) are both defined",
+					runItem.Command, runItem.Task,
+				)
+			}
+
+			return nil
+		},
 	}
 
-	if len(r.Command) != 0 && len(r.Task) != 0 {
-		return fmt.Errorf(
-			"command (%s) and subtask (%s) are both defined",
-			r.Command, r.Task,
-		)
-	}
-
-	return nil
+	return marshal.OneOf(commandCandidate, runCandidate)
 }
 
 // List is a list of run items with custom yaml unmarshalling.
@@ -47,19 +50,17 @@ type List []*Run
 // UnmarshalYAML allows single items to be used as lists.
 func (rl *List) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
-	var err error
-
 	var runSlice []*Run
-	if err = unmarshal(&runSlice); err == nil {
-		*rl = runSlice
-		return nil
+	sliceCandidate := marshal.Candidate{
+		Unmarshal: func() error { return unmarshal(&runSlice) },
+		Assign:    func() { *rl = runSlice },
 	}
 
 	var runItem *Run
-	if err = unmarshal(&runItem); err == nil {
-		*rl = List{runItem}
-		return nil
+	itemCandidate := marshal.Candidate{
+		Unmarshal: func() error { return unmarshal(&runItem) },
+		Assign:    func() { *rl = List{runItem} },
 	}
 
-	return err
+	return marshal.OneOf(sliceCandidate, itemCandidate)
 }

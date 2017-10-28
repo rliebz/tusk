@@ -52,8 +52,6 @@ func (t *Task) Dependencies() []string {
 
 // Execute runs the Run scripts in the task.
 func (t *Task) Execute() error {
-	// TODO: Announce task
-
 	for _, r := range t.Run {
 		if err := t.run(r); err != nil {
 			return err

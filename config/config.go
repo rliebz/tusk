@@ -35,12 +35,9 @@ func Parse(text []byte) (*Config, error) {
 func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	type configType Config // Use new type to avoid recursion
-	var configItem *configType
-	if err := unmarshal(&configItem); err != nil {
+	if err := unmarshal((*configType)(c)); err != nil {
 		return err
 	}
-
-	*c = *(*Config)(configItem)
 
 	for name, opt := range c.Options {
 		opt.Name = name

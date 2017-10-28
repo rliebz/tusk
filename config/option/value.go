@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
 )
 
@@ -33,28 +34,30 @@ func (v *value) commandValueOrDefault() (string, error) {
 // the string is used as the Default field.
 func (v *value) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
-	var err error
-
 	var valueString string
-	if err = unmarshal(&valueString); err == nil {
-		*v = value{Value: valueString}
-		return nil
+	stringCandidate := marshal.Candidate{
+		Unmarshal: func() error { return unmarshal(&valueString) },
+		Assign:    func() { *v = value{Value: valueString} },
 	}
 
 	type valueType value // Use new type to avoid recursion
-	if err = unmarshal((*valueType)(v)); err == nil {
+	var valueItem valueType
+	valueCandidate := marshal.Candidate{
+		Unmarshal: func() error { return unmarshal(&valueItem) },
+		Assign:    func() { *v = value(valueItem) },
+		Validate: func() error {
+			if valueItem.Value != "" && valueItem.Command != "" {
+				return fmt.Errorf(
+					"value (%s) and command (%s) are both defined",
+					valueItem.Value, valueItem.Command,
+				)
+			}
 
-		if v.Value != "" && v.Command != "" {
-			return fmt.Errorf(
-				"value (%s) and command (%s) are both defined",
-				v.Value, v.Command,
-			)
-		}
-
-		return nil
+			return nil
+		},
 	}
 
-	return err
+	return marshal.OneOf(stringCandidate, valueCandidate)
 }
 
 type valueList []value
@@ -62,19 +65,17 @@ type valueList []value
 // UnmarshalYAML allows single items to be used as lists.
 func (vl *valueList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
-	var err error
-
 	var valueSlice []value
-	if err = unmarshal(&valueSlice); err == nil {
-		*vl = valueSlice
-		return nil
+	sliceCandidate := marshal.Candidate{
+		Unmarshal: func() error { return unmarshal(&valueSlice) },
+		Assign:    func() { *vl = valueSlice },
 	}
 
 	var valueItem value
-	if err = unmarshal(&valueItem); err == nil {
-		*vl = valueList{valueItem}
-		return nil
+	itemCandidate := marshal.Candidate{
+		Unmarshal: func() error { return unmarshal(&valueItem) },
+		Assign:    func() { *vl = valueList{valueItem} },
 	}
 
-	return err
+	return marshal.OneOf(sliceCandidate, itemCandidate)
 }

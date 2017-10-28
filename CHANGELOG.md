@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Changed
 - Commands and flags are now listed in alphabetical order.
 
+### Fixed
+- Improve error messaging for non-generic yaml parsing errors.
+
+
 ## 0.1.5 (2017-10-26)
 ### Changed
 - Include expected value for skipped run clauses during verbose logging.
