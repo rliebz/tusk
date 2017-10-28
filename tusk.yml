@@ -60,6 +60,34 @@ tasks:
         task: lint
       - command: go test -cover -race ${verbose-string} ${short-string} ./...
 
+  circleci:
+    usage: Run the circleci build locally
+    description: |
+      Alternative to `tusk test`.
+
+      Download the circleci agent if needed and run `circleci build`. This will
+      spin up a docker container locally and run linters and tests in an
+      environment that more closely resembles the pipeline run on CircleCI, but
+      is not easily configurable.
+
+      Requires docker to be running locally.
+    options:
+      bin-path:
+        private: true
+        default: /usr/local/bin/circleci
+      download-path:
+        private: true
+        default: https://circle-downloads.s3.amazonaws.com/releases/build_agent_wrapper/circleci
+      no-install:
+        usage: Do not install the CLI locally if not already available
+        type: bool
+    run:
+      - when:
+          not_equal: {no-install: true}
+          command: '! command -v circleci'
+        command: curl -o ${bin-path} ${download-path} && chmod +x ${bin-path}
+      - command: circleci build
+
   release:
     usage: Release the latest version with goreleaser
     options:

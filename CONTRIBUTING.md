@@ -9,8 +9,8 @@ discussion and a great opportunity to help improve the code as a whole.
 
 A great way to contribute to the project is to open GitHub issues whenever you
 encounter any issue, or if you have an idea on how Tusk can improve. Missing
-or incorrect documentation are issues too, so please feel free to open one
-whenever you feel there is a chance to make Tusk better.
+or incorrect documentation are issues too, so feel free to open one whenever
+you feel there is a chance to make Tusk better.
 
 When reporting a bug, make sure to include the expected behavior and steps to 
 reproduce. The more descriptive you can be, the faster the issue can be
@@ -99,10 +99,10 @@ For a slightly higher-fidelity test suite, you can [configure the `circleci`
 command line tool][circleci-cli] along with docker to run your tests locally in
 containers the same way they would be run against a pull request.
 
-Once installed, with docker running locally:
+With docker running locally:
 
 ```bash
-circleci build
+tusk circleci
 ```
 
 [circleci-cli]: https://circleci.com/docs/2.0/local-jobs/#installing-the-cli-locally
