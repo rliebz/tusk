@@ -1,6 +1,8 @@
 package appcli
 
 import (
+	"sort"
+
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
@@ -16,6 +18,7 @@ func addTasks(app *cli.App, cfg *config.Config, create commandCreator) error {
 		}
 	}
 
+	sort.Sort(commandsByName(app.Commands))
 	return nil
 }
 
