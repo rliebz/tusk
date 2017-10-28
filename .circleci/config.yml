@@ -94,8 +94,7 @@ jobs:
       - checkout
       - run: *install_tusk
       - run: *install_fpm
-      - run: *release
-
+      - deploy: *release
 
 workflows:
   version: 2
