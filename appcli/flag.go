@@ -2,7 +2,9 @@ package appcli
 
 import (
 	"fmt"
+	"sort"
 	"strings"
+	"unicode"
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -32,7 +34,6 @@ func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) error {
 	}
 
 	for _, opt := range dependencies {
-
 		if opt.Private {
 			continue
 		}
@@ -45,9 +46,9 @@ func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) error {
 				t.Name,
 			)
 		}
-
 	}
 
+	sort.Sort(flagsByName(cmd.Flags))
 	return nil
 }
 
@@ -101,4 +102,45 @@ func createCLIFlag(opt *option.Option) (cli.Flag, error) {
 	default:
 		return nil, fmt.Errorf(`unsupported flag type "%s"`, opt.Type)
 	}
+}
+
+// flagsByName sorts alphabetically, taking case into consideration.
+type flagsByName []cli.Flag
+
+func (f flagsByName) Len() int {
+	return len(f)
+}
+
+func (f flagsByName) Swap(i, j int) {
+	f[i], f[j] = f[j], f[i]
+}
+
+func (f flagsByName) Less(i, j int) bool {
+	return lexicographicLess(f[i].GetName(), f[j].GetName())
+}
+
+// lexicographicLess compares strings alphabetically considering case.
+func lexicographicLess(i, j string) bool {
+	iRunes := []rune(i)
+	jRunes := []rune(j)
+
+	lenShared := len(iRunes)
+	if lenShared > len(jRunes) {
+		lenShared = len(jRunes)
+	}
+
+	for index := 0; index < lenShared; index++ {
+		ir := iRunes[index]
+		jr := jRunes[index]
+
+		if lir, ljr := unicode.ToLower(ir), unicode.ToLower(jr); lir != ljr {
+			return lir < ljr
+		}
+
+		if ir != jr {
+			return ir < jr
+		}
+	}
+
+	return i < j
 }

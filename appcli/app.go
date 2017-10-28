@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -42,6 +43,7 @@ func newBaseApp() *cli.App {
 		},
 	)
 
+	sort.Sort(flagsByName(app.Flags))
 	return app
 }
 
