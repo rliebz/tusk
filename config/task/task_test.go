@@ -48,7 +48,6 @@ var shouldtests = []struct {
 }
 
 func TestTask_shouldRun(t *testing.T) {
-
 	var task Task
 
 	for _, tt := range shouldtests {
@@ -66,5 +65,29 @@ func TestTask_shouldRun(t *testing.T) {
 				tt.desc, tt.expected, actual,
 			)
 		}
+	}
+}
+
+func TestTask_runCommands(t *testing.T) {
+	var task Task
+
+	runSuccess := &run.Run{
+		Command: marshal.StringList{"exit 0"},
+	}
+
+	if err := task.runCommands(runSuccess); err != nil {
+		t.Errorf(
+			`task.RunCommands([exit 0]): unexpected error: %s`, err,
+		)
+	}
+
+	runFailure := &run.Run{
+		Command: marshal.StringList{"exit 0", "exit 1"},
+	}
+
+	if err := task.runCommands(runFailure); err == nil {
+		t.Error(
+			`task.RunCommands([exit 0, exit 1]): expected error, got nil`,
+		)
 	}
 }

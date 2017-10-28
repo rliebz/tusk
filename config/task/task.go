@@ -23,7 +23,7 @@ type Task struct {
 // UnmarshalYAML unmarshals and assigns names to options.
 func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
-	type taskType Task // User new type to avoid recursion
+	type taskType Task // Use new type to avoid recursion
 	if err := unmarshal((*taskType)(t)); err != nil {
 		return err
 	}
@@ -80,7 +80,6 @@ func (t *Task) run(r *run.Run) error {
 }
 
 func (t *Task) shouldRun(r *run.Run) (bool, error) {
-
 	if r.When == nil {
 		return true, nil
 	}
@@ -93,9 +92,11 @@ func (t *Task) shouldRun(r *run.Run) (bool, error) {
 		for _, command := range r.Command {
 			ui.PrintSkipped(command, err.Error())
 		}
+
 		for _, subTaskName := range r.Task {
 			ui.PrintSkipped("task: "+subTaskName, err.Error())
 		}
+
 		return false, nil
 	}
 
