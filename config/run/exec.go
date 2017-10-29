@@ -13,8 +13,10 @@ func ExecCommand(command string) error {
 
 	cmd := exec.Command("sh", "-c", command) // nolint: gas
 	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	if ui.Verbosity > ui.VerbosityLevelSilent {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
 
 	if err := cmd.Run(); err != nil {
 		ui.PrintCommandError(err)
