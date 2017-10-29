@@ -23,7 +23,7 @@ func PrintCommand(command string) {
 
 // PrintSkipped prints the command skipped and the reason.
 func PrintSkipped(command string, reason string) {
-	if Verbosity == VerbosityLevelVerbose {
+	if Verbosity < VerbosityLevelVerbose {
 		return
 	}
 

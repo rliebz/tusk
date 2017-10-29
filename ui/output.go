@@ -19,7 +19,7 @@ func Print(a ...interface{}) {
 
 // Debug prints info only in verbose mode.
 func Debug(a ...interface{}) {
-	if Verbosity == VerbosityLevelVerbose {
+	if Verbosity < VerbosityLevelVerbose {
 		return
 	}
 
