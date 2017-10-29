@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- New -s/--silent global option available for no stderr/stdout.
+
 ### Changed
 - Commands and flags are now listed in alphabetical order.
 
