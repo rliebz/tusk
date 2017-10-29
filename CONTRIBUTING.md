@@ -39,18 +39,26 @@ git clone https://github.com/rliebz/tusk.git $(go env GOPATH)/src/github.com/rli
 cd $(go env GOPATH)/src/github.com/rliebz/tusk
 ```
 
-To install Tusk:
-
-```bash
-go install
-```
-
-This will place a binary named `tusk` in the `bin` directory on your `GOPATH`.
-If it is not already on your path, you can add the following command to your
-`.bash_profile` or `.zshrc`:
+If it is not already on your path, you probably also want to have the `GOPATH`
+binary directory available for projects installed by `go get` and `go install`.
+To do so, add the following to your `.bash_profile` or `.zshrc`:
 
 ```bash
 export PATH=$PATH:$(go env GOPATH)/bin
+```
+
+Tusk currently uses [dep][dep] to manage its dependencies. To install
+dependencies into the `vendor/` directory:
+
+```bash
+go get -u github.com/golang/dep/cmd/dep
+dep ensure
+```
+
+Finally, to install Tusk:
+
+```bash
+go install
 ```
 
 If you have already installed tusk from another source, make sure you test
@@ -106,4 +114,5 @@ tusk circleci
 ```
 
 [circleci-cli]: https://circleci.com/docs/2.0/local-jobs/#installing-the-cli-locally
+[dep]: https://github.com/golang/dep
 [GOPATH]: https://golang.org/doc/code.html#GOPATH

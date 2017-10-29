@@ -11,7 +11,10 @@ defaults:
     command: mkdir -p $TEST_RESULTS
   install_tusk: &install_tusk
     name: Install the application
-    command: go install
+    command: |
+      go get -u github.com/golang/dep/cmd/dep
+      dep ensure
+      go install
   store_artifacts: &store_artifacts
     path: /tmp/test-results
     destination: raw-test-output
