@@ -36,7 +36,7 @@ func main() {
 	}
 
 	if meta.PrintVersion && !meta.PrintHelp {
-		ui.Print(version)
+		ui.Println(version)
 		os.Exit(0)
 	}
 

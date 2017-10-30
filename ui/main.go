@@ -40,15 +40,10 @@ var (
 	// Verbosity is the amount to print for tusk output
 	Verbosity = VerbosityLevelNormal
 
-	// HasPrinted indicates whether any output has been printed to the console.
-	// This can be used to determine if a blank line should be printed before
-	// new output.
-	HasPrinted = false
-
-	// Stdout is a logger that prints to stdout.
-	Stdout = log.New(os.Stdout, "", 0)
-	// Stderr is a logger that prints to stderr.
-	Stderr = log.New(os.Stderr, "", 0)
+	// LoggerStdout is a logger that prints to stdout.
+	LoggerStdout = log.New(os.Stdout, "", 0)
+	// LoggerStderr is a logger that prints to stderr.
+	LoggerStderr = log.New(os.Stderr, "", 0)
 
 	bold   = conditionalColor(color.Bold)
 	blue   = conditionalColor(color.FgBlue)
@@ -63,7 +58,6 @@ func println(l *log.Logger, v ...interface{}) {
 	}
 
 	l.Println(v...)
-	HasPrinted = true
 }
 
 func printf(l *log.Logger, format string, v ...interface{}) {
@@ -72,7 +66,6 @@ func printf(l *log.Logger, format string, v ...interface{}) {
 	}
 
 	l.Printf(format, v...)
-	HasPrinted = true
 }
 
 type formatter func(a ...interface{}) string

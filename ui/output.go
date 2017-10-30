@@ -11,10 +11,10 @@ const (
 	errorString   = "ERROR"
 )
 
-// Print prints a message
-func Print(a ...interface{}) {
+// Println prints a message to stdout.
+func Println(a ...interface{}) {
 	message := fmt.Sprint(a...)
-	println(Stdout, message)
+	println(LoggerStdout, message)
 }
 
 // Debug prints info only in verbose mode.
@@ -40,6 +40,7 @@ func Warn(a ...interface{}) {
 	if Verbosity <= VerbosityLevelQuiet {
 		return
 	}
+
 	logInStyle(warningString, yellow, a...)
 }
 
@@ -51,7 +52,7 @@ func Error(a ...interface{}) {
 func logInStyle(title string, f formatter, a ...interface{}) {
 	message := fmt.Sprint(a...)
 	printf(
-		Stderr,
+		LoggerStderr,
 		"[%s] %s\n",
 		f(title),
 		message,

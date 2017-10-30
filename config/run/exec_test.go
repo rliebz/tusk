@@ -2,7 +2,6 @@ package run
 
 import (
 	"bytes"
-	"log"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -13,12 +12,12 @@ func TestExecCommand(t *testing.T) {
 	command := "exit 0"
 
 	stderrBuf := new(bytes.Buffer)
-	ui.Stderr = log.New(stderrBuf, "", 0)
+	ui.LoggerStderr.SetOutput(stderrBuf)
 	ui.PrintCommand(command)
 	stderrExpected := stderrBuf.String()
 
 	stderrActualBuf := new(bytes.Buffer)
-	ui.Stderr = log.New(stderrActualBuf, "", 0)
+	ui.LoggerStderr.SetOutput(stderrActualBuf)
 	if err := ExecCommand(command); err != nil {
 		t.Fatalf(`execCommand("%s"): unexpected err: %s`, command, err)
 	}
@@ -38,14 +37,14 @@ func TestExecCommand_error(t *testing.T) {
 
 	bufExpected := new(bytes.Buffer)
 	errExpected := errors.New("exit status 1")
-	ui.Stderr = log.New(bufExpected, "", 0)
+	ui.LoggerStderr.SetOutput(bufExpected)
 	ui.PrintCommand(command)
 	ui.PrintCommandError(errExpected)
 
 	expected := bufExpected.String()
 
 	bufActual := new(bytes.Buffer)
-	ui.Stderr = log.New(bufActual, "", 0)
+	ui.LoggerStderr.SetOutput(bufActual)
 	if err := ExecCommand(command); err.Error() != errExpected.Error() {
 		t.Fatalf(`execCommand("%s"): expected error "%s", actual "%s"`,
 			command, errExpected, err,

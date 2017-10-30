@@ -14,7 +14,7 @@ func PrintCommand(command string) {
 	}
 
 	printf(
-		Stderr,
+		LoggerStderr,
 		"[%s] %s\n",
 		blue(commandActionString),
 		bold(command),
@@ -28,7 +28,7 @@ func PrintSkipped(command string, reason string) {
 	}
 
 	printf(
-		Stderr,
+		LoggerStderr,
 		"[%s] %s\n%s%s\n",
 		yellow(skippedString),
 		bold(command),
@@ -44,7 +44,7 @@ func PrintCommandError(err error) {
 	}
 
 	printf(
-		Stderr,
+		LoggerStderr,
 		"%s%s\n",
 		red(prefixOutput()),
 		err.Error(),
