@@ -5,6 +5,8 @@ import (
 )
 
 const (
+	logFormat = "[%s] %s\n"
+
 	debugString   = "DEBUG"
 	infoString    = "INFO"
 	warningString = "WARNING"
@@ -53,7 +55,7 @@ func logInStyle(title string, f formatter, a ...interface{}) {
 	message := fmt.Sprint(a...)
 	printf(
 		LoggerStderr,
-		"[%s] %s\n",
+		logFormat,
 		f(title),
 		message,
 	)
