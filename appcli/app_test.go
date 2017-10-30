@@ -248,40 +248,63 @@ func TestGetConfigMetadata_version(t *testing.T) {
 	}
 }
 
-func helperTestGetConfigMetadataVerbosity(t *testing.T, args []string, expected ui.VerbosityLevel) {
-	metadata, err := GetConfigMetadata(args)
-	if err != nil {
-		t.Fatalf(
-			"GetConfigMetadata(%s):\nunexpected err: %s",
-			args, err,
-		)
+var verbosityFlagTests = []struct {
+	args     []string
+	expected ui.VerbosityLevel
+}{
+	{
+		[]string{"tusk"},
+		ui.VerbosityLevelNormal,
+	},
+	{
+		[]string{"tusk", "--silent"},
+		ui.VerbosityLevelSilent,
+	},
+	{
+		[]string{"tusk", "--quiet"},
+		ui.VerbosityLevelQuiet,
+	},
+	{
+		[]string{"tusk", "--verbose"},
+		ui.VerbosityLevelVerbose,
+	},
+	{
+		[]string{"tusk", "--quiet", "--verbose"},
+		ui.VerbosityLevelQuiet,
+	},
+	{
+		[]string{"tusk", "--silent", "--quiet"},
+		ui.VerbosityLevelSilent,
+	},
+	{
+		[]string{"tusk", "--silent", "--verbose"},
+		ui.VerbosityLevelSilent,
+	},
+	{
+		[]string{"tusk", "--silent", "--quiet", "--verbose"},
+		ui.VerbosityLevelSilent,
+	},
+}
+
+func TestGetConfigMetadata_verbosity(t *testing.T) {
+	for _, tt := range verbosityFlagTests {
+
+		metadata, err := GetConfigMetadata(tt.args)
+		if err != nil {
+			t.Errorf(
+				"GetConfigMetadata(%s):\nunexpected err: %s",
+				tt.args, err,
+			)
+			continue
+		}
+
+		if metadata.Verbosity != tt.expected {
+			t.Errorf(
+				"GetConfigMetadata(%s): expected %s, actual: %s",
+				tt.args,
+				tt.expected,
+				metadata.Verbosity,
+			)
+		}
 	}
-
-	if metadata.Verbosity != expected {
-		t.Errorf(
-			"GetConfigMetadata(%s): expected %s, actual: %s",
-			args,
-			expected.String(),
-			metadata.Verbosity.String())
-	}
-}
-
-func TestGetConfigMetadata_quiet(t *testing.T) {
-	args := []string{"tusk", "--quiet"}
-
-	helperTestGetConfigMetadataVerbosity(t, args, ui.VerbosityLevelQuiet)
-}
-
-func TestGetConfigMetadata_verbose(t *testing.T) {
-	args := []string{"tusk", "--verbose"}
-
-	helperTestGetConfigMetadataVerbosity(t, args, ui.VerbosityLevelVerbose)
-
-}
-
-func TestGetConfigMetadata_silent(t *testing.T) {
-	args := []string{"tusk", "--silent"}
-
-	helperTestGetConfigMetadataVerbosity(t, args, ui.VerbosityLevelSilent)
-
 }
