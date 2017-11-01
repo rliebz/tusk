@@ -56,3 +56,26 @@ func testPrint(t *testing.T, tt printTestCase) {
 		)
 	}
 }
+
+var verbosityStringTests = []struct {
+	level    VerbosityLevel
+	expected string
+}{
+	{VerbosityLevelSilent, "Silent"},
+	{VerbosityLevelQuiet, "Quiet"},
+	{VerbosityLevelNormal, "Normal"},
+	{VerbosityLevelVerbose, "Verbose"},
+	{VerbosityLevel(99), "Unknown"},
+}
+
+func TestVerbosityLevel_String(t *testing.T) {
+	for _, tt := range verbosityStringTests {
+		actual := tt.level.String()
+		if tt.expected != actual {
+			t.Errorf(
+				`level.String(): expected "%s", actual "%s"`,
+				tt.expected, actual,
+			)
+		}
+	}
+}
