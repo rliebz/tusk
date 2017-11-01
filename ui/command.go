@@ -32,7 +32,7 @@ func PrintSkipped(command string, reason string) {
 		"[%s] %s\n%s%s\n",
 		yellow(skippedString),
 		bold(command),
-		cyan(prefixOutput()),
+		cyan(outputPrefix),
 		reason,
 	)
 }
@@ -46,15 +46,7 @@ func PrintCommandError(err error) {
 	printf(
 		LoggerStderr,
 		"%s%s\n",
-		red(prefixOutput()),
+		red(outputPrefix),
 		err.Error(),
 	)
-}
-
-func prefixOutput() string {
-	if Verbosity <= VerbosityLevelQuiet {
-		return ""
-	}
-
-	return outputPrefix
 }
