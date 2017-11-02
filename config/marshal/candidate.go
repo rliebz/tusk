@@ -6,9 +6,9 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// Candidate is a candidate for unmarshalling.
+// UnmarshalCandidate is a candidate for unmarshalling.
 // Candidates should only be defined inside of an UnmarshalYAML function.
-type Candidate struct {
+type UnmarshalCandidate struct {
 	// Unmarshal should return the result of UnmarshalYAML's unmarshal function.
 	// This simply provides a closure so that different data types can be
 	// safely passed into the unmarshalling function without reflection.
@@ -24,11 +24,11 @@ type Candidate struct {
 	Validate func() error
 }
 
-// OneOf tries to unmarshal candidates of different types until successful.
+// UnmarshalOneOf unmarshals candidates of different types until successful.
 // If any error other than a yaml.TypeError is thrown, that error is returned
 // immediately. If no candidates are valid, the error from the last candidate
 // passed will be returned.
-func OneOf(candidates ...Candidate) error {
+func UnmarshalOneOf(candidates ...UnmarshalCandidate) error {
 	err := errors.New("no candidates passed")
 
 	for _, c := range candidates {

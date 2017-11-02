@@ -7,8 +7,8 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func createTypeErrorCandidate(t *testing.T) Candidate {
-	return Candidate{
+func createTypeErrorCandidate(t *testing.T) UnmarshalCandidate {
+	return UnmarshalCandidate{
 		Unmarshal: func() error { return &yaml.TypeError{} },
 		Assign: func() {
 			t.Error("failed candidate called Assign function")
@@ -20,8 +20,8 @@ func createTypeErrorCandidate(t *testing.T) Candidate {
 	}
 }
 
-func createFailCandidate(t *testing.T) Candidate {
-	return Candidate{
+func createFailCandidate(t *testing.T) UnmarshalCandidate {
+	return UnmarshalCandidate{
 		Unmarshal: func() error { return errors.New("oops") },
 		Assign: func() {
 			t.Error("failed candidate called Assign function")
@@ -33,16 +33,16 @@ func createFailCandidate(t *testing.T) Candidate {
 	}
 }
 
-func createInvalidCandidate(t *testing.T) Candidate {
-	return Candidate{
+func createInvalidCandidate(t *testing.T) UnmarshalCandidate {
+	return UnmarshalCandidate{
 		Unmarshal: func() error { return nil },
 		Assign:    func() { t.Error("invalid candidate called Assign function") },
 		Validate:  func() error { return errors.New("expected failure") },
 	}
 }
 
-func createNeverReachedCandidate(t *testing.T) Candidate {
-	return Candidate{
+func createNeverReachedCandidate(t *testing.T) UnmarshalCandidate {
+	return UnmarshalCandidate{
 		Unmarshal: func() error {
 			t.Error("candidate was unexpectedly reached")
 			return nil
@@ -51,24 +51,24 @@ func createNeverReachedCandidate(t *testing.T) Candidate {
 }
 
 func TestOneOf_error(t *testing.T) {
-	if err := OneOf(); err == nil {
+	if err := UnmarshalOneOf(); err == nil {
 		t.Error("OneOf(): expected error, got nil")
 	}
 
-	if err := OneOf(
+	if err := UnmarshalOneOf(
 		createTypeErrorCandidate(t),
 	); err == nil {
 		t.Error("OneOf(typeError): expected error, got nil")
 	}
 
-	if err := OneOf(
+	if err := UnmarshalOneOf(
 		createFailCandidate(t),
 		createNeverReachedCandidate(t),
 	); err == nil {
 		t.Error("OneOf(failed): expected error, got nil")
 	}
 
-	if err := OneOf(
+	if err := UnmarshalOneOf(
 		createInvalidCandidate(t),
 		createNeverReachedCandidate(t),
 	); err == nil {
@@ -95,7 +95,7 @@ func TestOneOf_success(t *testing.T) {
 		}
 	}()
 
-	successCandidate := Candidate{
+	successCandidate := UnmarshalCandidate{
 		Unmarshal: func() error { return nil },
 		Assign:    func() { assignCalled = true },
 		Validate: func() error {
@@ -104,7 +104,7 @@ func TestOneOf_success(t *testing.T) {
 		},
 	}
 
-	if err := OneOf(
+	if err := UnmarshalOneOf(
 		createTypeErrorCandidate(t),
 		successCandidate,
 		createNeverReachedCandidate(t),

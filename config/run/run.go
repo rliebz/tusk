@@ -19,14 +19,14 @@ type Run struct {
 func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var command string
-	commandCandidate := marshal.Candidate{
+	commandCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&command) },
 		Assign:    func() { *r = Run{Command: marshal.StringList{command}} },
 	}
 
 	type runType Run // Use new type to avoid recursion
 	var runItem runType
-	runCandidate := marshal.Candidate{
+	runCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&runItem) },
 		Assign:    func() { *r = Run(runItem) },
 		Validate: func() error {
@@ -41,7 +41,7 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		},
 	}
 
-	return marshal.OneOf(commandCandidate, runCandidate)
+	return marshal.UnmarshalOneOf(commandCandidate, runCandidate)
 }
 
 // List is a list of run items with custom yaml unmarshalling.
@@ -51,16 +51,16 @@ type List []*Run
 func (rl *List) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var runSlice []*Run
-	sliceCandidate := marshal.Candidate{
+	sliceCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&runSlice) },
 		Assign:    func() { *rl = runSlice },
 	}
 
 	var runItem *Run
-	itemCandidate := marshal.Candidate{
+	itemCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&runItem) },
 		Assign:    func() { *rl = List{runItem} },
 	}
 
-	return marshal.OneOf(sliceCandidate, itemCandidate)
+	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)
 }

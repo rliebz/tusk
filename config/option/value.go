@@ -35,14 +35,14 @@ func (v *value) commandValueOrDefault() (string, error) {
 func (v *value) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var valueString string
-	stringCandidate := marshal.Candidate{
+	stringCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&valueString) },
 		Assign:    func() { *v = value{Value: valueString} },
 	}
 
 	type valueType value // Use new type to avoid recursion
 	var valueItem valueType
-	valueCandidate := marshal.Candidate{
+	valueCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&valueItem) },
 		Assign:    func() { *v = value(valueItem) },
 		Validate: func() error {
@@ -57,7 +57,7 @@ func (v *value) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		},
 	}
 
-	return marshal.OneOf(stringCandidate, valueCandidate)
+	return marshal.UnmarshalOneOf(stringCandidate, valueCandidate)
 }
 
 type valueList []value
@@ -66,16 +66,16 @@ type valueList []value
 func (vl *valueList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var valueSlice []value
-	sliceCandidate := marshal.Candidate{
+	sliceCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&valueSlice) },
 		Assign:    func() { *vl = valueSlice },
 	}
 
 	var valueItem value
-	itemCandidate := marshal.Candidate{
+	itemCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&valueItem) },
 		Assign:    func() { *vl = valueList{valueItem} },
 	}
 
-	return marshal.OneOf(sliceCandidate, itemCandidate)
+	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)
 }

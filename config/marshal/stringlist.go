@@ -8,16 +8,16 @@ type StringList []string
 // UnmarshalYAML unmarshals a string or list of strings always into a list.
 func (sl *StringList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var single string
-	singleCandidate := Candidate{
+	singleCandidate := UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&single) },
 		Assign:    func() { *sl = []string{single} },
 	}
 
 	var list []string
-	listCandidate := Candidate{
+	listCandidate := UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&list) },
 		Assign:    func() { *sl = list },
 	}
 
-	return OneOf(singleCandidate, listCandidate)
+	return UnmarshalOneOf(singleCandidate, listCandidate)
 }
