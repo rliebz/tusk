@@ -19,10 +19,7 @@ On macOS, installation is also available through [homebrew][homebrew]:
 brew install rliebz/tusk/tusk
 ```
 
-#### Supported Platforms
-
-Tusk is supported on Linux and macOS. Future experimental Windows support is
-planned through <https://mvdan.cc/sh/>, a native Go shell interpreter.
+Tusk is supported on Linux and macOS.
 
 ### Usage
 
