@@ -27,5 +27,5 @@ deploy: false
 
 test_script:
   - go install
-  - gometalinter --config .gometalinter.json ./...
-  - go test -cover -race -v ./...
+  - tusk --quiet lint
+  - tusk --quiet test --verbose --no-lint
