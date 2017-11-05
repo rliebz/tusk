@@ -2,7 +2,8 @@
 
 [![GitHub release](https://img.shields.io/github/release/rliebz/tusk.svg)][releases]
 [![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk/master.svg)][circle]
-[![license](https://img.shields.io/github/license/rliebz/tusk.svg)](LICENSE)
+[![AppVeyor](https://img.shields.io/appveyor/ci/RobertLiebowitz/tusk/master.svg?label=windows)][appveyor]
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Tusk is a yaml-based task runner. By creating a `tusk.yml` in the root of a
 repository, Tusk becomes a custom command line tool with minimal configuration.
@@ -11,6 +12,7 @@ repository, Tusk becomes a custom command line tool with minimal configuration.
 
 ### Installation
 
+Tusk is supported on Linux, macOS, and Windows.
 The latest version can be installed from the [releases page][releases].
 
 On macOS, installation is also available through [homebrew][homebrew]:
@@ -18,8 +20,6 @@ On macOS, installation is also available through [homebrew][homebrew]:
 ```bash
 brew install rliebz/tusk/tusk
 ```
-
-Tusk is supported on Linux and macOS.
 
 ### Usage
 
@@ -394,6 +394,7 @@ using quotes when appropriate.
 Set-up instructions for a development environment and contribution guidelines
 can be found in [CONTRIBUTING.md](CONTRIBUTING.md).
 
+[appveyor]: https://ci.appveyor.com/project/RobertLiebowitz/tusk
 [circle]: https://circleci.com/gh/rliebz/tusk/tree/master
 [homebrew]: https://brew.sh
 [releases]: https://github.com/rliebz/tusk/releases
