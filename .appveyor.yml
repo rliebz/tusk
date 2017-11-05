@@ -1,5 +1,9 @@
 version: "{build}"
 
+branches:
+  only:
+    - master
+
 clone_folder: c:\gopath\src\github.com\rliebz\tusk
 
 environment:
