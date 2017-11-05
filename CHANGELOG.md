@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Commands and flags are now listed in alphabetical order.
 
 ### Fixed
+- Avoid infinite loop when searching for tusk.yml in non-unix file systems.
 - Remove redundant error message for non-exit exec errors.
 - Improve error messaging for non-generic yaml parsing errors.
 

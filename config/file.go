@@ -13,25 +13,26 @@ var DefaultFile = "tusk.yml"
 // This should be called when an explicit file is not passed in to determine
 // the full path to the relevant config file.
 func SearchForFile() (fullPath string, found bool, err error) {
-	dirpath, err := os.Getwd()
+	prevPath := ""
+	dirPath, err := os.Getwd()
 	if err != nil {
 		return "", false, err
 	}
 
-	for dirpath != "/" {
-		fullPath, found, err = findFileInDir(dirpath)
+	for dirPath != prevPath {
+		fullPath, found, err = findFileInDir(dirPath)
 		if err != nil || found {
 			return fullPath, found, err
 		}
-		dirpath = filepath.Dir(dirpath)
+		prevPath, dirPath = dirPath, filepath.Dir(dirPath)
 	}
 
 	return "", false, nil
 }
 
-func findFileInDir(dirpath string) (fullPath string, found bool, err error) {
+func findFileInDir(dirPath string) (fullPath string, found bool, err error) {
 
-	fullPath = filepath.Join(dirpath, DefaultFile)
+	fullPath = filepath.Join(dirPath, DefaultFile)
 	if _, err := os.Stat(fullPath); err != nil {
 		if os.IsNotExist(err) {
 			return "", false, nil
