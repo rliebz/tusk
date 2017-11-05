@@ -14,20 +14,18 @@ install:
   - rmdir c:\go /s /q
   - appveyor DownloadFile https://storage.googleapis.com/golang/go%GOVERSION%.windows-amd64.msi
   - msiexec /i go%GOVERSION%.windows-amd64.msi /q
-  - choco install bzr
-  - set Path=c:\go\bin;c:\gopath\bin;C:\Program Files (x86)\Bazaar\;C:\Program Files\Mercurial\%Path%
-  - go version
-  - go env
-  # Install dependencies
+  - set Path=c:\go\bin;c:\gopath\bin;%Path%
+  # Install vendor dependencies
   - go get -u github.com/golang/dep/cmd/dep
   - dep ensure
+  # Install test dependencies
   - go get -u github.com/alecthomas/gometalinter
   - gometalinter --install
-  - go install
 
 build: false
 deploy: false
 
 test_script:
+  - go install
   - gometalinter --config .gometalinter.json ./...
   - go test -cover -race -v ./...
