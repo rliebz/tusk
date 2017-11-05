@@ -19,7 +19,9 @@ func ExecCommand(command string) error {
 	}
 
 	if err := cmd.Run(); err != nil {
-		ui.PrintCommandError(err)
+		if _, ok := err.(*exec.ExitError); ok {
+			ui.PrintCommandError(err)
+		}
 		return err
 	}
 

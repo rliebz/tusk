@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Commands and flags are now listed in alphabetical order.
 
 ### Fixed
+- Remove redundant error message for non-exit exec errors.
 - Improve error messaging for non-generic yaml parsing errors.
 
 
