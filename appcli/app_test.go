@@ -4,7 +4,7 @@ package appcli
 import (
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -152,8 +152,8 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 		t.Fatalf("os.Getwd(): unexpected err: %s", err)
 	}
 
-	directory := path.Dir(wd)
-	if metadata.Directory != directory {
+	directory := filepath.Dir(wd)
+	if directory != metadata.Directory {
 		t.Errorf(
 			"GetConfigMetadata(%s): expected Directory: %s, actual: %s",
 			args, directory, metadata.Directory,
