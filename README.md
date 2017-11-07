@@ -1,5 +1,6 @@
 # Tusk
 
+[![Gitter](https://img.shields.io/gitter/room/tusk-cli/tusk.svg)][gitter]
 [![GitHub release](https://img.shields.io/github/release/rliebz/tusk.svg)][releases]
 [![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk/master.svg)][circle]
 [![AppVeyor](https://img.shields.io/appveyor/ci/RobertLiebowitz/tusk/master.svg?label=windows)][appveyor]
@@ -396,5 +397,6 @@ can be found in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 [appveyor]: https://ci.appveyor.com/project/RobertLiebowitz/tusk
 [circle]: https://circleci.com/gh/rliebz/tusk/tree/master
+[gitter]: https://gitter.im/tusk-cli/tusk
 [homebrew]: https://brew.sh
 [releases]: https://github.com/rliebz/tusk/releases
