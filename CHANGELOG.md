@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.2.0 (2017-11-08)
 ### Added
 - Windows is now supported.
 - New -s/--silent global option available for no stderr/stdout.
