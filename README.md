@@ -10,11 +10,23 @@
 Tusk is a yaml-based task runner. By creating a `tusk.yml` in the root of a
 repository, Tusk becomes a custom command line tool with minimal configuration.
 
+## Features
+
+- __Customizable__: Specify your own tasks and options with support for command-line
+  flags, environment variables, conditional logic, and more.
+- __Explorable__: With help documentation generated dynamically and support for Bash
+  and Zsh tab completion available, all the help you need to get started in a
+  project is available straight from the command line.
+- __Accessible__: Built for usability with a simple YAML configuration, familiar
+  syntax for passing options, Bash-like variable interpolation, and a colorful
+  terminal output.
+- __Zero Dependencies__: All you need is a single binary file to get started on
+  Linux, macOS, or Windows.
+
 ## Getting Started
 
 ### Installation
 
-Tusk is supported on Linux, macOS, and Windows.
 The latest version can be installed from the [releases page][releases].
 
 On macOS, installation is also available through [homebrew][homebrew]:
@@ -41,15 +53,41 @@ tasks:
 As long as there is a `tusk.yml` file in the working or any parent directory,
 tasks can be run:
 
-```bash
-tusk greet
+```
+$ tusk greet --name friend
+[Running] echo "Hello, friend!"
+Hello, friend!
 ```
 
-Help messages are dynamically generated for the project and tasks:
+Help messages are dynamically generated based on the YAML configuration:
 
-```bash
-tusk --help
-tusk greet -h
+```
+$ tusk --help
+tusk - a task runner built with simplicity in mind
+
+Usage:
+   tusk [global options] <task> [task options]
+
+Tasks:
+   greet  Say hello to someone
+
+Global Options:
+   -f file, --file file  Set file to use as the config file
+   -h, --help            Show help and exit
+   ...
+```
+
+Individual tasks have help messages as well:
+
+```
+$ tusk greet --help
+tusk greet - Say hello to someone
+
+Usage:
+   tusk greet [options]
+
+Options:
+   --name value  A person to say "Hello" to
 ```
 
 For more detailed examples, check out [`example/example.yml`](example/example.yml)
