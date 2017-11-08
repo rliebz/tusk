@@ -120,7 +120,7 @@ immediately exit with the same exit code without executing any other commands.
 
 For executing shell commands, the interpreter used will be the value of the
 `SHELL` environment variable. If no environment variable is set, the default is
-`/bin/sh`.
+`sh`.
 
 Run can also execute previous tasks:
 

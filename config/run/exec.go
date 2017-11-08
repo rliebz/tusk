@@ -8,7 +8,7 @@ import (
 )
 
 const shellEnvVar = "SHELL"
-const defaultShell = "/bin/sh"
+const defaultShell = "sh"
 
 // ExecCommand executes a shell command.
 func ExecCommand(command string) error {
@@ -23,16 +23,14 @@ func ExecCommand(command string) error {
 	}
 
 	if err := cmd.Run(); err != nil {
-		if _, ok := err.(*exec.ExitError); ok {
-			ui.PrintCommandError(err)
-		}
+		ui.PrintCommandError(err)
 		return err
 	}
 
 	return nil
 }
 
-// getShell returns the value of the `SHELL` environment variable, or `/bin/sh`.
+// getShell returns the value of the `SHELL` environment variable, or `sh`.
 func getShell() string {
 	if shell := os.Getenv(shellEnvVar); shell != "" {
 		return shell

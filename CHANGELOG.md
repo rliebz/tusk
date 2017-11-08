@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Changed
 - Shell commands are now executed by the `SHELL` environment variable by
-  default. If `SHELL` is not set, `/bin/sh` is used.
+  default. If `SHELL` is not set, `sh` is used.
 - Commands and flags are now listed in alphabetical order.
 
 ### Fixed
