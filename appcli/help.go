@@ -24,9 +24,9 @@ Version:
 Description:
 {{indent 3 .Description}}{{end}}{{if .VisibleCommands}}
 
-Tasks:{{range .VisibleCategories}}{{if .Name}}
-   {{.Name}}:{{end}}{{range .VisibleCommands}}
-     {{join .Names ", "}}{{"\t"}}{{.Usage}}{{end}}{{end}}{{end}}{{if .VisibleFlags}}
+Tasks:{{range .VisibleCategories}}{{$categoryName := .Name}}{{if $categoryName}}
+   {{$categoryName}}:{{end}}{{range .VisibleCommands}}
+   {{if $categoryName}}  {{end}}{{join .Names ", "}}{{"\t"}}{{.Usage}}{{end}}{{end}}{{end}}{{if .VisibleFlags}}
 
 Global Options:
    {{range $index, $option := .VisibleFlags}}{{if $index}}
