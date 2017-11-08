@@ -97,8 +97,8 @@ tasks:
 ### Run
 
 The behavior of a task is defined in its `run` clause. In its simplest form,
-`run` can be given a string or list of strings to be executed serially by the
-native `sh` interpreter:
+`run` can be given a string or list of strings to be executed serially as shell
+commands:
 
 ```yaml
 tasks:
@@ -117,6 +117,10 @@ tasks:
 
 If any of the run commands execute with a non-zero exit code, Tusk will
 immediately exit with the same exit code without executing any other commands.
+
+For executing shell commands, the interpreter used will be the value of the
+`SHELL` environment variable. If no environment variable is set, the default is
+`/bin/sh`.
 
 Run can also execute previous tasks:
 

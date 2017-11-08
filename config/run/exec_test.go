@@ -2,6 +2,7 @@ package run
 
 import (
 	"bytes"
+	"os"
 	"testing"
 
 	"github.com/pkg/errors"
@@ -57,5 +58,31 @@ func TestExecCommand_error(t *testing.T) {
 			"execCommand(\"%s\"):\nexpected output:\n`%s`\nactual output:\n`%s`",
 			command, expected, actual,
 		)
+	}
+}
+
+func TestGetShell(t *testing.T) {
+	originalShell := os.Getenv(shellEnvVar)
+	defer func() {
+		if err := os.Setenv(shellEnvVar, originalShell); err != nil {
+			t.Errorf("Failed to reset SHELL environment variable: %v", err)
+		}
+	}()
+
+	customShell := "/my/custom/sh"
+	if err := os.Setenv(shellEnvVar, customShell); err != nil {
+		t.Fatalf("Failed to set environment variable: %v", err)
+	}
+
+	if actual := getShell(); actual != customShell {
+		t.Errorf("getShell(): expected %v, actual %v", customShell, actual)
+	}
+
+	if err := os.Unsetenv(shellEnvVar); err != nil {
+		t.Fatalf("Failed to unset environment variable: %v", err)
+	}
+
+	if actual := getShell(); actual != defaultShell {
+		t.Errorf("getShell(): expected %v, actual %v", defaultShell, actual)
 	}
 }
