@@ -74,19 +74,22 @@ tasks:
       file:
         short: f
         usage: test file to run
-      is_test_env:
+      is-test-env:
         private: true
         default:
           command: test "$RAILS_ENV" = "test" || test "$RACK_ENV" = "test"
     run:
       - when:
-          equal: {is_test_env: true}
+          equal: {is-test-env: true}
         task: setup
       - when:
-          equal: {is_test_env: false}
-        # TODO: We need to set environment variables here
+          equal: {is-test-env: false}
+        environment:
+          RAILS_ENV: test
+          RACK_ENV: test
+      - when:
+          equal: {is-test-env: false}
         task: update
-      # TODO: Support positional args
       - command: bin/rake test ${file}
 
   update:
