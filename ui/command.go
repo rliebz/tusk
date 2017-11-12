@@ -3,8 +3,6 @@ package ui
 const (
 	commandActionString = "Running"
 	skippedString       = "Skipping"
-
-	outputPrefix = "=> "
 )
 
 // PrintCommand prints the command to be executed.

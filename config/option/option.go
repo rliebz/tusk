@@ -109,7 +109,7 @@ func (o *Option) setenv(value string) error {
 	}
 
 	ui.Warn(
-		"Exporting environment variables inside options has been deprecated.\n",
+		"Exporting environment variables inside options has been deprecated.",
 		"Please use the `environment` action inside of a `run` clause instead.",
 	)
 

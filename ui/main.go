@@ -7,19 +7,21 @@ import (
 	"github.com/fatih/color"
 )
 
-// VerbosityLevel describes amount of output
+// VerbosityLevel describes the verbosity of output.
 type VerbosityLevel uint8
 
 const (
-	// VerbosityLevelSilent means sending no output from tusk
+	// VerbosityLevelSilent does not print any output to stderr/stdout.
 	VerbosityLevelSilent VerbosityLevel = iota
-	// VerbosityLevelQuiet means sending limited output from tusk
+	// VerbosityLevelQuiet only prints command output and error messages.
 	VerbosityLevelQuiet VerbosityLevel = iota
-	// VerbosityLevelNormal means normal output from tusk
+	// VerbosityLevelNormal is the normal level of verbosity.
 	VerbosityLevelNormal VerbosityLevel = iota
-	// VerbosityLevelVerbose means extra output from tusk
+	// VerbosityLevelVerbose prints all messages, include debug info.
 	VerbosityLevelVerbose VerbosityLevel = iota
 )
+
+const outputPrefix = "=> "
 
 func (v VerbosityLevel) String() string {
 	switch v {
@@ -37,11 +39,12 @@ func (v VerbosityLevel) String() string {
 }
 
 var (
-	// Verbosity is the amount to print for tusk output
+	// Verbosity allows the verbosity of output to be set.
 	Verbosity = VerbosityLevelNormal
 
 	// LoggerStdout is a logger that prints to stdout.
 	LoggerStdout = log.New(os.Stdout, "", 0)
+
 	// LoggerStderr is a logger that prints to stderr.
 	LoggerStderr = log.New(os.Stderr, "", 0)
 

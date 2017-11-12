@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"strings"
 )
 
 const (
@@ -52,7 +53,12 @@ func Error(a ...interface{}) {
 }
 
 func logInStyle(title string, f formatter, a ...interface{}) {
-	message := fmt.Sprint(a...)
+	messages := make([]string, len(a))
+	for i, message := range a {
+		messages[i] = fmt.Sprint(message)
+	}
+	message := strings.Join(messages, fmt.Sprintf("\n%s", cyan(outputPrefix)))
+
 	printf(
 		LoggerStderr,
 		logFormat,
