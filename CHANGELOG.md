@@ -2,6 +2,10 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- Log-level messages (Debug, Info, Warning, and Error) are now printed in title
+  case instead of all caps.
+
 
 ## 0.2.0 (2017-11-08)
 ### Added

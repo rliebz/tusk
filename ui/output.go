@@ -7,10 +7,10 @@ import (
 const (
 	logFormat = "[%s] %s\n"
 
-	debugString   = "DEBUG"
-	infoString    = "INFO"
-	warningString = "WARNING"
-	errorString   = "ERROR"
+	debugString   = "Debug"
+	infoString    = "Info"
+	warningString = "Warning"
+	errorString   = "Error"
 )
 
 // Println prints a message to stdout.
