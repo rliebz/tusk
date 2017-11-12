@@ -32,6 +32,17 @@ func TestTask_UnmarshalYAML(t *testing.T) {
 	}
 }
 
+func TestTask_UnmarshalYAML_invalid(t *testing.T) {
+	y := []byte(`[invalid]`)
+	task := Task{}
+
+	if err := yaml.Unmarshal(y, &task); err == nil {
+		t.Fatalf(
+			"yaml.Unmarshal(%s, ...): expected error, actual nil", string(y),
+		)
+	}
+}
+
 var shouldtests = []struct {
 	desc     string
 	input    *run.Run
