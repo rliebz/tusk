@@ -2,7 +2,6 @@ package appcli
 
 import (
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"sort"
 
@@ -80,13 +79,13 @@ func newFlagApp(cfgText []byte) (*cli.App, error) {
 }
 
 // NewApp creates a cli.App that executes tasks.
-func NewApp(meta *config.Metadata) (*cli.App, error) {
+func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 	flagApp, err := newFlagApp(meta.CfgText)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = flagApp.Run(os.Args); err != nil {
+	if err = flagApp.Run(args); err != nil {
 		return nil, err
 	}
 

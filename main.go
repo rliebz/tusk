@@ -40,7 +40,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	app, err := appcli.NewApp(meta)
+	app, err := appcli.NewApp(os.Args, meta)
 	if err != nil {
 		ui.Error(err)
 		os.Exit(1)

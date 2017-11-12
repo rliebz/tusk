@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/ui"
 	"github.com/urfave/cli"
 )
@@ -132,6 +133,43 @@ func TestNewFlagApp_no_options(t *testing.T) {
 			"flagApp.Metadata for args(%s):\n expected: %#v\nactual: %#v",
 			args, flagsExpected, flagsActual,
 		)
+	}
+}
+
+func TestNewApp(t *testing.T) {
+	args := []string{"tusk", "foo"}
+	cfgText := []byte(`tasks: { "foo": {} }`)
+	meta := &config.Metadata{CfgText: cfgText}
+	app, err := NewApp(args, meta)
+	if err != nil {
+		t.Errorf("NewApp(): unexpected error: %v", err)
+	}
+
+	if 1 != len(app.Commands) {
+		t.Fatalf(
+			"For config: `%s`\nexpected 1 command, got %#v",
+			string(cfgText), app.Commands,
+		)
+	}
+}
+
+func TestNewApp_fails_bad_config(t *testing.T) {
+	args := []string{"tusk"}
+	cfgText := []byte(`invalid`)
+	meta := &config.Metadata{CfgText: cfgText}
+	_, err := NewApp(args, meta)
+	if err == nil {
+		t.Fatal("expected error for invalid config text")
+	}
+}
+
+func TestNewApp_fails_bad_flag(t *testing.T) {
+	args := []string{"tusk", "--invalid"}
+	cfgText := []byte{}
+	meta := &config.Metadata{CfgText: cfgText}
+	_, err := NewApp(args, meta)
+	if err == nil {
+		t.Fatal("expected error for invalid flag")
 	}
 }
 
