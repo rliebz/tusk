@@ -68,26 +68,56 @@ func TestTask_shouldRun(t *testing.T) {
 	}
 }
 
-func TestTask_runCommands(t *testing.T) {
+func TestTask_run_commands(t *testing.T) {
 	var task Task
 
 	runSuccess := &run.Run{
 		Command: marshal.StringList{"exit 0"},
 	}
 
-	if err := task.runCommands(runSuccess); err != nil {
-		t.Errorf(
-			`task.RunCommands([exit 0]): unexpected error: %s`, err,
-		)
+	if err := task.run(runSuccess); err != nil {
+		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
 	runFailure := &run.Run{
 		Command: marshal.StringList{"exit 0", "exit 1"},
 	}
 
-	if err := task.runCommands(runFailure); err == nil {
-		t.Error(
-			`task.RunCommands([exit 0, exit 1]): expected error, got nil`,
-		)
+	if err := task.run(runFailure); err == nil {
+		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
+	}
+}
+
+func TestTask_run_sub_tasks(t *testing.T) {
+	taskSuccess := &Task{
+		Name: "success",
+		Run: run.List{
+			&run.Run{Command: marshal.StringList{"exit 0"}},
+		},
+	}
+
+	taskFailure := &Task{
+		Name: "failure",
+		Run: run.List{
+			&run.Run{Command: marshal.StringList{"exit 1"}},
+		},
+	}
+
+	task := Task{
+		SubTasks: []*Task{taskSuccess, taskFailure},
+	}
+
+	r := &run.Run{
+		Task: marshal.StringList{"success"},
+	}
+
+	if err := task.run(r); err != nil {
+		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
+	}
+
+	r.Task = append(r.Task, "failure")
+
+	if err := task.run(r); err == nil {
+		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
 	}
 }
