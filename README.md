@@ -172,8 +172,23 @@ tasks:
       - command: echo "Inside two"
 ```
 
-Either a task or a command can be executed in a single item in a run list, but
-not both.
+Or be used to set and unset environment variables for subsequent run actions:
+
+```yaml
+tasks:
+  hello:
+    - run:
+        environment:
+          http_proxy: http://proxy.example.com
+          no_proxy: null
+    - run: curl http://example.com
+```
+
+Passing `null` to an environment variable will explicitly unset it, while
+passing an empty string will set it to an empty string.
+
+While a `run` can be used for commands, sub-tasks, or setting environment
+variables, each `run` item can only perform one action.
 
 ### When
 

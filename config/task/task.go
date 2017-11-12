@@ -1,6 +1,8 @@
 package task
 
 import (
+	"os"
+
 	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/config/run"
 	"github.com/rliebz/tusk/config/when"
@@ -76,6 +78,10 @@ func (t *Task) run(r *run.Run) error {
 		return err
 	}
 
+	if err := t.runEnvironment(r); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -121,6 +127,24 @@ func (t *Task) runSubTasks(r *run.Run) error {
 					return err
 				}
 			}
+		}
+	}
+
+	return nil
+}
+
+func (t *Task) runEnvironment(r *run.Run) error {
+	for key, value := range r.Environment {
+		if value == nil {
+			if err := os.Unsetenv(key); err != nil {
+				return err
+			}
+
+			continue
+		}
+
+		if err := os.Setenv(key, *value); err != nil {
+			return err
 		}
 	}
 

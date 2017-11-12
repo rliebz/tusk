@@ -1,17 +1,18 @@
 package run
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
 )
 
-// Run defines a a single runnable script within a task.
+// Run defines a a single runnable item within a task.
 type Run struct {
-	When    *when.When         `yaml:",omitempty"`
-	Command marshal.StringList `yaml:",omitempty"`
-	Task    marshal.StringList `yaml:",omitempty"`
+	When        *when.When         `yaml:",omitempty"`
+	Command     marshal.StringList `yaml:",omitempty"`
+	Task        marshal.StringList `yaml:",omitempty"`
+	Environment map[string]*string `yaml:",omitempty"`
 }
 
 // UnmarshalYAML allows plain strings to represent a run struct. The value of
@@ -30,11 +31,21 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		Unmarshal: func() error { return unmarshal(&runItem) },
 		Assign:    func() { *r = Run(runItem) },
 		Validate: func() error {
-			if len(runItem.Command) != 0 && len(runItem.Task) != 0 {
-				return fmt.Errorf(
-					"command (%s) and subtask (%s) are both defined",
-					runItem.Command, runItem.Task,
-				)
+			actionUsedList := []bool{
+				len(runItem.Command) != 0,
+				len(runItem.Task) != 0,
+				runItem.Environment != nil,
+			}
+
+			count := 0
+			for _, isUsed := range actionUsedList {
+				if isUsed {
+					count++
+				}
+			}
+
+			if count > 1 {
+				return errors.New("Only one action can be defined in `run`")
 			}
 
 			return nil

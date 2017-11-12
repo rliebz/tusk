@@ -40,15 +40,23 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 	}
 }
 
+var multipleActionTests = []string{
+	`{command: example, task: echo 'hello'}`,
+	`{command: example, environment: {foo: bar}}`,
+	`{task: echo 'hello', environment: {foo: bar}}`,
+	`{command: example, task: echo 'hello', environment: {foo: bar}}`,
+}
+
 func TestRun_UnmarshalYAML_command_and_subtask(t *testing.T) {
-	s := []byte(`{command: example, task: echo 'hello'}`)
 	r := Run{}
 
-	if err := yaml.Unmarshal(s, &r); err == nil {
-		t.Fatalf(
-			"yaml.Unmarshal(%s, ...): expected error, received nil",
-			string(s),
-		)
+	for _, input := range multipleActionTests {
+		if err := yaml.Unmarshal([]byte(input), &r); err == nil {
+			t.Fatalf(
+				"yaml.Unmarshal(%s, ...): expected error, received nil",
+				input,
+			)
+		}
 	}
 }
 
@@ -94,7 +102,7 @@ func TestRunList_UnmarshalYAML(t *testing.T) {
 
 	if h1.Foo[0].Command[0] != "example" {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
+			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%v`",
 			s1, "example", h1.Foo[0],
 		)
 	}

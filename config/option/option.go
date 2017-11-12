@@ -7,6 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/rliebz/tusk/config/when"
+	"github.com/rliebz/tusk/ui"
 )
 
 // Option represents an abstract command line option.
@@ -106,6 +107,11 @@ func (o *Option) setenv(value string) error {
 	if o.Export == "" {
 		return nil
 	}
+
+	ui.Warn(
+		"Exporting environment variables inside options has been deprecated.\n",
+		"Please use the `environment` action inside of a `run` clause instead.",
+	)
 
 	return os.Setenv(o.Export, value)
 }
