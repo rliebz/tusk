@@ -134,9 +134,15 @@ tasks:
 
 ### Run
 
-The behavior of a task is defined in its `run` clause. In its simplest form,
-`run` can be given a string or list of strings to be executed serially as shell
-commands:
+The behavior of a task is defined in its `run` clause. A `run` clause can be
+used for commands, sub-tasks, or setting environment variables. Although each
+`run` item can only perform one of these actions, they can be run in succession
+to handle complex scenarios.
+
+#### Command
+
+In its simplest form, `run` can be given a string or list of strings to be
+executed serially as shell commands:
 
 ```yaml
 tasks:
@@ -160,7 +166,32 @@ For executing shell commands, the interpreter used will be the value of the
 `SHELL` environment variable. If no environment variable is set, the default is
 `sh`.
 
-Run can also execute previous tasks:
+#### Environment
+
+The second type of action a `run` clause can perform is setting or unsetting
+environment variables. To do so, simply define a map of environment variable
+names to their desired values: 
+
+```yaml
+tasks:
+  hello:
+    options:
+      proxy-url:
+        default: http://proxy.example.com
+    run:
+      - environment:
+          http_proxy: ${proxy-url}
+          https_proxy: ${proxy-url}
+          no_proxy: null
+      - command: curl http://example.com
+```
+
+Passing `null` to an environment variable will explicitly unset it, while
+passing an empty string will set it to an empty string.
+
+#### Sub-Tasks
+
+Run can also execute previously-defined tasks:
 
 ```yaml
 tasks:
@@ -172,23 +203,9 @@ tasks:
       - command: echo "Inside two"
 ```
 
-Or be used to set and unset environment variables for subsequent run actions:
-
-```yaml
-tasks:
-  hello:
-    - run:
-        environment:
-          http_proxy: http://proxy.example.com
-          no_proxy: null
-    - run: curl http://example.com
-```
-
-Passing `null` to an environment variable will explicitly unset it, while
-passing an empty string will set it to an empty string.
-
-While a `run` can be used for commands, sub-tasks, or setting environment
-variables, each `run` item can only perform one action.
+Any options for a sub-task will be directly configurable from the parent task.
+For this reason, it is not possible for a task and its sub-tasks to have
+differing definitions of the same option.
 
 ### When
 
@@ -341,21 +358,6 @@ options:
         value: Linux User
       - value: User
 ```
-
-#### Exporting
-
-The ultimate value of an option can be exported to an environment variable:
-
-```yaml
-options:
-  tmpdir:
-    default: /tmp/
-    export: TMPDIR
-```
-
-All environment variables are evaluated during the interpolation phase, which
-means that they will all be set before any `run` commands are executed. For more
-granular control, variables can be manually exported during a `run` command.
 
 #### Required Options
 
