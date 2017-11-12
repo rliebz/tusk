@@ -1,11 +1,10 @@
 # Tusk
 
-<!-- Temporarily removed due to issue with shields.io / GitHub -->
-<!-- [![GitHub release](https://img.shields.io/github/release/rliebz/tusk.svg)][releases] -->
-[![Gitter](https://img.shields.io/gitter/room/tusk-cli/tusk.svg)][gitter]
+[![GitHub release](https://img.shields.io/github/release/rliebz/tusk.svg)][releases]
 [![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk/master.svg)][circle]
 [![AppVeyor](https://img.shields.io/appveyor/ci/RobertLiebowitz/tusk/master.svg?label=windows)][appveyor]
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Gitter](https://img.shields.io/gitter/room/tusk-cli/tusk.svg)][gitter]
 
 Tusk is a yaml-based task runner. By creating a `tusk.yml` in the root of a
 repository, Tusk becomes a custom command line tool with minimal configuration.
