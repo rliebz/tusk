@@ -1,8 +1,14 @@
 package ui
 
+import (
+	"sort"
+)
+
 const (
-	commandActionString = "Running"
-	skippedString       = "Skipping"
+	runningString = "Running"
+	skippedString = "Skipping"
+
+	environmentMessage = "Set environment variables"
 )
 
 // PrintCommand prints the command to be executed.
@@ -14,9 +20,63 @@ func PrintCommand(command string) {
 	printf(
 		LoggerStderr,
 		"[%s] %s\n",
-		blue(commandActionString),
+		blue(runningString),
 		bold(command),
 	)
+}
+
+// PrintEnvironment prints when environment variables are set.
+func PrintEnvironment(variables map[string]*string) {
+	if Verbosity <= VerbosityLevelQuiet {
+		return
+	}
+
+	if len(variables) == 0 {
+		return
+	}
+
+	printf(
+		LoggerStderr,
+		"[%s] %s\n",
+		blue(runningString),
+		environmentMessage,
+	)
+
+	// Print in deterministic order
+	var keys []string
+	for key := range variables {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		value := variables[key]
+		if value == nil {
+			continue
+		}
+
+		printf(
+			LoggerStderr,
+			"%sset %s=%s",
+			cyan(outputPrefix),
+			bold(key),
+			*value,
+		)
+	}
+
+	for _, key := range keys {
+		value := variables[key]
+		if value != nil {
+			continue
+		}
+
+		printf(
+			LoggerStderr,
+			"%sunset %s",
+			cyan(outputPrefix),
+			bold(key),
+		)
+	}
 }
 
 // PrintSkipped prints the command skipped and the reason.

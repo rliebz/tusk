@@ -135,6 +135,7 @@ func (t *Task) runSubTasks(r *run.Run) error {
 }
 
 func (t *Task) runEnvironment(r *run.Run) error {
+	ui.PrintEnvironment(r.Environment)
 	for key, value := range r.Environment {
 		if value == nil {
 			if err := os.Unsetenv(key); err != nil {

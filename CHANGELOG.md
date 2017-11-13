@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Changed
 - Log-level messages (Debug, Info, Warning, and Error) are now printed in title
   case instead of all caps.
+- Log-level messages now indent additional lines of text.
 
 ### Deprecated
 - Environment variables should no longer be set inside of an `option` clause.
