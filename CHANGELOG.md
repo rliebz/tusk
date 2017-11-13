@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.2.1 (2017-11-12)
 ### Added
 - Environment variables can now be set and unset inside of a `run` clause. This
   replaces the `export` functionality that was previously under `option`.
