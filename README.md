@@ -207,6 +207,20 @@ Any options for a sub-task will be directly configurable from the parent task.
 For this reason, it is not possible for a task and its sub-tasks to have
 differing definitions of the same option.
 
+In cases where a sub-task may not be useful on its own, define it as private to
+prevent it from being invoked directly from the command-line. For example:
+
+```yaml
+tasks:
+  config:
+    private: true
+    run:
+      environment:
+        ENVIRONMENT: dev
+  serve:
+    run: python main.py
+```
+
 ### When
 
 For conditional execution, `when` clauses are available.

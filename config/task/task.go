@@ -15,11 +15,12 @@ type Task struct {
 	Run         run.List
 	Usage       string `yaml:",omitempty"`
 	Description string `yaml:",omitempty"`
+	Private     bool
 
 	// Computed members not specified in yaml file
-	Name     string  `yaml:"-"`
-	SubTasks []*Task `yaml:"-"`
-	Vars     map[string]string
+	Name     string            `yaml:"-"`
+	SubTasks []*Task           `yaml:"-"`
+	Vars     map[string]string `yaml:"-"`
 }
 
 // UnmarshalYAML unmarshals and assigns names to options.

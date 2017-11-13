@@ -23,13 +23,17 @@ func addTasks(app *cli.App, cfg *config.Config, create commandCreator) error {
 }
 
 func addTask(app *cli.App, cfg *config.Config, t *task.Task, create commandCreator) error {
+	if err := config.AddSubTasks(cfg, t); err != nil {
+		return errors.Wrap(err, "could not add sub-tasks")
+	}
+
+	if t.Private {
+		return nil
+	}
+
 	command, err := create(app, t)
 	if err != nil {
 		return errors.Wrapf(err, `could not create command "%s"`, t.Name)
-	}
-
-	if err := config.AddSubTasks(cfg, t); err != nil {
-		return errors.Wrap(err, "could not add sub-tasks")
 	}
 
 	if err := addAllFlagsUsed(cfg, command, t); err != nil {

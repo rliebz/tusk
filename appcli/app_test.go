@@ -4,8 +4,10 @@ package appcli
 import (
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
+	"syscall"
 	"testing"
 
 	"github.com/rliebz/tusk/config"
@@ -140,6 +142,7 @@ func TestNewApp(t *testing.T) {
 	args := []string{"tusk", "foo"}
 	cfgText := []byte(`tasks: { "foo": {} }`)
 	meta := &config.Metadata{CfgText: cfgText}
+
 	app, err := NewApp(args, meta)
 	if err != nil {
 		t.Errorf("NewApp(): unexpected error: %v", err)
@@ -150,6 +153,41 @@ func TestNewApp(t *testing.T) {
 			"For config: `%s`\nexpected 1 command, got %#v",
 			string(cfgText), app.Commands,
 		)
+	}
+}
+
+func TestNewApp_private_task(t *testing.T) {
+	args := []string{"tusk", "public"}
+	expectedCode := 99
+	cfgText := []byte(`
+tasks:
+  private:
+    private: true
+    run: exit 99
+  public:
+    run: {task: private}`)
+	meta := &config.Metadata{CfgText: cfgText}
+
+	app, err := NewApp(args, meta)
+	if err != nil {
+		t.Errorf("NewApp(): unexpected error: %v", err)
+	}
+
+	if 1 != len(app.Commands) {
+		t.Fatalf(
+			"For config: `%s`\nexpected 1 command, got %#v",
+			string(cfgText), app.Commands,
+		)
+	}
+
+	// Ensure private task still runs as subtask
+	exitErr, ok := app.Run(args).(*exec.ExitError)
+	if !ok {
+		t.Fatalf("app.Run(%v): expected exit err, got %#v", args, err)
+	}
+
+	if actual := exitErr.Sys().(syscall.WaitStatus).ExitStatus(); actual != expectedCode {
+		t.Fatalf("app.Run(%v): expected error code 99, actual: %d", args, actual)
 	}
 }
 

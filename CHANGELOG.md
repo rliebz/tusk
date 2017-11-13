@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Added
 - Environment variables can now be set and unset inside of a `run` clause. This
   replaces the `export` functionality that was previously under `option`.
+- Tasks can now be defined as private.
 
 ### Changed
 - Log-level messages (Debug, Info, Warning, and Error) are now printed in title
