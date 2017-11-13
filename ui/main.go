@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -21,7 +22,7 @@ const (
 	VerbosityLevelVerbose VerbosityLevel = iota
 )
 
-const outputPrefix = "=> "
+const outputPrefix = " => "
 
 func (v VerbosityLevel) String() string {
 	switch v {
@@ -72,6 +73,14 @@ func printf(l *log.Logger, format string, v ...interface{}) {
 }
 
 type formatter func(a ...interface{}) string
+
+func tag(name string, f formatter) string {
+	if color.NoColor {
+		return fmt.Sprintf("%s:", name)
+	}
+
+	return f(name)
+}
 
 func conditionalColor(value ...color.Attribute) formatter {
 	return func(a ...interface{}) string {

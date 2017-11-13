@@ -19,8 +19,8 @@ func PrintCommand(command string) {
 
 	printf(
 		LoggerStderr,
-		"[%s] %s\n",
-		blue(runningString),
+		logFormat,
+		tag(runningString, blue),
 		bold(command),
 	)
 }
@@ -35,10 +35,12 @@ func PrintEnvironment(variables map[string]*string) {
 		return
 	}
 
+	f := blue
+
 	printf(
 		LoggerStderr,
-		"[%s] %s\n",
-		blue(runningString),
+		logFormat,
+		tag(runningString, f),
 		environmentMessage,
 	)
 
@@ -58,7 +60,7 @@ func PrintEnvironment(variables map[string]*string) {
 		printf(
 			LoggerStderr,
 			"%sset %s=%s",
-			cyan(outputPrefix),
+			f(outputPrefix),
 			bold(key),
 			*value,
 		)
@@ -73,7 +75,7 @@ func PrintEnvironment(variables map[string]*string) {
 		printf(
 			LoggerStderr,
 			"%sunset %s",
-			cyan(outputPrefix),
+			f(outputPrefix),
 			bold(key),
 		)
 	}
@@ -85,12 +87,19 @@ func PrintSkipped(command string, reason string) {
 		return
 	}
 
+	f := cyan
+
 	printf(
 		LoggerStderr,
-		"[%s] %s\n%s%s\n",
-		yellow(skippedString),
+		logFormat,
+		tag(skippedString, f),
 		bold(command),
-		cyan(outputPrefix),
+	)
+
+	printf(
+		LoggerStderr,
+		"%s%s\n",
+		f(outputPrefix),
 		reason,
 	)
 }
@@ -103,8 +112,7 @@ func PrintCommandError(err error) {
 
 	printf(
 		LoggerStderr,
-		"%s%s\n",
-		red(outputPrefix),
-		err.Error(),
+		"%s\n",
+		red(err.Error()),
 	)
 }

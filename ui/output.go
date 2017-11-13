@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	logFormat = "[%s] %s\n"
+	logFormat = "%s %s\n"
 
 	debugString   = "Debug"
 	infoString    = "Info"
@@ -57,12 +57,12 @@ func logInStyle(title string, f formatter, a ...interface{}) {
 	for i, message := range a {
 		messages[i] = fmt.Sprint(message)
 	}
-	message := strings.Join(messages, fmt.Sprintf("\n%s", cyan(outputPrefix)))
+	message := strings.Join(messages, fmt.Sprintf("\n%s", f(outputPrefix)))
 
 	printf(
 		LoggerStderr,
 		logFormat,
-		f(title),
+		tag(title, f),
 		message,
 	)
 }

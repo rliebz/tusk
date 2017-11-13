@@ -20,7 +20,7 @@ var outputTests = []printTestCase{
 		func() { Debug("foo") },
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
-		fmt.Sprintf(logFormat, debugString, "foo"),
+		fmt.Sprintf(logFormat, tag(debugString, cyan), "foo"),
 	},
 	{
 		`Info("foo")`,
@@ -28,7 +28,7 @@ var outputTests = []printTestCase{
 		func() { Info("foo") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
-		fmt.Sprintf(logFormat, infoString, "foo"),
+		fmt.Sprintf(logFormat, tag(infoString, blue), "foo"),
 	},
 	{
 		`Warn("foo")`,
@@ -36,7 +36,7 @@ var outputTests = []printTestCase{
 		func() { Warn("foo") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
-		fmt.Sprintf(logFormat, warningString, "foo"),
+		fmt.Sprintf(logFormat, tag(warningString, yellow), "foo"),
 	},
 	{
 		`Error("foo")`,
@@ -44,7 +44,7 @@ var outputTests = []printTestCase{
 		func() { Error("foo") },
 		VerbosityLevelSilent,
 		VerbosityLevelQuiet,
-		fmt.Sprintf(logFormat, errorString, "foo"),
+		fmt.Sprintf(logFormat, tag(errorString, red), "foo"),
 	},
 }
 

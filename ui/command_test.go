@@ -13,7 +13,7 @@ var commandTests = []printTestCase{
 		func() { PrintCommand("echo hello") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
-		fmt.Sprintf("[%s] %s\n", runningString, "echo hello"),
+		fmt.Sprintf("%s %s\n", tag(runningString, blue), "echo hello"),
 	},
 	{
 		`PrintEnvironment()`,
@@ -31,8 +31,8 @@ var commandTests = []printTestCase{
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
 		fmt.Sprintf(
-			"[%s] %s\n%sset %s=%s\n%sset %s=%s\n%sunset %s\n",
-			runningString,
+			"%s %s\n%sset %s=%s\n%sset %s=%s\n%sunset %s\n",
+			tag(runningString, blue),
 			environmentMessage,
 			outputPrefix, "A", "one",
 			outputPrefix, "C", "three",
@@ -54,7 +54,11 @@ var commandTests = []printTestCase{
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
 		fmt.Sprintf(
-			"[%s] %s\n%s%s\n", skippedString, "echo hello", outputPrefix, "oops",
+			"%s %s\n%s%s\n",
+			tag(skippedString, yellow),
+			"echo hello",
+			outputPrefix,
+			"oops",
 		),
 	},
 	{
@@ -63,7 +67,7 @@ var commandTests = []printTestCase{
 		func() { PrintCommandError(errors.New("oops")) },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
-		fmt.Sprintf("%s%s\n", outputPrefix, "oops"),
+		fmt.Sprintf("%s\n", "oops"),
 	},
 }
 

@@ -54,7 +54,7 @@ tasks can be run:
 
 ```
 $ tusk greet --name friend
-[Running] echo "Hello, friend!"
+Running: echo "Hello, friend!"
 Hello, friend!
 ```
 
@@ -113,7 +113,7 @@ The commands can be run with no additional configuration:
 
 ```
 $ tusk hello
-[Running] echo "Hello, world!"
+Running: echo "Hello, world!"
 Hello, world!
 ```
 
