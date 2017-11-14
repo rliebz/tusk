@@ -45,7 +45,7 @@ func createCommandComplete(command *cli.Command) func(c *cli.Context) {
 	return func(c *cli.Context) {
 
 		if !isCompletingFlag(command.Flags, os.Args[len(os.Args)-2]) {
-			fmt.Println("normal")
+			fmt.Println("task")
 			for _, flag := range command.Flags {
 				printFlag(c, flag)
 			}
@@ -61,6 +61,12 @@ func printCommand(command cli.Command) {
 	if command.Hidden {
 		return
 	}
+
+	if command.Usage == "" {
+		fmt.Println(command.Name)
+		return
+	}
+
 	fmt.Printf(
 		"%s:%s\n",
 		command.Name,

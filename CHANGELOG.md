@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Fixed
+- Fix various issues with Zsh tab completions.
 
 ## 0.2.1 (2017-11-12)
 ### Added

@@ -10,20 +10,51 @@ IFS=$'\n' _words=( $(${words[@]:0:$end} --generate-bash-completion) )
 meta="${_words[1]}"
 _options=( "${_words[@]:1}" )
 
-case "${meta}" in
-    "normal")
-        local -a _tasks _flags
-        for option in "${_options[@]}"; do
-            if [[ "${option}" = --* ]]; then
-                _flags+=("${option}")
-            else
-                _tasks+=("${option}")
-            fi
-        done
-        _describe -t tasks 'tasks' _tasks
-        _describe -t flags 'flags' _flags
-        ;;
-    "file")
-        _files
-        ;;
-esac
+__tusk_tasks() {
+    local -a tasks
+    for option in "${_options[@]}"; do
+        if [[ ! "${option}" = --* ]]; then
+            tasks+=("${option}")
+        fi
+    done
+    _describe -t tasks 'tasks' tasks
+}
+
+__tusk_task_flags() {
+    local -a flags
+    for option in "${_options[@]}"; do
+        if [[ "${option}" = --* ]]; then
+            flags+=("${option}")
+        fi
+    done
+    _describe -t task-flags 'task options' flags
+}
+
+__tusk_global_flags() {
+    local -a flags
+    for option in "${_options[@]}"; do
+        if [[ "${option}" = --* ]]; then
+            flags+=("${option}")
+        fi
+    done
+    _describe -t global-flags 'global options' flags
+}
+
+_tusk() {
+    case "${meta}" in
+        "normal")
+            _alternative \
+                'tasks:task:__tusk_tasks' \
+                'global-flags:flag:__tusk_global_flags'
+            ;;
+        "task")
+            _alternative \
+                'task-flags:flag:__tusk_task_flags'
+            ;;
+        "file")
+            _files
+            ;;
+    esac
+}
+
+_tusk "$@"
