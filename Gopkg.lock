@@ -38,15 +38,14 @@
   revision = "1e2299c37cc91a509f1b12369872d27be0ce98a6"
 
 [[projects]]
-  branch = "null-fix"
+  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "08434a82b8376f585898a97654ce18065d14cb97"
-  source = "github.com/rliebz/yaml"
+  revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8c40e7a4f244dffc5d5d4b1095a7f4599bb231c7614da1da4261f44e8ed62131"
+  inputs-digest = "0139ba6d52f625c5ff8b6a7a338cb75e05f803d60b77abfda3ab361921123f13"
   solver-name = "gps-cdcl"
   solver-version = 1

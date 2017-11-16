@@ -35,5 +35,4 @@
 
 [[constraint]]
   name = "gopkg.in/yaml.v2"
-  source = "github.com/rliebz/yaml"
-  branch = "null-fix"
+  branch = "v2"
