@@ -287,9 +287,8 @@ var unmarshalOptionErrorTests = []struct {
 }
 
 func TestOption_UnmarshalYAML_invalid_definitions(t *testing.T) {
-	o := Option{}
-
 	for _, tt := range unmarshalOptionErrorTests {
+		o := Option{}
 		if err := yaml.Unmarshal([]byte(tt.input), &o); err == nil {
 			t.Errorf(
 				"yaml.Unmarshal(%s, ...): expected error for %s, actual nil",
