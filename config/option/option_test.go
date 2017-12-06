@@ -207,6 +207,107 @@ func TestOption_Evaluate_required_with_environment(t *testing.T) {
 	}
 }
 
+func TestOption_Evaluate_values_none_specified(t *testing.T) {
+	expected := ""
+	option := Option{
+		Values: marshal.StringList{"red", "herring"},
+	}
+
+	actual, err := option.Evaluate()
+	if err != nil {
+		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
+	}
+
+	if expected != actual {
+		t.Errorf(
+			`Option.Evaluate(): expected "%s", actual "%s"`,
+			expected, actual,
+		)
+	}
+}
+
+func TestOption_Evaluate_values_with_passed(t *testing.T) {
+	expected := "foo"
+	option := Option{
+		Passed: expected,
+		Values: marshal.StringList{"red", expected, "herring"},
+	}
+
+	actual, err := option.Evaluate()
+	if err != nil {
+		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
+	}
+
+	if expected != actual {
+		t.Errorf(
+			`Option.Evaluate(): expected "%s", actual "%s"`,
+			expected, actual,
+		)
+	}
+}
+
+func TestOption_Evaluate_values_with_environment(t *testing.T) {
+	envVar := "OPTION_VAR"
+	expected := "foo"
+
+	option := Option{
+		Environment: envVar,
+		Values:      marshal.StringList{"red", expected, "herring"},
+	}
+
+	if err := os.Setenv(envVar, expected); err != nil {
+		t.Fatalf("unexpected err setting environment variable: %s", err)
+	}
+
+	actual, err := option.Evaluate()
+	if err != nil {
+		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
+	}
+
+	if expected != actual {
+		t.Errorf(
+			`Option.Evaluate(): expected "%s", actual "%s"`,
+			expected, actual,
+		)
+	}
+}
+
+func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
+	expected := "foo"
+	option := Option{
+		Passed: expected,
+		Values: marshal.StringList{"bad", "values", "FOO"},
+	}
+
+	_, err := option.Evaluate()
+	if err == nil {
+		t.Fatalf(
+			"Option.Evaluate(): expected error for invalid passed value, got nil",
+		)
+	}
+}
+
+func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
+	envVar := "OPTION_VAR"
+	expected := "foo"
+
+	option := Option{
+		Environment: envVar,
+		Values:      marshal.StringList{"bad", "values", "FOO"},
+	}
+
+	if err := os.Setenv(envVar, expected); err != nil {
+		t.Fatalf("unexpected err setting environment variable: %s", err)
+	}
+
+	_, err := option.Evaluate()
+	if err == nil {
+		t.Fatalf(
+			"Option.Evaluate(): expected error for invalid environment value, got nil",
+		)
+	}
+}
+
 var evaluteTypeDefaultTests = []struct {
 	typeName string
 	expected string
@@ -279,6 +380,10 @@ var unmarshalOptionErrorTests = []struct {
 	{
 		"private and environment defined",
 		"{private: true, environment: ENV_VAR}",
+	},
+	{
+		"private and values defined",
+		"{private: true, values: [foo, bar]}",
 	},
 	{
 		"required and default defined",
