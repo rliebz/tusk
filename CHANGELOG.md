@@ -2,6 +2,10 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Add `values` field for options. Any option directly passed by command line
+  flag or environment variable must be one of the listed values, if specified.
+
 ### Fixed
 - Fix various issues with Zsh tab completions.
 

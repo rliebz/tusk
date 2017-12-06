@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
 	"github.com/rliebz/tusk/ui"
 )
@@ -18,6 +19,7 @@ type Option struct {
 	Export   string
 	Private  bool
 	Required bool
+	Values   marshal.StringList
 
 	// Used to determine value
 	Environment   string
@@ -58,15 +60,21 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		)
 	}
 
-	if o.Private && o.Required {
-		return errors.New("option cannot be both private and required")
-	}
+	if o.Private {
+		if o.Required {
+			return errors.New("option cannot be both private and required")
+		}
 
-	if o.Private && o.Environment != "" {
-		return fmt.Errorf(
-			`environment variable "%s" defined for private option`,
-			o.Environment,
-		)
+		if o.Environment != "" {
+			return fmt.Errorf(
+				`environment variable "%s" defined for private option`,
+				o.Environment,
+			)
+		}
+
+		if len(o.Values) != 0 {
+			return errors.New("option cannot be private and specify values")
+		}
 	}
 
 	if o.Required && len(o.DefaultValues) > 0 {
@@ -122,13 +130,12 @@ func (o *Option) getValue() (string, error) {
 	}
 
 	if !o.Private {
-		if o.Passed != "" {
-			return o.Passed, nil
+		if err := o.validateSpecified(); err != nil {
+			return "", err
 		}
 
-		envValue := os.Getenv(o.Environment)
-		if envValue != "" {
-			return envValue, nil
+		if value, found := o.getSpecified(); found {
+			return value, nil
 		}
 	}
 
@@ -137,6 +144,42 @@ func (o *Option) getValue() (string, error) {
 	}
 
 	return o.getDefaultValue()
+}
+
+func (o *Option) getSpecified() (value string, found bool) {
+
+	if o.Passed != "" {
+		return o.Passed, true
+	}
+
+	envValue := os.Getenv(o.Environment)
+	if envValue != "" {
+		return envValue, true
+	}
+
+	return "", false
+}
+
+func (o *Option) validateSpecified() error {
+	if len(o.Values) == 0 {
+		return nil
+	}
+
+	specified, found := o.getSpecified()
+	if !found {
+		return nil
+	}
+
+	for _, value := range o.Values {
+		if specified == value {
+			return nil
+		}
+	}
+
+	return fmt.Errorf(
+		`value "%s" for option "%s" must be one of %v`,
+		o.Passed, o.Name, o.Values,
+	)
 }
 
 func (o *Option) getDefaultValue() (string, error) {
