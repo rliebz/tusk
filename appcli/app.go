@@ -164,16 +164,7 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 		metadata.Directory = filepath.Dir(fullPath)
 		metadata.PrintHelp = c.Bool("help")
 		metadata.PrintVersion = c.Bool("version")
-
-		if c.Bool("silent") {
-			metadata.Verbosity = ui.VerbosityLevelSilent
-		} else if c.Bool("quiet") {
-			metadata.Verbosity = ui.VerbosityLevelQuiet
-		} else if c.Bool("verbose") {
-			metadata.Verbosity = ui.VerbosityLevelVerbose
-		} else {
-			metadata.Verbosity = ui.VerbosityLevelNormal
-		}
+		setMetadataVerbosity(metadata, c)
 
 		return err
 	}
@@ -183,6 +174,18 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 	}
 
 	return metadata, err
+}
+
+func setMetadataVerbosity(metadata *config.Metadata, c *cli.Context) {
+	if c.Bool("silent") {
+		metadata.Verbosity = ui.VerbosityLevelSilent
+	} else if c.Bool("quiet") {
+		metadata.Verbosity = ui.VerbosityLevelQuiet
+	} else if c.Bool("verbose") {
+		metadata.Verbosity = ui.VerbosityLevelVerbose
+	} else {
+		metadata.Verbosity = ui.VerbosityLevelNormal
+	}
 }
 
 // populateMetadata runs the app to populate the metadata struct.
