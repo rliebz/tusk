@@ -11,25 +11,25 @@ _tusk_bash_autocomplete() {
     opts="$( echo "${words}" | tail -n +2 )"
 
     case "${meta}" in
-        normal)
-            declare -a values tasks flags
+        file)
+            COMPREPLY=( $(compgen -f -- "${cur}") )
+            ;;
+        *)
+            declare -a values args flags
             values=( ${opts} )
             for option in "${values[@]}"; do
                 if [[ "${option}" = --* ]]; then
                     flags+=("${option}")
                 else
-                    tasks+=("${option}")
+                    args+=("${option}")
                 fi
             done
 
             if [[ "${cur}" = --* ]]; then
                 COMPREPLY=( $(compgen -W "${flags[*]}" -- "${cur}") )
             else
-                COMPREPLY=( $(compgen -W "${tasks[*]}" -- "${cur}") )
+                COMPREPLY=( $(compgen -W "${args[*]}" -- "${cur}") )
             fi
-            ;;
-        file)
-            COMPREPLY=( $(compgen -f -- "${cur}") )
             ;;
     esac
 
