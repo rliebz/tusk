@@ -40,6 +40,16 @@ __tusk_global_flags() {
     _describe -t global-flags 'global options' flags
 }
 
+__tusk_values() {
+    local -a values
+    for option in "${_options[@]}"; do
+        if [[ ! "${option}" = --* ]]; then
+            values+=("${option}")
+        fi
+    done
+    _describe -t values 'values' values
+}
+
 _tusk() {
     case "${meta}" in
         "normal")
@@ -50,6 +60,10 @@ _tusk() {
         "task")
             _alternative \
                 'task-flags:flag:__tusk_task_flags'
+            ;;
+        "value")
+            _alternative \
+                'values:value:__tusk_values'
             ;;
         "file")
             _files

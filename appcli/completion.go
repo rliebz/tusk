@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/rliebz/tusk/config"
 	"github.com/urfave/cli"
 )
 
@@ -21,7 +22,8 @@ func createDefaultComplete(app *cli.App) func(c *cli.Context) {
 			return
 		}
 
-		if !isCompletingFlag(app.Flags, os.Args[len(os.Args)-2]) {
+		_, isCompleting := getCompletingFlag(app.Flags, os.Args[len(os.Args)-2])
+		if !isCompleting {
 			fmt.Println("normal")
 			for _, command := range app.Commands {
 				printCommand(command)
@@ -41,13 +43,31 @@ func createDefaultComplete(app *cli.App) func(c *cli.Context) {
 // The metadata includes the completion type followed by a list of options.
 // The available completion types are "normal" and "file". Normal will return
 // task-specific flags, while file allows completion engines to use system files.
-func createCommandComplete(command *cli.Command) func(c *cli.Context) {
+func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli.Context) {
 	return func(c *cli.Context) {
 
-		if !isCompletingFlag(command.Flags, os.Args[len(os.Args)-2]) {
+		flagName, isCompleting := getCompletingFlag(command.Flags, os.Args[len(os.Args)-2])
+		if !isCompleting {
 			fmt.Println("task")
 			for _, flag := range command.Flags {
 				printFlag(c, flag)
+			}
+			return
+		}
+
+		t := cfg.Tasks[command.Name]
+		opt, ok := t.Options[flagName]
+		if !ok {
+			opt, ok = cfg.Options[flagName]
+			if !ok {
+				return
+			}
+		}
+
+		if len(opt.Values) > 0 {
+			fmt.Println("value")
+			for _, value := range opt.Values {
+				fmt.Println(value)
 			}
 			return
 		}
@@ -103,11 +123,11 @@ func removeCompletionArg(args []string) []string {
 	return output
 }
 
-// isCompletingFlag tells if the trailing arg is an incomplete flag.
-func isCompletingFlag(flags []cli.Flag, arg string) bool {
+// getCompletingFlag tells if the trailing arg is an incomplete flag.
+func getCompletingFlag(flags []cli.Flag, arg string) (string, bool) {
 
 	if !strings.HasPrefix(arg, "-") {
-		return false
+		return "", false
 	}
 
 	name := strings.TrimLeft(arg, "-")
@@ -123,12 +143,12 @@ func isCompletingFlag(flags []cli.Flag, arg string) bool {
 
 		for _, candidate := range strings.Split(flag.GetName(), ", ") {
 			if name == candidate {
-				return true
+				return name, true
 			}
 		}
 	}
 
-	return false
+	return "", false
 }
 
 func isFlagArgumentError(err error) bool {

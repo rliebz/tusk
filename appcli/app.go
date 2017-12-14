@@ -124,7 +124,9 @@ func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 
 	app.BashComplete = createDefaultComplete(app)
 	for i := range app.Commands {
-		app.Commands[i].BashComplete = createCommandComplete(&app.Commands[i])
+		app.Commands[i].BashComplete = createCommandComplete(
+			&app.Commands[i], cfg,
+		)
 	}
 
 	return app, nil
