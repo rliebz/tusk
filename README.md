@@ -373,6 +373,24 @@ options:
       - value: User
 ```
 
+#### Option Values
+
+An option can specify which values are considered valid:
+
+```yaml
+options:
+  number:
+    default: zero
+    values:
+      - one
+      - two
+      - three
+```
+
+Any value passed by command-line flags or environment variables must be one of
+the listed values. Default values, including commands, are excluded from this
+requirement.
+
 #### Required Options
 
 Options may be required if there is no sane default value. For a required flag,

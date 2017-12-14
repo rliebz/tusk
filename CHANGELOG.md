@@ -2,9 +2,12 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.2.2 (2017-12-14)
 ### Added
 - Add `values` field for options. Any option directly passed by command line
   flag or environment variable must be one of the listed values, if specified.
+- Add completion for option values.
 
 ### Fixed
 - Fix issue where global flags with hyphens are sometimes skipped during 
