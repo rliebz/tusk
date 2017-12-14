@@ -41,7 +41,7 @@ func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
 // Dependencies returns a list of options that are required explicitly.
 // This does not include interpolations.
 func (t *Task) Dependencies() []string {
-	var options []string
+	options := make([]string, 0, len(t.Options)+len(t.Run))
 
 	for _, opt := range t.Options {
 		options = append(options, opt.Dependencies()...)

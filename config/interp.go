@@ -83,7 +83,7 @@ func getRequiredOpts(cfgText []byte, taskName string) ([]string, error) {
 		return nil, err
 	}
 
-	var output []string
+	output := make([]string, 0, len(required))
 	for _, opt := range required {
 		output = append(output, opt.Name)
 	}

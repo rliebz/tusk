@@ -36,8 +36,7 @@ type Option struct {
 // Dependencies returns a list of options that are required explicitly.
 // This does not include interpolations.
 func (o *Option) Dependencies() []string {
-	var options []string
-
+	options := make([]string, 0, len(o.DefaultValues))
 	for _, value := range o.DefaultValues {
 		options = append(options, value.When.Dependencies()...)
 	}

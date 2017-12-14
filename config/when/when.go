@@ -22,11 +22,8 @@ type When struct {
 // Dependencies returns a list of options that are required explicitly.
 // This does not include interpolations.
 func (w *When) Dependencies() []string {
-
-	var options []string
-
 	if w == nil {
-		return options
+		return nil
 	}
 
 	// Use a map to prevent duplicates
@@ -39,6 +36,7 @@ func (w *When) Dependencies() []string {
 		references[opt] = struct{}{}
 	}
 
+	options := make([]string, 0, len(references))
 	for opt := range references {
 		options = append(options, opt)
 	}

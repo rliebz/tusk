@@ -120,7 +120,7 @@ func getDependencies(item dependencyGetter) ([]string, error) {
 	re := interp.CompileGeneric()
 	groups := re.FindAllStringSubmatch(string(marshalled), -1)
 
-	var names []string
+	names := make([]string, 0, len(groups))
 	for _, group := range groups {
 		names = append(names, group[1])
 	}
