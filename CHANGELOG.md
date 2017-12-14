@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
   flag or environment variable must be one of the listed values, if specified.
 
 ### Fixed
+- Fix issue where global flags with hyphens are sometimes skipped during 
+  interpolation.
 - Fix various issues with Zsh tab completions.
 
 ## 0.2.1 (2017-11-12)

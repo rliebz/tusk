@@ -117,14 +117,7 @@ func getDependencies(item dependencyGetter) ([]string, error) {
 		return nil, err
 	}
 
-	re := interp.CompileGeneric()
-	groups := re.FindAllStringSubmatch(string(marshalled), -1)
-
-	names := make([]string, 0, len(groups))
-	for _, group := range groups {
-		names = append(names, group[1])
-	}
-
+	names := interp.FindPotentialVariables(marshalled)
 	names = append(names, item.Dependencies()...)
 
 	return names, nil

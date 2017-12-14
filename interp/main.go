@@ -53,9 +53,18 @@ func Contains(text []byte, name string) (bool, error) {
 	return re.Match(text), nil
 }
 
-// CompileGeneric returns the regexp pattern to identify a potential variable.
-func CompileGeneric() *regexp.Regexp {
-	return regexp.MustCompile(`\${(\w+)}`)
+// FindPotentialVariables returns a list of potential interpolation target names.
+func FindPotentialVariables(text []byte) []string {
+	re := regexp.MustCompile(`\${([\w-]+)}`)
+
+	groups := re.FindAllStringSubmatch(string(text), -1)
+
+	names := make([]string, 0, len(groups))
+	for _, group := range groups {
+		names = append(names, group[1])
+	}
+
+	return names
 }
 
 // Compile returns the regexp pattern for a given variable name.
