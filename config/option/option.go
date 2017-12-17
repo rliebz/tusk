@@ -26,6 +26,7 @@ type Option struct {
 	DefaultValues valueList `yaml:"default"`
 
 	// Computed members not specified in yaml file
+	// TODO: May need to remove tag from Name
 	Name       string            `yaml:"-"`
 	Passed     string            `yaml:"-"`
 	Vars       map[string]string `yaml:"-"`

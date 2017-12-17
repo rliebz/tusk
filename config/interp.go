@@ -24,6 +24,18 @@ import (
 // list of options which require interpolation.
 func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]byte, map[string]string, error) {
 
+	// TODO: Remove this
+	cfg, values, err := ParseComplete(cfgText, passed, taskName)
+	if err == nil {
+		var text []byte
+		if text, err = yaml.Marshal(cfg); err == nil {
+			_ = text
+			_ = values
+			// fmt.Println(string(text))
+			// fmt.Println(values)
+		}
+	}
+
 	options := make(map[string]string)
 
 	ordered, err := getOrderedOpts(cfgText)
@@ -59,6 +71,51 @@ func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]b
 	return interp.Escape(cfgText), options, nil
 }
 
+// ParseComplete is the new Interpolate.
+func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*Config, map[string]string, error) {
+
+	cfg, err := Parse(cfgText)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	options, err := getRequiredOptions(cfgText, taskName)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	values := make(map[string]string, len(options))
+	for _, name := range options {
+		if err := interpolateOption(cfg.Options[name], passed, values); err != nil {
+			return nil, nil, err
+		}
+	}
+
+	// TODO: Go over task options
+
+	return cfg, values, nil
+}
+
+func interpolateOption(o *option.Option, passed, values map[string]string) error {
+	if err := interp.Struct(o, values); err != nil {
+		return err
+	}
+
+	if valuePassed, ok := passed[o.Name]; ok {
+		o.Passed = valuePassed
+	}
+
+	value, err := o.Evaluate()
+	if err != nil {
+		return err
+	}
+
+	values[o.Name] = value
+	o.Vars = values
+
+	return nil
+}
+
 func getRequiredOpts(cfgText []byte, taskName string) ([]string, error) {
 	if taskName == "" {
 		return []string{}, nil
@@ -86,6 +143,71 @@ func getRequiredOpts(cfgText []byte, taskName string) ([]string, error) {
 	output := make([]string, 0, len(required))
 	for _, opt := range required {
 		output = append(output, opt.Name)
+	}
+
+	return output, nil
+}
+
+// TODO: Replace old version
+// TODO: Also return task options in order?
+func getRequiredOptions(cfgText []byte, taskName string) ([]string, error) {
+	if taskName == "" {
+		return []string{}, nil
+	}
+
+	ordered, err := getOrderedOptions(cfgText)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg, err := Parse(cfgText)
+	if err != nil {
+		return nil, err
+	}
+
+	t, ok := cfg.Tasks[taskName]
+	if !ok {
+		return nil, fmt.Errorf(`could not find task "%s"`, taskName)
+	}
+
+	// TODO: Version that skips subtasks
+	required, err := cfg.FindAllOptions(t)
+	if err != nil {
+		return nil, err
+	}
+
+	var output []string
+	for _, o := range ordered {
+		for _, r := range required {
+			if r.Name != o {
+				continue
+			}
+
+			output = append(output, o)
+		}
+	}
+
+	return output, nil
+}
+
+// TODO: Replace old version
+func getOrderedOptions(text []byte) ([]string, error) {
+	ordered := new(struct {
+		Options yaml.MapSlice
+	})
+
+	if err := yaml.Unmarshal(text, ordered); err != nil {
+		return nil, err
+	}
+
+	var output []string
+	for _, mapslice := range ordered.Options {
+		name, ok := mapslice.Key.(string)
+		if !ok {
+			return nil, fmt.Errorf("failed to assert name as string: %v", mapslice.Key)
+		}
+
+		output = append(output, name)
 	}
 
 	return output, nil

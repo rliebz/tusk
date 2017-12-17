@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 var escSeq = []byte("{UNLIKELY_ESCAPE_SEQUENCE}")
@@ -25,6 +27,21 @@ func Interpolate(text []byte, name string, value string) ([]byte, error) {
 	text = re.ReplaceAll(text, []byte(value))
 
 	return unescapePattern(text), nil
+}
+
+// Struct interpolates any struct.
+func Struct(i interface{}, values map[string]string) error {
+	text, err := yaml.Marshal(i)
+	if err != nil {
+		return err
+	}
+
+	text, err = Map(text, values)
+	if err != nil {
+		return err
+	}
+
+	return yaml.UnmarshalStrict(text, i)
 }
 
 // Map runs interpolation over a map from variable name to value.
