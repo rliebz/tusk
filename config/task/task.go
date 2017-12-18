@@ -100,8 +100,8 @@ func (t *Task) shouldRun(r *run.Run) (bool, error) {
 			ui.PrintSkipped(command, err.Error())
 		}
 
-		for _, subTaskName := range r.Task {
-			ui.PrintSkipped("task: "+subTaskName, err.Error())
+		for _, subTask := range r.Task {
+			ui.PrintSkipped("task: "+subTask.Name, err.Error())
 		}
 
 		return false, nil
@@ -121,9 +121,9 @@ func (t *Task) runCommands(r *run.Run) error {
 }
 
 func (t *Task) runSubTasks(r *run.Run) error {
-	for _, subTaskName := range r.Task {
+	for _, subTaskDesc := range r.Task {
 		for _, subTask := range t.SubTasks {
-			if subTask.Name == subTaskName {
+			if subTask.Name == subTaskDesc.Name {
 				if err := subTask.Execute(); err != nil {
 					return err
 				}

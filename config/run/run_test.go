@@ -11,11 +11,11 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 	r2 := Run{}
 
 	if err := yaml.Unmarshal(s1, &r1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
 	}
 
 	if err := yaml.Unmarshal(s2, &r2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s2, err)
+		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(r1, r2) {
