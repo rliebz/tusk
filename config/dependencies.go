@@ -13,11 +13,14 @@ import (
 func AddSubTasks(cfg *Config, t *task.Task) error {
 
 	for _, run := range t.Run {
-		for _, subTaskName := range run.Task {
+		for _, subTaskDesc := range run.Task {
 			// TODO: This requires tasks to be defined in order
-			subTask, ok := cfg.Tasks[subTaskName]
+			subTask, ok := cfg.Tasks[subTaskDesc.Name]
 			if !ok {
-				return fmt.Errorf(`sub-task "%s" was referenced before definition`, subTaskName)
+				return fmt.Errorf(
+					`sub-task "%s" was referenced before definition`,
+					subTaskDesc.Name,
+				)
 			}
 
 			t.SubTasks = append(t.SubTasks, subTask)

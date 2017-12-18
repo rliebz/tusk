@@ -110,7 +110,6 @@ func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 		return nil, err
 	}
 
-	// TODO: Don't forget to do this
 	for _, t := range cfg.Tasks {
 		t.Vars = flags
 	}

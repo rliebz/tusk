@@ -120,14 +120,14 @@ func TestTask_run_sub_tasks(t *testing.T) {
 	}
 
 	r := &run.Run{
-		Task: marshal.StringList{"success"},
+		Task: run.SubTaskList{{Name: "success"}},
 	}
 
 	if err := task.run(r); err != nil {
 		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
-	r.Task = append(r.Task, "failure")
+	r.Task = append(r.Task, &run.SubTask{Name: "failure"})
 
 	if err := task.run(r); err == nil {
 		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)

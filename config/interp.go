@@ -79,21 +79,55 @@ func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*
 		return nil, nil, err
 	}
 
-	options, err := getRequiredOptions(cfgText, taskName)
+	globalOptions, err := getRequiredOptions(cfgText, taskName)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	values := make(map[string]string, len(options))
-	for _, name := range options {
-		if err := interpolateOption(cfg.Options[name], passed, values); err != nil {
+	values := make(map[string]string, len(globalOptions))
+	for _, name := range globalOptions {
+		if err := interpolateOption(
+			cfg.Options[name],
+			passed,
+			values,
+		); err != nil {
 			return nil, nil, err
 		}
 	}
 
-	// TODO: Go over task options
+	if err := interpolateTask(cfg, cfgText, values, passed, taskName); err != nil {
+		return nil, nil, err
+	}
+
+	// TODO: Subtasks here
 
 	return cfg, values, nil
+}
+
+func interpolateTask(cfg *Config, cfgText []byte, values, passed map[string]string, taskName string) error {
+	if taskName == "" {
+		return nil
+	}
+
+	taskOptions, err := getTaskOptions(cfgText, taskName)
+	if err != nil {
+		return err
+	}
+
+	taskValues := make(map[string]string, len(values)+len(taskOptions))
+	for _, name := range taskOptions {
+		if err := interpolateOption(
+			cfg.Tasks[taskName].Options[name],
+			passed,
+			taskValues,
+		); err != nil {
+			return err
+		}
+	}
+
+	cfg.Tasks[taskName].Vars = taskValues
+
+	return nil
 }
 
 func interpolateOption(o *option.Option, passed, values map[string]string) error {
@@ -208,6 +242,36 @@ func getOrderedOptions(text []byte) ([]string, error) {
 		}
 
 		output = append(output, name)
+	}
+
+	return output, nil
+}
+
+func getTaskOptions(cfgText []byte, taskName string) ([]string, error) {
+	ordered := new(struct {
+		Tasks yaml.MapSlice
+	})
+
+	if err := yaml.Unmarshal(cfgText, ordered); err != nil {
+		return nil, err
+	}
+
+	var output []string
+	for _, mapslice := range ordered.Tasks {
+		if name := mapslice.Key.(string); name != taskName {
+			continue
+		}
+
+		for _, mapslice := range mapslice.Value.(yaml.MapSlice) {
+			if name := mapslice.Key.(string); name != "options" {
+				continue
+			}
+
+			for _, mapslice := range mapslice.Value.(yaml.MapSlice) {
+				output = append(output, mapslice.Key.(string))
+			}
+			break
+		}
 	}
 
 	return output, nil

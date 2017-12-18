@@ -11,7 +11,7 @@ import (
 type Run struct {
 	When        *when.When         `yaml:",omitempty"`
 	Command     marshal.StringList `yaml:",omitempty"`
-	Task        marshal.StringList `yaml:",omitempty"`
+	Task        SubTaskList        `yaml:",omitempty"`
 	Environment map[string]*string `yaml:",omitempty"`
 }
 
@@ -59,7 +59,7 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 type List []*Run
 
 // UnmarshalYAML allows single items to be used as lists.
-func (rl *List) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (rl *List) UnmarshalYAML(unmarshal func(interface{}) error) error { // nolint: dupl
 
 	var runSlice []*Run
 	sliceCandidate := marshal.UnmarshalCandidate{
