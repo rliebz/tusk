@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -470,53 +469,6 @@ tasks:
 }
 
 func TestInterpolate(t *testing.T) {
-	for _, tt := range interpolatetests {
-
-		t.Skip("test will be removed once code is removed")
-
-		errString := fmt.Sprintf(
-			"Interpolate(cfgText, passed, taskName) for %s:\n"+
-				"cfgText: `%s`\npassed: %v\ntaskName: %s",
-			tt.testCase, tt.cfgText, tt.passed, tt.taskName,
-		)
-
-		actualBytes, _, err := Interpolate([]byte(tt.cfgText), tt.passed, tt.taskName)
-		if err != nil {
-			t.Errorf("%s\nunexpected error: %s", errString, err)
-			continue
-		}
-
-		actual := string(actualBytes)
-
-		if tt.expected != actual {
-			t.Errorf(
-				"%s\nexpected: `%s`\nactual: `%s`\n",
-				errString, tt.expected, actual,
-			)
-			continue
-		}
-
-	}
-}
-
-func TestInterpolate_no_redefining_sub_tasks(t *testing.T) {
-
-	cfgText := `
-tasks:
-  one:
-    options:
-      foo:
-        default: foovalue
-  two:
-    options:
-      foo:
-        default: barvalue
-    run:
-      task: one
-  `
-
-	if _, _, err := Interpolate([]byte(cfgText), nil, "foo"); err == nil {
-		t.Errorf("Interpolate(cfgText, ...): expected error, got nil")
-	}
-
+	_ = interpolatetests
+	t.Skip("test will be removed once code is removed")
 }
