@@ -45,30 +45,6 @@ func addSubTasks(cfg *Config, cfgText []byte, values map[string]string, t *task.
 	return nil
 }
 
-// AddSubTasks will recursively add task objects to the task's list of pretasks.
-func AddSubTasks(cfg *Config, t *task.Task) error {
-
-	for _, run := range t.Run {
-		for _, subTaskDesc := range run.Task {
-			// TODO: This requires tasks to be defined in order
-			subTask, ok := cfg.Tasks[subTaskDesc.Name]
-			if !ok {
-				return fmt.Errorf(
-					`sub-task "%s" was referenced before definition`,
-					subTaskDesc.Name,
-				)
-			}
-
-			// t.SubTasks = append(t.SubTasks, *subTask)
-			if err := AddSubTasks(cfg, subTask); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
 // FindAllOptions returns a list of options relevant for a given task.
 func (cfg *Config) FindAllOptions(t *task.Task) ([]*option.Option, error) {
 	names, err := getDependencies(t)
