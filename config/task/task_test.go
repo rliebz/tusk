@@ -101,33 +101,31 @@ func TestTask_run_commands(t *testing.T) {
 }
 
 func TestTask_run_sub_tasks(t *testing.T) {
-	taskSuccess := &Task{
+	taskSuccess := Task{
 		Name: "success",
 		Run: run.List{
 			&run.Run{Command: marshal.StringList{"exit 0"}},
 		},
 	}
 
-	taskFailure := &Task{
+	taskFailure := Task{
 		Name: "failure",
 		Run: run.List{
 			&run.Run{Command: marshal.StringList{"exit 1"}},
 		},
 	}
 
-	task := Task{
-		SubTasks: []*Task{taskSuccess, taskFailure},
-	}
+	r := &run.Run{}
 
-	r := &run.Run{
-		Task: run.SubTaskList{{Name: "success"}},
+	task := Task{
+		SubTasks: map[*run.Run][]Task{r: {taskSuccess}},
 	}
 
 	if err := task.run(r); err != nil {
 		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
-	r.Task = append(r.Task, &run.SubTask{Name: "failure"})
+	task.SubTasks[r] = append(task.SubTasks[r], taskFailure)
 
 	if err := task.run(r); err == nil {
 		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
