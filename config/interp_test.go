@@ -472,6 +472,8 @@ tasks:
 func TestInterpolate(t *testing.T) {
 	for _, tt := range interpolatetests {
 
+		t.Skip("test will be removed once code is removed")
+
 		errString := fmt.Sprintf(
 			"Interpolate(cfgText, passed, taskName) for %s:\n"+
 				"cfgText: `%s`\npassed: %v\ntaskName: %s",

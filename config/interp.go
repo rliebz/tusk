@@ -24,18 +24,6 @@ import (
 // list of options which require interpolation.
 func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]byte, map[string]string, error) {
 
-	// TODO: Remove this
-	cfg, values, err := ParseComplete(cfgText, passed, taskName)
-	if err == nil {
-		var text []byte
-		if text, err = yaml.Marshal(cfg); err == nil {
-			_ = text
-			_ = values
-			// fmt.Println(string(text))
-			// fmt.Println(values)
-		}
-	}
-
 	options := make(map[string]string)
 
 	ordered, err := getOrderedOpts(cfgText)
@@ -71,17 +59,18 @@ func Interpolate(cfgText []byte, passed map[string]string, taskName string) ([]b
 	return interp.Escape(cfgText), options, nil
 }
 
-// ParseComplete is the new Interpolate.
-func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*Config, map[string]string, error) {
+// ParseComplete parses the file completely with interpolation.
+func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*Config, error) {
 
 	cfg, err := Parse(cfgText)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
+	// TODO: Disallow passing non-options explicitly to subtasks
 	globalOptions, err := getRequiredOptions(cfgText, taskName)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	values := make(map[string]string, len(globalOptions))
@@ -91,33 +80,41 @@ func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*
 			passed,
 			values,
 		); err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 	}
 
-	if err := interpolateTask(cfg, cfgText, values, passed, taskName); err != nil {
-		return nil, nil, err
+	if t, ok := cfg.Tasks[taskName]; ok {
+		if err := interpolateTask(cfgText, values, passed, t); err != nil {
+			return nil, err
+		}
+
+		if err := addSubTasks(cfg, cfgText, values, t); err != nil {
+			return nil, err
+		}
 	}
 
-	// TODO: Subtasks here
-
-	return cfg, values, nil
+	return cfg, nil
 }
 
-func interpolateTask(cfg *Config, cfgText []byte, values, passed map[string]string, taskName string) error {
-	if taskName == "" {
+func interpolateTask(cfgText []byte, values, passed map[string]string, t *task.Task) error {
+	if t == nil {
 		return nil
 	}
 
-	taskOptions, err := getTaskOptions(cfgText, taskName)
+	taskOptions, err := getTaskOptions(cfgText, t.Name)
 	if err != nil {
 		return err
 	}
 
 	taskValues := make(map[string]string, len(values)+len(taskOptions))
+	for k, v := range values {
+		taskValues[k] = v
+	}
+
 	for _, name := range taskOptions {
 		if err := interpolateOption(
-			cfg.Tasks[taskName].Options[name],
+			t.Options[name],
 			passed,
 			taskValues,
 		); err != nil {
@@ -125,12 +122,18 @@ func interpolateTask(cfg *Config, cfgText []byte, values, passed map[string]stri
 		}
 	}
 
-	cfg.Tasks[taskName].Vars = taskValues
+	if err := interp.Struct(&t.Run, taskValues); err != nil {
+		return err
+	}
+
+	t.Vars = taskValues
 
 	return nil
 }
 
 func interpolateOption(o *option.Option, passed, values map[string]string) error {
+	o.InvalidateCache()
+
 	if err := interp.Struct(o, values); err != nil {
 		return err
 	}
@@ -139,13 +142,13 @@ func interpolateOption(o *option.Option, passed, values map[string]string) error
 		o.Passed = valuePassed
 	}
 
+	o.Vars = values
 	value, err := o.Evaluate()
 	if err != nil {
 		return err
 	}
 
 	values[o.Name] = value
-	o.Vars = values
 
 	return nil
 }
@@ -376,9 +379,11 @@ func checkTaskForOpt(t *task.Task, optName string) (*option.Option, bool) {
 		return value, true
 	}
 
-	for _, subTask := range t.SubTasks {
-		if opt, found := checkTaskForOpt(subTask, optName); found {
-			return opt, true
+	for _, subTaskList := range t.SubTasks {
+		for _, subTask := range subTaskList {
+			if opt, found := checkTaskForOpt(&subTask, optName); found {
+				return opt, true
+			}
 		}
 	}
 

@@ -1,13 +1,49 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/rliebz/tusk/config/option"
+	"github.com/rliebz/tusk/config/run"
 	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/interp"
 	yaml "gopkg.in/yaml.v2"
 )
+
+func addSubTasks(cfg *Config, cfgText []byte, values map[string]string, t *task.Task) error {
+
+	if t.SubTasks != nil {
+		return errors.New("subtasks added multiple times")
+	}
+
+	t.SubTasks = make(map[*run.Run][]task.Task)
+
+	for _, run := range t.Run {
+		for _, subTaskDesc := range run.Task {
+			subTask, ok := cfg.Tasks[subTaskDesc.Name]
+			if !ok {
+				return fmt.Errorf(
+					`sub-task "%s" does not exist`,
+					subTaskDesc.Name,
+				)
+			}
+
+			st := *subTask
+			if err := interpolateTask(cfgText, values, subTaskDesc.Options, &st); err != nil {
+				return err
+			}
+			t.SubTasks[run] = append(t.SubTasks[run], st)
+
+			if err := addSubTasks(cfg, cfgText, values, &st); err != nil {
+				return err
+			}
+
+		}
+	}
+
+	return nil
+}
 
 // AddSubTasks will recursively add task objects to the task's list of pretasks.
 func AddSubTasks(cfg *Config, t *task.Task) error {
@@ -23,7 +59,7 @@ func AddSubTasks(cfg *Config, t *task.Task) error {
 				)
 			}
 
-			t.SubTasks = append(t.SubTasks, subTask)
+			// t.SubTasks = append(t.SubTasks, *subTask)
 			if err := AddSubTasks(cfg, subTask); err != nil {
 				return err
 			}
@@ -56,15 +92,17 @@ func (cfg *Config) FindAllOptions(t *task.Task) ([]*option.Option, error) {
 		return nil, err
 	}
 
-	for _, subTask := range t.SubTasks {
-		nested, err := cfg.FindAllOptions(subTask)
-		if err != nil {
-			return nil, err
-		}
+	for _, taskList := range t.SubTasks {
+		for _, subTask := range taskList {
+			nested, err := cfg.FindAllOptions(&subTask)
+			if err != nil {
+				return nil, err
+			}
 
-		required, err = addNestedDependencies(required, nested)
-		if err != nil {
-			return nil, err
+			required, err = addNestedDependencies(required, nested)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 

@@ -18,9 +18,9 @@ type Task struct {
 	Private     bool
 
 	// Computed members not specified in yaml file
-	Name     string            `yaml:"-"`
-	SubTasks []*Task           `yaml:"-"`
-	Vars     map[string]string `yaml:"-"`
+	Name     string              `yaml:"-"`
+	SubTasks map[*run.Run][]Task `yaml:"-"` // TODO: Move run into task package
+	Vars     map[string]string   `yaml:"-"`
 }
 
 // UnmarshalYAML unmarshals and assigns names to options.
@@ -120,14 +120,11 @@ func (t *Task) runCommands(r *run.Run) error {
 	return nil
 }
 
+// Figure out robust way to map run to subtasks
 func (t *Task) runSubTasks(r *run.Run) error {
-	for _, subTaskDesc := range r.Task {
-		for _, subTask := range t.SubTasks {
-			if subTask.Name == subTaskDesc.Name {
-				if err := subTask.Execute(); err != nil {
-					return err
-				}
-			}
+	for _, subTask := range t.SubTasks[r] {
+		if err := subTask.Execute(); err != nil {
+			return err
 		}
 	}
 

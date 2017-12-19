@@ -100,18 +100,9 @@ func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 		taskName = command.Name
 	}
 
-	cfgText, flags, err := config.Interpolate(meta.CfgText, passed, taskName)
+	cfg, err := config.ParseComplete(meta.CfgText, passed, taskName)
 	if err != nil {
 		return nil, err
-	}
-
-	cfg, err := config.Parse(cfgText)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, t := range cfg.Tasks {
-		t.Vars = flags
 	}
 
 	app := newBaseApp()

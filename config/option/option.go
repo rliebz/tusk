@@ -84,6 +84,11 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
+// InvalidateCache resets the cache.
+func (o *Option) InvalidateCache() {
+	o.isCacheSet = false
+}
+
 // Evaluate determines an option's value and sets an environment variable.
 //
 // The order of priority is:
@@ -125,6 +130,7 @@ func (o *Option) setenv(value string) error {
 }
 
 func (o *Option) getValue() (string, error) {
+	// TODO: Does caching help?
 	if o.isCacheSet {
 		return o.cacheValue, nil
 	}
