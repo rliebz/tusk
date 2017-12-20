@@ -87,10 +87,6 @@ func (t *Task) run(r *run.Run) error {
 }
 
 func (t *Task) shouldRun(r *run.Run) (bool, error) {
-	if r.When == nil {
-		return true, nil
-	}
-
 	if err := r.When.Validate(t.Vars); err != nil {
 		if !when.IsFailedCondition(err) {
 			return false, err

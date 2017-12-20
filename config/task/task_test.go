@@ -6,7 +6,7 @@ import (
 
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/run"
-	"github.com/rliebz/tusk/config/when"
+	"github.com/rliebz/tusk/config/whentest"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -49,14 +49,9 @@ var shouldtests = []struct {
 	input    *run.Run
 	expected bool
 }{
-	{"nil when clause", &run.Run{When: nil}, true},
-	{"empty when clause", &run.Run{When: &when.When{}}, true},
-	{"true when clause", &run.Run{When: &when.When{
-		Command: marshal.StringList{"test 1 = 1"},
-	}}, true},
-	{"false when clause", &run.Run{When: &when.When{
-		Command: marshal.StringList{"test 1 = 0"},
-	}}, false},
+	{"no when clause", &run.Run{}, true},
+	{"true when clause", &run.Run{When: whentest.True}, true},
+	{"false when clause", &run.Run{When: whentest.False}, false},
 }
 
 func TestTask_shouldRun(t *testing.T) {
