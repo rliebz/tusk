@@ -1,18 +1,23 @@
-package run
+package task
 
 import (
 	"errors"
+	"os"
 
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
+	"github.com/rliebz/tusk/ui"
 )
 
 // Run defines a a single runnable item within a task.
 type Run struct {
 	When        when.When          `yaml:",omitempty"`
 	Command     marshal.StringList `yaml:",omitempty"`
-	Task        SubTaskList        `yaml:",omitempty"`
+	SubTaskList SubTaskList        `yaml:"task,omitempty"`
 	Environment map[string]*string `yaml:",omitempty"`
+
+	// Computed members not specified in yaml file
+	Tasks []Task `yaml:"-"`
 }
 
 // UnmarshalYAML allows plain strings to represent a run struct. The value of
@@ -33,7 +38,7 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		Validate: func() error {
 			actionUsedList := []bool{
 				len(runItem.Command) != 0,
-				len(runItem.Task) != 0,
+				len(runItem.SubTaskList) != 0,
 				runItem.Environment != nil,
 			}
 
@@ -55,11 +60,51 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return marshal.UnmarshalOneOf(commandCandidate, runCandidate)
 }
 
-// List is a list of run items with custom yaml unmarshalling.
-type List []*Run
+func (r *Run) runCommands() error {
+	for _, command := range r.Command {
+		if err := ExecCommand(command); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Figure out robust way to map run to subtasks
+func (r *Run) runSubTasks() error {
+	for _, subTask := range r.Tasks {
+		if err := subTask.Execute(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *Run) runEnvironment() error {
+	ui.PrintEnvironment(r.Environment)
+	for key, value := range r.Environment {
+		if value == nil {
+			if err := os.Unsetenv(key); err != nil {
+				return err
+			}
+
+			continue
+		}
+
+		if err := os.Setenv(key, *value); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// RunList is a list of run items with custom yaml unmarshalling.
+type RunList []*Run
 
 // UnmarshalYAML allows single items to be used as lists.
-func (rl *List) UnmarshalYAML(unmarshal func(interface{}) error) error { // nolint: dupl
+func (rl *RunList) UnmarshalYAML(unmarshal func(interface{}) error) error { // nolint: dupl
 
 	var runSlice []*Run
 	sliceCandidate := marshal.UnmarshalCandidate{
@@ -70,7 +115,7 @@ func (rl *List) UnmarshalYAML(unmarshal func(interface{}) error) error { // noli
 	var runItem *Run
 	itemCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&runItem) },
-		Assign:    func() { *rl = List{runItem} },
+		Assign:    func() { *rl = RunList{runItem} },
 	}
 
 	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)

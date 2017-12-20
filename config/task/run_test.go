@@ -1,4 +1,4 @@
-package run
+package task
 
 import "testing"
 import "gopkg.in/yaml.v2"
@@ -61,7 +61,7 @@ func TestRun_UnmarshalYAML_command_and_subtask(t *testing.T) {
 }
 
 type runListHolder struct {
-	Foo List
+	Foo RunList
 }
 
 func TestRunList_UnmarshalYAML(t *testing.T) {

@@ -1,4 +1,4 @@
-package run
+package task
 
 import "github.com/rliebz/tusk/config/marshal"
 
