@@ -25,11 +25,8 @@ func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*
 
 	values := make(map[string]string, len(globalOptions))
 	for _, name := range globalOptions {
-		if err := interpolateOption(
-			cfg.Options[name],
-			passed,
-			values,
-		); err != nil {
+		o := cfg.Options[name]
+		if err := interpolateOption(o, passed, values); err != nil {
 			return nil, err
 		}
 	}
@@ -63,11 +60,10 @@ func interpolateTask(cfgText []byte, values, passed map[string]string, t *task.T
 	}
 
 	for _, name := range taskOptions {
-		if err := interpolateOption(
-			t.Options[name],
-			passed,
-			taskValues,
-		); err != nil {
+		o := t.Options[name]
+
+		o.InvalidateCache()
+		if err := interpolateOption(o, passed, taskValues); err != nil {
 			return err
 		}
 	}
