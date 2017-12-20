@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/rliebz/tusk/config/marshal"
-	"github.com/rliebz/tusk/config/run"
 	"github.com/rliebz/tusk/config/whentest"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -46,12 +45,12 @@ func TestTask_UnmarshalYAML_invalid(t *testing.T) {
 
 var shouldtests = []struct {
 	desc     string
-	input    *run.Run
+	input    *Run
 	expected bool
 }{
-	{"no when clause", &run.Run{}, true},
-	{"true when clause", &run.Run{When: whentest.True}, true},
-	{"false when clause", &run.Run{When: whentest.False}, false},
+	{"no when clause", &Run{}, true},
+	{"true when clause", &Run{When: whentest.True}, true},
+	{"false when clause", &Run{When: whentest.False}, false},
 }
 
 func TestTask_shouldRun(t *testing.T) {
@@ -78,7 +77,7 @@ func TestTask_shouldRun(t *testing.T) {
 func TestTask_run_commands(t *testing.T) {
 	var task Task
 
-	runSuccess := &run.Run{
+	runSuccess := &Run{
 		Command: marshal.StringList{"exit 0"},
 	}
 
@@ -86,7 +85,7 @@ func TestTask_run_commands(t *testing.T) {
 		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
-	runFailure := &run.Run{
+	runFailure := &Run{
 		Command: marshal.StringList{"exit 0", "exit 1"},
 	}
 
@@ -98,29 +97,29 @@ func TestTask_run_commands(t *testing.T) {
 func TestTask_run_sub_tasks(t *testing.T) {
 	taskSuccess := Task{
 		Name: "success",
-		Run: run.List{
-			&run.Run{Command: marshal.StringList{"exit 0"}},
+		RunList: RunList{
+			&Run{Command: marshal.StringList{"exit 0"}},
 		},
 	}
 
 	taskFailure := Task{
 		Name: "failure",
-		Run: run.List{
-			&run.Run{Command: marshal.StringList{"exit 1"}},
+		RunList: RunList{
+			&Run{Command: marshal.StringList{"exit 1"}},
 		},
 	}
 
-	r := &run.Run{}
-
-	task := Task{
-		SubTasks: map[*run.Run][]Task{r: {taskSuccess}},
+	r := &Run{
+		Tasks: []Task{taskSuccess},
 	}
+
+	task := Task{}
 
 	if err := task.run(r); err != nil {
 		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
-	task.SubTasks[r] = append(task.SubTasks[r], taskFailure)
+	r.Tasks = append(r.Tasks, taskFailure)
 
 	if err := task.run(r); err == nil {
 		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
@@ -158,7 +157,7 @@ func TestTask_run_environment(t *testing.T) {
 
 	var task Task
 
-	r := &run.Run{
+	r := &Run{
 		Environment: map[string]*string{
 			toBeSet:   &toBeSetValue,
 			toBeUnset: nil,

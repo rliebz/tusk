@@ -68,7 +68,7 @@ func interpolateTask(cfgText []byte, values, passed map[string]string, t *task.T
 		}
 	}
 
-	if err := interp.Struct(&t.Run, taskValues); err != nil {
+	if err := interp.Struct(&t.RunList, taskValues); err != nil {
 		return err
 	}
 

@@ -1,11 +1,9 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/rliebz/tusk/config/option"
-	"github.com/rliebz/tusk/config/run"
 	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/interp"
 	yaml "gopkg.in/yaml.v2"
@@ -13,14 +11,8 @@ import (
 
 func addSubTasks(cfg *Config, cfgText []byte, values map[string]string, t *task.Task) error {
 
-	if t.SubTasks != nil {
-		return errors.New("subtasks added multiple times")
-	}
-
-	t.SubTasks = make(map[*run.Run][]task.Task)
-
-	for _, run := range t.Run {
-		for _, subTaskDesc := range run.Task {
+	for _, run := range t.RunList {
+		for _, subTaskDesc := range run.SubTaskList {
 			subTask, ok := cfg.Tasks[subTaskDesc.Name]
 			if !ok {
 				return fmt.Errorf(
@@ -33,7 +25,7 @@ func addSubTasks(cfg *Config, cfgText []byte, values map[string]string, t *task.
 			if err := interpolateTask(cfgText, values, subTaskDesc.Options, &st); err != nil {
 				return err
 			}
-			t.SubTasks[run] = append(t.SubTasks[run], st)
+			run.Tasks = append(run.Tasks, st)
 
 			if err := addSubTasks(cfg, cfgText, values, &st); err != nil {
 				return err
@@ -68,8 +60,8 @@ func (cfg *Config) FindAllOptions(t *task.Task) ([]*option.Option, error) {
 		return nil, err
 	}
 
-	for _, taskList := range t.SubTasks {
-		for _, subTask := range taskList {
+	for _, run := range t.RunList {
+		for _, subTask := range run.Tasks {
 			nested, err := cfg.FindAllOptions(&subTask)
 			if err != nil {
 				return nil, err
