@@ -66,17 +66,23 @@ func TestRun_UnmarshalYAML_command_and_subtask(t *testing.T) {
 
 var shouldtests = []struct {
 	desc     string
-	input    *Run
+	input    Run
 	expected bool
+	vars     map[string]string
 }{
-	{"no when clause", &Run{}, true},
-	{"true when clause", &Run{When: whentest.True}, true},
-	{"false when clause", &Run{When: whentest.False}, false},
+	{"no when clause", Run{}, true, nil},
+	{"true when clause", Run{When: whentest.True}, true, nil},
+	{"false when clause", Run{When: whentest.False}, false, nil},
+	{"var matches condition", Run{When: whentest.FooEqualsBar}, true,
+		map[string]string{"foo": "bar"}},
+	{"var does not match condition", Run{When: whentest.FooEqualsBar}, false,
+		map[string]string{"foo": "baz"}},
+	{"var was not passed", Run{When: whentest.FooEqualsBar}, false, nil},
 }
 
 func TestRun_shouldRun(t *testing.T) {
 	for _, tt := range shouldtests {
-		actual, err := tt.input.shouldRun(nil)
+		actual, err := tt.input.shouldRun(tt.vars)
 		if err != nil {
 			t.Errorf(
 				"task.shouldRun() for %s: unexpected error: %s",
