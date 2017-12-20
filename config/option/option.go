@@ -130,7 +130,6 @@ func (o *Option) setenv(value string) error {
 }
 
 func (o *Option) getValue() (string, error) {
-	// TODO: Does caching help?
 	if o.isCacheSet {
 		return o.cacheValue, nil
 	}
