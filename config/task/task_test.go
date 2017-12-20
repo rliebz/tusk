@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/rliebz/tusk/config/marshal"
-	"github.com/rliebz/tusk/config/whentest"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -40,37 +39,6 @@ func TestTask_UnmarshalYAML_invalid(t *testing.T) {
 		t.Fatalf(
 			"yaml.Unmarshal(%s, ...): expected error, actual nil", string(y),
 		)
-	}
-}
-
-var shouldtests = []struct {
-	desc     string
-	input    *Run
-	expected bool
-}{
-	{"no when clause", &Run{}, true},
-	{"true when clause", &Run{When: whentest.True}, true},
-	{"false when clause", &Run{When: whentest.False}, false},
-}
-
-func TestTask_shouldRun(t *testing.T) {
-	var task Task
-
-	for _, tt := range shouldtests {
-		actual, err := task.shouldRun(tt.input)
-		if err != nil {
-			t.Errorf(
-				"task.shouldRun() for %s: unexpected error: %s",
-				tt.desc, err,
-			)
-			continue
-		}
-		if tt.expected != actual {
-			t.Errorf(
-				"task.shouldRun() for %s: expected: %t, actual: %t",
-				tt.desc, tt.expected, actual,
-			)
-		}
 	}
 }
 

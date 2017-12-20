@@ -60,6 +60,26 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return marshal.UnmarshalOneOf(commandCandidate, runCandidate)
 }
 
+func (r *Run) shouldRun(vars map[string]string) (bool, error) {
+	if err := r.When.Validate(vars); err != nil {
+		if !when.IsFailedCondition(err) {
+			return false, err
+		}
+
+		for _, command := range r.Command {
+			ui.PrintSkipped(command, err.Error())
+		}
+
+		for _, subTask := range r.SubTaskList {
+			ui.PrintSkipped("task: "+subTask.Name, err.Error())
+		}
+
+		return false, nil
+	}
+
+	return true, nil
+}
+
 func (r *Run) runCommands() error {
 	for _, command := range r.Command {
 		if err := ExecCommand(command); err != nil {

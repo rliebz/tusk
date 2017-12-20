@@ -1,8 +1,12 @@
 package task
 
-import "testing"
-import "gopkg.in/yaml.v2"
-import "reflect"
+import (
+	"reflect"
+	"testing"
+
+	"github.com/rliebz/tusk/config/whentest"
+	"gopkg.in/yaml.v2"
+)
 
 func TestRun_UnmarshalYAML(t *testing.T) {
 	s1 := []byte(`command: example`)
@@ -55,6 +59,35 @@ func TestRun_UnmarshalYAML_command_and_subtask(t *testing.T) {
 			t.Fatalf(
 				"yaml.Unmarshal(%s, ...): expected error, received nil",
 				input,
+			)
+		}
+	}
+}
+
+var shouldtests = []struct {
+	desc     string
+	input    *Run
+	expected bool
+}{
+	{"no when clause", &Run{}, true},
+	{"true when clause", &Run{When: whentest.True}, true},
+	{"false when clause", &Run{When: whentest.False}, false},
+}
+
+func TestRun_shouldRun(t *testing.T) {
+	for _, tt := range shouldtests {
+		actual, err := tt.input.shouldRun(nil)
+		if err != nil {
+			t.Errorf(
+				"task.shouldRun() for %s: unexpected error: %s",
+				tt.desc, err,
+			)
+			continue
+		}
+		if tt.expected != actual {
+			t.Errorf(
+				"task.shouldRun() for %s: expected: %t, actual: %t",
+				tt.desc, tt.expected, actual,
 			)
 		}
 	}

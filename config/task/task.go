@@ -2,8 +2,6 @@ package task
 
 import (
 	"github.com/rliebz/tusk/config/option"
-	"github.com/rliebz/tusk/config/when"
-	"github.com/rliebz/tusk/ui"
 )
 
 // Task is a single task to be run by CLI.
@@ -62,8 +60,7 @@ func (t *Task) Execute() error {
 
 // run executes a Run struct.
 func (t *Task) run(r *Run) error {
-
-	if ok, err := t.shouldRun(r); !ok || err != nil {
+	if ok, err := r.shouldRun(t.Vars); !ok || err != nil {
 		return err
 	}
 
@@ -80,24 +77,4 @@ func (t *Task) run(r *Run) error {
 	}
 
 	return nil
-}
-
-func (t *Task) shouldRun(r *Run) (bool, error) {
-	if err := r.When.Validate(t.Vars); err != nil {
-		if !when.IsFailedCondition(err) {
-			return false, err
-		}
-
-		for _, command := range r.Command {
-			ui.PrintSkipped(command, err.Error())
-		}
-
-		for _, subTask := range r.SubTaskList {
-			ui.PrintSkipped("task: "+subTask.Name, err.Error())
-		}
-
-		return false, nil
-	}
-
-	return true, nil
 }
