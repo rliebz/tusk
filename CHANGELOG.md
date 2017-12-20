@@ -3,6 +3,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 0.2.3 (2017-12-19)
+### Fixed
+- Fix issue with Zsh tab completions.
+
 ## 0.2.2 (2017-12-14)
 ### Added
 - Add `values` field for options. Any option directly passed by command line
