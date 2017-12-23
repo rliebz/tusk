@@ -9,11 +9,11 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func addSubTasks(cfg *Config, cfgText []byte, values map[string]string, t *task.Task) error {
+func addSubTasks(cfg *Config, cfgText []byte, t *task.Task) error {
 
 	for _, run := range t.RunList {
 		for _, subTaskDesc := range run.SubTaskList {
-			subTask, ok := cfg.Tasks[subTaskDesc.Name]
+			st, ok := cfg.Tasks[subTaskDesc.Name]
 			if !ok {
 				return fmt.Errorf(
 					`sub-task "%s" does not exist`,
@@ -21,13 +21,21 @@ func addSubTasks(cfg *Config, cfgText []byte, values map[string]string, t *task.
 				)
 			}
 
-			st := *subTask
-			if err := interpolateTask(cfgText, values, subTaskDesc.Options, &st); err != nil {
+			passed := subTaskDesc.Options
+			subTask := *st
+
+			values, err := interpolateGlobalOptions(cfg, cfgText, passed, &subTask)
+			if err != nil {
 				return err
 			}
-			run.Tasks = append(run.Tasks, st)
 
-			if err := addSubTasks(cfg, cfgText, values, &st); err != nil {
+			if err := interpolateTask(cfgText, values, passed, &subTask); err != nil {
+				return err
+			}
+
+			run.Tasks = append(run.Tasks, subTask)
+
+			if err := addSubTasks(cfg, cfgText, &subTask); err != nil {
 				return err
 			}
 

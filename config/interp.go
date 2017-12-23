@@ -17,8 +17,33 @@ func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*
 		return nil, err
 	}
 
+	t := cfg.Tasks[taskName]
+
 	// TODO: Disallow passing non-options explicitly to subtasks
-	globalOptions, err := getRequiredOptions(cfgText, taskName)
+
+	values, err := interpolateGlobalOptions(cfg, cfgText, passed, t)
+	if err != nil {
+		return nil, err
+	}
+
+	if t, ok := cfg.Tasks[taskName]; ok {
+		if err := interpolateTask(cfgText, values, passed, t); err != nil {
+			return nil, err
+		}
+
+		if err := addSubTasks(cfg, cfgText, t); err != nil {
+			return nil, err
+		}
+	}
+
+	return cfg, nil
+}
+
+func interpolateGlobalOptions(
+	cfg *Config, cfgText []byte, passed map[string]string, t *task.Task,
+) (map[string]string, error) {
+
+	globalOptions, err := getRequiredOptions(cfgText, t)
 	if err != nil {
 		return nil, err
 	}
@@ -31,17 +56,7 @@ func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*
 		}
 	}
 
-	if t, ok := cfg.Tasks[taskName]; ok {
-		if err := interpolateTask(cfgText, values, passed, t); err != nil {
-			return nil, err
-		}
-
-		if err := addSubTasks(cfg, cfgText, values, t); err != nil {
-			return nil, err
-		}
-	}
-
-	return cfg, nil
+	return values, nil
 }
 
 func interpolateTask(cfgText []byte, values, passed map[string]string, t *task.Task) error {
@@ -78,8 +93,6 @@ func interpolateTask(cfgText []byte, values, passed map[string]string, t *task.T
 }
 
 func interpolateOption(o *option.Option, passed, values map[string]string) error {
-	o.InvalidateCache()
-
 	if err := interp.Struct(o, values); err != nil {
 		return err
 	}
@@ -99,8 +112,8 @@ func interpolateOption(o *option.Option, passed, values map[string]string) error
 	return nil
 }
 
-func getRequiredOptions(cfgText []byte, taskName string) ([]string, error) {
-	if taskName == "" {
+func getRequiredOptions(cfgText []byte, t *task.Task) ([]string, error) {
+	if t == nil {
 		return []string{}, nil
 	}
 
@@ -114,12 +127,6 @@ func getRequiredOptions(cfgText []byte, taskName string) ([]string, error) {
 		return nil, err
 	}
 
-	t, ok := cfg.Tasks[taskName]
-	if !ok {
-		return nil, fmt.Errorf(`could not find task "%s"`, taskName)
-	}
-
-	// TODO: Version that skips subtasks
 	required, err := cfg.FindAllOptions(t)
 	if err != nil {
 		return nil, err
