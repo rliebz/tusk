@@ -10,25 +10,6 @@ import (
 
 var escSeq = []byte("{UNLIKELY_ESCAPE_SEQUENCE}")
 
-// Escape escapes all instances of $$ with $.
-func Escape(text []byte) []byte {
-	return bytes.Replace(text, []byte("$$"), []byte("$"), -1)
-}
-
-// Interpolate replaces instances of the name pattern with the value.
-func Interpolate(text []byte, name string, value string) ([]byte, error) {
-	text = escapePattern(text)
-
-	re, err := Compile(name)
-	if err != nil {
-		return nil, err
-	}
-
-	text = re.ReplaceAll(text, []byte(value))
-
-	return unescapePattern(text), nil
-}
-
 // Struct interpolates any struct.
 func Struct(i interface{}, values map[string]string) error {
 	text, err := yaml.Marshal(i)
@@ -36,38 +17,14 @@ func Struct(i interface{}, values map[string]string) error {
 		return err
 	}
 
-	text, err = Map(text, values)
+	text, err = mapInterpolate(text, values)
 	if err != nil {
 		return err
 	}
 
+	text = escape(text)
+
 	return yaml.UnmarshalStrict(text, i)
-}
-
-// Map runs interpolation over a map from variable name to value.
-func Map(text []byte, m map[string]string) ([]byte, error) {
-
-	for variable, value := range m {
-		var err error
-		text, err = Interpolate(text, variable, value)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return text, nil
-}
-
-// Contains verifies whether an interpolation string exists for a given name.
-func Contains(text []byte, name string) (bool, error) {
-	text = escapePattern(text)
-
-	re, err := Compile(name)
-	if err != nil {
-		return false, err
-	}
-
-	return re.Match(text), nil
 }
 
 // FindPotentialVariables returns a list of potential interpolation target names.
@@ -84,8 +41,41 @@ func FindPotentialVariables(text []byte) []string {
 	return names
 }
 
-// Compile returns the regexp pattern for a given variable name.
-func Compile(name string) (*regexp.Regexp, error) {
+// escape escapes all instances of $$ with $.
+func escape(text []byte) []byte {
+	return bytes.Replace(text, []byte("$$"), []byte("$"), -1)
+}
+
+// interpolate replaces instances of the name pattern with the value.
+func interpolate(text []byte, name string, value string) ([]byte, error) {
+	text = escapePattern(text)
+
+	re, err := compile(name)
+	if err != nil {
+		return nil, err
+	}
+
+	text = re.ReplaceAll(text, []byte(value))
+
+	return unescapePattern(text), nil
+}
+
+// mapInterpolate runs interpolation over a map from variable name to value.
+func mapInterpolate(text []byte, m map[string]string) ([]byte, error) {
+
+	for variable, value := range m {
+		var err error
+		text, err = interpolate(text, variable, value)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return text, nil
+}
+
+// compile returns the regexp pattern for a given variable name.
+func compile(name string) (*regexp.Regexp, error) {
 	pattern := fmt.Sprintf(`\$({%s})`, name)
 	return regexp.Compile(pattern)
 }

@@ -17,7 +17,7 @@ var escapetests = []struct {
 
 func TestEscape(t *testing.T) {
 	for _, tt := range escapetests {
-		escaped := Escape([]byte(tt.input))
+		escaped := escape([]byte(tt.input))
 		actual := string(escaped)
 
 		if tt.expected != actual {
@@ -84,7 +84,7 @@ var maptests = []struct {
 
 func TestMap(t *testing.T) {
 	for _, tt := range maptests {
-		actual, err := Map(tt.input, tt.vars)
+		actual, err := mapInterpolate(tt.input, tt.vars)
 		if err != nil {
 			t.Errorf("Unexpected err: %s", err)
 			continue
@@ -94,36 +94,6 @@ func TestMap(t *testing.T) {
 			t.Errorf(
 				"Map(%s): expected: %s, actual: %s",
 				string(tt.input), string(tt.expected), string(actual),
-			)
-		}
-	}
-}
-
-var containstests = []struct {
-	input    []byte
-	name     string
-	expected bool
-}{
-	{[]byte("${foo}"), "foo", true},
-	{[]byte("${bar}"), "foo", false},
-	{[]byte("foo"), "foo", false},
-	{[]byte("$${foo}"), "foo", false},
-	{[]byte("$foo"), "foo", false},
-	{[]byte("${foo-_bar}"), "foo-_bar", true},
-}
-
-func TestContains(t *testing.T) {
-	for _, tt := range containstests {
-		actual, err := Contains(tt.input, tt.name)
-		if err != nil {
-			t.Errorf("Unexpected err: %s", err)
-			continue
-		}
-
-		if tt.expected != actual {
-			t.Errorf(
-				`Contains("%s", "%s"): expected: %t, actual: %t`,
-				string(tt.input), tt.name, tt.expected, actual,
 			)
 		}
 	}
