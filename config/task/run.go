@@ -124,7 +124,7 @@ func (r *Run) runEnvironment() error {
 type RunList []*Run
 
 // UnmarshalYAML allows single items to be used as lists.
-func (rl *RunList) UnmarshalYAML(unmarshal func(interface{}) error) error { // nolint: dupl
+func (rl *RunList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var runSlice []*Run
 	sliceCandidate := marshal.UnmarshalCandidate{

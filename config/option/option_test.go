@@ -37,7 +37,6 @@ func TestOption_Dependencies(t *testing.T) {
 	}
 }
 
-// nolint: dupl
 func equalUnordered(a, b []string) bool {
 	if len(a) != len(b) {
 		return false

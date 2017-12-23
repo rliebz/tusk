@@ -7,7 +7,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func TestSubTask_UnmarshalYAML(t *testing.T) { // nolint: dupl
+func TestSubTask_UnmarshalYAML(t *testing.T) {
 	s1 := []byte(`name: example`)
 	s2 := []byte(`example`)
 	st1 := SubTask{}
@@ -36,7 +36,7 @@ func TestSubTask_UnmarshalYAML(t *testing.T) { // nolint: dupl
 	}
 }
 
-func TestSubTaskList_UnmarshalYAML(t *testing.T) { // nolint: dupl
+func TestSubTaskList_UnmarshalYAML(t *testing.T) {
 	s1 := []byte(`example`)
 	s2 := []byte(`[example]`)
 	l1 := SubTaskList{}
