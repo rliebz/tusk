@@ -7,7 +7,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func TestValue_UnmarshalYAML(t *testing.T) { // nolint: dupl
+func TestValue_UnmarshalYAML(t *testing.T) {
 	s1 := []byte(`value: example`)
 	s2 := []byte(`example`)
 	v1 := value{}
@@ -47,7 +47,7 @@ func TestValue_UnmarshalYAML_value_and_command(t *testing.T) {
 	}
 }
 
-func TestValueList_UnmarshalYAML(t *testing.T) { // nolint: dupl
+func TestValueList_UnmarshalYAML(t *testing.T) {
 	s1 := []byte(`example`)
 	s2 := []byte(`[example]`)
 	v1 := valueList{}

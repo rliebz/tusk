@@ -31,7 +31,7 @@ func (s *SubTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
 type SubTaskList []*SubTask
 
 // UnmarshalYAML allows single items to be used as lists.
-func (l *SubTaskList) UnmarshalYAML(unmarshal func(interface{}) error) error { // nolint: dupl
+func (l *SubTaskList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var subTaskSlice []*SubTask
 	sliceCandidate := marshal.UnmarshalCandidate{

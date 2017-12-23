@@ -2,7 +2,6 @@
   "deadline": "3m",
   "enable": [
     "deadcode",
-    "dupl",
     "errcheck",
     "gas",
     "goconst",
