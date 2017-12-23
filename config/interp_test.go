@@ -1,18 +1,24 @@
 package config
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
+
+	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/config/when"
 )
 
 var interpolatetests = []struct {
 	testCase string
-	cfgText  string
+	input    string
 	passed   map[string]string
 	taskName string
-	expected string
+	expected task.RunList
 }{
 	{
-		"happy path",
+		"single task global interpolation",
 		`
 options:
   foo:
@@ -23,14 +29,9 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-options:
-  foo:
-    default: bar
-tasks:
-  mytask:
-    run: echo bar
-`,
+		task.RunList{{
+			Command: marshal.StringList{"echo bar"},
+		}},
 	},
 
 	{
@@ -45,14 +46,9 @@ tasks:
 `,
 		map[string]string{"foo": "passed"},
 		"mytask",
-		`
-options:
-  foo:
-    default: bar
-tasks:
-  mytask:
-    run: echo passed
-`,
+		task.RunList{{
+			Command: marshal.StringList{"echo passed"},
+		}},
 	},
 
 	{
@@ -71,18 +67,10 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-options:
-  foo:
-    default: foovalue
-  bar:
-    default: barvalue
-tasks:
-  mytask:
-    run: echo foovalue
-  unused:
-    run: echo ${bar}
-`},
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}},
+	},
 
 	{
 		"escaped interpolation over multiple iterations",
@@ -101,40 +89,13 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-options:
-  foo:
-    default: foovalue
-  bar:
-    default: foovalue
-tasks:
-  pretask:
-    run: echo ${bar}
-  mytask:
-    run:
-      task: pretask
-`},
-
-	{
-		"no task specified",
-		`
-options:
-  foo:
-    default: bar
-tasks:
-  mytask:
-    run: echo ${foo}
-`,
-		map[string]string{},
-		"",
-		`
-options:
-  foo:
-    default: bar
-tasks:
-  mytask:
-    run: echo ${foo}
-`,
+		task.RunList{{
+			Tasks: []task.Task{{
+				RunList: task.RunList{{
+					Command: marshal.StringList{"echo ${bar}"},
+				}},
+			}},
+		}},
 	},
 
 	{
@@ -151,16 +112,9 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-options:
-  foo:
-    default: foovalue
-  bar:
-    default: foovalue
-tasks:
-  mytask:
-    run: echo foovalue
-`,
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}},
 	},
 
 	{
@@ -178,17 +132,9 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-options:
-  foo:
-    default: foovalue
-tasks:
-  mytask:
-    options:
-      bar:
-        default: foovalue
-    run: echo foovalue
-`,
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}},
 	},
 
 	{
@@ -206,17 +152,9 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-options:
-  foo:
-    default: foovalue
-tasks:
-  mytask:
-    options:
-      foo:
-        default: newvalue
-    run: echo newvalue
-`,
+		task.RunList{{
+			Command: marshal.StringList{"echo newvalue"},
+		}},
 	},
 
 	{
@@ -236,19 +174,9 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-tasks:
-  unused:
-    options:
-      foo:
-        default: foovalue
-    run: echo barvalue
-  mytask:
-    options:
-      foo:
-        default: barvalue
-    run: echo barvalue
-`,
+		task.RunList{{
+			Command: marshal.StringList{"echo barvalue"},
+		}},
 	},
 
 	{
@@ -267,18 +195,13 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-options:
-  foo:
-    default: foovalue
-
-tasks:
-  pretask:
-    run: echo foovalue
-  mytask:
-    run:
-      task: pretask
-`,
+		task.RunList{{
+			Tasks: []task.Task{{
+				RunList: task.RunList{{
+					Command: marshal.StringList{"echo foovalue"},
+				}},
+			}},
+		}},
 	},
 
 	{
@@ -300,21 +223,17 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-options:
-  foo:
-    default: foovalue
-
-tasks:
-  roottask:
-    run: echo foovalue
-  pretask:
-    run:
-      task: roottask
-  mytask:
-    run:
-      task: pretask
-`,
+		task.RunList{{
+			Tasks: []task.Task{{
+				RunList: task.RunList{{
+					Tasks: []task.Task{{
+						RunList: task.RunList{{
+							Command: marshal.StringList{"echo foovalue"},
+						}},
+					}},
+				}},
+			}},
+		}},
 	},
 
 	{
@@ -326,31 +245,39 @@ options:
 
 tasks:
   roottask:
+    options:
+      foo:
+        default: nope
     run: echo ${foo}
   pretask:
+    options:
+      foo:
+        default: nope
     run:
-      task: roottask
+      task:
+        name: roottask
+        options:
+          foo: ${foo}-2
   mytask:
     run:
-      task: pretask
+      task:
+        name: pretask
+        options:
+          foo: ${foo}-1
 `,
 		map[string]string{"foo": "passed"},
 		"mytask",
-		`
-options:
-  foo:
-    default: foovalue
-
-tasks:
-  roottask:
-    run: echo passed
-  pretask:
-    run:
-      task: roottask
-  mytask:
-    run:
-      task: pretask
-`,
+		task.RunList{{
+			Tasks: []task.Task{{
+				RunList: task.RunList{{
+					Tasks: []task.Task{{
+						RunList: task.RunList{{
+							Command: marshal.StringList{"echo passed-1-2"},
+						}},
+					}},
+				}},
+			}},
+		}},
 	},
 
 	{
@@ -371,20 +298,17 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-tasks:
-  roottask:
-    options:
-      foo:
-        default: foovalue
-    run: echo foovalue
-  pretask:
-    run:
-      task: roottask
-  mytask:
-    run:
-      task: pretask
-`,
+		task.RunList{{
+			Tasks: []task.Task{{
+				RunList: task.RunList{{
+					Tasks: []task.Task{{
+						RunList: task.RunList{{
+							Command: marshal.StringList{"echo foovalue"},
+						}},
+					}},
+				}},
+			}},
+		}},
 	},
 
 	{
@@ -411,26 +335,14 @@ tasks:
 `,
 		map[string]string{},
 		"mytask",
-		`
-options:
-  bar:
-    default: barvalue
-
-tasks:
-  mytask:
-    options:
-      foo:
-        default:
-          when:
-            equal:
-              foo: true
-          value: barvalue
-    run:
-      when:
-        equal:
-          foo: true
-      command: echo yo
-`,
+		task.RunList{{
+			When: when.When{
+				Equal: map[string]marshal.StringList{
+					"foo": {"true"},
+				},
+			},
+			Command: marshal.StringList{"echo yo"},
+		}},
 	},
 
 	{
@@ -451,24 +363,96 @@ tasks:
 `,
 		map[string]string{},
 		"two",
-		`
-options:
-  foo:
-    default: foovalue
-
-tasks:
-  one:
-    run:
-      - command: echo foovalue
-  two:
-    run:
-      - command: echo foovalue
-      - task: one
-`,
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}, {
+			Tasks: []task.Task{{
+				RunList: task.RunList{{
+					Command: marshal.StringList{"echo foovalue"},
+				}},
+			}},
+		}},
 	},
 }
 
-func TestInterpolate(t *testing.T) {
-	_ = interpolatetests
-	t.Skip("test will be removed once code is removed")
+func TestParseComplete_interpolates(t *testing.T) {
+	for _, tt := range interpolatetests {
+		context := fmt.Sprintf(`
+executing test case: %s
+for task "%s" with parameters: %s
+---
+given input:
+%s
+---
+`,
+			tt.testCase, tt.taskName, tt.passed, tt.input,
+		)
+
+		actual, err := ParseComplete([]byte(tt.input), tt.passed, tt.taskName)
+		if err != nil {
+			t.Errorf(context+"unexpected error parsing text: %s", err)
+			continue
+		}
+
+		expectedTask := &task.Task{
+			Name:    tt.taskName,
+			RunList: tt.expected,
+		}
+
+		tasksRunEquivalently(t, context, expectedTask, actual.Tasks[tt.taskName])
+	}
+}
+
+func tasksRunEquivalently(t *testing.T, context string, t1 *task.Task, t2 *task.Task) {
+	if len(t1.RunList) != len(t2.RunList) {
+		t.Errorf(
+			context+`task "%s" expected %d tasks, actual: %d`,
+			t2.Name, len(t1.RunList), len(t2.RunList),
+		)
+		return
+	}
+
+	for i := range t1.RunList {
+		runsAreEquivalent(t, context, t1.RunList[i], t2.RunList[i])
+	}
+
+}
+
+func runsAreEquivalent(t *testing.T, context string, r1 *task.Run, r2 *task.Run) {
+	if !reflect.DeepEqual(r1.When, r2.When) {
+		t.Errorf(
+			context+"expected when: %#v\nactual: %#v",
+			r1.When, r2.When,
+		)
+		return
+	}
+
+	if len(r1.Command) != len(r2.Command) {
+		t.Errorf(
+			context+`expected %d commands, actual: %d`,
+			len(r1.Command), len(r2.Command),
+		)
+		return
+	}
+
+	for i := range r1.Command {
+		if r1.Command[i] != r2.Command[i] {
+			t.Errorf(
+				context+"expected command: %s\nactual: %s",
+				r1.Command[i], r2.Command[i],
+			)
+		}
+	}
+
+	if len(r1.Tasks) != len(r2.Tasks) {
+		t.Errorf(
+			context+`expected %d subtasks, actual: %d`,
+			len(r1.Tasks), len(r2.Tasks),
+		)
+		return
+	}
+
+	for i := range r1.Tasks {
+		tasksRunEquivalently(t, context, &r1.Tasks[i], &r2.Tasks[i])
+	}
 }
