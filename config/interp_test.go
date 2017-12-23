@@ -90,11 +90,7 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Tasks: []task.Task{{
-				RunList: task.RunList{{
-					Command: marshal.StringList{"echo ${bar}"},
-				}},
-			}},
+			Command: marshal.StringList{"echo ${bar}"},
 		}},
 	},
 
@@ -196,11 +192,7 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Tasks: []task.Task{{
-				RunList: task.RunList{{
-					Command: marshal.StringList{"echo foovalue"},
-				}},
-			}},
+			Command: marshal.StringList{"echo foovalue"},
 		}},
 	},
 
@@ -224,15 +216,7 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Tasks: []task.Task{{
-				RunList: task.RunList{{
-					Tasks: []task.Task{{
-						RunList: task.RunList{{
-							Command: marshal.StringList{"echo foovalue"},
-						}},
-					}},
-				}},
-			}},
+			Command: marshal.StringList{"echo foovalue"},
 		}},
 	},
 
@@ -268,15 +252,7 @@ tasks:
 		map[string]string{"foo": "passed"},
 		"mytask",
 		task.RunList{{
-			Tasks: []task.Task{{
-				RunList: task.RunList{{
-					Tasks: []task.Task{{
-						RunList: task.RunList{{
-							Command: marshal.StringList{"echo passed-1-2"},
-						}},
-					}},
-				}},
-			}},
+			Command: marshal.StringList{"echo passed-1-2"},
 		}},
 	},
 
@@ -299,15 +275,7 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Tasks: []task.Task{{
-				RunList: task.RunList{{
-					Tasks: []task.Task{{
-						RunList: task.RunList{{
-							Command: marshal.StringList{"echo foovalue"},
-						}},
-					}},
-				}},
-			}},
+			Command: marshal.StringList{"echo foovalue"},
 		}},
 	},
 
@@ -366,11 +334,7 @@ tasks:
 		task.RunList{{
 			Command: marshal.StringList{"echo foovalue"},
 		}, {
-			Tasks: []task.Task{{
-				RunList: task.RunList{{
-					Command: marshal.StringList{"echo foovalue"},
-				}},
-			}},
+			Command: marshal.StringList{"echo foovalue"},
 		}},
 	},
 }
@@ -388,34 +352,43 @@ given input:
 			tt.testCase, tt.taskName, tt.passed, tt.input,
 		)
 
-		actual, err := ParseComplete([]byte(tt.input), tt.passed, tt.taskName)
+		cfg, err := ParseComplete([]byte(tt.input), tt.passed, tt.taskName)
 		if err != nil {
 			t.Errorf(context+"unexpected error parsing text: %s", err)
 			continue
 		}
 
-		expectedTask := &task.Task{
-			Name:    tt.taskName,
-			RunList: tt.expected,
+		actual := flattenRuns(cfg.Tasks[tt.taskName].RunList)
+
+		if len(tt.expected) != len(actual) {
+			t.Errorf(
+				context+`task "%s" expected %d tasks, actual: %d`,
+				tt.taskName, len(tt.expected), len(actual),
+			)
+			return
 		}
 
-		tasksRunEquivalently(t, context, expectedTask, actual.Tasks[tt.taskName])
+		for i := range tt.expected {
+			runsAreEquivalent(t, context, tt.expected[i], actual[i])
+		}
 	}
 }
 
-func tasksRunEquivalently(t *testing.T, context string, t1 *task.Task, t2 *task.Task) {
-	if len(t1.RunList) != len(t2.RunList) {
-		t.Errorf(
-			context+`task "%s" expected %d tasks, actual: %d`,
-			t2.Name, len(t1.RunList), len(t2.RunList),
-		)
-		return
+func flattenRuns(runList task.RunList) task.RunList {
+	var flattened task.RunList
+
+	for _, run := range runList {
+		if len(run.Tasks) == 0 {
+			flattened = append(flattened, run)
+			continue
+		}
+
+		for _, t := range run.Tasks {
+			flattened = append(flattened, flattenRuns(t.RunList)...)
+		}
 	}
 
-	for i := range t1.RunList {
-		runsAreEquivalent(t, context, t1.RunList[i], t2.RunList[i])
-	}
-
+	return flattened
 }
 
 func runsAreEquivalent(t *testing.T, context string, r1 *task.Run, r2 *task.Run) {
@@ -442,17 +415,5 @@ func runsAreEquivalent(t *testing.T, context string, r1 *task.Run, r2 *task.Run)
 				r1.Command[i], r2.Command[i],
 			)
 		}
-	}
-
-	if len(r1.Tasks) != len(r2.Tasks) {
-		t.Errorf(
-			context+`expected %d subtasks, actual: %d`,
-			len(r1.Tasks), len(r2.Tasks),
-		)
-		return
-	}
-
-	for i := range r1.Tasks {
-		tasksRunEquivalently(t, context, &r1.Tasks[i], &r2.Tasks[i])
 	}
 }
