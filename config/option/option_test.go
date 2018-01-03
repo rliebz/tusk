@@ -12,7 +12,7 @@ import (
 )
 
 func TestOption_Dependencies(t *testing.T) {
-	option := &Option{DefaultValues: valueList{
+	option := &Option{DefaultValues: ValueList{
 		{When: whentest.False, Value: "foo"},
 		{When: when.When{
 			Equal: map[string]marshal.StringList{
@@ -65,14 +65,14 @@ var valuetests = []struct {
 	{"empty option", &Option{}, ""},
 	{
 		"default only",
-		&Option{DefaultValues: valueList{
+		&Option{DefaultValues: ValueList{
 			{Value: "default"},
 		}},
 		"default",
 	},
 	{
 		"command only",
-		&Option{DefaultValues: valueList{
+		&Option{DefaultValues: ValueList{
 			{Command: "echo command"},
 		}},
 		"command",
@@ -89,7 +89,7 @@ var valuetests = []struct {
 	},
 	{
 		"conditional value",
-		&Option{DefaultValues: valueList{
+		&Option{DefaultValues: ValueList{
 			{When: whentest.False, Value: "foo"},
 			{When: whentest.True, Value: "bar"},
 			{When: whentest.False, Value: "baz"},
@@ -100,7 +100,7 @@ var valuetests = []struct {
 		"passed when all settings are defined",
 		&Option{
 			Environment: "OPTION_VAR",
-			DefaultValues: valueList{
+			DefaultValues: ValueList{
 				{When: whentest.True, Value: "when"},
 			},
 			Passed: "passed",

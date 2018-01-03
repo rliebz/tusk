@@ -10,8 +10,8 @@ import (
 func TestValue_UnmarshalYAML(t *testing.T) {
 	s1 := []byte(`value: example`)
 	s2 := []byte(`example`)
-	v1 := value{}
-	v2 := value{}
+	v1 := Value{}
+	v2 := Value{}
 
 	if err := yaml.Unmarshal(s1, &v1); err != nil {
 		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
@@ -38,7 +38,7 @@ func TestValue_UnmarshalYAML(t *testing.T) {
 
 func TestValue_UnmarshalYAML_value_and_command(t *testing.T) {
 	s := []byte(`{value: "example", command: "echo hello"}`)
-	v := value{}
+	v := Value{}
 
 	if err := yaml.Unmarshal(s, &v); err == nil {
 		t.Fatalf(
@@ -50,8 +50,8 @@ func TestValue_UnmarshalYAML_value_and_command(t *testing.T) {
 func TestValueList_UnmarshalYAML(t *testing.T) {
 	s1 := []byte(`example`)
 	s2 := []byte(`[example]`)
-	v1 := valueList{}
-	v2 := valueList{}
+	v1 := ValueList{}
+	v2 := ValueList{}
 
 	if err := yaml.Unmarshal(s1, &v1); err != nil {
 		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
