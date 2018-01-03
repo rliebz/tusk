@@ -417,3 +417,120 @@ func runsAreEquivalent(t *testing.T, context string, r1 *task.Run, r2 *task.Run)
 		}
 	}
 }
+
+var invalidinterpolatetests = []struct {
+	testCase string
+	input    string
+	passed   map[string]string
+	taskName string
+}{
+	{
+		"invalid yaml",
+		`}{`,
+		map[string]string{},
+		"mytask",
+	},
+	{
+		"passing non-option to subtask",
+		`
+tasks:
+  one:
+    run: echo hello
+  two:
+    run:
+      task:
+        name: one
+        options: {wrong: foo}
+`,
+		map[string]string{},
+		"two",
+	},
+	{
+		"passing global-option to subtask",
+		`
+options:
+  foo:
+    default: foovalue
+tasks:
+  one:
+    run: echo ${foo}
+  two:
+    run:
+      task:
+        name: one
+        options: {foo: replacement}
+`,
+		map[string]string{},
+		"two",
+	},
+	{
+		"sub-task does not exist",
+		`
+tasks:
+  mytask:
+    run:
+      task: fake
+`,
+		map[string]string{},
+		"mytask",
+	},
+}
+
+func TestParseComplete_invalid(t *testing.T) {
+	for _, tt := range invalidinterpolatetests {
+		context := fmt.Sprintf(`
+executing test case: %s
+for task "%s" with parameters: %s
+---
+given input:
+%s
+---
+`,
+			tt.testCase, tt.taskName, tt.passed, tt.input,
+		)
+
+		_, err := ParseComplete([]byte(tt.input), tt.passed, tt.taskName)
+		if err == nil {
+			t.Errorf(context+"expected error for %s", tt.testCase)
+			continue
+		}
+	}
+}
+
+func TestParseComplete_no_task(t *testing.T) {
+	cfgText := []byte(`
+options:
+  foo:
+    default: bar
+  bar:
+    default: ${foo}
+tasks:
+  mytask:
+    run: echo ${bar}
+`)
+
+	cfg, err := ParseComplete(cfgText, map[string]string{}, "")
+	if err != nil {
+		t.Fatalf("unexpected error parsing text: %s", err)
+	}
+
+	expectedBar := "${foo}"
+	actualBar := cfg.Options["bar"].DefaultValues[0].Value
+
+	if expectedBar != actualBar {
+		t.Errorf(
+			`expected raw value for bar: "%s", actual: "%s"`,
+			expectedBar, actualBar,
+		)
+	}
+
+	expectedCommand := "echo ${bar}"
+	actualCommand := cfg.Tasks["mytask"].RunList[0].Command[0]
+
+	if expectedCommand != actualCommand {
+		t.Errorf(
+			`expected raw command for mytask: "%s", actual: "%s"`,
+			expectedCommand, actualCommand,
+		)
+	}
+}

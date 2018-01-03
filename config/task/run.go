@@ -90,7 +90,6 @@ func (r *Run) runCommands() error {
 	return nil
 }
 
-// Figure out robust way to map run to subtasks
 func (r *Run) runSubTasks() error {
 	for _, subTask := range r.Tasks {
 		if err := subTask.Execute(); err != nil {
