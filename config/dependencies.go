@@ -1,52 +1,14 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/interp"
 	yaml "gopkg.in/yaml.v2"
 )
 
-func addSubTasks(cfg *Config, cfgText []byte, t *task.Task) error {
-
-	for _, run := range t.RunList {
-		for _, subTaskDesc := range run.SubTaskList {
-			st, ok := cfg.Tasks[subTaskDesc.Name]
-			if !ok {
-				return fmt.Errorf(
-					`sub-task "%s" does not exist`,
-					subTaskDesc.Name,
-				)
-			}
-
-			passed := subTaskDesc.Options
-			subTask := *st
-
-			values, err := interpolateGlobalOptions(cfg, cfgText, passed, &subTask)
-			if err != nil {
-				return err
-			}
-
-			if err := interpolateTask(cfgText, values, passed, &subTask); err != nil {
-				return err
-			}
-
-			run.Tasks = append(run.Tasks, subTask)
-
-			if err := addSubTasks(cfg, cfgText, &subTask); err != nil {
-				return err
-			}
-
-		}
-	}
-
-	return nil
-}
-
 // FindAllOptions returns a list of options relevant for a given task.
-func (cfg *Config) FindAllOptions(t *task.Task) ([]*option.Option, error) {
+func FindAllOptions(t *task.Task, cfg *Config) ([]*option.Option, error) {
 	names, err := getDependencies(t)
 	if err != nil {
 		return nil, err
@@ -63,29 +25,15 @@ func (cfg *Config) FindAllOptions(t *task.Task) ([]*option.Option, error) {
 		required = append(required, opt)
 	}
 
-	required, err = recurseDependencies(names, candidates, required)
+	required, err = findRequiredOptionsRecursively(names, candidates, required)
 	if err != nil {
 		return nil, err
-	}
-
-	for _, run := range t.RunList {
-		for _, subTask := range run.Tasks {
-			nested, err := cfg.FindAllOptions(&subTask)
-			if err != nil {
-				return nil, err
-			}
-
-			required, err = addNestedDependencies(required, nested)
-			if err != nil {
-				return nil, err
-			}
-		}
 	}
 
 	return required, nil
 }
 
-func recurseDependencies(
+func findRequiredOptionsRecursively(
 	entry []string, candidates map[string]*option.Option, found []*option.Option,
 ) ([]*option.Option, error) {
 
@@ -114,7 +62,7 @@ candidates:
 		}
 
 		var err error
-		found, err = recurseDependencies(dependencies, candidates, found)
+		found, err = findRequiredOptionsRecursively(dependencies, candidates, found)
 		if err != nil {
 			return nil, err
 		}
@@ -138,25 +86,4 @@ func getDependencies(item dependencyGetter) ([]string, error) {
 	names = append(names, item.Dependencies()...)
 
 	return names, nil
-}
-
-func addNestedDependencies(dependencies, nested []*option.Option) ([]*option.Option, error) {
-	set := make(map[string]*option.Option)
-	for _, opt := range dependencies {
-		set[opt.Name] = opt
-	}
-	for _, newOpt := range nested {
-		if found, ok := set[newOpt.Name]; ok {
-			if newOpt != found {
-				return nil, fmt.Errorf(
-					`cannot redefine option "%s" in sub-task`, newOpt.Name,
-				)
-			}
-			continue
-		}
-
-		dependencies = append(dependencies, newOpt)
-	}
-
-	return dependencies, nil
 }

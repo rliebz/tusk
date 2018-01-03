@@ -23,7 +23,7 @@ type Option struct {
 
 	// Used to determine value
 	Environment   string
-	DefaultValues valueList `yaml:"default"`
+	DefaultValues ValueList `yaml:"default"`
 
 	// Computed members not specified in yaml file
 	// TODO: May need to remove tag from Name

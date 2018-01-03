@@ -17,30 +17,35 @@ func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*
 		return nil, err
 	}
 
-	t := cfg.Tasks[taskName]
+	t, isTaskSet := cfg.Tasks[taskName]
+	if !isTaskSet {
+		return cfg, nil
+	}
 
 	// TODO: Disallow passing non-options explicitly to subtasks
 
-	values, err := interpolateGlobalOptions(cfg, cfgText, passed, t)
-	if err != nil {
+	if err := passTaskValues(t, cfg, cfgText, passed); err != nil {
 		return nil, err
-	}
-
-	if t, ok := cfg.Tasks[taskName]; ok {
-		if err := interpolateTask(cfgText, values, passed, t); err != nil {
-			return nil, err
-		}
-
-		if err := addSubTasks(cfg, cfgText, t); err != nil {
-			return nil, err
-		}
 	}
 
 	return cfg, nil
 }
 
+func passTaskValues(t *task.Task, cfg *Config, cfgText []byte, passed map[string]string) error {
+	values, err := interpolateGlobalOptions(t, cfg, cfgText, passed)
+	if err != nil {
+		return err
+	}
+
+	if err := interpolateTask(t, cfgText, values, passed); err != nil {
+		return err
+	}
+
+	return addSubTasks(t, cfg, cfgText)
+}
+
 func interpolateGlobalOptions(
-	cfg *Config, cfgText []byte, passed map[string]string, t *task.Task,
+	t *task.Task, cfg *Config, cfgText []byte, passed map[string]string,
 ) (map[string]string, error) {
 
 	globalOptions, err := getRequiredOptions(cfgText, t)
@@ -59,11 +64,7 @@ func interpolateGlobalOptions(
 	return values, nil
 }
 
-func interpolateTask(cfgText []byte, values, passed map[string]string, t *task.Task) error {
-	if t == nil {
-		return nil
-	}
-
+func interpolateTask(t *task.Task, cfgText []byte, values, passed map[string]string) error {
 	taskOptions, err := getTaskOptions(cfgText, t.Name)
 	if err != nil {
 		return err
@@ -113,10 +114,6 @@ func interpolateOption(o *option.Option, passed, values map[string]string) error
 }
 
 func getRequiredOptions(cfgText []byte, t *task.Task) ([]string, error) {
-	if t == nil {
-		return []string{}, nil
-	}
-
 	ordered, err := getOrderedOptions(cfgText)
 	if err != nil {
 		return nil, err
@@ -127,7 +124,7 @@ func getRequiredOptions(cfgText []byte, t *task.Task) ([]string, error) {
 		return nil, err
 	}
 
-	required, err := cfg.FindAllOptions(t)
+	required, err := FindAllOptions(t, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -196,4 +193,31 @@ func getTaskOptions(cfgText []byte, taskName string) ([]string, error) {
 	}
 
 	return output, nil
+}
+
+func addSubTasks(t *task.Task, cfg *Config, cfgText []byte) error {
+
+	for _, run := range t.RunList {
+		for _, subTaskDesc := range run.SubTaskList {
+			st, ok := cfg.Tasks[subTaskDesc.Name]
+			if !ok {
+				return fmt.Errorf(
+					`sub-task "%s" does not exist`,
+					subTaskDesc.Name,
+				)
+			}
+
+			passed := subTaskDesc.Options
+			subTask := *st
+
+			if err := passTaskValues(&subTask, cfg, cfgText, passed); err != nil {
+				return err
+			}
+
+			run.Tasks = append(run.Tasks, subTask)
+
+		}
+	}
+
+	return nil
 }
