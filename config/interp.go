@@ -22,8 +22,6 @@ func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*
 		return cfg, nil
 	}
 
-	// TODO: Disallow passing non-options explicitly to subtasks
-
 	if err := passTaskValues(t, cfg, cfgText, passed); err != nil {
 		return nil, err
 	}
@@ -209,6 +207,15 @@ func addSubTasks(t *task.Task, cfg *Config, cfgText []byte) error {
 
 			passed := subTaskDesc.Options
 			subTask := *st
+
+			for optName := range passed {
+				if _, isValidOption := subTask.Options[optName]; !isValidOption {
+					return fmt.Errorf(
+						`option "%s" cannot be passed to task "%s"`,
+						optName, subTask.Name,
+					)
+				}
+			}
 
 			if err := passTaskValues(&subTask, cfg, cfgText, passed); err != nil {
 				return err
