@@ -39,6 +39,33 @@ var findalloptionstests = []struct {
 		[]int{},
 	},
 	{
+		"multiple dependencies per option",
+		[]option.Option{
+			optiontest.Create(
+				optiontest.WithName("foo"),
+				optiontest.WithDependency("one"),
+				optiontest.WithDependency("two"),
+				optiontest.WithDependency("three"),
+			),
+		},
+		[]option.Option{
+			optiontest.Create(
+				optiontest.WithName("one"),
+			),
+			optiontest.Create(
+				optiontest.WithName("two"),
+			),
+			optiontest.Create(
+				optiontest.WithName("three"),
+			),
+			optiontest.Create(
+				optiontest.WithName("wrong"),
+			),
+		},
+		[]int{0},
+		[]int{0, 1, 2},
+	},
+	{
 		"only task dependencies",
 		[]option.Option{
 			optiontest.Create(
