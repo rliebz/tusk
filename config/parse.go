@@ -87,7 +87,6 @@ func interpolateTask(t *task.Task, cfgText []byte, values, passed map[string]str
 	for _, name := range taskOptions {
 		o := t.Options[name]
 
-		o.InvalidateCache()
 		if err := interpolateOption(o, passed, taskValues); err != nil {
 			return err
 		}

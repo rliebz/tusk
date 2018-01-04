@@ -84,11 +84,6 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-// InvalidateCache resets the cache.
-func (o *Option) InvalidateCache() {
-	o.isCacheSet = false
-}
-
 // Evaluate determines an option's value and sets an environment variable.
 //
 // The order of priority is:
