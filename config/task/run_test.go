@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rliebz/tusk/config/whentest"
+	"github.com/rliebz/tusk/config/when"
 	"gopkg.in/yaml.v2"
 )
 
@@ -71,13 +71,13 @@ var shouldtests = []struct {
 	vars     map[string]string
 }{
 	{"no when clause", Run{}, true, nil},
-	{"true when clause", Run{When: whentest.True}, true, nil},
-	{"false when clause", Run{When: whentest.False}, false, nil},
-	{"var matches condition", Run{When: whentest.FooEqualsBar}, true,
+	{"true when clause", Run{When: when.True}, true, nil},
+	{"false when clause", Run{When: when.False}, false, nil},
+	{"var matches condition", Run{When: when.Create(when.WithEqual("foo", "bar"))}, true,
 		map[string]string{"foo": "bar"}},
-	{"var does not match condition", Run{When: whentest.FooEqualsBar}, false,
+	{"var does not match condition", Run{When: when.Create(when.WithEqual("foo", "bar"))}, false,
 		map[string]string{"foo": "baz"}},
-	{"var was not passed", Run{When: whentest.FooEqualsBar}, false, nil},
+	{"var was not passed", Run{When: when.Create(when.WithEqual("foo", "bar"))}, false, nil},
 }
 
 func TestRun_shouldRun(t *testing.T) {

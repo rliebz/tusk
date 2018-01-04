@@ -19,14 +19,14 @@ func Create(operators ...func(o *option.Option)) option.Option {
 	return o
 }
 
-// WithName is an operator that adds a name to an option.
+// WithName returns an operator that adds a name to an option.
 func WithName(name string) func(o *option.Option) {
 	return func(o *option.Option) {
 		o.Name = name
 	}
 }
 
-// WithDependency is an operator that adds a dependency to an option.
+// WithDependency returns an operator that adds a dependency to an option.
 func WithDependency(name string) func(o *option.Option) {
 	return func(o *option.Option) {
 		o.DefaultValues = append(
@@ -38,7 +38,7 @@ func WithDependency(name string) func(o *option.Option) {
 	}
 }
 
-// WithWhenDependency is an operator that adds a when dependency to an option.
+// WithWhenDependency returns an operator that adds a when dependency to an option.
 func WithWhenDependency(name string) func(o *option.Option) {
 	return func(o *option.Option) {
 		o.DefaultValues = append(

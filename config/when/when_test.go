@@ -2,56 +2,42 @@ package when
 
 import (
 	"reflect"
-	"runtime"
 	"testing"
-
-	"github.com/rliebz/tusk/config/marshal"
 )
 
-// Define convenience aliases.
-type eqMap = map[string]marshal.StringList
-type sl = marshal.StringList
-
 var dependenciestests = []struct {
-	when     *When
+	when     When
 	expected []string
 }{
-	{nil, []string{}},
-	{&When{}, []string{}},
+	{When{}, []string{}},
 
 	// Equal
 	{
-		&When{Equal: eqMap{"foo": sl{"true"}}},
+		Create(WithEqual("foo", "true")),
 		[]string{"foo"},
 	},
 	{
-		&When{Equal: eqMap{"foo": sl{"true"}, "bar": sl{"true"}}},
+		Create(WithEqual("foo", "true"), WithEqual("bar", "true")),
 		[]string{"foo", "bar"},
 	},
 
 	// NotEqual
 	{
-		&When{NotEqual: eqMap{"foo": sl{"true"}}},
+		Create(WithNotEqual("foo", "true")),
 		[]string{"foo"},
 	},
 	{
-		&When{NotEqual: eqMap{"foo": sl{"true"}, "bar": sl{"true"}}},
+		Create(WithNotEqual("foo", "true"), WithNotEqual("bar", "true")),
 		[]string{"foo", "bar"},
 	},
 
 	// Both
 	{
-		&When{
-			Equal:    eqMap{"foo": sl{"true"}},
-			NotEqual: eqMap{"foo": sl{"true"}},
-		},
+		Create(WithEqual("foo", "true"), WithNotEqual("foo", "true")),
 		[]string{"foo"},
 	},
 	{
-		&When{
-			Equal:    eqMap{"foo": sl{"true"}},
-			NotEqual: eqMap{"bar": sl{"true"}},
-		},
+		Create(WithEqual("foo", "true"), WithNotEqual("bar", "true")),
 		[]string{"foo", "bar"},
 	},
 }
@@ -88,91 +74,90 @@ func equalUnordered(a, b []string) bool {
 }
 
 var validatetests = []struct {
-	when      *When
+	when      When
 	options   map[string]string
 	shouldErr bool
 }{
 	// Empty
-	{nil, nil, false},
-	{&When{}, nil, false},
+	{When{}, nil, false},
 
 	// Command Clauses
-	{&When{Command: sl{"test 1 = 1"}}, nil, false},
-	{&When{Command: sl{"test 1 = 0"}}, nil, true},
-	{&When{Command: sl{"test 1 = 1", "test 0 = 0"}}, nil, false},
-	{&When{Command: sl{"test 1 = 1", "test 1 = 0"}}, nil, true},
+	{Create(WithCommandSuccess), nil, false},
+	{Create(WithCommandFailure), nil, true},
+	{Create(WithCommandSuccess, WithCommandSuccess), nil, false},
+	{Create(WithCommandSuccess, WithCommandFailure), nil, true},
 
 	// Exist Clauses
-	{&When{Exists: sl{"when_test.go"}}, nil, false},
-	{&When{Exists: sl{"fakefile"}}, nil, true},
-	{&When{Exists: sl{"when_test.go", "fakefile"}}, nil, true},
+	{Create(WithExists("when_test.go")), nil, false},
+	{Create(WithExists("fakefile")), nil, true},
+	{Create(WithExists("fakefile"), WithExists("when_test.go")), nil, true},
 
 	// OS Clauses
-	{&When{OS: sl{runtime.GOOS}}, nil, false},
-	{&When{OS: sl{"fake"}}, nil, true},
-	{&When{OS: sl{runtime.GOOS, "fake"}}, nil, false},
-	{&When{OS: sl{"fake", runtime.GOOS}}, nil, false},
+	{Create(WithOSSuccess), nil, false},
+	{Create(WithOSFailure), nil, true},
+	{Create(WithOSSuccess, WithOSFailure), nil, false},
+	{Create(WithOSFailure, WithOSSuccess), nil, false},
 
 	// Equal Clauses
 	{
-		&When{Equal: eqMap{"foo": sl{"true"}}},
+		Create(WithEqual("foo", "true")),
 		map[string]string{"foo": "true"},
 		false,
 	},
 	{
-		&When{Equal: eqMap{"foo": sl{"true"}, "bar": sl{"false"}}},
+		Create(WithEqual("foo", "true"), WithEqual("bar", "false")),
 		map[string]string{"foo": "true", "bar": "false"},
 		false,
 	},
 	{
-		&When{Equal: eqMap{"foo": sl{"true"}}},
+		Create(WithEqual("foo", "true")),
 		map[string]string{"foo": "false"},
 		true,
 	},
 	{
-		&When{Equal: eqMap{"foo": sl{"true"}}},
+		Create(WithEqual("foo", "true")),
 		map[string]string{},
 		true,
 	},
 	{
-		&When{Equal: eqMap{"foo": sl{"true"}}},
+		Create(WithEqual("foo", "true")),
 		map[string]string{"bar": "true"},
 		true,
 	},
 	{
-		&When{Equal: eqMap{"foo": sl{"true"}, "bar": sl{"true"}}},
+		Create(WithEqual("foo", "true"), WithEqual("bar", "false")),
 		map[string]string{"bar": "true"},
 		true,
 	},
 
 	// NotEqual Clauses
 	{
-		&When{NotEqual: eqMap{"foo": sl{"true"}}},
+		Create(WithNotEqual("foo", "true")),
 		map[string]string{"foo": "true"},
 		true,
 	},
 	{
-		&When{NotEqual: eqMap{"foo": sl{"true"}}},
+		Create(WithNotEqual("foo", "true")),
 		map[string]string{"foo": "false"},
 		false,
 	},
 	{
-		&When{NotEqual: eqMap{"foo": sl{"true"}}},
+		Create(WithNotEqual("foo", "true")),
 		map[string]string{},
 		true,
 	},
 	{
-		&When{NotEqual: eqMap{"foo": sl{"true"}}},
+		Create(WithNotEqual("foo", "true")),
 		map[string]string{"bar": "true"},
 		true,
 	},
 	{
-		&When{NotEqual: eqMap{"foo": sl{"true"}, "bar": sl{"true"}}},
+		Create(WithNotEqual("foo", "true"), WithNotEqual("bar", "true")),
 		map[string]string{"bar": "true"},
 		true,
 	},
 	{
-		&When{NotEqual: eqMap{"foo": sl{"true"}, "bar": sl{"true"}}},
+		Create(WithNotEqual("foo", "true"), WithNotEqual("bar", "true")),
 		map[string]string{"foo": "false", "bar": "false"},
 		false,
 	},

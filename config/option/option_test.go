@@ -7,24 +7,19 @@ import (
 
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
-	"github.com/rliebz/tusk/config/whentest"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func TestOption_Dependencies(t *testing.T) {
 	option := &Option{DefaultValues: ValueList{
-		{When: whentest.False, Value: "foo"},
-		{When: when.When{
-			Equal: map[string]marshal.StringList{
-				"foo": {"foovalue"},
-				"bar": {"barvalue"},
-			},
-		}, Value: "bar"},
-		{When: when.When{
-			NotEqual: map[string]marshal.StringList{
-				"baz": {"bazvalue"},
-			},
-		}, Value: "bar"},
+		{When: when.False, Value: "foo"},
+		{When: when.Create(
+			when.WithEqual("foo", "foovalue"),
+			when.WithEqual("bar", "barvalue"),
+		), Value: "bar"},
+		{When: when.Create(
+			when.WithNotEqual("baz", "bazvalue"),
+		), Value: "bar"},
 	}}
 
 	expected := []string{"foo", "bar", "baz"}
@@ -90,9 +85,9 @@ var valuetests = []struct {
 	{
 		"conditional value",
 		&Option{DefaultValues: ValueList{
-			{When: whentest.False, Value: "foo"},
-			{When: whentest.True, Value: "bar"},
-			{When: whentest.False, Value: "baz"},
+			{When: when.False, Value: "foo"},
+			{When: when.True, Value: "bar"},
+			{When: when.False, Value: "baz"},
 		}},
 		"bar",
 	},
@@ -101,7 +96,7 @@ var valuetests = []struct {
 		&Option{
 			Environment: "OPTION_VAR",
 			DefaultValues: ValueList{
-				{When: whentest.True, Value: "when"},
+				{When: when.True, Value: "when"},
 			},
 			Passed: "passed",
 		},
