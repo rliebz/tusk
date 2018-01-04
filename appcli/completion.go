@@ -64,9 +64,9 @@ func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli
 			}
 		}
 
-		if len(opt.Values) > 0 {
+		if len(opt.ValuesAllowed) > 0 {
 			fmt.Println("value")
-			for _, value := range opt.Values {
+			for _, value := range opt.ValuesAllowed {
 				fmt.Println(value)
 			}
 			return

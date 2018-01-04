@@ -13,20 +13,19 @@ import (
 
 // Option represents an abstract command line option.
 type Option struct {
-	Short    string
-	Type     string
-	Usage    string
-	Export   string
-	Private  bool
-	Required bool
-	Values   marshal.StringList
+	Short         string
+	Type          string
+	Usage         string
+	Export        string
+	Private       bool
+	Required      bool
+	ValuesAllowed marshal.StringList `yaml:"values"`
 
 	// Used to determine value
 	Environment   string
 	DefaultValues ValueList `yaml:"default"`
 
 	// Computed members not specified in yaml file
-	// TODO: May need to remove tag from Name
 	Name       string            `yaml:"-"`
 	Passed     string            `yaml:"-"`
 	Vars       map[string]string `yaml:"-"`
@@ -72,7 +71,7 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			)
 		}
 
-		if len(o.Values) != 0 {
+		if len(o.ValuesAllowed) != 0 {
 			return errors.New("option cannot be private and specify values")
 		}
 	}
@@ -161,7 +160,7 @@ func (o *Option) getSpecified() (value string, found bool) {
 }
 
 func (o *Option) validateSpecified() error {
-	if len(o.Values) == 0 {
+	if len(o.ValuesAllowed) == 0 {
 		return nil
 	}
 
@@ -170,7 +169,7 @@ func (o *Option) validateSpecified() error {
 		return nil
 	}
 
-	for _, value := range o.Values {
+	for _, value := range o.ValuesAllowed {
 		if specified == value {
 			return nil
 		}
@@ -178,7 +177,7 @@ func (o *Option) validateSpecified() error {
 
 	return fmt.Errorf(
 		`value "%s" for option "%s" must be one of %v`,
-		o.Passed, o.Name, o.Values,
+		o.Passed, o.Name, o.ValuesAllowed,
 	)
 }
 
