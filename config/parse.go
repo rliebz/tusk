@@ -41,12 +41,12 @@ func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*
 }
 
 func passTaskValues(t *task.Task, cfg *Config, cfgText []byte, passed map[string]string) error {
-	values, err := interpolateGlobalOptions(t, cfg, cfgText, passed)
+	vars, err := interpolateGlobalOptions(t, cfg, cfgText, passed)
 	if err != nil {
 		return err
 	}
 
-	if err := interpolateTask(t, cfgText, values, passed); err != nil {
+	if err := interpolateTask(t, cfgText, passed, vars); err != nil {
 		return err
 	}
 
@@ -62,47 +62,47 @@ func interpolateGlobalOptions(
 		return nil, err
 	}
 
-	values := make(map[string]string, len(globalOptions))
+	vars := make(map[string]string, len(globalOptions))
 	for _, name := range globalOptions {
 		o := cfg.Options[name]
-		if err := interpolateOption(o, passed, values); err != nil {
+		if err := interpolateOption(o, passed, vars); err != nil {
 			return nil, err
 		}
 	}
 
-	return values, nil
+	return vars, nil
 }
 
-func interpolateTask(t *task.Task, cfgText []byte, values, passed map[string]string) error {
+func interpolateTask(t *task.Task, cfgText []byte, passed, vars map[string]string) error {
 	taskOptions, err := getOrderedTaskOptions(cfgText, t.Name)
 	if err != nil {
 		return err
 	}
 
-	taskValues := make(map[string]string, len(values)+len(taskOptions))
-	for k, v := range values {
-		taskValues[k] = v
+	taskVars := make(map[string]string, len(vars)+len(taskOptions))
+	for k, v := range vars {
+		taskVars[k] = v
 	}
 
 	for _, name := range taskOptions {
 		o := t.Options[name]
 
-		if err := interpolateOption(o, passed, taskValues); err != nil {
+		if err := interpolateOption(o, passed, taskVars); err != nil {
 			return err
 		}
 	}
 
-	if err := interp.Marshallable(&t.RunList, taskValues); err != nil {
+	if err := interp.Marshallable(&t.RunList, taskVars); err != nil {
 		return err
 	}
 
-	t.Vars = taskValues
+	t.Vars = taskVars
 
 	return nil
 }
 
-func interpolateOption(o *option.Option, passed, values map[string]string) error {
-	if err := interp.Marshallable(o, values); err != nil {
+func interpolateOption(o *option.Option, passed, vars map[string]string) error {
+	if err := interp.Marshallable(o, vars); err != nil {
 		return err
 	}
 
@@ -110,13 +110,13 @@ func interpolateOption(o *option.Option, passed, values map[string]string) error
 		o.Passed = valuePassed
 	}
 
-	o.Vars = values
+	o.Vars = vars
 	value, err := o.Evaluate()
 	if err != nil {
 		return err
 	}
 
-	values[o.Name] = value
+	vars[o.Name] = value
 
 	return nil
 }
