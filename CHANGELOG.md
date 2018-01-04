@@ -2,6 +2,20 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- Interpolation is now done per task. This has the following effects:
+  - Sub-task options are no longer exposed to the command line.
+  - Sub-task options are now exposed in run clauses and can be passed by a
+    parent task to a sub-task.
+  - Global options are only exposed when used directly by the invoked task and
+    not when invoked by subtasks.
+  - Tasks and sub-tasks can define options with the same name.
+- Sub-tasks can now be defined in any order.
+
+### Fixed
+- Sub-tasks no longer execute multiple times per reference in situations where
+  the same sub-task is referenced in multiple places.
+
 
 ## 0.2.3 (2017-12-19)
 ### Fixed
