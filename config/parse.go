@@ -57,7 +57,7 @@ func interpolateGlobalOptions(
 	t *task.Task, cfg *Config, cfgText []byte, passed map[string]string,
 ) (map[string]string, error) {
 
-	globalOptions, err := getRequiredGlobalOptions(cfgText, t)
+	globalOptions, err := getRequiredGlobalOptions(t, cfgText)
 	if err != nil {
 		return nil, err
 	}
@@ -73,55 +73,7 @@ func interpolateGlobalOptions(
 	return vars, nil
 }
 
-func interpolateTask(t *task.Task, cfgText []byte, passed, vars map[string]string) error {
-	taskOptions, err := getOrderedTaskOptions(cfgText, t.Name)
-	if err != nil {
-		return err
-	}
-
-	taskVars := make(map[string]string, len(vars)+len(taskOptions))
-	for k, v := range vars {
-		taskVars[k] = v
-	}
-
-	for _, name := range taskOptions {
-		o := t.Options[name]
-
-		if err := interpolateOption(o, passed, taskVars); err != nil {
-			return err
-		}
-	}
-
-	if err := interp.Marshallable(&t.RunList, taskVars); err != nil {
-		return err
-	}
-
-	t.Vars = taskVars
-
-	return nil
-}
-
-func interpolateOption(o *option.Option, passed, vars map[string]string) error {
-	if err := interp.Marshallable(o, vars); err != nil {
-		return err
-	}
-
-	if valuePassed, ok := passed[o.Name]; ok {
-		o.Passed = valuePassed
-	}
-
-	o.Vars = vars
-	value, err := o.Evaluate()
-	if err != nil {
-		return err
-	}
-
-	vars[o.Name] = value
-
-	return nil
-}
-
-func getRequiredGlobalOptions(cfgText []byte, t *task.Task) ([]string, error) {
+func getRequiredGlobalOptions(t *task.Task, cfgText []byte) ([]string, error) {
 	ordered, err := getOrderedGlobalOptions(cfgText)
 	if err != nil {
 		return nil, err
@@ -166,6 +118,54 @@ func getOrderedGlobalOptions(cfgText []byte) ([]string, error) {
 	}
 
 	return ordered, nil
+}
+
+func interpolateOption(o *option.Option, passed, vars map[string]string) error {
+	if err := interp.Marshallable(o, vars); err != nil {
+		return err
+	}
+
+	if valuePassed, ok := passed[o.Name]; ok {
+		o.Passed = valuePassed
+	}
+
+	o.Vars = vars
+	value, err := o.Evaluate()
+	if err != nil {
+		return err
+	}
+
+	vars[o.Name] = value
+
+	return nil
+}
+
+func interpolateTask(t *task.Task, cfgText []byte, passed, vars map[string]string) error {
+	taskOptions, err := getOrderedTaskOptions(cfgText, t.Name)
+	if err != nil {
+		return err
+	}
+
+	taskVars := make(map[string]string, len(vars)+len(taskOptions))
+	for k, v := range vars {
+		taskVars[k] = v
+	}
+
+	for _, name := range taskOptions {
+		o := t.Options[name]
+
+		if err := interpolateOption(o, passed, taskVars); err != nil {
+			return err
+		}
+	}
+
+	if err := interp.Marshallable(&t.RunList, taskVars); err != nil {
+		return err
+	}
+
+	t.Vars = taskVars
+
+	return nil
 }
 
 func getOrderedTaskOptions(cfgText []byte, taskName string) ([]string, error) {
