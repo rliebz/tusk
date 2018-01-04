@@ -9,6 +9,17 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// Parse loads the contents of a config file into a struct.
+func Parse(text []byte) (*Config, error) {
+	cfg := New()
+
+	if err := yaml.UnmarshalStrict(text, &cfg); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
 // ParseComplete parses the file completely with interpolation.
 func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*Config, error) {
 
@@ -46,7 +57,7 @@ func interpolateGlobalOptions(
 	t *task.Task, cfg *Config, cfgText []byte, passed map[string]string,
 ) (map[string]string, error) {
 
-	globalOptions, err := getRequiredOptions(cfgText, t)
+	globalOptions, err := getRequiredGlobalOptions(cfgText, t)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +74,7 @@ func interpolateGlobalOptions(
 }
 
 func interpolateTask(t *task.Task, cfgText []byte, values, passed map[string]string) error {
-	taskOptions, err := getTaskOptions(cfgText, t.Name)
+	taskOptions, err := getOrderedTaskOptions(cfgText, t.Name)
 	if err != nil {
 		return err
 	}
@@ -111,8 +122,8 @@ func interpolateOption(o *option.Option, passed, values map[string]string) error
 	return nil
 }
 
-func getRequiredOptions(cfgText []byte, t *task.Task) ([]string, error) {
-	ordered, err := getOrderedOptions(cfgText)
+func getRequiredGlobalOptions(cfgText []byte, t *task.Task) ([]string, error) {
+	ordered, err := getOrderedGlobalOptions(cfgText)
 	if err != nil {
 		return nil, err
 	}
@@ -141,56 +152,51 @@ func getRequiredOptions(cfgText []byte, t *task.Task) ([]string, error) {
 	return output, nil
 }
 
-func getOrderedOptions(text []byte) ([]string, error) {
-	ordered := new(struct {
+func getOrderedGlobalOptions(cfgText []byte) ([]string, error) {
+	cfgMapSlice := new(struct {
 		Options yaml.MapSlice
 	})
 
-	if err := yaml.Unmarshal(text, ordered); err != nil {
+	if err := yaml.Unmarshal(cfgText, cfgMapSlice); err != nil {
 		return nil, err
 	}
 
-	var output []string
-	for _, mapslice := range ordered.Options {
-		name, ok := mapslice.Key.(string)
-		if !ok {
-			return nil, fmt.Errorf("failed to assert name as string: %v", mapslice.Key)
-		}
-
-		output = append(output, name)
+	var ordered []string
+	for _, optionMapSlice := range cfgMapSlice.Options {
+		ordered = append(ordered, optionMapSlice.Key.(string))
 	}
 
-	return output, nil
+	return ordered, nil
 }
 
-func getTaskOptions(cfgText []byte, taskName string) ([]string, error) {
-	ordered := new(struct {
+func getOrderedTaskOptions(cfgText []byte, taskName string) ([]string, error) {
+	cfgMapSlice := new(struct {
 		Tasks yaml.MapSlice
 	})
 
-	if err := yaml.Unmarshal(cfgText, ordered); err != nil {
+	if err := yaml.Unmarshal(cfgText, cfgMapSlice); err != nil {
 		return nil, err
 	}
 
-	var output []string
-	for _, mapslice := range ordered.Tasks {
-		if name := mapslice.Key.(string); name != taskName {
+	var ordered []string
+	for _, taskMapSlice := range cfgMapSlice.Tasks {
+		if name := taskMapSlice.Key.(string); name != taskName {
 			continue
 		}
 
-		for _, mapslice := range mapslice.Value.(yaml.MapSlice) {
-			if name := mapslice.Key.(string); name != "options" {
+		for _, mapSlice := range taskMapSlice.Value.(yaml.MapSlice) {
+			if name := mapSlice.Key.(string); name != "options" {
 				continue
 			}
 
-			for _, mapslice := range mapslice.Value.(yaml.MapSlice) {
-				output = append(output, mapslice.Key.(string))
+			for _, optionMapSlice := range mapSlice.Value.(yaml.MapSlice) {
+				ordered = append(ordered, optionMapSlice.Key.(string))
 			}
 			break
 		}
 	}
 
-	return output, nil
+	return ordered, nil
 }
 
 func addSubTasks(t *task.Task, cfg *Config, cfgText []byte) error {
