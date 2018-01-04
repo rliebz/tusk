@@ -112,7 +112,7 @@ func getOrderedGlobalOptions(cfgText []byte) ([]string, error) {
 		return nil, err
 	}
 
-	var ordered []string
+	ordered := make([]string, 0, len(cfgMapSlice.Options))
 	for _, optionMapSlice := range cfgMapSlice.Options {
 		ordered = append(ordered, optionMapSlice.Key.(string))
 	}
