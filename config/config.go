@@ -4,7 +4,6 @@ import (
 	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/ui"
-	yaml "gopkg.in/yaml.v2"
 )
 
 // Config is a struct representing the format for configuration settings.
@@ -19,17 +18,6 @@ func New() *Config {
 		Options: make(map[string]*option.Option),
 		Tasks:   make(map[string]*task.Task),
 	}
-}
-
-// Parse loads the contents of a config file into a struct.
-func Parse(text []byte) (*Config, error) {
-	cfg := New()
-
-	if err := yaml.UnmarshalStrict(text, &cfg); err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
 }
 
 // UnmarshalYAML unmarshals and assigns names to options and tasks.
