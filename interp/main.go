@@ -10,8 +10,8 @@ import (
 
 var escSeq = []byte("{UNLIKELY_ESCAPE_SEQUENCE}")
 
-// Struct interpolates any struct.
-func Struct(i interface{}, values map[string]string) error {
+// Marshallable interpolates an arbitrary YAML-marshallable interface.
+func Marshallable(i interface{}, values map[string]string) error {
 	text, err := yaml.Marshal(i)
 	if err != nil {
 		return err

@@ -92,7 +92,7 @@ func interpolateTask(t *task.Task, cfgText []byte, values, passed map[string]str
 		}
 	}
 
-	if err := interp.Struct(&t.RunList, taskValues); err != nil {
+	if err := interp.Marshallable(&t.RunList, taskValues); err != nil {
 		return err
 	}
 
@@ -102,7 +102,7 @@ func interpolateTask(t *task.Task, cfgText []byte, values, passed map[string]str
 }
 
 func interpolateOption(o *option.Option, passed, values map[string]string) error {
-	if err := interp.Struct(o, values); err != nil {
+	if err := interp.Marshallable(o, values); err != nil {
 		return err
 	}
 
