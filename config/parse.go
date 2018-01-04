@@ -11,9 +11,9 @@ import (
 
 // Parse loads the contents of a config file into a struct.
 func Parse(text []byte) (*Config, error) {
-	cfg := New()
+	cfg := new(Config)
 
-	if err := yaml.UnmarshalStrict(text, &cfg); err != nil {
+	if err := yaml.UnmarshalStrict(text, cfg); err != nil {
 		return nil, err
 	}
 

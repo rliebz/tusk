@@ -12,14 +12,6 @@ type Config struct {
 	Tasks   map[string]*task.Task
 }
 
-// New is the constructor for Config.
-func New() *Config {
-	return &Config{
-		Options: make(map[string]*option.Option),
-		Tasks:   make(map[string]*task.Task),
-	}
-}
-
 // UnmarshalYAML unmarshals and assigns names to options and tasks.
 func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
