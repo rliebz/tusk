@@ -8,7 +8,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
-	"github.com/rliebz/tusk/ui"
 )
 
 // Option represents an abstract command line option.
@@ -16,7 +15,6 @@ type Option struct {
 	Short         string
 	Type          string
 	Usage         string
-	Export        string
 	Private       bool
 	Required      bool
 	ValuesAllowed marshal.StringList `yaml:"values"`
@@ -103,24 +101,7 @@ func (o *Option) Evaluate() (string, error) {
 
 	o.cache(value)
 
-	if err := o.setenv(value); err != nil {
-		return "", err
-	}
-
 	return value, nil
-}
-
-func (o *Option) setenv(value string) error {
-	if o.Export == "" {
-		return nil
-	}
-
-	ui.Warn(
-		"Exporting environment variables inside options has been deprecated.",
-		"Please use the `environment` action inside of a `run` clause instead.",
-	)
-
-	return os.Setenv(o.Export, value)
 }
 
 func (o *Option) getValue() (string, error) {

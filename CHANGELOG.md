@@ -16,6 +16,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Sub-tasks no longer execute multiple times per reference in situations where
   the same sub-task is referenced in multiple places.
 
+### Removed
+- Environment variables can no longer be set inside of an `option` clause.
+  Using `environment` inside a `run` clause is the replacement behavior.
+
 
 ## 0.2.3 (2017-12-19)
 ### Fixed
@@ -45,6 +49,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Deprecated
 - Environment variables should no longer be set inside of an `option` clause.
+  Using `environment` inside a `run` clause is the replacement behavior.
 
 
 ## 0.2.0 (2017-11-08)

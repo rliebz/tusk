@@ -133,30 +133,6 @@ func TestOption_Evaluate(t *testing.T) {
 	}
 }
 
-func TestOption_Evaluate_sets_environment_variable(t *testing.T) {
-	expected := "test value"
-	envName := "EVALUATE_OUTPUT_VAR"
-	o := Option{
-		Passed: expected,
-		Export: envName,
-	}
-
-	if err := os.Unsetenv(envName); err != nil {
-		t.Errorf(`os.Unsetenv(%s): unexpected err: %s`, envName, err)
-	}
-
-	if _, err := o.Evaluate(); err != nil {
-		t.Errorf(`Option.Evaluate(): unexpected err: %s`, err)
-	}
-
-	if actual := os.Getenv(envName); actual != expected {
-		t.Errorf(
-			`Option.Evaluate() exported var "%s": expected "%s", actual "%s"`,
-			envName, expected, actual,
-		)
-	}
-}
-
 func TestOption_Evaluate_required_nothing_passed(t *testing.T) {
 	option := Option{Required: true}
 
