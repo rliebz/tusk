@@ -53,9 +53,9 @@ func Error(a ...interface{}) {
 }
 
 func logInStyle(title string, f formatter, a ...interface{}) {
-	messages := make([]string, len(a))
-	for i, message := range a {
-		messages[i] = fmt.Sprint(message)
+	messages := make([]string, 0, len(a))
+	for _, message := range a {
+		messages = append(messages, fmt.Sprint(message))
 	}
 	message := strings.Join(messages, fmt.Sprintf("\n%s", f(outputPrefix)))
 

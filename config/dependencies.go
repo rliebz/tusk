@@ -19,7 +19,7 @@ func FindAllOptions(t *task.Task, cfg *Config) ([]*option.Option, error) {
 		candidates[name] = opt
 	}
 
-	var required []*option.Option
+	required := make([]*option.Option, 0, len(t.Options))
 	for name, opt := range t.Options {
 		candidates[name] = opt
 		required = append(required, opt)
