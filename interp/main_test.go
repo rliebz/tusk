@@ -6,6 +6,64 @@ import (
 	"testing"
 )
 
+func TestMarshallable_string(t *testing.T) {
+	actual := "My name is ${name}, not ${invalid}"
+	values := map[string]string{"name": "foo", "other": "bar"}
+	expected := "My name is foo, not ${invalid}"
+
+	if err := Marshallable(&actual, values); err != nil {
+		t.Errorf("Marshallable(): unexpected error: %s", err)
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf(
+			"Marshallable(): expected: %#v, actual: %#v",
+			expected, actual,
+		)
+	}
+}
+
+func TestMarshallable_slice(t *testing.T) {
+	actual := []string{"My name", "is ${name}", "not ${invalid}"}
+	values := map[string]string{"name": "foo", "other": "bar"}
+	expected := []string{"My name", "is foo", "not ${invalid}"}
+
+	if err := Marshallable(&actual, values); err != nil {
+		t.Errorf("Marshallable(): unexpected error: %s", err)
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf(
+			"Marshallable(): expected: %#v, actual: %#v",
+			expected, actual,
+		)
+	}
+}
+
+func TestMarshallable_struct(t *testing.T) {
+	actual := struct {
+		Name string
+		Not  string
+	}{"it's ${name}", "not ${invalid}"}
+	values := map[string]string{"name": "foo", "other": "bar"}
+
+	expected := struct {
+		Name string
+		Not  string
+	}{"it's foo", "not ${invalid}"}
+
+	if err := Marshallable(&actual, values); err != nil {
+		t.Errorf("Marshallable(): unexpected error: %s", err)
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf(
+			"Marshallable(): expected: %#v, actual: %#v",
+			expected, actual,
+		)
+	}
+}
+
 var escapetests = []struct {
 	input    string
 	expected string
