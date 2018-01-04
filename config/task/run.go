@@ -82,7 +82,7 @@ func (r *Run) shouldRun(vars map[string]string) (bool, error) {
 
 func (r *Run) runCommands() error {
 	for _, command := range r.Command {
-		if err := ExecCommand(command); err != nil {
+		if err := execCommand(command); err != nil {
 			return err
 		}
 	}
