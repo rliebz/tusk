@@ -10,8 +10,8 @@ import (
 const shellEnvVar = "SHELL"
 const defaultShell = "sh"
 
-// ExecCommand executes a shell command.
-func ExecCommand(command string) error {
+// execCommand executes a shell command.
+func execCommand(command string) error {
 	ui.PrintCommand(command)
 
 	shell := getShell()

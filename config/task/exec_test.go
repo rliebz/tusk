@@ -19,7 +19,7 @@ func TestExecCommand(t *testing.T) {
 
 	stderrActualBuf := new(bytes.Buffer)
 	ui.LoggerStderr.SetOutput(stderrActualBuf)
-	if err := ExecCommand(command); err != nil {
+	if err := execCommand(command); err != nil {
 		t.Fatalf(`execCommand("%s"): unexpected err: %s`, command, err)
 	}
 	stderrActual := stderrActualBuf.String()
@@ -46,7 +46,7 @@ func TestExecCommand_error(t *testing.T) {
 
 	bufActual := new(bytes.Buffer)
 	ui.LoggerStderr.SetOutput(bufActual)
-	if err := ExecCommand(command); err.Error() != errExpected.Error() {
+	if err := execCommand(command); err.Error() != errExpected.Error() {
 		t.Fatalf(`execCommand("%s"): expected error "%s", actual "%s"`,
 			command, errExpected, err,
 		)
