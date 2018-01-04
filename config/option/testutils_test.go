@@ -1,4 +1,4 @@
-package optiontest
+package option
 
 import (
 	"fmt"

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/rliebz/tusk/config/option"
-	"github.com/rliebz/tusk/config/optiontest"
 	"github.com/rliebz/tusk/config/task"
 )
 
@@ -19,8 +18,8 @@ var findalloptionstests = []struct {
 		"no dependencies",
 		[]option.Option{},
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
+			option.Create(
+				option.WithName("foo"),
 			),
 		},
 		[]int{},
@@ -29,9 +28,9 @@ var findalloptionstests = []struct {
 	{
 		"fake dependencies",
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
-				optiontest.WithDependency("fake"),
+			option.Create(
+				option.WithName("foo"),
+				option.WithDependency("fake"),
 			),
 		},
 		[]option.Option{},
@@ -41,25 +40,25 @@ var findalloptionstests = []struct {
 	{
 		"multiple dependencies per option",
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
-				optiontest.WithDependency("one"),
-				optiontest.WithDependency("two"),
-				optiontest.WithDependency("three"),
+			option.Create(
+				option.WithName("foo"),
+				option.WithDependency("one"),
+				option.WithDependency("two"),
+				option.WithDependency("three"),
 			),
 		},
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("one"),
+			option.Create(
+				option.WithName("one"),
 			),
-			optiontest.Create(
-				optiontest.WithName("two"),
+			option.Create(
+				option.WithName("two"),
 			),
-			optiontest.Create(
-				optiontest.WithName("three"),
+			option.Create(
+				option.WithName("three"),
 			),
-			optiontest.Create(
-				optiontest.WithName("wrong"),
+			option.Create(
+				option.WithName("wrong"),
 			),
 		},
 		[]int{0},
@@ -68,12 +67,12 @@ var findalloptionstests = []struct {
 	{
 		"only task dependencies",
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
+			option.Create(
+				option.WithName("foo"),
 			),
-			optiontest.Create(
-				optiontest.WithName("bar"),
-				optiontest.WithDependency("foo"),
+			option.Create(
+				option.WithName("bar"),
+				option.WithDependency("foo"),
 			),
 		},
 		[]option.Option{},
@@ -83,17 +82,17 @@ var findalloptionstests = []struct {
 	{
 		"overridden global dependencies",
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
+			option.Create(
+				option.WithName("foo"),
 			),
-			optiontest.Create(
-				optiontest.WithName("bar"),
-				optiontest.WithDependency("foo"),
+			option.Create(
+				option.WithName("bar"),
+				option.WithDependency("foo"),
 			),
 		},
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
+			option.Create(
+				option.WithName("foo"),
 			),
 		},
 		[]int{0, 1},
@@ -102,12 +101,12 @@ var findalloptionstests = []struct {
 	{
 		"when dependencies",
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
+			option.Create(
+				option.WithName("foo"),
 			),
-			optiontest.Create(
-				optiontest.WithName("bar"),
-				optiontest.WithWhenDependency("foo"),
+			option.Create(
+				option.WithName("bar"),
+				option.WithWhenDependency("foo"),
 			),
 		},
 		[]option.Option{},
@@ -117,14 +116,14 @@ var findalloptionstests = []struct {
 	{
 		"task requires global",
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("bar"),
-				optiontest.WithDependency("foo"),
+			option.Create(
+				option.WithName("bar"),
+				option.WithDependency("foo"),
 			),
 		},
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
+			option.Create(
+				option.WithName("foo"),
 			),
 		},
 		[]int{0},
@@ -133,14 +132,14 @@ var findalloptionstests = []struct {
 	{
 		"global requires task (false positive)",
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
+			option.Create(
+				option.WithName("foo"),
 			),
 		},
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("bar"),
-				optiontest.WithDependency("foo"),
+			option.Create(
+				option.WithName("bar"),
+				option.WithDependency("foo"),
 			),
 		},
 		[]int{0},
@@ -149,22 +148,22 @@ var findalloptionstests = []struct {
 	{
 		"nested depdendencies",
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
-				optiontest.WithDependency("bar"),
+			option.Create(
+				option.WithName("foo"),
+				option.WithDependency("bar"),
 			),
-			optiontest.Create(
-				optiontest.WithName("bar"),
-				optiontest.WithDependency("baz"),
+			option.Create(
+				option.WithName("bar"),
+				option.WithDependency("baz"),
 			),
 		},
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("baz"),
-				optiontest.WithDependency("qux"),
+			option.Create(
+				option.WithName("baz"),
+				option.WithDependency("qux"),
 			),
-			optiontest.Create(
-				optiontest.WithName("qux"),
+			option.Create(
+				option.WithName("qux"),
 			),
 		},
 		[]int{0, 1},
@@ -173,29 +172,29 @@ var findalloptionstests = []struct {
 	{
 		"nested depdendencies with ignored globals",
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("foo"),
-				optiontest.WithDependency("bar"),
+			option.Create(
+				option.WithName("foo"),
+				option.WithDependency("bar"),
 			),
-			optiontest.Create(
-				optiontest.WithName("bar"),
-				optiontest.WithDependency("baz"),
+			option.Create(
+				option.WithName("bar"),
+				option.WithDependency("baz"),
 			),
 		},
 		[]option.Option{
-			optiontest.Create(
-				optiontest.WithName("qux"),
+			option.Create(
+				option.WithName("qux"),
 			),
-			optiontest.Create(
-				optiontest.WithName("skiptwo"),
+			option.Create(
+				option.WithName("skiptwo"),
 			),
-			optiontest.Create(
-				optiontest.WithName("baz"),
-				optiontest.WithDependency("qux"),
+			option.Create(
+				option.WithName("baz"),
+				option.WithDependency("qux"),
 			),
-			optiontest.Create(
-				optiontest.WithName("skipone"),
-				optiontest.WithDependency("skiptwo"),
+			option.Create(
+				option.WithName("skipone"),
+				option.WithDependency("skiptwo"),
 			),
 		},
 		[]int{0, 1},
