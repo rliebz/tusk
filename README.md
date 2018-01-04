@@ -38,7 +38,7 @@ brew install rliebz/tusk/tusk
 
 Create a `tusk.yml` file in the root of a project repository:
 
-```yml
+```yaml
 tasks:
   greet:
     usage: Say hello to someone
@@ -203,22 +203,38 @@ tasks:
       - command: echo "Inside two"
 ```
 
-Any options for a sub-task will be directly configurable from the parent task.
-For this reason, it is not possible for a task and its sub-tasks to have
-differing definitions of the same option.
+For any option that a sub-task defines, the parent task can pass a value, which
+is treated the same way as passing by command-line would be. To do so, use the
+long definition of a sub-task:
+
+```yaml
+tasks:
+  greet:
+    options:
+      person:
+        default: World
+    run: echo "Hello, ${person}!"
+  greet-myself:
+    run:
+      task:
+        name: greet
+        options:
+          person: me
+```
 
 In cases where a sub-task may not be useful on its own, define it as private to
 prevent it from being invoked directly from the command-line. For example:
 
 ```yaml
 tasks:
-  config:
+  configure-environment:
     private: true
     run:
-      environment:
-        ENVIRONMENT: dev
+      environment: {APP_ENV: dev}
   serve:
-    run: python main.py
+    run:
+      - task: configure-environment
+      - command: python main.py
 ```
 
 ### When
@@ -438,16 +454,20 @@ tasks:
     run: echo "Goodbye, ${name}!"
 ```
 
-A shared option is only considered an option for a particular task if it is
-referenced at some point in that task or one of its subtasks.
+Any shared variables referenced by a task will be exposed by command-line when
+invoking that task. Shared variables referenced by a sub-task will be evaluated
+as needed, but not exposed by command-line.
 
 #### Interpolation
 
-The interpolation syntax for a variable `foo` is `${foo}`.
+The interpolation syntax for a variable `foo` is `${foo}`, meaning any instances
+of `${foo}` in the configuration file will be replaced with the value of `foo`
+during execution.
 
-Interpolation is done iteratively in the order that variables are defined, with
-global variables being evaluated first. This means that options can reference
-other options:
+Interpolation is done on a task-by-task basis, meaning options defined in one
+task will not interpolate to any other tasks. For each task, interpolation is
+done iteratively in the order that variables are defined, with shared variables
+being evaluated first. This means that options can reference other options:
 
 ```yaml
 options:

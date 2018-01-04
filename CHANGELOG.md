@@ -2,13 +2,15 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.3.0 (2018-01-04)
 ### Changed
 - Interpolation is now done per task. This has the following effects:
   - Sub-task options are no longer exposed to the command line.
   - Sub-task options are now exposed in run clauses and can be passed by a
     parent task to a sub-task.
-  - Global options are only exposed when used directly by the invoked task and
-    not when invoked by subtasks.
+  - Shared options are only exposed when used directly by the invoked task and
+    not when invoked by sub-tasks.
   - Tasks and sub-tasks can define options with the same name.
 - Sub-tasks can now be defined in any order.
 
@@ -86,8 +88,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Zsh completion now includes usage information.
 
 ### Fixed
-- Application no longer errors when referencing the same global option in both
-  a task and its subtask. Redefinitions are still disallowed.
+- Application no longer errors when referencing the same shared option in both
+  a task and its sub-task. Redefinitions are still disallowed.
 
 
 ## 0.1.3 (2017-10-16)
