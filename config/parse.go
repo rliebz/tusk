@@ -213,6 +213,13 @@ func addSubTasks(t *task.Task, cfg *Config, cfgText []byte) error {
 			passed := subTaskDesc.Options
 			subTask := *st
 
+			options := make(map[string]*option.Option)
+			for name, ptr := range subTask.Options {
+				opt := *ptr
+				options[name] = &opt
+			}
+			subTask.Options = options
+
 			for optName := range passed {
 				if _, isValidOption := subTask.Options[optName]; !isValidOption {
 					return fmt.Errorf(

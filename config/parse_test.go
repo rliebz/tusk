@@ -257,6 +257,34 @@ tasks:
 	},
 
 	{
+		"repeated sub-task call with different parameters",
+		`
+tasks:
+  pretask:
+    options:
+      foo: {}
+    run: echo ${foo}
+  mytask:
+    run:
+      - task:
+          name: pretask
+          options:
+            foo: one
+      - task:
+          name: pretask
+          options:
+            foo: two
+`,
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo one"},
+		}, {
+			Command: marshal.StringList{"echo two"},
+		}},
+	},
+
+	{
 		"nested sub-task dependencies with sub-task-level options",
 		`
 tasks:
