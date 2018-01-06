@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/config/option"
 	"github.com/urfave/cli"
 )
 
@@ -22,7 +23,8 @@ func createDefaultComplete(app *cli.App) func(c *cli.Context) {
 			return
 		}
 
-		_, isCompleting := getCompletingFlag(app.Flags, os.Args[len(os.Args)-2])
+		trailingArg := os.Args[len(os.Args)-2]
+		isCompleting := isCompletingArg(app.Flags, trailingArg)
 		if !isCompleting {
 			fmt.Println("normal")
 			for _, command := range app.Commands {
@@ -46,7 +48,8 @@ func createDefaultComplete(app *cli.App) func(c *cli.Context) {
 func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli.Context) {
 	return func(c *cli.Context) {
 
-		flagName, isCompleting := getCompletingFlag(command.Flags, os.Args[len(os.Args)-2])
+		trailingArg := os.Args[len(os.Args)-2]
+		isCompleting := isCompletingArg(command.Flags, trailingArg)
 		if !isCompleting {
 			fmt.Println("task")
 			for _, flag := range command.Flags {
@@ -55,13 +58,17 @@ func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli
 			return
 		}
 
+		flagName := strings.TrimLeft(trailingArg, "-")
+
 		t := cfg.Tasks[command.Name]
-		opt, ok := t.Options[flagName]
+		options, err := config.FindAllOptions(t, cfg)
+		if err != nil {
+			return
+		}
+
+		opt, ok := getOptionFlag(flagName, options)
 		if !ok {
-			opt, ok = cfg.Options[flagName]
-			if !ok {
-				return
-			}
+			return
 		}
 
 		if len(opt.ValuesAllowed) > 0 {
@@ -75,6 +82,16 @@ func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli
 		// Default to file completion
 		fmt.Println("file")
 	}
+}
+
+func getOptionFlag(flagName string, options []*option.Option) (*option.Option, bool) {
+	for _, opt := range options {
+		if flagName == opt.Name || flagName == opt.Short {
+			return opt, true
+		}
+	}
+
+	return nil, false
 }
 
 func printCommand(command cli.Command) {
@@ -123,14 +140,15 @@ func removeCompletionArg(args []string) []string {
 	return output
 }
 
-// getCompletingFlag tells if the trailing arg is an incomplete flag.
-func getCompletingFlag(flags []cli.Flag, arg string) (string, bool) {
+// isCompletingArg returns if the trailing arg is an incomplete flag.
+func isCompletingArg(flags []cli.Flag, arg string) bool {
 
 	if !strings.HasPrefix(arg, "-") {
-		return "", false
+		return false
 	}
 
 	name := strings.TrimLeft(arg, "-")
+	short := len(arg) == len(name)+1
 
 	for _, flag := range flags {
 		if _, ok := flag.(cli.BoolFlag); ok {
@@ -142,13 +160,16 @@ func getCompletingFlag(flags []cli.Flag, arg string) (string, bool) {
 		}
 
 		for _, candidate := range strings.Split(flag.GetName(), ", ") {
+			if len(candidate) == 1 && !short {
+				continue
+			}
 			if name == candidate {
-				return name, true
+				return true
 			}
 		}
 	}
 
-	return "", false
+	return false
 }
 
 func isFlagArgumentError(err error) bool {

@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Fixed
 - Invoking the same sub-task multiple times with different options now assigns
   the options to each sub-task correctly.
+- Short flags with arguments now offer Bash/Zsh completions correctly.
 
 
 ## 0.3.0 (2018-01-04)
