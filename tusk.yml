@@ -1,9 +1,4 @@
 ---
-options:
-  fast:
-    usage: Skip slow linters/tests
-    type: bool
-
 tasks:
   bootstrap:
     usage: Set up app dependencies for first time use
@@ -20,6 +15,9 @@ tasks:
     description: |
       Runs gometalinter using the configuration specified in .gometalinter.json.
     options:
+      fast:
+        usage: Only run fast linters
+        type: bool
       opts:
         private: true
         default:
@@ -34,6 +32,9 @@ tasks:
       Runs the full test suite using `go test -cover ./...`. Also runs the
       linter by default, and linter errors are considered failed tests.
     options:
+      fast:
+        usage: Only run fast tests and linters
+        type: bool
       no-lint:
         usage: Skip running gometalinter
         default: false
@@ -57,7 +58,10 @@ tasks:
     run:
       - when:
           equal: {no-lint: false}
-        task: lint
+        task:
+          name: lint
+          options:
+            fast: ${fast}
       - command: go test -cover -race ${verbose-string} ${short-string} ./...
 
   circleci:
