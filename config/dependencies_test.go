@@ -242,6 +242,8 @@ func TestFindAllOptions(t *testing.T) {
 }
 
 func assertOptionsEqualUnordered(t *testing.T, desc string, a, b []*option.Option) {
+	t.Helper()
+
 	if len(a) != len(b) {
 		t.Errorf(
 			"options for %s: expected %d options, actual %d",

@@ -420,6 +420,8 @@ func flattenRuns(runList task.RunList) task.RunList {
 }
 
 func runsAreEquivalent(t *testing.T, context string, r1 *task.Run, r2 *task.Run) {
+	t.Helper()
+
 	if !reflect.DeepEqual(r1.When, r2.When) {
 		t.Errorf(
 			context+"expected when: %#v\nactual: %#v",
