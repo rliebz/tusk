@@ -23,6 +23,7 @@ type printTestCase struct {
 }
 
 func testPrint(t *testing.T, tt printTestCase) {
+	t.Helper()
 	defer resetUIState()
 
 	buf := new(bytes.Buffer)
