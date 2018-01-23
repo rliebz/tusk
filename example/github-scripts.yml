@@ -10,8 +10,8 @@ tasks:
         command: brew bundle
 
       - when:
-          exists: .ruby-version
-          command: test -z "$(rbenv version-name 2>/dev/null)"
+          - exists: .ruby-version
+          - command: test -z "$(rbenv version-name 2>/dev/null)"
         command:
           - rbenv install --skip-existing
 

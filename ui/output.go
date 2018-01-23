@@ -12,7 +12,12 @@ const (
 	infoString    = "Info"
 	warningString = "Warning"
 	errorString   = "Error"
+
+	deprecatedString = "Deprecated"
 )
+
+// Store a list of sent deprecations to prevent duplicates
+var deprecations []string
 
 // Println prints a message to stdout.
 func Println(a ...interface{}) {
@@ -50,6 +55,26 @@ func Warn(a ...interface{}) {
 // Error prints an application error.
 func Error(a ...interface{}) {
 	logInStyle(errorString, red, a...)
+}
+
+// Deprecate prints a deprecation warning no more than once.
+func Deprecate(a ...interface{}) {
+	if Verbosity <= VerbosityLevelQuiet {
+		return
+	}
+
+	if len(a) > 0 {
+		message := fmt.Sprint(a[0])
+		for _, d := range deprecations {
+
+			if message == d {
+				return
+			}
+		}
+		deprecations = append(deprecations, message)
+	}
+
+	logInStyle(deprecatedString, yellow, a...)
 }
 
 func logInStyle(title string, f formatter, a ...interface{}) {

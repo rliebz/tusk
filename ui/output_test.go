@@ -46,6 +46,25 @@ var outputTests = []printTestCase{
 		VerbosityLevelQuiet,
 		fmt.Sprintf(logFormat, tag(errorString, red), "foo"),
 	},
+	{
+		`Deprecate("foo") once`,
+		LoggerStderr,
+		func() { Deprecate("foo") },
+		VerbosityLevelQuiet,
+		VerbosityLevelNormal,
+		fmt.Sprintf(logFormat, tag(deprecatedString, yellow), "foo"),
+	},
+	{
+		`Deprecate("foo") twice`,
+		LoggerStderr,
+		func() {
+			Deprecate("foo")
+			Deprecate("foo")
+		},
+		VerbosityLevelQuiet,
+		VerbosityLevelNormal,
+		fmt.Sprintf(logFormat, tag(deprecatedString, yellow), "foo"),
+	},
 }
 
 func TestPrintFunctions(t *testing.T) {

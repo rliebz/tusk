@@ -11,6 +11,7 @@ func resetUIState() {
 	LoggerStdout.SetOutput(os.Stdout)
 	LoggerStderr.SetOutput(os.Stderr)
 	Verbosity = VerbosityLevelNormal
+	deprecations = nil
 }
 
 type printTestCase struct {

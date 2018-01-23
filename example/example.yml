@@ -22,16 +22,16 @@ options:
       - when:
           # Clauses can take a string or a list of strings.
           # For `exists` clauses, all files must exist.
-          exists: some_file.txt
+          - exists: some_file.txt
           # For `os`, only one needs to match.
-          os:
-            - linux
-            - darwin
+          - os:
+              - linux
+              - darwin
           # Shell exit codes can be used for more control.
           # Any command passed to will be run through the shell.
-          command:
-            # Variables declared earlier in the config file are available.
-            - test ${global} -gt 5
+          - command:
+              # Variables declared earlier in the config file are available.
+              - test ${global} -gt 5
         value: Global Is Five!
       - when:
           # `equal` and `not_equal` are available for quick equality checks.

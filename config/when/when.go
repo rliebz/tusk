@@ -1,12 +1,14 @@
 package when
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 
 	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/ui"
 )
 
 // When defines the conditions for running a task.
@@ -49,6 +51,8 @@ func (w *When) Validate(vars map[string]string) error {
 	if w == nil {
 		return nil
 	}
+
+	warnDeprecations(w)
 
 	for _, f := range w.Exists {
 		if _, err := os.Stat(f); err != nil {
@@ -147,4 +151,74 @@ func validateEquality(
 	}
 
 	return nil
+}
+
+func warnDeprecations(w *When) {
+	warnMultiClauseDeprecation(w)
+
+	warnListDeprecation(w.Command, "command")
+	warnListDeprecation(w.Exists, "exists")
+
+	for _, l := range w.Equal {
+		warnListDeprecation(l, "equal")
+	}
+
+	for _, l := range w.NotEqual {
+		warnListDeprecation(l, "equal")
+	}
+}
+
+func warnMultiClauseDeprecation(w *When) {
+	var clausesUsed []string
+
+	if len(w.Command) > 0 {
+		clausesUsed = append(clausesUsed, "command")
+	}
+
+	if len(w.Exists) > 0 {
+		clausesUsed = append(clausesUsed, "exists")
+	}
+
+	if len(w.OS) > 0 {
+		clausesUsed = append(clausesUsed, "os")
+	}
+
+	if len(w.Equal) > 0 {
+		clausesUsed = append(clausesUsed, "equal")
+	}
+
+	if len(w.NotEqual) > 0 {
+		clausesUsed = append(clausesUsed, "not_equal")
+	}
+
+	if len(clausesUsed) > 1 {
+		deprecateWhenBehavior(
+			"Using multiple checks",
+			clausesUsed[0], clausesUsed[1],
+		)
+	}
+}
+
+func warnListDeprecation(list marshal.StringList, field string) {
+	if len(list) > 1 {
+		deprecateWhenBehavior(
+			fmt.Sprintf("Multiple values for `%s`", field),
+			field, field,
+		)
+	}
+}
+
+func deprecateWhenBehavior(behavior, example1, example2 string) {
+	ui.Deprecate(
+		fmt.Sprintf("%s in `when` clauses has been deprecated", behavior),
+		"The behavior will change in a future release",
+		fmt.Sprintf(`Use multiple when clauses for multiple requirements instead
+
+        when:
+          - %s: ...
+          - %s: ...
+          ...
+`,
+			example1, example2),
+	)
 }
