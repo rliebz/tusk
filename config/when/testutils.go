@@ -23,6 +23,13 @@ func Create(operators ...func(w *When)) When {
 	return w
 }
 
+// WithCommand returns an operator that runs a given command
+func WithCommand(command string) func(w *When) {
+	return func(w *When) {
+		w.Command = append(w.Command, command)
+	}
+}
+
 // WithCommandSuccess is an operator that includes a successful command.
 var WithCommandSuccess = func(w *When) {
 	w.Command = append(w.Command, "test 1 = 1")
@@ -33,10 +40,17 @@ var WithCommandFailure = func(w *When) {
 	w.Command = append(w.Command, "test 0 = 1")
 }
 
-// WithExists is an operator that requires a file to exist.
+// WithExists returns an operator that requires a file to exist.
 func WithExists(filename string) func(w *When) {
 	return func(w *When) {
 		w.Exists = append(w.Exists, filename)
+	}
+}
+
+// WithOS returns an operator that requires an arbitrary OS.
+func WithOS(name string) func(w *When) {
+	return func(w *When) {
+		w.OS = append(w.OS, name)
 	}
 }
 

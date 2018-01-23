@@ -308,7 +308,32 @@ tasks:
 	},
 
 	{
-		"when dependencies",
+		"when clauses",
+		`
+tasks:
+  mytask:
+    run:
+      when:
+        - os:
+            - os1
+            - os2
+        - command: echo hello
+          os: os3
+      command: echo goodbye
+`,
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			When: when.List{
+				when.Create(when.WithOS("os1"), when.WithOS("os2")),
+				when.Create(when.WithCommand("echo hello"), when.WithOS("os3")),
+			},
+			Command: marshal.StringList{"echo goodbye"},
+		}},
+	},
+
+	{
+		"when clause with dependencies",
 		`
 options:
   bar:
