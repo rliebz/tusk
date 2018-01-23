@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var dependenciestests = []struct {
+var whenDepTests = []struct {
 	when     When
 	expected []string
 }{
@@ -43,7 +43,7 @@ var dependenciestests = []struct {
 }
 
 func TestWhen_Dependencies(t *testing.T) {
-	for _, tt := range dependenciestests {
+	for _, tt := range whenDepTests {
 		actual := tt.when.Dependencies()
 		if !equalUnordered(tt.expected, actual) {
 			t.Errorf(
@@ -73,7 +73,7 @@ func equalUnordered(a, b []string) bool {
 	return reflect.DeepEqual(aMap, bMap)
 }
 
-var validatetests = []struct {
+var whenValidateTests = []struct {
 	when      When
 	options   map[string]string
 	shouldErr bool
@@ -164,7 +164,7 @@ var validatetests = []struct {
 }
 
 func TestWhen_Validate(t *testing.T) {
-	for _, tt := range validatetests {
+	for _, tt := range whenValidateTests {
 		err := tt.when.Validate(tt.options)
 		didErr := err != nil
 		if tt.shouldErr != didErr {

@@ -25,6 +25,10 @@ func (l *List) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // Validate returns an error if any when clauses fail.
 func (l *List) Validate(vars map[string]string) error {
+	if l == nil {
+		return nil
+	}
+
 	for _, w := range *l {
 		if err := w.Validate(vars); err != nil {
 			return err
