@@ -3,6 +3,15 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 0.3.2 (2018-01-23)
+### Added
+- Support lists of `when` items.
+
+### Deprecated
+- Individual `when` items should no longer contain multiple validations for AND
+  logic. Multiple validations for OR logic will be added in a future release.
+
+
 ## 0.3.1 (2018-01-05)
 ### Fixed
 - Invoking the same sub-task multiple times with different options now assigns

@@ -251,14 +251,14 @@ run:
 In a `run` clause, any item with a true `when` clause will execute. There are
 five different checks supported:
 
-- `command` (list): Execute if all commands run with an exit code of `0`.
-  Commands will execute serially and terminate immediately upon failure.
-- `exists` (list): Execute if all files exist.
-- `os` (list): Execute if the user's operating system matches one from the list.
+- `command` (string): Execute if the command runs with an exit code of `0`.
+- `exists` (string): Execute if the file exists.
+- `os` (list): Execute if the operating system matches any one from the list.
 - `equal` (map): Execute if each variable matches the value it maps to.
 - `not_equal` (map): Execute if each variable does not match the value it maps to.
 
-All checks must pass for the `when` clause to evaluate to true. Here is a more
+The `when` clause supports any number of different checks as a list, where each
+check must pass individually for the clause to evaluate to true. Here is a more
 complicated example of how `when` can be used:
 
 ```yaml
@@ -269,12 +269,14 @@ tasks:
         usage: Cat a file
     run:
       - when:
-          os: linux
-        command: echo "This is a linux machine"
+          os:
+            - linux
+            - darwin
+        command: echo "This is a unix machine"
       - when:
-          exists: my_file.txt
-          equal: {cat: true}
-          command: command -v cat
+          - exists: my_file.txt
+          - equal: {cat: true}
+          - command: command -v cat
         command: cat my_file.txt
 ```
 
