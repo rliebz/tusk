@@ -58,11 +58,13 @@ func TestWithWhenDependency(t *testing.T) {
 	)
 
 	for _, value := range o.DefaultValues {
-		for key := range value.When.Equal {
-			if key == a {
-				foundA = true
-			} else if key == b {
-				foundB = true
+		for _, w := range value.When {
+			for key := range w.Equal {
+				if key == a {
+					foundA = true
+				} else if key == b {
+					foundB = true
+				}
 			}
 		}
 	}

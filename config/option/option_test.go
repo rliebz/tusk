@@ -12,14 +12,14 @@ import (
 
 func TestOption_Dependencies(t *testing.T) {
 	option := &Option{DefaultValues: ValueList{
-		{When: when.False, Value: "foo"},
-		{When: when.Create(
+		{When: when.List{when.False}, Value: "foo"},
+		{When: when.List{when.Create(
 			when.WithEqual("foo", "foovalue"),
 			when.WithEqual("bar", "barvalue"),
-		), Value: "bar"},
-		{When: when.Create(
+		)}, Value: "bar"},
+		{When: when.List{when.Create(
 			when.WithNotEqual("baz", "bazvalue"),
-		), Value: "bar"},
+		)}, Value: "bar"},
 	}}
 
 	expected := []string{"foo", "bar", "baz"}
@@ -85,9 +85,9 @@ var valuetests = []struct {
 	{
 		"conditional value",
 		&Option{DefaultValues: ValueList{
-			{When: when.False, Value: "foo"},
-			{When: when.True, Value: "bar"},
-			{When: when.False, Value: "baz"},
+			{When: when.List{when.False}, Value: "foo"},
+			{When: when.List{when.True}, Value: "bar"},
+			{When: when.List{when.False}, Value: "baz"},
 		}},
 		"bar",
 	},
@@ -96,7 +96,7 @@ var valuetests = []struct {
 		&Option{
 			Environment: "OPTION_VAR",
 			DefaultValues: ValueList{
-				{When: when.True, Value: "when"},
+				{When: when.List{when.True}, Value: "when"},
 			},
 			Passed: "passed",
 		},

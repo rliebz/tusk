@@ -11,7 +11,7 @@ import (
 
 // Run defines a a single runnable item within a task.
 type Run struct {
-	When        when.When          `yaml:",omitempty"`
+	When        when.List          `yaml:",omitempty"`
 	Command     marshal.StringList `yaml:",omitempty"`
 	SubTaskList SubTaskList        `yaml:"task,omitempty"`
 	Environment map[string]*string `yaml:",omitempty"`

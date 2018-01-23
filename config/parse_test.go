@@ -332,11 +332,11 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			When: when.When{
+			When: when.List{when.When{
 				Equal: map[string]marshal.StringList{
 					"foo": {"true"},
 				},
-			},
+			}},
 			Command: marshal.StringList{"echo yo"},
 		}},
 	},

@@ -71,13 +71,26 @@ var shouldtests = []struct {
 	vars     map[string]string
 }{
 	{"no when clause", Run{}, true, nil},
-	{"true when clause", Run{When: when.True}, true, nil},
-	{"false when clause", Run{When: when.False}, false, nil},
-	{"var matches condition", Run{When: when.Create(when.WithEqual("foo", "bar"))}, true,
-		map[string]string{"foo": "bar"}},
-	{"var does not match condition", Run{When: when.Create(when.WithEqual("foo", "bar"))}, false,
-		map[string]string{"foo": "baz"}},
-	{"var was not passed", Run{When: when.Create(when.WithEqual("foo", "bar"))}, false, nil},
+	{"true when clause", Run{When: when.List{when.True}}, true, nil},
+	{"false when clause", Run{When: when.List{when.False}}, false, nil},
+	{
+		"var matches condition",
+		Run{When: when.List{when.Create(when.WithEqual("foo", "bar"))}},
+		true,
+		map[string]string{"foo": "bar"},
+	},
+	{
+		"var does not match condition",
+		Run{When: when.List{when.Create(when.WithEqual("foo", "bar"))}},
+		false,
+		map[string]string{"foo": "baz"},
+	},
+	{
+		"var was not passed",
+		Run{When: when.List{when.Create(when.WithEqual("foo", "bar"))}},
+		false,
+		nil,
+	},
 }
 
 func TestRun_shouldRun(t *testing.T) {
