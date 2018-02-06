@@ -50,7 +50,7 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			}
 
 			if count > 1 {
-				return errors.New("Only one action can be defined in `run`")
+				return errors.New("only one action can be defined in `run`")
 			}
 
 			return nil
