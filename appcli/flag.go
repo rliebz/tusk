@@ -47,7 +47,7 @@ func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) error {
 		}
 	}
 
-	sort.Sort(flagsByName(cmd.Flags))
+	sort.Sort(cli.FlagsByName(cmd.Flags))
 	return nil
 }
 

@@ -47,7 +47,7 @@ func newBaseApp() *cli.App {
 		},
 	)
 
-	sort.Sort(flagsByName(app.Flags))
+	sort.Sort(cli.FlagsByName(app.Flags))
 	return app
 }
 

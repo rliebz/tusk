@@ -18,7 +18,7 @@ func addTasks(app *cli.App, cfg *config.Config, create commandCreator) error {
 		}
 	}
 
-	sort.Sort(commandsByName(app.Commands))
+	sort.Sort(cli.CommandsByName(app.Commands))
 	return nil
 }
 
