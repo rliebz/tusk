@@ -12,6 +12,7 @@ import (
 func init() {
 
 	cli.HelpPrinter = helpPrinter
+	cli.FlagNamePrefixer = flagPrefixer
 
 	cli.AppHelpTemplate = `{{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
 
@@ -69,4 +70,45 @@ func helpPrinter(out io.Writer, templ string, data interface{}) {
 	}
 
 	cli.HelpPrinterCustom(out, templ, data, customFunc)
+}
+
+// flagPrefixer formats the command-line flag usage.
+func flagPrefixer(fullName, placeholder string) string {
+	var output string
+
+	parts := strings.Split(fullName, ",")
+	for _, flagName := range parts {
+		flagName = strings.Trim(flagName, " ")
+		output = joinFlagString(output, flagName)
+	}
+
+	if strings.HasPrefix(output, "--") {
+		output = "    " + output
+	}
+
+	if placeholder != "" {
+		output = output + " " + placeholder
+	}
+
+	return output
+}
+
+func joinFlagString(existing, flagName string) string {
+	if existing == "" {
+		return prependHyphens(flagName)
+	}
+
+	if len(flagName) == 1 {
+		return prependHyphens(flagName) + ", " + existing
+	}
+
+	return existing + ", " + prependHyphens(flagName)
+}
+
+func prependHyphens(flagName string) string {
+	if len(flagName) == 1 {
+		return "-" + flagName
+	}
+
+	return "--" + flagName
 }

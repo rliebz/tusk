@@ -71,8 +71,8 @@ Tasks:
    greet  Say hello to someone
 
 Global Options:
-   -f file, --file file  Set file to use as the config file
-   -h, --help            Show help and exit
+   -f, --file file  Set file to use as the config file
+   -h, --help       Show help and exit
    ...
 ```
 

@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- Help documentation for flags is now more consistently structured.
+
 
 ## 0.3.2 (2018-01-23)
 ### Added
