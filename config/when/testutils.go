@@ -1,6 +1,8 @@
 package when
 
 import (
+	"math/rand"
+	"os"
 	"runtime"
 
 	"github.com/rliebz/tusk/config/marshal"
@@ -62,6 +64,70 @@ var WithOSSuccess = func(w *When) {
 // WithOSFailure is an operator that requires the wrong OS.
 var WithOSFailure = func(w *When) {
 	w.OS = append(w.OS, "fake")
+}
+
+// WithEnv returns an operator that requires an env var to be set.
+func WithEnv(key string, value string) func(w *When) {
+	return func(w *When) {
+		ensureEnv(w)
+		w.Environment[key] = &value
+	}
+}
+
+// WithoutEnv returns an operator that requires an env var to be unset.
+func WithoutEnv(key string) func(w *When) {
+	return func(w *When) {
+		ensureEnv(w)
+		w.Environment[key] = nil
+	}
+}
+
+// WithEnvSuccess is an operator that requires a set environment variable.
+var WithEnvSuccess = func(w *When) {
+	ensureEnv(w)
+	key := randomString()
+	value := randomString()
+	os.Setenv(key, value) // nolint: errcheck
+	w.Environment[key] = &value
+}
+
+// WithEnvFailure is an operator that requires a set environment variable.
+var WithEnvFailure = func(w *When) {
+	ensureEnv(w)
+	key := randomString()
+	value := randomString()
+	w.Environment[key] = &value
+}
+
+// WithoutEnvSuccess is an operator that requires an unset environment variable.
+var WithoutEnvSuccess = func(w *When) {
+	ensureEnv(w)
+	key := randomString()
+	w.Environment[key] = nil
+}
+
+// WithoutEnvFailure is an operator that requires an unset environment variable.
+var WithoutEnvFailure = func(w *When) {
+	ensureEnv(w)
+	key := randomString()
+	value := randomString()
+	os.Setenv(key, value) // nolint: errcheck
+	w.Environment[key] = nil
+}
+
+func randomString() string {
+	var letters = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ_")
+	a := make([]rune, 20)
+	for i := range a {
+		a[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(a)
+}
+
+func ensureEnv(w *When) {
+	if w.Environment == nil {
+		w.Environment = make(map[string]*string)
+	}
 }
 
 // WithEqual returns an operator that requires the key to equal the value.

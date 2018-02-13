@@ -17,8 +17,9 @@ type When struct {
 	Exists  marshal.StringList `yaml:",omitempty"`
 	OS      marshal.StringList `yaml:",omitempty"`
 
-	Equal    map[string]marshal.StringList `yaml:",omitempty"`
-	NotEqual map[string]marshal.StringList `yaml:"not_equal,omitempty"`
+	Environment map[string]*string            `yaml:",omitempty"`
+	Equal       map[string]marshal.StringList `yaml:",omitempty"`
+	NotEqual    map[string]marshal.StringList `yaml:"not_equal,omitempty"`
 }
 
 // Dependencies returns a list of options that are required explicitly.
@@ -54,6 +55,44 @@ func (w *When) Validate(vars map[string]string) error {
 
 	warnDeprecations(w)
 
+	if err := w.validateExists(); err != nil {
+		return err
+	}
+
+	if err := w.validateOS(); err != nil {
+		return err
+	}
+
+	if err := w.validateEnv(); err != nil {
+		return err
+	}
+
+	if err := w.validateEqual(vars); err != nil {
+		return err
+	}
+
+	if err := w.validateNotEqual(vars); err != nil {
+		return err
+	}
+
+	if err := w.validateCommand(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (w *When) validateCommand() error {
+	for _, command := range w.Command {
+		if err := testCommand(command); err != nil {
+			return newCondFailErrorf(`test failed: %s`, command)
+		}
+	}
+
+	return nil
+}
+
+func (w *When) validateExists() error {
 	for _, f := range w.Exists {
 		if _, err := os.Stat(f); err != nil {
 			if os.IsNotExist(err) {
@@ -63,45 +102,92 @@ func (w *When) Validate(vars map[string]string) error {
 		}
 	}
 
-	if err := validateOS(runtime.GOOS, w.OS); err != nil {
-		return err
-	}
+	return nil
+}
 
-	for _, command := range w.Command {
-		if err := testCommand(command); err != nil {
-			return newCondFailErrorf(`test failed: %s`, command)
+func (w *When) validateOS() error {
+	return validateOneOf(
+		"current OS", runtime.GOOS, w.OS,
+		func(expected, actual string) bool {
+			return normalizeOS(expected) == actual
+		},
+	)
+}
+
+func (w *When) validateEnv() error {
+	for varName, expected := range w.Environment {
+		actual, ok := os.LookupEnv(varName)
+		if expected == nil {
+			if ok {
+				return newCondFailErrorf(
+					`environment variable %s ("%s") must not be set`,
+					varName, actual,
+				)
+			}
+
+			continue
 		}
-	}
 
-	if err := validateEquality(vars, w.Equal, func(a, b string) bool {
-		return a == b
-	}); err != nil {
-		return err
-	}
-
-	if err := validateEquality(vars, w.NotEqual, func(a, b string) bool {
-		return a != b
-	}); err != nil {
-		return err
+		if *expected != actual {
+			return newCondFailErrorf(
+				`environment variable %s ("%s") does not match expected value (%s)`,
+				varName, actual, expected,
+			)
+		}
 	}
 
 	return nil
 }
 
-func validateOS(os string, required []string) error { // nolint: unparam
-	// Nothing specified means any OS is fine
+func (w *When) validateEqual(vars map[string]string) error {
+	return validateEquality(vars, w.Equal, func(a, b string) bool {
+		return a == b
+	})
+}
+
+func (w *When) validateNotEqual(vars map[string]string) error {
+	return validateEquality(vars, w.NotEqual, func(a, b string) bool {
+		return a != b
+	})
+}
+
+// nolint: unparam
+func validateOneOf(
+	desc, value string, required []string, compare func(string, string) bool,
+) error {
 	if len(required) == 0 {
 		return nil
 	}
 
-	// Otherwise, at least one must match
-	for _, r := range required {
-		if os == normalizeOS(r) {
+	for _, expected := range required {
+		if compare(expected, value) {
 			return nil
 		}
 	}
 
-	return newCondFailErrorf(`current OS "%s" not listed in %v`, os, required)
+	return newCondFailErrorf(`%s (%s) not listed in %v`, desc, value, required)
+}
+
+// validateAllOf is a stand-in for validateOneOf to be backward compatible.
+// Behavior will change in an upcoming major version, as this behavior has
+// been deprecated.
+func validateAllOf(
+	desc, value string, required []string, compare func(string, string) bool,
+) error {
+	if len(required) == 0 {
+		return nil
+	}
+
+	for _, expected := range required {
+		if !compare(expected, value) {
+			return newCondFailErrorf(
+				`%s (%s) does not match expected value (%s)`,
+				desc, value, expected,
+			)
+		}
+	}
+
+	return nil
 }
 
 func normalizeOS(os string) string {
@@ -133,20 +219,19 @@ func validateEquality(
 	compare func(string, string) bool,
 ) error {
 
-	for name, values := range cases {
-		for _, expected := range values {
+	for optionName, values := range cases {
+		actual, ok := options[optionName]
+		if !ok {
+			return newCondFailErrorf(`option "%s" not defined`, optionName)
+		}
 
-			actual, ok := options[name]
-			if !ok {
-				return newCondFailErrorf(`option "%s" not defined`, name)
-			}
-
-			if !compare(expected, actual) {
-				return newCondFailErrorf(
-					`option "%s" expected value "%s", but received "%s"`,
-					name, expected, actual,
-				)
-			}
+		if err := validateAllOf(
+			fmt.Sprintf(`option "%s"`, optionName),
+			actual,
+			values,
+			compare,
+		); err != nil {
+			return err
 		}
 	}
 
@@ -181,6 +266,10 @@ func warnMultiClauseDeprecation(w *When) {
 
 	if len(w.OS) > 0 {
 		clausesUsed = append(clausesUsed, "os")
+	}
+
+	if len(w.Environment) > 0 {
+		clausesUsed = append(clausesUsed, "environment")
 	}
 
 	if len(w.Equal) > 0 {

@@ -80,6 +80,7 @@ var whenValidateTests = []struct {
 }{
 	// Empty
 	{When{}, nil, false},
+	{When{}, map[string]string{"foo": "bar"}, false},
 
 	// Command Clauses
 	{Create(WithCommandSuccess), nil, false},
@@ -97,6 +98,14 @@ var whenValidateTests = []struct {
 	{Create(WithOSFailure), nil, true},
 	{Create(WithOSSuccess, WithOSFailure), nil, false},
 	{Create(WithOSFailure, WithOSSuccess), nil, false},
+
+	// Environment Clauses
+	{Create(WithEnvSuccess), nil, false},
+	{Create(WithoutEnvSuccess), nil, false},
+	{Create(WithEnvFailure), nil, true},
+	{Create(WithoutEnvFailure), nil, true},
+	{Create(WithEnvSuccess, WithoutEnvFailure), nil, true},
+	{Create(WithEnvFailure, WithoutEnvSuccess), nil, true},
 
 	// Equal Clauses
 	{
@@ -169,7 +178,7 @@ func TestWhen_Validate(t *testing.T) {
 		didErr := err != nil
 		if tt.shouldErr != didErr {
 			t.Errorf(
-				"%+v.Validate(): expected error: %t, got error: '%s'",
+				"%+v.Validate():\nexpected error: %t, got error: '%s'",
 				tt.when, tt.shouldErr, err,
 			)
 		}
