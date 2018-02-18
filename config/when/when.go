@@ -22,6 +22,19 @@ type When struct {
 	NotEqual    map[string]marshal.StringList `yaml:"not_equal,omitempty"`
 }
 
+// UnmarshalYAML warns about deprecated features.
+func (w *When) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	type whenType When // Use new type to avoid recursion
+	if err := unmarshal((*whenType)(w)); err != nil {
+		return err
+	}
+
+	warnDeprecations(w)
+
+	return nil
+}
+
 // Dependencies returns a list of options that are required explicitly.
 // This does not include interpolations.
 func (w *When) Dependencies() []string {
@@ -52,8 +65,6 @@ func (w *When) Validate(vars map[string]string) error {
 	if w == nil {
 		return nil
 	}
-
-	warnDeprecations(w)
 
 	if err := w.validateExists(); err != nil {
 		return err
