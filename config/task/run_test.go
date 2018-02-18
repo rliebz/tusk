@@ -44,19 +44,53 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 	}
 }
 
+var environmentTests = []struct {
+	input          string
+	expectedLength int
+}{
+	{`{}`, 0},
+	{`{environment: {}}`, 0},
+	{`{set_environment: {}}`, 0},
+	{`{environment: {foo: bar}}`, 1},
+	{`{set_environment: {foo: bar}}`, 1},
+	{`{environment: {foo: bar, bar: baz}}`, 2},
+	{`{set_environment: {foo: bar, bar: baz}}`, 2},
+}
+
+func TestRun_UnmarshalYAML_environment_and_set_environment(t *testing.T) {
+	for _, testCase := range environmentTests {
+		r := Run{}
+
+		if err := yaml.Unmarshal([]byte(testCase.input), &r); err != nil {
+			t.Errorf(
+				"yaml.Unmarshal(%s, ...): unexpected error: %s",
+				testCase.input, err,
+			)
+			continue
+		}
+
+		if testCase.expectedLength != len(r.SetEnvironment) {
+			t.Errorf(
+				"yaml.Unmarshal(%s, ...): expected %d environment items, got %d",
+				testCase.input, testCase.expectedLength, len(r.SetEnvironment),
+			)
+		}
+	}
+}
+
 var multipleActionTests = []string{
 	`{command: example, task: echo 'hello'}`,
 	`{command: example, environment: {foo: bar}}`,
 	`{task: echo 'hello', environment: {foo: bar}}`,
 	`{command: example, task: echo 'hello', environment: {foo: bar}}`,
+	`{environment: {foo: bar}, set_environment: {bar: baz}}`,
 }
 
 func TestRun_UnmarshalYAML_command_and_subtask(t *testing.T) {
-	r := Run{}
-
 	for _, input := range multipleActionTests {
+		r := Run{}
 		if err := yaml.Unmarshal([]byte(input), &r); err == nil {
-			t.Fatalf(
+			t.Errorf(
 				"yaml.Unmarshal(%s, ...): expected error, received nil",
 				input,
 			)

@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Changed
 - Help documentation for flags is now more consistently structured.
+- The `environment` key in `run` clauses has been renamed `set_environment` to
+  make the distinction from `when` clauses clear. The original name is still
+  supported for backward compatibility, but it has been deprecated and will be
+  removed in a future release.
 
 
 ## 0.3.2 (2018-01-23)

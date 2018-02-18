@@ -126,7 +126,7 @@ func TestTask_run_environment(t *testing.T) {
 	var task Task
 
 	r := &Run{
-		Environment: map[string]*string{
+		SetEnvironment: map[string]*string{
 			toBeSet:   &toBeSetValue,
 			toBeUnset: nil,
 		},

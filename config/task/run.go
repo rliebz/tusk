@@ -11,9 +11,11 @@ import (
 
 // Run defines a a single runnable item within a task.
 type Run struct {
-	When        when.List          `yaml:",omitempty"`
-	Command     marshal.StringList `yaml:",omitempty"`
-	SubTaskList SubTaskList        `yaml:"task,omitempty"`
+	When           when.List          `yaml:",omitempty"`
+	Command        marshal.StringList `yaml:",omitempty"`
+	SubTaskList    SubTaskList        `yaml:"task,omitempty"`
+	SetEnvironment map[string]*string `yaml:"set_environment,omitempty"`
+	// Deprecated: Use SetEnvironment instead
 	Environment map[string]*string `yaml:",omitempty"`
 
 	// Computed members not specified in yaml file
@@ -40,6 +42,7 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 				len(runItem.Command) != 0,
 				len(runItem.SubTaskList) != 0,
 				runItem.Environment != nil,
+				runItem.SetEnvironment != nil,
 			}
 
 			count := 0
@@ -51,6 +54,15 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 			if count > 1 {
 				return errors.New("only one action can be defined in `run`")
+			}
+
+			if len(runItem.Environment) > 0 {
+				ui.Deprecate(
+					"The `environment` key has been deprecated in `run` clauses",
+					"Use `set_environment` instead\n",
+				)
+				runItem.SetEnvironment = runItem.Environment
+				runItem.Environment = nil
 			}
 
 			return nil
@@ -101,8 +113,8 @@ func (r *Run) runSubTasks() error {
 }
 
 func (r *Run) runEnvironment() error {
-	ui.PrintEnvironment(r.Environment)
-	for key, value := range r.Environment {
+	ui.PrintEnvironment(r.SetEnvironment)
+	for key, value := range r.SetEnvironment {
 		if value == nil {
 			if err := os.Unsetenv(key); err != nil {
 				return err
