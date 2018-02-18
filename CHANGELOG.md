@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Support environment variable conditional in `when` clauses.
+
 ### Changed
 - Help documentation for flags is now more consistently structured.
 
