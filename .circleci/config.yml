@@ -3,7 +3,7 @@ defaults:
   job_defaults: &job_defaults
     working_directory: /go/src/github.com/rliebz/tusk
     docker:
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.10
     environment:
       TEST_RESULTS: /tmp/test-results
   mktestdir: &mktestdir
