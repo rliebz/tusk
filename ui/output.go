@@ -75,6 +75,7 @@ func Deprecate(a ...interface{}) {
 	}
 
 	logInStyle(deprecatedString, yellow, a...)
+	println(LoggerStderr)
 }
 
 func logInStyle(title string, f formatter, a ...interface{}) {

@@ -59,7 +59,7 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			if len(runItem.Environment) > 0 {
 				ui.Deprecate(
 					"The `environment` key has been deprecated in `run` clauses",
-					"Use `set-environment` instead\n",
+					"Use `set-environment` instead",
 				)
 				runItem.SetEnvironment = runItem.Environment
 				runItem.Environment = nil
