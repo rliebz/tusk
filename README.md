@@ -166,7 +166,7 @@ For executing shell commands, the interpreter used will be the value of the
 `SHELL` environment variable. If no environment variable is set, the default is
 `sh`.
 
-#### Environment
+#### Set Environment
 
 The second type of action a `run` clause can perform is setting or unsetting
 environment variables. To do so, simply define a map of environment variable
@@ -179,14 +179,14 @@ tasks:
       proxy-url:
         default: http://proxy.example.com
     run:
-      - environment:
+      - set_environment:
           http_proxy: ${proxy-url}
           https_proxy: ${proxy-url}
-          no_proxy: null
+          no_proxy: ~
       - command: curl http://example.com
 ```
 
-Passing `null` to an environment variable will explicitly unset it, while
+Passing `~` or `null` to an environment variable will explicitly unset it, while
 passing an empty string will set it to an empty string.
 
 #### Sub-Tasks
@@ -230,7 +230,7 @@ tasks:
   configure-environment:
     private: true
     run:
-      environment: {APP_ENV: dev}
+      set_environment: {APP_ENV: dev}
   serve:
     run:
       - task: configure-environment
@@ -254,8 +254,13 @@ five different checks supported:
 - `command` (string): Execute if the command runs with an exit code of `0`.
 - `exists` (string): Execute if the file exists.
 - `os` (list): Execute if the operating system matches any one from the list.
-- `equal` (map): Execute if each variable matches the value it maps to.
-- `not_equal` (map): Execute if each variable does not match the value it maps to.
+- `environment` (map[string -> string]): Execute if the environment variable
+  matches the value it maps to. To check if a variable is not set, the value
+  should be `~` or `null`.
+- `equal` (map[string -> string]): Execute if the given option equals the value
+  it maps to.
+- `not_equal` (map[string -> string]): Execute if the given option does not
+  equal the value it maps to.
 
 The `when` clause supports any number of different checks as a list, where each
 check must pass individually for the clause to evaluate to true. Here is a more
