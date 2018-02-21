@@ -50,14 +50,14 @@ var environmentTests = []struct {
 }{
 	{`{}`, 0},
 	{`{environment: {}}`, 0},
-	{`{set_environment: {}}`, 0},
+	{`{set-environment: {}}`, 0},
 	{`{environment: {foo: bar}}`, 1},
-	{`{set_environment: {foo: bar}}`, 1},
+	{`{set-environment: {foo: bar}}`, 1},
 	{`{environment: {foo: bar, bar: baz}}`, 2},
-	{`{set_environment: {foo: bar, bar: baz}}`, 2},
+	{`{set-environment: {foo: bar, bar: baz}}`, 2},
 }
 
-func TestRun_UnmarshalYAML_environment_and_set_environment(t *testing.T) {
+func TestRun_UnmarshalYAML_SetEnvironment(t *testing.T) {
 	for _, testCase := range environmentTests {
 		r := Run{}
 
@@ -83,7 +83,7 @@ var multipleActionTests = []string{
 	`{command: example, environment: {foo: bar}}`,
 	`{task: echo 'hello', environment: {foo: bar}}`,
 	`{command: example, task: echo 'hello', environment: {foo: bar}}`,
-	`{environment: {foo: bar}, set_environment: {bar: baz}}`,
+	`{environment: {foo: bar}, set-environment: {bar: baz}}`,
 }
 
 func TestRun_UnmarshalYAML_command_and_subtask(t *testing.T) {

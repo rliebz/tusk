@@ -87,7 +87,7 @@ tasks:
         type: bool
     run:
       - when:
-          - not_equal: {no-install: true}
+          - not-equal: {no-install: true}
           - command: '! command -v circleci'
         command: curl -o ${bin-path} ${download-path} && chmod +x ${bin-path}
       - command: circleci build

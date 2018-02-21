@@ -3,7 +3,58 @@ package when
 import (
 	"reflect"
 	"testing"
+
+	yaml "gopkg.in/yaml.v2"
 )
+
+var unmarshalTests = []struct {
+	desc     string
+	input    string
+	expected When
+}{
+	{
+		"not_equal",
+		`not_equal: {foo: bar}`,
+		Create(WithNotEqual("foo", "bar")),
+	},
+	{
+		"not-equal",
+		`not-equal: {foo: bar}`,
+		Create(WithNotEqual("foo", "bar")),
+	},
+}
+
+func TestWhen_UnmarshalYAML(t *testing.T) {
+	for _, tt := range unmarshalTests {
+		w := When{}
+		if err := yaml.Unmarshal([]byte(tt.input), &w); err != nil {
+			t.Errorf(
+				`Unmarshalling %s: unexpected error: %s`,
+				tt.desc, err,
+			)
+			continue
+		}
+
+		if !reflect.DeepEqual(tt.expected.NotEqual, w.NotEqual) {
+			t.Errorf(
+				"NotEqual for %s:\nexpected: %v\nactual: %v",
+				tt.desc, tt.expected.NotEqual, w.NotEqual,
+			)
+		}
+	}
+}
+
+func TestWhen_UnmarshalYAML_invalid(t *testing.T) {
+	w := When{}
+	input := []byte("not_equal: {foo: bar}\nnot-equal: {bar: baz}")
+	expected := "both `not_equal` and `not-equal` are defined in a single `when` clause"
+	if err := yaml.Unmarshal(input, &w); expected != err.Error() {
+		t.Errorf(
+			"expected error: %s\nactual: %s",
+			expected, err,
+		)
+	}
+}
 
 var whenDepTests = []struct {
 	when     When

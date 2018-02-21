@@ -1,6 +1,7 @@
 package when
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -19,7 +20,9 @@ type When struct {
 
 	Environment map[string]*string            `yaml:",omitempty"`
 	Equal       map[string]marshal.StringList `yaml:",omitempty"`
-	NotEqual    map[string]marshal.StringList `yaml:"not_equal,omitempty"`
+	NotEqual    map[string]marshal.StringList `yaml:"not-equal,omitempty"`
+	// Deprecated: Use `not-equal` instead of `not_equal`
+	NotEqualDeprecated map[string]marshal.StringList `yaml:"not_equal,omitempty"`
 }
 
 // UnmarshalYAML warns about deprecated features.
@@ -28,6 +31,18 @@ func (w *When) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	type whenType When // Use new type to avoid recursion
 	if err := unmarshal((*whenType)(w)); err != nil {
 		return err
+	}
+
+	if len(w.NotEqualDeprecated) > 0 {
+		ui.Deprecate("The `not_equal` clause has been renamed to `not-equal`\n")
+		if len(w.NotEqual) > 0 {
+			return errors.New(
+				"both `not_equal` and `not-equal` are defined in a single `when` clause",
+			)
+		}
+
+		w.NotEqual = w.NotEqualDeprecated
+		w.NotEqualDeprecated = nil
 	}
 
 	warnDeprecations(w)

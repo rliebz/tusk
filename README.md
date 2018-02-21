@@ -179,7 +179,7 @@ tasks:
       proxy-url:
         default: http://proxy.example.com
     run:
-      - set_environment:
+      - set-environment:
           http_proxy: ${proxy-url}
           https_proxy: ${proxy-url}
           no_proxy: ~
@@ -230,7 +230,7 @@ tasks:
   configure-environment:
     private: true
     run:
-      set_environment: {APP_ENV: dev}
+      set-environment: {APP_ENV: dev}
   serve:
     run:
       - task: configure-environment
@@ -259,7 +259,7 @@ five different checks supported:
   should be `~` or `null`.
 - `equal` (map[string -> string]): Execute if the given option equals the value
   it maps to.
-- `not_equal` (map[string -> string]): Execute if the given option does not
+- `not-equal` (map[string -> string]): Execute if the given option does not
   equal the value it maps to.
 
 The `when` clause supports any number of different checks as a list, where each
