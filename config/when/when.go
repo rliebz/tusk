@@ -34,7 +34,7 @@ func (w *When) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	if len(w.NotEqualDeprecated) > 0 {
-		ui.Deprecate("The `not_equal` clause has been renamed to `not-equal`\n")
+		ui.Deprecate("The `not_equal` clause has been renamed to `not-equal`")
 		if len(w.NotEqual) > 0 {
 			return errors.New(
 				"both `not_equal` and `not-equal` are defined in a single `when` clause",
@@ -332,8 +332,7 @@ func deprecateWhenBehavior(behavior, example1, example2 string) {
         when:
           - %s: ...
           - %s: ...
-          ...
-`,
+          ...`,
 			example1, example2),
 	)
 }

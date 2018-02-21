@@ -23,6 +23,21 @@ var outputTests = []printTestCase{
 		fmt.Sprintf(logFormat, tag(debugString, cyan), "foo"),
 	},
 	{
+		`Debug("foo", "bar", "baz")`,
+		LoggerStderr,
+		func() {
+			Debug("foo", "bar", "baz")
+		},
+		VerbosityLevelNormal,
+		VerbosityLevelVerbose,
+		fmt.Sprintf(
+			"%s %s\n%s%s\n%s%s\n",
+			tag(debugString, cyan), "foo",
+			cyan(outputPrefix), "bar",
+			cyan(outputPrefix), "baz",
+		),
+	},
+	{
 		`Info("foo")`,
 		LoggerStderr,
 		func() { Info("foo") },
@@ -52,7 +67,7 @@ var outputTests = []printTestCase{
 		func() { Deprecate("foo") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
-		fmt.Sprintf(logFormat, tag(deprecatedString, yellow), "foo"),
+		fmt.Sprintf(logFormat, tag(deprecatedString, yellow), "foo\n"),
 	},
 	{
 		`Deprecate("foo") twice`,
@@ -63,7 +78,19 @@ var outputTests = []printTestCase{
 		},
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
-		fmt.Sprintf(logFormat, tag(deprecatedString, yellow), "foo"),
+		fmt.Sprintf(logFormat, tag(deprecatedString, yellow), "foo\n"),
+	},
+	{
+		`Deprecate("foo", "bar")`,
+		LoggerStderr,
+		func() { Deprecate("foo", "bar") },
+		VerbosityLevelQuiet,
+		VerbosityLevelNormal,
+		fmt.Sprintf(
+			"%s %s\n%s%s\n\n",
+			tag(deprecatedString, yellow), "foo",
+			yellow(outputPrefix), "bar",
+		),
 	},
 }
 
