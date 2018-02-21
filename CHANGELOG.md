@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.3.3 (2018-02-21)
 ### Added
 - Support environment variable conditional in `when` clauses.
 
