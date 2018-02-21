@@ -8,10 +8,17 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Changed
 - Warnings now appear more consistently for deprecated functionality.
 - Help documentation for flags is now more consistently structured.
-- The `environment` key in `run` clauses has been renamed `set_environment` to
-  make the distinction from `when` clauses clear. The original name is still
-  supported for backward compatibility, but it has been deprecated and will be
-  removed in a future release.
+- Several configuration keys have been renamed. While the original names are
+  still supported, they have been deprecated and will be removed in a future
+  release. See the deprecated section for details.
+
+### Deprecated
+- The key name `not_equal` should be replaced with `not-equal`. This change is
+  to reinforce the convention for naming multi-word keys such as flag names
+  using kebab case.
+- The key name `environment` in `run` clauses should be replaced with
+  `set-environment`. This is to make the behavior distinction from other
+  `environment` clauses clear.
 
 
 ## 0.3.2 (2018-01-23)

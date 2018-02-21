@@ -7,7 +7,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func TestWhen_UnmarshalYAML(t *testing.T) {
+func TestList_UnmarshalYAML(t *testing.T) {
 	s1 := []byte(`os: linux`)
 	s2 := []byte(`[os: linux]`)
 	l1 := List{}

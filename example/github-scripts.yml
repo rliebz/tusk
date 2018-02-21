@@ -84,7 +84,7 @@ tasks:
         task: setup
       - when:
           equal: {is-test-env: false}
-        set_environment:
+        set-environment:
           RAILS_ENV: test
           RACK_ENV: test
       - when:

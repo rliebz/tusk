@@ -34,7 +34,7 @@ options:
               - test ${global} -gt 5
         value: Global Is Five!
       - when:
-          # `equal` and `not_equal` are available for quick equality checks.
+          # `equal` and `not-equal` are available for quick equality checks.
           equal:
             # Interpolation syntax is not needed for map keys.
             global: 5
