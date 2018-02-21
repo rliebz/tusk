@@ -46,7 +46,7 @@ defaults:
     name: Install fpm
     command: |
       sudo apt-get update
-      sudo apt-get -y install ruby ruby-dev rubygems build-essential rpm
+      sudo apt-get -y install ruby ruby-dev rubygems build-essential rpm libffi-dev
       sudo gem install --no-ri --no-rdoc fpm
   release: &release
     name: Run goreleaser
