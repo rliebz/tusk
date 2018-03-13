@@ -1,6 +1,7 @@
 package appcli
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -138,8 +139,18 @@ func TestNewFlagApp_no_options(t *testing.T) {
 }
 
 func TestNewApp(t *testing.T) {
-	args := []string{"tusk", "foo"}
-	cfgText := []byte(`tasks: { "foo": {} }`)
+	taskName := "foo"
+	name := "new-name"
+	usage := "new usage"
+	args := []string{"tusk", taskName}
+
+	cfgText := []byte(fmt.Sprintf(`
+name: %s
+usage: %s
+tasks: { "%s": {} }
+`,
+		name, usage, taskName,
+	))
 	meta := &config.Metadata{CfgText: cfgText}
 
 	app, err := NewApp(args, meta)
@@ -148,9 +159,23 @@ func TestNewApp(t *testing.T) {
 	}
 
 	if 1 != len(app.Commands) {
-		t.Fatalf(
+		t.Errorf(
 			"For config: `%s`\nexpected 1 command, got %#v",
 			string(cfgText), app.Commands,
+		)
+	}
+
+	if name != app.Name {
+		t.Errorf(
+			`NewApp().name => %q, want %q`,
+			app.Name, name,
+		)
+	}
+
+	if usage != app.Usage {
+		t.Errorf(
+			`NewApp().usage => %q, want %q`,
+			app.Usage, usage,
 		)
 	}
 }
