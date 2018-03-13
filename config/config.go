@@ -8,6 +8,9 @@ import (
 
 // Config is a struct representing the format for configuration settings.
 type Config struct {
+	Name  *string
+	Usage *string
+
 	Options map[string]*option.Option
 	Tasks   map[string]*task.Task
 }
