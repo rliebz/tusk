@@ -95,10 +95,16 @@ tasks:
   release:
     usage: Release the latest version with goreleaser
     options:
-      goreleaser-bin:
-        usage: The binary for goreleaser
-        default: goreleaser
+      snapshot:
+        usage: Release without publishing or validation
+        type: bool
+      snapshot-flags:
+        private: true
+        default:
+          when:
+            equal: {snapshot: true}
+          value: --snapshot
     run: |
       header='^## [0-9]+\.[0-9]+\.[0-9]+'
       awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
-          ${goreleaser-bin} --rm-dist --release-notes /dev/stdin
+          goreleaser --rm-dist --release-notes /dev/stdin ${snapshot-flags}

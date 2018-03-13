@@ -40,7 +40,7 @@ brew:
   github:
     owner: rliebz
     name: homebrew-tusk
-  homepage: "https://github.com/rliebz/tusk"
+  homepage: https://github.com/rliebz/tusk
   description: A tusk runner built with simplicity in mind
   install: |
     bin.install "tusk"
@@ -49,8 +49,9 @@ brew:
     zsh_completion.install "completion/_tusk"
   test: |
     system "#{bin}/tusk --version"
-fpm:
+nfpm:
   maintainer: Robert Liebowitz <rliebz@gmail.com>
+  homepage: https://gihub.com/rliebz/tusk
   description: A task runner built with simplicity in mind
   license: MIT
   formats:

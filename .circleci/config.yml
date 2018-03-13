@@ -4,7 +4,7 @@ defaults:
     working_directory: /go/src/github.com/rliebz/tusk
     docker:
       - image: circleci/golang:1.10
-    environment:
+    environment: &environment_defaults
       TEST_RESULTS: /tmp/test-results
   mktestdir: &mktestdir
     name: Create the test directory
@@ -42,24 +42,26 @@ defaults:
       tusk --quiet test --verbose --no-lint | tee $TEST_RESULTS/go-test.out
 
   # Release
-  install_fpm: &install_fpm
-    name: Install fpm
+  install_release_dependencies: &install_release_dependencies
+    name: Install goreleaser dependencies
     command: |
-      sudo apt-get update
-      sudo apt-get -y install ruby ruby-dev rubygems build-essential rpm libffi-dev
-      sudo gem install --no-ri --no-rdoc fpm
+      sudo apt-get -y install rpm
+      curl -sL https://git.io/goreleaser > /tmp/goreleaser
+      sudo chmod +x /tmp/goreleaser
+      sudo mv /tmp/goreleaser /usr/local/bin
   release: &release
     name: Run goreleaser
     command: |
-      curl -sL https://git.io/goreleaser > /tmp/goreleaser
-      sudo chmod +x /tmp/goreleaser
-      sudo "PATH=$PATH" --preserve-env /go/bin/tusk --quiet release --goreleaser-bin /tmp/goreleaser
+      sudo "PATH=$PATH" --preserve-env /go/bin/tusk release "${RELEASE_FLAGS}"
 
 version: 2
 jobs:
   # For running tests locally
   build:
     <<: *job_defaults
+    environment:
+      <<: *environment_defaults
+      RELEASE_FLAGS: --snapshot
     steps:
       - checkout
       - run: *mktestdir
@@ -68,6 +70,9 @@ jobs:
       - run: *lint
       - run: *install_test_dependencies
       - run: *test
+      # Local release is dry-run only
+      - run: *install_release_dependencies
+      - run: *release
 
   lint:
     <<: *job_defaults
@@ -96,7 +101,7 @@ jobs:
     steps:
       - checkout
       - run: *install_tusk
-      - run: *install_fpm
+      - run: *install_release_dependencies
       - deploy: *release
 
 workflows:
