@@ -54,7 +54,7 @@ defaults:
     command: |
       # Pin goreleaser version
       export VERSION=v0.62.3
-      sudo "PATH=$PATH" --preserve-env /go/bin/tusk release "${RELEASE_FLAGS}"
+      sudo "PATH=$PATH" --preserve-env /go/bin/tusk release ${RELEASE_FLAGS}
 
 version: 2
 jobs:
