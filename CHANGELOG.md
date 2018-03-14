@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.3.4 (2018-03-14)
 ### Added
 - Top-level keys `name` and `usage` can be changed in the config file to update
   help documentation. This supports aliasing different config files to be used

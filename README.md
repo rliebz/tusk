@@ -465,6 +465,38 @@ Any shared variables referenced by a task will be exposed by command-line when
 invoking that task. Shared variables referenced by a sub-task will be evaluated
 as needed, but not exposed by command-line.
 
+#### CLI Metadata
+
+It is also possible to create a custom CLI tool for use outside of a project's
+directory by using shell aliases:
+
+```bash
+alias mycli="tusk -f /path/to/tusk.yml"
+```
+
+In that case, it may be useful to override the tool name and usage text that
+are provided as part of the help documentation:
+
+```yaml
+name: mycli
+usage: A custom aliased command-line application
+
+tasks:
+  ...
+```
+
+The example above will produce the following help documentation:
+
+```
+mycli - A custom aliased command-line application
+
+Usage:
+  mycli [global options] <task> [task options]
+
+Tasks:
+  ...
+```
+
 #### Interpolation
 
 The interpolation syntax for a variable `foo` is `${foo}`, meaning any instances
