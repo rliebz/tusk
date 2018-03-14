@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Top-level keys `name` and `usage` can be changed in the config file to update
   help documentation. This supports aliasing different config files to be used
   as custom CLI tools.
+- Support `tusk.yaml` as alternate config file name.
 
 ## 0.3.3 (2018-02-21)
 ### Added

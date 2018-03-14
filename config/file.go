@@ -5,8 +5,7 @@ import (
 	"path/filepath"
 )
 
-// DefaultFile is the default name for a config file.
-var DefaultFile = "tusk.yml"
+var defaultFiles = []string{"tusk.yml", "tusk.yaml"}
 
 // SearchForFile checks the working directory and every parent directory to
 // find a configuration file with the default name.
@@ -32,7 +31,19 @@ func SearchForFile() (fullPath string, found bool, err error) {
 
 func findFileInDir(dirPath string) (fullPath string, found bool, err error) {
 
-	fullPath = filepath.Join(dirPath, DefaultFile)
+	for _, fileName := range defaultFiles {
+		fullPath, found, err = findFileInDirByName(dirPath, fileName)
+		if err != nil || found {
+			return fullPath, found, err
+		}
+	}
+
+	return "", false, nil
+}
+
+func findFileInDirByName(dirPath, fileName string) (fullPath string, found bool, err error) {
+
+	fullPath = filepath.Join(dirPath, fileName)
 	if _, err := os.Stat(fullPath); err != nil {
 		if os.IsNotExist(err) {
 			return "", false, nil
