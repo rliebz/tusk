@@ -24,11 +24,10 @@ type Option struct {
 	DefaultValues ValueList `yaml:"default"`
 
 	// Computed members not specified in yaml file
-	Name       string            `yaml:"-"`
-	Passed     string            `yaml:"-"`
-	Vars       map[string]string `yaml:"-"`
-	cacheValue string            `yaml:"-"`
-	isCacheSet bool              `yaml:"-"`
+	Name       string `yaml:"-"`
+	Passed     string `yaml:"-"`
+	cacheValue string `yaml:"-"`
+	isCacheSet bool   `yaml:"-"`
 }
 
 // Dependencies returns a list of options that are required explicitly.
@@ -89,12 +88,12 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 //   3. The first item in the default value list with a valid when clause
 //
 // Values may also be cached to avoid re-running commands.
-func (o *Option) Evaluate() (string, error) {
+func (o *Option) Evaluate(vars map[string]string) (string, error) {
 	if o == nil {
 		return "", nil
 	}
 
-	value, err := o.getValue()
+	value, err := o.getValue(vars)
 	if err != nil {
 		return "", err
 	}
@@ -104,7 +103,7 @@ func (o *Option) Evaluate() (string, error) {
 	return value, nil
 }
 
-func (o *Option) getValue() (string, error) {
+func (o *Option) getValue(vars map[string]string) (string, error) {
 	if o.isCacheSet {
 		return o.cacheValue, nil
 	}
@@ -123,7 +122,7 @@ func (o *Option) getValue() (string, error) {
 		return "", fmt.Errorf("no value passed for required option: %s", o.Name)
 	}
 
-	return o.getDefaultValue()
+	return o.getDefaultValue(vars)
 }
 
 func (o *Option) getSpecified() (value string, found bool) {
@@ -162,9 +161,9 @@ func (o *Option) validateSpecified() error {
 	)
 }
 
-func (o *Option) getDefaultValue() (string, error) {
+func (o *Option) getDefaultValue(vars map[string]string) (string, error) {
 	for _, candidate := range o.DefaultValues {
-		if err := candidate.When.Validate(o.Vars); err != nil {
+		if err := candidate.When.Validate(vars); err != nil {
 			if !when.IsFailedCondition(err) {
 				return "", err
 			}

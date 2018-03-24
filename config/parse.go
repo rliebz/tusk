@@ -129,8 +129,7 @@ func interpolateOption(o *option.Option, passed, vars map[string]string) error {
 		o.Passed = valuePassed
 	}
 
-	o.Vars = vars
-	value, err := o.Evaluate()
+	value, err := o.Evaluate(vars)
 	if err != nil {
 		return err
 	}
