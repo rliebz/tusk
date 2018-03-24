@@ -206,7 +206,9 @@ func TestOption_Evaluate_required_with_environment(t *testing.T) {
 func TestOption_Evaluate_values_none_specified(t *testing.T) {
 	expected := ""
 	option := Option{
-		ValuesAllowed: marshal.StringList{"red", "herring"},
+		ValueWithList: ValueWithList{
+			ValuesAllowed: marshal.StringList{"red", "herring"},
+		},
 	}
 
 	actual, err := option.Evaluate(nil)
@@ -225,8 +227,10 @@ func TestOption_Evaluate_values_none_specified(t *testing.T) {
 func TestOption_Evaluate_values_with_passed(t *testing.T) {
 	expected := "foo"
 	option := Option{
-		Passed:        expected,
-		ValuesAllowed: marshal.StringList{"red", expected, "herring"},
+		Passed: expected,
+		ValueWithList: ValueWithList{
+			ValuesAllowed: marshal.StringList{"red", expected, "herring"},
+		},
 	}
 
 	actual, err := option.Evaluate(nil)
@@ -247,8 +251,10 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 	expected := "foo"
 
 	option := Option{
-		Environment:   envVar,
-		ValuesAllowed: marshal.StringList{"red", expected, "herring"},
+		Environment: envVar,
+		ValueWithList: ValueWithList{
+			ValuesAllowed: marshal.StringList{"red", expected, "herring"},
+		},
 	}
 
 	if err := os.Setenv(envVar, expected); err != nil {
@@ -271,8 +277,10 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
 	expected := "foo"
 	option := Option{
-		Passed:        expected,
-		ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
+		Passed: expected,
+		ValueWithList: ValueWithList{
+			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
+		},
 	}
 
 	_, err := option.Evaluate(nil)
@@ -288,8 +296,10 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 	expected := "foo"
 
 	option := Option{
-		Environment:   envVar,
-		ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
+		Environment: envVar,
+		ValueWithList: ValueWithList{
+			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
+		},
 	}
 
 	if err := os.Setenv(envVar, expected); err != nil {
@@ -337,10 +347,13 @@ func TestOption_Evaluate_type_defaults(t *testing.T) {
 }
 
 func TestOption_UnmarshalYAML(t *testing.T) {
-	s := []byte(`{usage: foo, name: ignored}`)
+	s := []byte(`{usage: foo, values: [foo, bar], name: ignored}`)
 	expected := Option{
 		Usage: "foo",
-		Name:  "",
+		ValueWithList: ValueWithList{
+			ValuesAllowed: []string{"foo", "bar"},
+		},
+		Name: "",
 	}
 	actual := Option{}
 
