@@ -6,18 +6,18 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
 )
 
 // Option represents an abstract command line option.
 type Option struct {
-	Short         string
-	Type          string
-	Usage         string
-	Private       bool
-	Required      bool
-	ValuesAllowed marshal.StringList `yaml:"values"`
+	ValueWithList `yaml:",inline"`
+
+	Short    string
+	Type     string
+	Usage    string
+	Private  bool
+	Required bool
 
 	// Used to determine value
 	Environment   string
@@ -80,7 +80,7 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-// Evaluate determines an option's value and sets an environment variable.
+// Evaluate determines an option's value.
 //
 // The order of priority is:
 //   1. Command-line option passed
@@ -109,11 +109,11 @@ func (o *Option) getValue(vars map[string]string) (string, error) {
 	}
 
 	if !o.Private {
-		if err := o.validateSpecified(); err != nil {
-			return "", err
-		}
-
 		if value, found := o.getSpecified(); found {
+			if err := o.validateSpecified(value, "option "+o.Name); err != nil {
+				return "", err
+			}
+
 			return value, nil
 		}
 	}
@@ -137,28 +137,6 @@ func (o *Option) getSpecified() (value string, found bool) {
 	}
 
 	return "", false
-}
-
-func (o *Option) validateSpecified() error {
-	if len(o.ValuesAllowed) == 0 {
-		return nil
-	}
-
-	specified, found := o.getSpecified()
-	if !found {
-		return nil
-	}
-
-	for _, value := range o.ValuesAllowed {
-		if specified == value {
-			return nil
-		}
-	}
-
-	return fmt.Errorf(
-		`value "%s" for option "%s" must be one of %v`,
-		o.Passed, o.Name, o.ValuesAllowed,
-	)
 }
 
 func (o *Option) getDefaultValue(vars map[string]string) (string, error) {
