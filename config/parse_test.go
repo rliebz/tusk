@@ -18,6 +18,57 @@ var interpolatetests = []struct {
 	expected task.RunList
 }{
 	{
+		"argument interpolation",
+		`
+tasks:
+  mytask:
+    args:
+      foo: {}
+    run: echo ${foo}
+`,
+		map[string]string{"foo": "foovalue"},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}},
+	},
+	{
+		"argument with global interpolation",
+		`
+options:
+  foo:
+    default: wrong
+tasks:
+  mytask:
+    args:
+      foo: {}
+    run: echo ${foo}
+`,
+		map[string]string{"foo": "foovalue"},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}},
+	},
+	{
+		"argument evaluated before option",
+		`
+tasks:
+  mytask:
+    args:
+      foo: {}
+    options:
+      bar:
+        default: ${foo}
+    run: echo ${foo} ${bar}
+`,
+		map[string]string{"foo": "foovalue"},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue foovalue"},
+		}},
+	},
+	{
 		"single task global interpolation",
 		`
 options:
@@ -529,6 +580,32 @@ tasks:
 		map[string]string{},
 		"mytask",
 	},
+	{
+		"argument and option share name",
+		`
+tasks:
+  mytask:
+    args:
+      foo: {}
+    options:
+      foo: {}
+    run: echo oops
+`,
+		map[string]string{"foo": "foovalue"},
+		"mytask",
+	},
+	{
+		"argument not passed",
+		`
+tasks:
+  mytask:
+    args:
+      foo: {}
+    run: echo oops
+`,
+		map[string]string{},
+		"mytask",
+	},
 }
 
 func TestParseComplete_invalid(t *testing.T) {
@@ -546,7 +623,7 @@ given input:
 
 		_, err := ParseComplete([]byte(tt.input), tt.passed, tt.taskName)
 		if err == nil {
-			t.Errorf(context+"expected error for %s", tt.testCase)
+			t.Errorf(context+"expected error for test case: %s", tt.testCase)
 			continue
 		}
 	}

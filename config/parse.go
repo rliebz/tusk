@@ -120,6 +120,27 @@ func getOrderedGlobalOptions(cfgText []byte) ([]string, error) {
 	return ordered, nil
 }
 
+func interpolateArg(a *option.Arg, passed, vars map[string]string) error {
+	if err := interp.Marshallable(a, vars); err != nil {
+		return err
+	}
+
+	if valuePassed, ok := passed[a.Name]; ok {
+		a.Passed = valuePassed
+	} else {
+		return fmt.Errorf("no value passed for arg %q", a.Name)
+	}
+
+	value, err := a.Evaluate()
+	if err != nil {
+		return err
+	}
+
+	vars[a.Name] = value
+
+	return nil
+}
+
 func interpolateOption(o *option.Option, passed, vars map[string]string) error {
 	if err := interp.Marshallable(o, vars); err != nil {
 		return err
@@ -140,14 +161,28 @@ func interpolateOption(o *option.Option, passed, vars map[string]string) error {
 }
 
 func interpolateTask(t *task.Task, cfgText []byte, passed, vars map[string]string) error {
-	taskOptions, err := getOrderedTaskOptions(cfgText, t.Name)
+
+	taskArgs, err := getOrderedTaskOptions(cfgText, t.Name, "args")
 	if err != nil {
 		return err
 	}
 
-	taskVars := make(map[string]string, len(vars)+len(taskOptions))
+	taskOptions, err := getOrderedTaskOptions(cfgText, t.Name, "options")
+	if err != nil {
+		return err
+	}
+
+	taskVars := make(map[string]string, len(vars)+len(taskArgs)+len(taskOptions))
 	for k, v := range vars {
 		taskVars[k] = v
+	}
+
+	for _, name := range taskArgs {
+		a := t.Args[name]
+
+		if err := interpolateArg(a, passed, taskVars); err != nil {
+			return err
+		}
 	}
 
 	for _, name := range taskOptions {
@@ -167,7 +202,7 @@ func interpolateTask(t *task.Task, cfgText []byte, passed, vars map[string]strin
 	return nil
 }
 
-func getOrderedTaskOptions(cfgText []byte, taskName string) ([]string, error) {
+func getOrderedTaskOptions(cfgText []byte, taskName, key string) ([]string, error) {
 	cfgMapSlice := new(struct {
 		Tasks yaml.MapSlice
 	})
@@ -183,7 +218,7 @@ func getOrderedTaskOptions(cfgText []byte, taskName string) ([]string, error) {
 		}
 
 		for _, mapSlice := range taskMapSlice.Value.(yaml.MapSlice) {
-			if name := mapSlice.Key.(string); name != "options" {
+			if name := mapSlice.Key.(string); name != key {
 				continue
 			}
 
