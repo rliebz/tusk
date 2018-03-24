@@ -19,7 +19,8 @@
     "unconvert",
     "unparam",
     "varcheck",
-    "vet"
+    "vet",
+    "vetshadow"
   ],
   "linelength": 120,
   "vendor": true
