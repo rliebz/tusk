@@ -9,7 +9,10 @@ import (
 )
 
 func TestTask_UnmarshalYAML(t *testing.T) {
-	y := []byte(`options: { one: {}, two: {} }`)
+	y := []byte(`
+options: { one: {}, two: {} }
+args: { three: {}, four: {} }
+`)
 	task := Task{}
 
 	if err := yaml.Unmarshal(y, &task); err != nil {
@@ -20,11 +23,38 @@ func TestTask_UnmarshalYAML(t *testing.T) {
 	}
 
 	for _, expected := range []string{"one", "two"} {
+		opt, ok := task.Options[expected]
+		if !ok {
+			t.Errorf(
+				`yaml.Unmarshal(%q, %+v): did not find option %q`,
+				string(y), task, expected,
+			)
+			continue
+		}
 
-		actual := task.Options[expected].Name
+		actual := opt.Name
 		if expected != actual {
 			t.Errorf(
 				`yaml.Unmarshal("%s", %+v): expected option name: %s, actual: %s`,
+				string(y), task, expected, actual,
+			)
+		}
+	}
+
+	for _, expected := range []string{"three", "four"} {
+		arg, ok := task.Args[expected]
+		if !ok {
+			t.Errorf(
+				`yaml.Unmarshal(%q, %+v): did not find arg %q`,
+				string(y), task, expected,
+			)
+			continue
+		}
+
+		actual := arg.Name
+		if expected != actual {
+			t.Errorf(
+				`yaml.Unmarshal(%q, %+v): expected arg name: %s, actual: %s`,
 				string(y), task, expected, actual,
 			)
 		}
@@ -33,6 +63,20 @@ func TestTask_UnmarshalYAML(t *testing.T) {
 
 func TestTask_UnmarshalYAML_invalid(t *testing.T) {
 	y := []byte(`[invalid]`)
+	task := Task{}
+
+	if err := yaml.Unmarshal(y, &task); err == nil {
+		t.Fatalf(
+			"yaml.Unmarshal(%s, ...): expected error, actual nil", string(y),
+		)
+	}
+}
+
+func TestTask_UnmarshalYAML_option_and_arg_share_name(t *testing.T) {
+	y := []byte(`
+options: { foo: {} }
+args: { foo: {} }
+`)
 	task := Task{}
 
 	if err := yaml.Unmarshal(y, &task); err == nil {

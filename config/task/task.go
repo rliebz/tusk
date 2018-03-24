@@ -1,12 +1,15 @@
 package task
 
 import (
+	"fmt"
+
 	"github.com/rliebz/tusk/config/option"
 )
 
 // Task is a single task to be run by CLI.
 type Task struct {
 	Options     map[string]*option.Option `yaml:",omitempty"`
+	Args        map[string]*option.Arg    `yaml:",omitempty"`
 	RunList     RunList                   `yaml:"run"`
 	Usage       string                    `yaml:",omitempty"`
 	Description string                    `yaml:",omitempty"`
@@ -25,7 +28,17 @@ func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return err
 	}
 
+	for name, arg := range t.Args {
+		arg.Name = name
+	}
+
 	for name, opt := range t.Options {
+		if _, ok := t.Args[name]; ok {
+			return fmt.Errorf(
+				"argument and option %q must have unique names for task %q",
+				name, t.Name,
+			)
+		}
 		opt.Name = name
 	}
 
