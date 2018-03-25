@@ -32,6 +32,7 @@ tasks:
 			Command: marshal.StringList{"echo foovalue"},
 		}},
 	},
+
 	{
 		"argument with global interpolation",
 		`
@@ -50,6 +51,7 @@ tasks:
 			Command: marshal.StringList{"echo foovalue"},
 		}},
 	},
+
 	{
 		"argument evaluated before option",
 		`
@@ -68,6 +70,7 @@ tasks:
 			Command: marshal.StringList{"echo foovalue foovalue"},
 		}},
 	},
+
 	{
 		"single task global interpolation",
 		`
@@ -232,7 +235,6 @@ tasks:
 options:
   foo:
     default: foovalue
-
 tasks:
   pretask:
     run: echo ${foo}
@@ -253,7 +255,6 @@ tasks:
 options:
   foo:
     default: foovalue
-
 tasks:
   roottask:
     run: echo ${foo}
@@ -277,7 +278,6 @@ tasks:
 options:
   foo:
     default: foovalue
-
 tasks:
   roottask:
     options:
@@ -308,7 +308,89 @@ tasks:
 	},
 
 	{
-		"repeated sub-task call with different parameters",
+		"nested sub-task dependencies with args and options",
+		`
+options:
+  foo:
+    default: foovalue
+tasks:
+  roottask:
+    args:
+      one: {}
+      two: {}
+    options:
+      foo:
+        default: nope
+    run:
+      - echo ${foo}
+      - echo ${one} ${two}
+  pretask:
+    args:
+      one: {}
+      two: {}
+    options:
+      foo:
+        default: nope
+    run:
+      task:
+        name: roottask
+        args:
+          - ${one}-2
+          - ${two}-2
+        options:
+          foo: ${foo}-2
+  mytask:
+    run:
+      task:
+        name: pretask
+        args:
+          - onevalue
+          - twovalue
+        options:
+          foo: ${foo}-1
+`,
+		map[string]string{"foo": "passed"},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo passed-1-2"},
+		}, {
+			Command: marshal.StringList{"echo onevalue-2 twovalue-2"},
+		}},
+	},
+
+	{
+		"repeated sub-task call with different args",
+		`
+tasks:
+  pretask:
+    args:
+      foo: {}
+      bar: {}
+    run: echo ${foo} ${bar}
+  mytask:
+    run:
+      - task:
+          name: pretask
+          args:
+            - one
+            - two
+      - task:
+          name: pretask
+          args:
+            - three
+            - four
+`,
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo one two"},
+		}, {
+			Command: marshal.StringList{"echo three four"},
+		}},
+	},
+
+	{
+		"repeated sub-task call with different options",
 		`
 tasks:
   pretask:
@@ -466,7 +548,7 @@ given input:
 
 		if len(tt.expected) != len(actual) {
 			t.Errorf(
-				context+`task "%s" expected %d tasks, actual: %d`,
+				context+"task %q expected %d runs, actual: %d",
 				tt.taskName, len(tt.expected), len(actual),
 			)
 			return
@@ -535,6 +617,53 @@ var invalidinterpolatetests = []struct {
 		`}{`,
 		map[string]string{},
 		"mytask",
+	},
+	{
+		"not passing required arg to subtask",
+		`
+tasks:
+  one:
+    args:
+      foo: {}
+    run: echo hello
+  two:
+    run:
+      task:
+        name: one
+`,
+		map[string]string{},
+		"two",
+	},
+	{
+		"passing non-arg to subtask",
+		`
+tasks:
+  one:
+    run: echo hello
+  two:
+    run:
+      task:
+        name: one
+        args: foo
+`,
+		map[string]string{},
+		"two",
+	},
+	{
+		"not passing required option to subtask",
+		`
+tasks:
+  one:
+    options:
+      foo: {required: true}
+    run: echo hello
+  two:
+    run:
+      task:
+        name: one
+`,
+		map[string]string{},
+		"two",
 	},
 	{
 		"passing non-option to subtask",

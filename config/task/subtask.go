@@ -5,6 +5,7 @@ import "github.com/rliebz/tusk/config/marshal"
 // SubTask is a description of a sub-task with passed options.
 type SubTask struct {
 	Name    string
+	Args    marshal.StringList
 	Options map[string]string
 }
 
