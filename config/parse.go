@@ -239,38 +239,80 @@ func addSubTasks(t *task.Task, cfg *Config, cfgText []byte) error {
 			st, ok := cfg.Tasks[subTaskDesc.Name]
 			if !ok {
 				return fmt.Errorf(
-					`sub-task "%s" does not exist`,
+					"sub-task %q does not exist",
 					subTaskDesc.Name,
 				)
 			}
 
-			passed := subTaskDesc.Options
-			subTask := *st
+			subTask := copyTask(st)
 
-			options := make(map[string]*option.Option)
-			for name, ptr := range subTask.Options {
-				opt := *ptr
-				options[name] = &opt
-			}
-			subTask.Options = options
-
-			for optName := range passed {
-				if _, isValidOption := subTask.Options[optName]; !isValidOption {
-					return fmt.Errorf(
-						`option "%s" cannot be passed to task "%s"`,
-						optName, subTask.Name,
-					)
-				}
-			}
-
-			if err := passTaskValues(&subTask, cfg, cfgText, passed); err != nil {
+			values, err := getArgValues(cfgText, subTask, subTaskDesc.Args)
+			if err != nil {
 				return err
 			}
 
-			run.Tasks = append(run.Tasks, subTask)
+			for optName, opt := range subTaskDesc.Options {
+				if _, isValidOption := subTask.Options[optName]; !isValidOption {
+					return fmt.Errorf(
+						"option %q cannot be passed to task %q",
+						optName, subTask.Name,
+					)
+				}
+				values[optName] = opt
+			}
 
+			if err := passTaskValues(subTask, cfg, cfgText, values); err != nil {
+				return err
+			}
+
+			run.Tasks = append(run.Tasks, *subTask)
 		}
 	}
 
 	return nil
+}
+
+// copyTask returns a copy of a task, replacing references with new values.
+func copyTask(t *task.Task) *task.Task {
+	newTask := *t
+
+	argsCopy := make(map[string]*option.Arg, len(newTask.Args))
+	for name, ptr := range newTask.Args {
+		arg := *ptr
+		argsCopy[name] = &arg
+	}
+	newTask.Args = argsCopy
+
+	optionsCopy := make(map[string]*option.Option, len(newTask.Options))
+	for name, ptr := range newTask.Options {
+		opt := *ptr
+		optionsCopy[name] = &opt
+	}
+	newTask.Options = optionsCopy
+
+	return &newTask
+}
+
+func getArgValues(
+	cfgText []byte, subTask *task.Task, argsPassed []string,
+) (map[string]string, error) {
+
+	if len(argsPassed) != len(subTask.Args) {
+		return nil, fmt.Errorf(
+			"subtask %q requires %d args but got %d",
+			subTask.Name, len(subTask.Args), len(argsPassed),
+		)
+	}
+
+	values := make(map[string]string)
+	subTaskArgs, err := getOrderedTaskOptions(cfgText, subTask.Name, "args")
+	if err != nil {
+		return nil, err
+	}
+	for i, argName := range subTaskArgs {
+		values[argName] = argsPassed[i]
+	}
+
+	return values, nil
+
 }
