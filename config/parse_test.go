@@ -13,7 +13,8 @@ import (
 var interpolatetests = []struct {
 	testCase string
 	input    string
-	passed   map[string]string
+	args     []string
+	flags    map[string]string
 	taskName string
 	expected task.RunList
 }{
@@ -26,7 +27,8 @@ tasks:
       foo: {}
     run: echo ${foo}
 `,
-		map[string]string{"foo": "foovalue"},
+		[]string{"foovalue"},
+		map[string]string{},
 		"mytask",
 		task.RunList{{
 			Command: marshal.StringList{"echo foovalue"},
@@ -45,7 +47,8 @@ tasks:
       foo: {}
     run: echo ${foo}
 `,
-		map[string]string{"foo": "foovalue"},
+		[]string{"foovalue"},
+		map[string]string{},
 		"mytask",
 		task.RunList{{
 			Command: marshal.StringList{"echo foovalue"},
@@ -64,7 +67,8 @@ tasks:
         default: ${foo}
     run: echo ${foo} ${bar}
 `,
-		map[string]string{"foo": "foovalue"},
+		[]string{"foovalue"},
+		map[string]string{},
 		"mytask",
 		task.RunList{{
 			Command: marshal.StringList{"echo foovalue foovalue"},
@@ -81,6 +85,7 @@ tasks:
   mytask:
     run: echo ${foo}
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -98,6 +103,7 @@ tasks:
   mytask:
     run: echo ${foo}
 `,
+		[]string{},
 		map[string]string{"foo": "passed"},
 		"mytask",
 		task.RunList{{
@@ -119,6 +125,7 @@ tasks:
   unused:
     run: echo ${bar}
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -141,6 +148,7 @@ tasks:
     run:
       task: pretask
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -160,6 +168,7 @@ tasks:
   mytask:
     run: echo ${bar}
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -180,6 +189,7 @@ tasks:
         default: ${foo}
     run: echo ${bar}
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -200,6 +210,7 @@ tasks:
         default: newvalue
     run: echo ${foo}
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -222,6 +233,7 @@ tasks:
         default: barvalue
     run: echo ${foo}
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -242,6 +254,7 @@ tasks:
     run:
       task: pretask
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -265,6 +278,7 @@ tasks:
     run:
       task: pretask
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -300,6 +314,7 @@ tasks:
         options:
           foo: ${foo}-1
 `,
+		[]string{},
 		map[string]string{"foo": "passed"},
 		"mytask",
 		task.RunList{{
@@ -349,6 +364,7 @@ tasks:
         options:
           foo: ${foo}-1
 `,
+		[]string{},
 		map[string]string{"foo": "passed"},
 		"mytask",
 		task.RunList{{
@@ -380,6 +396,7 @@ tasks:
             - three
             - four
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -408,6 +425,7 @@ tasks:
           options:
             foo: two
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -433,6 +451,7 @@ tasks:
     run:
       task: pretask
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -454,6 +473,7 @@ tasks:
           os: os3
       command: echo goodbye
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -487,6 +507,7 @@ tasks:
           foo: true
       command: echo yo
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 		task.RunList{{
@@ -515,6 +536,7 @@ tasks:
       - command: echo ${foo}
       - task: one
 `,
+		[]string{},
 		map[string]string{},
 		"two",
 		task.RunList{{
@@ -535,10 +557,10 @@ given input:
 %s
 ---
 `,
-			tt.testCase, tt.taskName, tt.passed, tt.input,
+			tt.testCase, tt.taskName, tt.flags, tt.input,
 		)
 
-		cfg, err := ParseComplete([]byte(tt.input), tt.passed, tt.taskName)
+		cfg, err := ParseComplete([]byte(tt.input), tt.taskName, tt.args, tt.flags)
 		if err != nil {
 			t.Errorf(context+"unexpected error parsing text: %s", err)
 			continue
@@ -609,12 +631,14 @@ func runsAreEquivalent(t *testing.T, context string, r1 *task.Run, r2 *task.Run)
 var invalidinterpolatetests = []struct {
 	testCase string
 	input    string
-	passed   map[string]string
+	args     []string
+	flags    map[string]string
 	taskName string
 }{
 	{
 		"invalid yaml",
 		`}{`,
+		[]string{},
 		map[string]string{},
 		"mytask",
 	},
@@ -631,6 +655,7 @@ tasks:
       task:
         name: one
 `,
+		[]string{},
 		map[string]string{},
 		"two",
 	},
@@ -646,6 +671,7 @@ tasks:
         name: one
         args: foo
 `,
+		[]string{},
 		map[string]string{},
 		"two",
 	},
@@ -662,6 +688,7 @@ tasks:
       task:
         name: one
 `,
+		[]string{},
 		map[string]string{},
 		"two",
 	},
@@ -677,6 +704,7 @@ tasks:
         name: one
         options: {wrong: foo}
 `,
+		[]string{},
 		map[string]string{},
 		"two",
 	},
@@ -695,6 +723,7 @@ tasks:
         name: one
         options: {foo: replacement}
 `,
+		[]string{},
 		map[string]string{},
 		"two",
 	},
@@ -706,6 +735,7 @@ tasks:
     run:
       task: fake
 `,
+		[]string{},
 		map[string]string{},
 		"mytask",
 	},
@@ -720,6 +750,7 @@ tasks:
       foo: {}
     run: echo oops
 `,
+		[]string{},
 		map[string]string{"foo": "foovalue"},
 		"mytask",
 	},
@@ -732,6 +763,18 @@ tasks:
       foo: {}
     run: echo oops
 `,
+		[]string{},
+		map[string]string{},
+		"mytask",
+	},
+	{
+		"extra argument passed",
+		`
+tasks:
+  mytask:
+    run: echo oops
+`,
+		[]string{"foo"},
 		map[string]string{},
 		"mytask",
 	},
@@ -747,10 +790,10 @@ given input:
 %s
 ---
 `,
-			tt.testCase, tt.taskName, tt.passed, tt.input,
+			tt.testCase, tt.taskName, tt.flags, tt.input,
 		)
 
-		_, err := ParseComplete([]byte(tt.input), tt.passed, tt.taskName)
+		_, err := ParseComplete([]byte(tt.input), tt.taskName, tt.args, tt.flags)
 		if err == nil {
 			t.Errorf(context+"expected error for test case: %s", tt.testCase)
 			continue
@@ -770,7 +813,7 @@ tasks:
     run: echo ${bar}
 `)
 
-	cfg, err := ParseComplete(cfgText, map[string]string{}, "")
+	cfg, err := ParseComplete(cfgText, "", []string{}, map[string]string{})
 	if err != nil {
 		t.Fatalf("unexpected error parsing text: %s", err)
 	}

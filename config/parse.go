@@ -21,7 +21,12 @@ func Parse(text []byte) (*Config, error) {
 }
 
 // ParseComplete parses the file completely with interpolation.
-func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*Config, error) {
+func ParseComplete(
+	cfgText []byte,
+	taskName string,
+	args []string,
+	flags map[string]string,
+) (*Config, error) {
 
 	cfg, err := Parse(cfgText)
 	if err != nil {
@@ -33,11 +38,39 @@ func ParseComplete(cfgText []byte, passed map[string]string, taskName string) (*
 		return cfg, nil
 	}
 
+	passed, err := combineArgsAndFlags(t, args, flags)
+	if err != nil {
+		return nil, err
+	}
+
 	if err := passTaskValues(t, cfg, cfgText, passed); err != nil {
 		return nil, err
 	}
 
 	return cfg, nil
+}
+
+func combineArgsAndFlags(
+	t *task.Task, args []string, flags map[string]string,
+) (map[string]string, error) {
+	if len(t.Args) != len(args) {
+		return nil, fmt.Errorf(
+			"task %q requires exactly %d args, got %d",
+			t.Name, len(t.Args), len(args),
+		)
+	}
+
+	passed := make(map[string]string, len(args)+len(flags))
+	i := 0
+	for name := range t.Args {
+		passed[name] = args[i]
+		i++
+	}
+	for name, value := range flags {
+		passed[name] = value
+	}
+
+	return passed, nil
 }
 
 func passTaskValues(t *task.Task, cfg *Config, cfgText []byte, passed map[string]string) error {
