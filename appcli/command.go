@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/config/task"
@@ -14,24 +13,31 @@ type commandCreator func(app *cli.App, t *task.Task) (*cli.Command, error)
 
 func createExecuteCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
 	return createCommand(t, func(c *cli.Context) error {
-		if c.Args().Present() {
-			return fmt.Errorf("unexpected argument: %s", c.Args().First())
+		if len(t.Args) != len(c.Args()) {
+			return fmt.Errorf(
+				"task %q requires exactly %d args, got %d",
+				t.Name, len(t.Args), len(c.Args()),
+			)
 		}
 		return t.Execute()
 	}), nil
 }
 
 func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
-	passed, ok := app.Metadata["flagsPassed"].(map[string]string)
-	if !ok {
-		return nil, errors.New("could not read flags from metadata")
+	argsPassed, flagsPassed, err := getPassedValues(app)
+	if err != nil {
+		return nil, err
 	}
 
 	return createCommand(t, func(c *cli.Context) error {
 		app.Metadata["command"] = &c.Command
+		for _, value := range c.Args() {
+			argsPassed = append(argsPassed, value)
+		}
+		app.Metadata["argsPassed"] = argsPassed
 		for _, flagName := range c.FlagNames() {
 			if c.IsSet(flagName) {
-				passed[flagName] = c.String(flagName)
+				flagsPassed[flagName] = c.String(flagName)
 			}
 		}
 		return nil
