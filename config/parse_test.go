@@ -157,7 +157,7 @@ tasks:
 	},
 
 	{
-		"multiple interpolation - top level",
+		"multiple interpolation - global",
 		`
 options:
   foo:
@@ -178,6 +178,26 @@ tasks:
 
 	{
 		"multiple interpolation - task specific",
+		`
+tasks:
+  mytask:
+    options:
+      foo:
+        default: foovalue
+      bar:
+        default: ${foo}
+    run: echo ${bar}
+`,
+		[]string{},
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}},
+	},
+
+	{
+		"multiple interpolation - global + task specific",
 		`
 options:
   foo:
