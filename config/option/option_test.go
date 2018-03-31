@@ -411,3 +411,52 @@ func TestOption_UnmarshalYAML_invalid_definitions(t *testing.T) {
 		}
 	}
 }
+
+func TestGetOptionsWithOrder(t *testing.T) {
+	name := "foo"
+	env := "fooenv"
+	ms := yaml.MapSlice{
+		{Key: name, Value: &Option{Environment: env}},
+		{Key: "bar", Value: &Option{Environment: "barenv"}},
+	}
+
+	options, ordered, err := GetOptionsWithOrder(ms)
+	if err != nil {
+		t.Fatalf("GetOptionsWithOrder(ms) => unexpected error: %v", err)
+	}
+
+	if len(ms) != len(options) || len(ms) != len(ordered) {
+		t.Fatalf(
+			"GetOptionsWithOrder(ms) => want %d items, got %d in map and %d in slice",
+			len(ms), len(options), len(ordered),
+		)
+	}
+
+	opt, ok := options[name]
+	if !ok {
+		t.Fatalf("GetOptionsWithOrder(ms) => item %q is not in map", name)
+	}
+
+	if name != opt.Name {
+		t.Errorf(
+			"GetOptionsWithOrder(ms) => want opt.Name %q, got %q",
+			name, opt.Name,
+		)
+	}
+
+	if env != opt.Environment {
+		t.Errorf(
+			"GetOptionsWithOrder(ms) => want opt.Environment %q, got %q",
+			env, opt.Environment,
+		)
+	}
+
+	expectedOrder := []string{"foo", "bar"}
+	if !reflect.DeepEqual(expectedOrder, ordered) {
+		t.Errorf(
+			"GetOptionsWithOrder(ms) => want ordered %v, got %v",
+			expectedOrder, ordered,
+		)
+	}
+
+}
