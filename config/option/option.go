@@ -6,7 +6,9 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // Option represents an abstract command line option.
@@ -188,4 +190,17 @@ func (o *Option) isBoolean() bool {
 	default:
 		return false
 	}
+}
+
+// GetOptionsWithOrder returns both the option map and the ordered names.
+func GetOptionsWithOrder(ms yaml.MapSlice) (map[string]*Option, []string, error) {
+	options := make(map[string]*Option, len(ms))
+	assign := func(name string, text []byte) error {
+		opt := &Option{Name: name}
+		options[name] = opt
+		return yaml.Unmarshal(text, opt)
+	}
+
+	ordered, err := marshal.ParseOrderedMap(ms, assign)
+	return options, ordered, err
 }
