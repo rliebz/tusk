@@ -4,7 +4,7 @@ import "github.com/pkg/errors"
 
 // Arg represents a command-line argument.
 type Arg struct {
-	ValueWithList `yaml:",inline"`
+	valueWithList `yaml:",inline"`
 
 	Usage string
 
