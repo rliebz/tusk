@@ -26,7 +26,7 @@ tasks:
     run: echo ${foo}
 `)
 
-	flagApp, err := newFlagApp(cfgText)
+	flagApp, err := newMetaApp(cfgText)
 	if err != nil {
 		t.Fatalf(
 			"newFlagApp():\nconfig: `%s`\nunexpected err: %s",
@@ -86,7 +86,7 @@ func TestNewFlagApp_no_options(t *testing.T) {
     run: echo foo
 `)
 
-	flagApp, err := newFlagApp(cfgText)
+	flagApp, err := newMetaApp(cfgText)
 	if err != nil {
 		t.Fatalf(
 			"newFlagApp():\nconfig: `%s`\nunexpected err: %s",
