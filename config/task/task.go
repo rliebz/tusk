@@ -4,20 +4,26 @@ import (
 	"fmt"
 
 	"github.com/rliebz/tusk/config/option"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // Task is a single task to be run by CLI.
 type Task struct {
-	Options     map[string]*option.Option `yaml:",omitempty"`
-	Args        map[string]*option.Arg    `yaml:",omitempty"`
-	RunList     RunList                   `yaml:"run"`
-	Usage       string                    `yaml:",omitempty"`
-	Description string                    `yaml:",omitempty"`
+	ArgMapSlice    yaml.MapSlice `yaml:"args,omitempty"`
+	OptionMapSlice yaml.MapSlice `yaml:"options,omitempty"`
+
+	RunList     RunList `yaml:"run"`
+	Usage       string  `yaml:",omitempty"`
+	Description string  `yaml:",omitempty"`
 	Private     bool
 
 	// Computed members not specified in yaml file
-	Name string            `yaml:"-"`
-	Vars map[string]string `yaml:"-"`
+	Name               string                    `yaml:"-"`
+	Vars               map[string]string         `yaml:"-"`
+	Args               map[string]*option.Arg    `yaml:"-"`
+	OrderedArgNames    []string                  `yaml:"-"`
+	Options            map[string]*option.Option `yaml:"-"`
+	OrderedOptionNames []string                  `yaml:"-"`
 }
 
 // UnmarshalYAML unmarshals and assigns names to options.
@@ -28,18 +34,29 @@ func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return err
 	}
 
-	for name, arg := range t.Args {
-		arg.Name = name
+	args, orderedArgs, err := option.GetArgsWithOrder(t.ArgMapSlice)
+	if err != nil {
+		return err
 	}
 
-	for name, opt := range t.Options {
+	t.Args = args
+	t.OrderedArgNames = orderedArgs
+
+	options, orderedOptions, err := option.GetOptionsWithOrder(t.OptionMapSlice)
+	if err != nil {
+		return err
+	}
+
+	t.Options = options
+	t.OrderedOptionNames = orderedOptions
+
+	for name := range t.Options {
 		if _, ok := t.Args[name]; ok {
 			return fmt.Errorf(
 				"argument and option %q must have unique names for task %q",
 				name, t.Name,
 			)
 		}
-		opt.Name = name
 	}
 
 	return nil

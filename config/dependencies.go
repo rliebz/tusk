@@ -1,10 +1,11 @@
 package config
 
 import (
+	"encoding/json"
+
 	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/interp"
-	yaml "gopkg.in/yaml.v2"
 )
 
 // FindAllOptions returns a list of options relevant for a given task.
@@ -82,7 +83,9 @@ type dependencyGetter interface {
 
 func getDependencies(item dependencyGetter) ([]string, error) {
 
-	marshalled, err := yaml.Marshal(item)
+	// TODO: Remove json dependency by implementing stringer interface
+	// json is used to print computed fields that should not be yaml parseable
+	marshalled, err := json.Marshal(item)
 	if err != nil {
 		return nil, err
 	}

@@ -43,7 +43,7 @@ func ParseComplete(
 		return nil, err
 	}
 
-	if err := passTaskValues(t, cfg, cfgText, passed); err != nil {
+	if err := passTaskValues(t, cfg, passed); err != nil {
 		return nil, err
 	}
 
@@ -73,24 +73,24 @@ func combineArgsAndFlags(
 	return passed, nil
 }
 
-func passTaskValues(t *task.Task, cfg *Config, cfgText []byte, passed map[string]string) error {
-	vars, err := interpolateGlobalOptions(t, cfg, cfgText, passed)
+func passTaskValues(t *task.Task, cfg *Config, passed map[string]string) error {
+	vars, err := interpolateGlobalOptions(t, cfg, passed)
 	if err != nil {
 		return err
 	}
 
-	if err := interpolateTask(t, cfgText, passed, vars); err != nil {
+	if err := interpolateTask(t, passed, vars); err != nil {
 		return err
 	}
 
-	return addSubTasks(t, cfg, cfgText)
+	return addSubTasks(t, cfg)
 }
 
 func interpolateGlobalOptions(
-	t *task.Task, cfg *Config, cfgText []byte, passed map[string]string,
+	t *task.Task, cfg *Config, passed map[string]string,
 ) (map[string]string, error) {
 
-	globalOptions, err := getRequiredGlobalOptions(t, cfgText)
+	globalOptions, err := getRequiredGlobalOptions(t, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -106,24 +106,14 @@ func interpolateGlobalOptions(
 	return vars, nil
 }
 
-func getRequiredGlobalOptions(t *task.Task, cfgText []byte) ([]string, error) {
-	ordered, err := getOrderedGlobalOptions(cfgText)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg, err := Parse(cfgText)
-	if err != nil {
-		return nil, err
-	}
-
+func getRequiredGlobalOptions(t *task.Task, cfg *Config) ([]string, error) {
 	required, err := FindAllOptions(t, cfg)
 	if err != nil {
 		return nil, err
 	}
 
 	var output []string
-	for _, o := range ordered {
+	for _, o := range cfg.OrderedOptionNames {
 		for _, r := range required {
 			if r.Name != o {
 				continue
@@ -134,23 +124,6 @@ func getRequiredGlobalOptions(t *task.Task, cfgText []byte) ([]string, error) {
 	}
 
 	return output, nil
-}
-
-func getOrderedGlobalOptions(cfgText []byte) ([]string, error) {
-	cfgMapSlice := new(struct {
-		Options yaml.MapSlice
-	})
-
-	if err := yaml.Unmarshal(cfgText, cfgMapSlice); err != nil {
-		return nil, err
-	}
-
-	ordered := make([]string, 0, len(cfgMapSlice.Options))
-	for _, optionMapSlice := range cfgMapSlice.Options {
-		ordered = append(ordered, optionMapSlice.Key.(string))
-	}
-
-	return ordered, nil
 }
 
 func interpolateArg(a *option.Arg, passed, vars map[string]string) error {
@@ -193,24 +166,14 @@ func interpolateOption(o *option.Option, passed, vars map[string]string) error {
 	return nil
 }
 
-func interpolateTask(t *task.Task, cfgText []byte, passed, vars map[string]string) error {
+func interpolateTask(t *task.Task, passed, vars map[string]string) error {
 
-	taskArgs, err := getOrderedTaskOptions(cfgText, t.Name, "args")
-	if err != nil {
-		return err
-	}
-
-	taskOptions, err := getOrderedTaskOptions(cfgText, t.Name, "options")
-	if err != nil {
-		return err
-	}
-
-	taskVars := make(map[string]string, len(vars)+len(taskArgs)+len(taskOptions))
+	taskVars := make(map[string]string, len(vars)+len(t.Args)+len(t.Options))
 	for k, v := range vars {
 		taskVars[k] = v
 	}
 
-	for _, name := range taskArgs {
+	for _, name := range t.OrderedArgNames {
 		a := t.Args[name]
 
 		if err := interpolateArg(a, passed, taskVars); err != nil {
@@ -218,7 +181,7 @@ func interpolateTask(t *task.Task, cfgText []byte, passed, vars map[string]strin
 		}
 	}
 
-	for _, name := range taskOptions {
+	for _, name := range t.OrderedOptionNames {
 		o := t.Options[name]
 
 		if err := interpolateOption(o, passed, taskVars); err != nil {
@@ -235,37 +198,7 @@ func interpolateTask(t *task.Task, cfgText []byte, passed, vars map[string]strin
 	return nil
 }
 
-func getOrderedTaskOptions(cfgText []byte, taskName, key string) ([]string, error) {
-	cfgMapSlice := new(struct {
-		Tasks yaml.MapSlice
-	})
-
-	if err := yaml.Unmarshal(cfgText, cfgMapSlice); err != nil {
-		return nil, err
-	}
-
-	var ordered []string
-	for _, taskMapSlice := range cfgMapSlice.Tasks {
-		if name := taskMapSlice.Key.(string); name != taskName {
-			continue
-		}
-
-		for _, mapSlice := range taskMapSlice.Value.(yaml.MapSlice) {
-			if name := mapSlice.Key.(string); name != key {
-				continue
-			}
-
-			for _, optionMapSlice := range mapSlice.Value.(yaml.MapSlice) {
-				ordered = append(ordered, optionMapSlice.Key.(string))
-			}
-			break
-		}
-	}
-
-	return ordered, nil
-}
-
-func addSubTasks(t *task.Task, cfg *Config, cfgText []byte) error {
+func addSubTasks(t *task.Task, cfg *Config) error {
 
 	for _, run := range t.RunList {
 		for _, subTaskDesc := range run.SubTaskList {
@@ -279,7 +212,7 @@ func addSubTasks(t *task.Task, cfg *Config, cfgText []byte) error {
 
 			subTask := copyTask(st)
 
-			values, err := getArgValues(cfgText, subTask, subTaskDesc.Args)
+			values, err := getArgValues(subTask, subTaskDesc.Args)
 			if err != nil {
 				return err
 			}
@@ -294,7 +227,7 @@ func addSubTasks(t *task.Task, cfg *Config, cfgText []byte) error {
 				values[optName] = opt
 			}
 
-			if err := passTaskValues(subTask, cfg, cfgText, values); err != nil {
+			if err := passTaskValues(subTask, cfg, values); err != nil {
 				return err
 			}
 
@@ -327,7 +260,7 @@ func copyTask(t *task.Task) *task.Task {
 }
 
 func getArgValues(
-	cfgText []byte, subTask *task.Task, argsPassed []string,
+	subTask *task.Task, argsPassed []string,
 ) (map[string]string, error) {
 
 	if len(argsPassed) != len(subTask.Args) {
@@ -338,11 +271,7 @@ func getArgValues(
 	}
 
 	values := make(map[string]string)
-	subTaskArgs, err := getOrderedTaskOptions(cfgText, subTask.Name, "args")
-	if err != nil {
-		return nil, err
-	}
-	for i, argName := range subTaskArgs {
+	for i, argName := range subTask.OrderedArgNames {
 		values[argName] = argsPassed[i]
 	}
 
