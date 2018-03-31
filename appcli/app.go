@@ -60,8 +60,8 @@ func newSilentApp() *cli.App {
 	return app
 }
 
-// newFlagApp creates a cli.App that can parse flags.
-func newFlagApp(cfgText []byte) (*cli.App, error) {
+// newMetaApp creates a cli.App containing metadata, which can parse flags.
+func newMetaApp(cfgText []byte) (*cli.App, error) {
 	cfg, err := config.Parse(cfgText)
 	if err != nil {
 		return nil, err
@@ -81,22 +81,22 @@ func newFlagApp(cfgText []byte) (*cli.App, error) {
 
 // NewApp creates a cli.App that executes tasks.
 func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
-	flagApp, err := newFlagApp(meta.CfgText)
+	metaApp, err := newMetaApp(meta.CfgText)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = flagApp.Run(args); err != nil {
+	if err = metaApp.Run(args); err != nil {
 		return nil, err
 	}
 
 	var taskName string
-	command, ok := flagApp.Metadata["command"].(*cli.Command)
+	command, ok := metaApp.Metadata["command"].(*cli.Command)
 	if ok {
 		taskName = command.Name
 	}
 
-	argsPassed, flagsPassed, err := getPassedValues(flagApp)
+	argsPassed, flagsPassed, err := getPassedValues(metaApp)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 		return nil, err
 	}
 
-	copyFlags(app, flagApp)
+	copyFlags(app, metaApp)
 
 	app.BashComplete = createDefaultComplete(app)
 	for i := range app.Commands {
