@@ -20,6 +20,20 @@ __tusk_tasks() {
     _describe -t tasks 'tasks' tasks
 }
 
+__tusk_task_args() {
+    local -a args
+    for option in "${_options[@]}"; do
+        if [[ "${option}" != --* ]]; then
+            args+=("${option}")
+        fi
+    done
+    if [[ ${#args} == 0 ]]; then
+        _files
+    else
+        _describe -t task-args 'task arguments' args
+    fi
+}
+
 __tusk_task_flags() {
     local -a flags
     for option in "${_options[@]}"; do
@@ -56,7 +70,12 @@ case "${meta}" in
             'tasks:task:__tusk_tasks' \
             'global-flags:flag:__tusk_global_flags'
         ;;
-    "task")
+    "task-args")
+        _alternative \
+            'task-args:arg:__tusk_task_args' \
+            'task-flags:flag:__tusk_task_flags'
+        ;;
+    "task-no-args")
         _alternative \
             'task-flags:flag:__tusk_task_flags'
         ;;
