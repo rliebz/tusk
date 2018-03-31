@@ -47,11 +47,21 @@ func createDefaultComplete(app *cli.App) func(c *cli.Context) {
 // task-specific flags, while file allows completion engines to use system files.
 func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli.Context) {
 	return func(c *cli.Context) {
-
+		t := cfg.Tasks[command.Name]
 		trailingArg := os.Args[len(os.Args)-2]
 		isCompleting := isCompletingArg(command.Flags, trailingArg)
+
 		if !isCompleting {
-			fmt.Println("task")
+			if len(c.Args())+1 <= len(t.Args) {
+				fmt.Println("task-args")
+				argName := t.OrderedArgNames[len(c.Args())]
+				arg := t.Args[argName]
+				for _, value := range arg.ValuesAllowed {
+					fmt.Println(value)
+				}
+			} else {
+				fmt.Println("task-no-args")
+			}
 			for _, flag := range command.Flags {
 				printFlag(c, flag)
 			}
@@ -60,7 +70,6 @@ func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli
 
 		flagName := strings.TrimLeft(trailingArg, "-")
 
-		t := cfg.Tasks[command.Name]
 		options, err := config.FindAllOptions(t, cfg)
 		if err != nil {
 			return
