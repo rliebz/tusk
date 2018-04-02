@@ -46,10 +46,16 @@ func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error
 
 // createCommand creates a cli.Command from a task.Task.
 func createCommand(t *task.Task, actionFunc func(*cli.Context) error) *cli.Command {
-	return &cli.Command{
+	command := &cli.Command{
 		Name:        t.Name,
 		Usage:       strings.TrimSpace(t.Usage),
 		Description: strings.TrimSpace(t.Description),
 		Action:      actionFunc,
 	}
+
+	for _, name := range t.OrderedArgNames {
+		command.ArgsUsage += fmt.Sprintf("<%s> ", name)
+	}
+
+	return command
 }
