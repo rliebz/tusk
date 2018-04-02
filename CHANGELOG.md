@@ -2,6 +2,15 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Positional arguments for tasks are now supported. All positional arguments
+  specified in the config file are required.
+
+### Changed
+- Help documentation for flags with placeholder options now display them using
+  angular brackets.
+- Minor changes to certain error messages
+
 
 ## 0.3.4 (2018-03-14)
 ### Added
