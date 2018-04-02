@@ -87,7 +87,7 @@ func flagPrefixer(fullName, placeholder string) string {
 	}
 
 	if placeholder != "" {
-		output = output + " " + placeholder
+		output = output + " <" + placeholder + ">"
 	}
 
 	return output

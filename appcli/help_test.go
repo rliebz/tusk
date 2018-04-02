@@ -8,12 +8,12 @@ var flagPrefixerTests = []struct {
 	expected    string
 }{
 	{"a", "", "-a"},
-	{"a", "foo", "-a foo"},
+	{"a", "foo", "-a <foo>"},
 	{"aa", "", "    --aa"},
-	{"aa", "foo", "    --aa foo"},
+	{"aa", "foo", "    --aa <foo>"},
 	{"a, aa", "", "-a, --aa"},
 	{"aa, a", "", "-a, --aa"},
-	{"a, aa", "foo", "-a, --aa foo"},
+	{"a, aa", "foo", "-a, --aa <foo>"},
 }
 
 func TestFlagPrefixer(t *testing.T) {
