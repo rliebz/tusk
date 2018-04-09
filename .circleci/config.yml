@@ -6,6 +6,11 @@ defaults:
       - image: tuskcli/ci:latest
     environment: &environment_defaults
       TEST_RESULTS: /tmp/test-results
+  job_dry_run: &job_dry_run
+    <<: *job_defaults
+    environment:
+      <<: *environment_defaults
+      RELEASE_FLAGS: --snapshot
   mktestdir: &mktestdir
     name: Create the test directory
     command: mkdir -p $TEST_RESULTS
@@ -35,17 +40,13 @@ defaults:
     name: Run goreleaser
     command: |
       # Pin goreleaser version
-      export VERSION=v0.62.3
-      tusk release ${RELEASE_FLAGS}
+      VERSION=v0.62.3 tusk release ${RELEASE_FLAGS}
 
 version: 2
 jobs:
   # For running tests locally
   build:
-    <<: *job_defaults
-    environment:
-      <<: *environment_defaults
-      RELEASE_FLAGS: --snapshot
+    <<: *job_dry_run
     steps:
       - checkout
       - run: *mktestdir
@@ -75,6 +76,13 @@ jobs:
       - store_artifacts: *store_artifacts
       - store_test_results: *store_test_results
 
+  release_dry_run:
+    <<: *job_dry_run
+    steps:
+      - checkout
+      - run: *install_tusk
+      - deploy: *release
+
   release:
     <<: *job_defaults
     steps:
@@ -94,6 +102,10 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - release_dry_run:
+          filters:
+            tags:
+              ignore: /v[0-9]+(\.[0-9]+)*(-.*)*/
       - release:
           requires:
             - lint
