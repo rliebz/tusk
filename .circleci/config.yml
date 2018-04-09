@@ -3,7 +3,7 @@ defaults:
   job_defaults: &job_defaults
     working_directory: /go/src/github.com/rliebz/tusk
     docker:
-      - image: circleci/golang:1.10
+      - image: tuskcli/ci:latest
     environment: &environment_defaults
       TEST_RESULTS: /tmp/test-results
   mktestdir: &mktestdir
@@ -21,40 +21,22 @@ defaults:
   store_test_results: &store_test_results
     path: /tmp/test-results
 
-  # Lint
-  install_lint_dependencies: &install_lint_dependencies
-    name: Install linting dependencies
-    command: |
-      go get github.com/alecthomas/gometalinter
-      gometalinter --install
   lint: &lint
     name: Run gometalinter
     command: tusk --quiet lint | tee $TEST_RESULTS/gometalinter.out
 
-  # Test
-  install_test_dependencies: &install_test_dependencies
-    name: Install testing dependencies
-    command: go get github.com/jstemmer/go-junit-report
   test: &test
     name: Run go test
     command: |
       trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
       tusk --quiet test --verbose --no-lint | tee $TEST_RESULTS/go-test.out
 
-  # Release
-  install_release_dependencies: &install_release_dependencies
-    name: Install goreleaser dependencies
-    command: |
-      sudo apt-get -y install rpm
-      curl -sL https://git.io/goreleaser > /tmp/goreleaser
-      sudo chmod +x /tmp/goreleaser
-      sudo mv /tmp/goreleaser /usr/local/bin
   release: &release
     name: Run goreleaser
     command: |
       # Pin goreleaser version
       export VERSION=v0.62.3
-      sudo "PATH=$PATH" --preserve-env /go/bin/tusk release ${RELEASE_FLAGS}
+      tusk release ${RELEASE_FLAGS}
 
 version: 2
 jobs:
@@ -68,12 +50,9 @@ jobs:
       - checkout
       - run: *mktestdir
       - run: *install_tusk
-      - run: *install_lint_dependencies
       - run: *lint
-      - run: *install_test_dependencies
       - run: *test
       # Local release is dry-run only
-      - run: *install_release_dependencies
       - run: *release
 
   lint:
@@ -82,7 +61,6 @@ jobs:
       - checkout
       - run: *mktestdir
       - run: *install_tusk
-      - run: *install_lint_dependencies
       - run: *lint
       - store_artifacts: *store_artifacts
       - store_test_results: *store_test_results
@@ -93,7 +71,6 @@ jobs:
       - checkout
       - run: *mktestdir
       - run: *install_tusk
-      - run: *install_test_dependencies
       - run: *test
       - store_artifacts: *store_artifacts
       - store_test_results: *store_test_results
@@ -103,7 +80,6 @@ jobs:
     steps:
       - checkout
       - run: *install_tusk
-      - run: *install_release_dependencies
       - deploy: *release
 
 workflows:
