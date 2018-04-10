@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <link rel="shortcut icon" href="./img/favicon.ico">
+
+    <title>Getting Started - tusk</title>
+
+    <link href="./css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
+    <link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href="./css/base.css" rel="stylesheet">
+    <link href="./css/cinder.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/highlight.css">
+
+
+    <link href="./pygments.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
+    <script>
+    WebFont.load({
+        google: {
+            families: ['Open Sans', 'PT Sans']
+        }
+    });
+    </script>
+
+    
+</head>
+
+<body class="homepage" >
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+
+            <a class="navbar-brand" href=".">tusk</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li class="active">
+                        <a href=".">Getting Started</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="spec/">The Spec</a>
+                    </li>
+                
+                
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <i class="fa fa-search"></i> Search
+                        </a>
+                    </li>
+                    <li class="disabled">
+                        <a rel="next" >
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="spec/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/rliebz/tusk"><i class="fa fa-github"></i> GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="first-level active"><a href="#tusk">Tusk</a></li>
+            <li class="second-level"><a href="#features">Features</a></li>
+                
+            <li class="second-level"><a href="#getting-started">Getting Started</a></li>
+                
+                <li class="third-level"><a href="#installation">Installation</a></li>
+                <li class="third-level"><a href="#usage">Usage</a></li>
+            <li class="second-level"><a href="#contributing">Contributing</a></li>
+                
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<h1 id="tusk">Tusk</h1>
+<p><a href="https://github.com/rliebz/tusk/releases"><img alt="GitHub release" src="https://img.shields.io/github/release/rliebz/tusk.svg" /></a>
+<a href="https://circleci.com/gh/rliebz/tusk/tree/master"><img alt="CircleCI" src="https://img.shields.io/circleci/project/github/rliebz/tusk/master.svg" /></a>
+<a href="https://ci.appveyor.com/project/RobertLiebowitz/tusk"><img alt="AppVeyor" src="https://img.shields.io/appveyor/ci/RobertLiebowitz/tusk/master.svg?label=windows" /></a>
+<a href="./LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
+<a href="https://gitter.im/tusk-cli/tusk"><img alt="Gitter" src="https://img.shields.io/gitter/room/tusk-cli/tusk.svg" /></a></p>
+<p>Tusk is a yaml-based task runner. By creating a <code>tusk.yml</code> in the root of a
+repository, Tusk becomes a custom command line tool with minimal configuration.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Customizable</strong>: Specify your own tasks and options with support for command-line
+  flags, environment variables, conditional logic, and more.</li>
+<li><strong>Explorable</strong>: With help documentation generated dynamically and support for Bash
+  and Zsh tab completion available, all the help you need to get started in a
+  project is available straight from the command line.</li>
+<li><strong>Accessible</strong>: Built for usability with a simple YAML configuration, familiar
+  syntax for passing options, Bash-like variable interpolation, and a colorful
+  terminal output.</li>
+<li><strong>Zero Dependencies</strong>: All you need is a single binary file to get started on
+  Linux, macOS, or Windows.</li>
+</ul>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="installation">Installation</h3>
+<p>The latest version can be installed from the <a href="https://github.com/rliebz/tusk/releases">releases page</a>.</p>
+<p>On macOS, installation is also available through <a href="https://brew.sh">homebrew</a>:</p>
+<div class="codehilite"><pre><span></span>brew install rliebz/tusk/tusk
+</pre></div>
+
+
+<h3 id="usage">Usage</h3>
+<p>Create a <code>tusk.yml</code> file in the root of a project repository:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">greet</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Say hello to someone</span>
+    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">A person to say &quot;Hello&quot; to</span>
+        <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">World</span>
+    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, ${name}!&quot;</span>
+</pre></div>
+
+
+<p>As long as there is a <code>tusk.yml</code> file in the working or any parent directory,
+tasks can be run:</p>
+<div class="codehilite"><pre><span></span>$ tusk greet --name friend
+Running: echo &quot;Hello, friend!&quot;
+Hello, friend!
+</pre></div>
+
+
+<p>Help messages are dynamically generated based on the YAML configuration:</p>
+<div class="codehilite"><pre><span></span>$ tusk --help
+tusk - a task runner built with simplicity in mind
+
+Usage:
+   tusk [global options] &lt;task&gt; [task options]
+
+Tasks:
+   greet  Say hello to someone
+
+Global Options:
+   -f, --file file  Set file to use as the config file
+   -h, --help       Show help and exit
+   ...
+</pre></div>
+
+
+<p>Individual tasks have help messages as well:</p>
+<div class="codehilite"><pre><span></span>$ tusk greet --help
+tusk greet - Say hello to someone
+
+Usage:
+   tusk greet [options]
+
+Options:
+   --name value  A person to say &quot;Hello&quot; to
+</pre></div>
+
+
+<p>For more detailed examples, check out the project's own <a href="https://github.com/rliebz/tusk/blob/master/tusk.yml"><code>tusk.yml</code></a>
+file.</p>
+<h2 id="contributing">Contributing</h2>
+<p>Set-up instructions for a development environment and contribution guidelines
+can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p></div>
+        
+    </div>
+
+    <footer class="col-md-12 text-center">
+        <hr>
+        <p>
+        <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p></small>
+    </footer>
+
+    <script src="./js/jquery-1.10.2.min.js"></script>
+    <script src="./js/bootstrap-3.0.3.min.js"></script>
+    <script src="./js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    var base_url = '.';
+    </script>
+    <script data-main="./mkdocs/js/search.js" src="./mkdocs/js/require.js"></script>
+    <script src="./js/base.js"></script>
+    <script src="./search/require.js"></script>
+    <script src="./search/search.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        From here you can search these documents. Enter your search terms below.
+                    </p>
+                    <form role="form">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                        </div>
+                    </form>
+                    <div id="mkdocs-search-results"></div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+
+</html>
+
+<!--
+MkDocs version : 0.17.3
+Build Date UTC : 2018-04-10 00:08:13
+-->
