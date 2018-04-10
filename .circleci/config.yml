@@ -11,6 +11,7 @@ defaults:
     environment:
       <<: *environment_defaults
       RELEASE_FLAGS: --snapshot
+      MKDOCS_COMMAND: build
   mktestdir: &mktestdir
     name: Create the test directory
     command: mkdir -p $TEST_RESULTS
@@ -42,6 +43,11 @@ defaults:
       # Pin goreleaser version
       VERSION=v0.62.3 tusk release ${RELEASE_FLAGS}
 
+  publish_docs: &publish_docs
+    name: Run mkdocs
+    command: |
+      mkdocs ${MKDOCS_COMMAND:-gh-deploy}
+
 version: 2
 jobs:
   # For running tests locally
@@ -55,6 +61,7 @@ jobs:
       - run: *test
       # Local release is dry-run only
       - run: *release
+      - run: *publish_docs
 
   lint:
     <<: *job_defaults
@@ -90,6 +97,21 @@ jobs:
       - run: *install_tusk
       - deploy: *release
 
+  publish_docs_dry_run:
+    <<: *job_dry_run
+    steps:
+      - checkout
+      - deploy: *publish_docs
+
+  publish_docs:
+    <<: *job_defaults
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "33:53:3f:55:d6:d4:21:9c:88:29:5b:c6:c3:ee:b3:af"
+      - checkout
+      - deploy: *publish_docs
+
 workflows:
   version: 2
   pipeline:
@@ -106,10 +128,22 @@ workflows:
           filters:
             tags:
               ignore: /v[0-9]+(\.[0-9]+)*(-.*)*/
+      - publish_docs_dry_run:
+          filters:
+            tags:
+              ignore: /v[0-9]+(\.[0-9]+)*(-.*)*/
       - release:
           requires:
             - lint
             - test
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+            branches:
+              ignore: /.*/
+      - publish_docs:
+          requires:
+            - release
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(-.*)*/
