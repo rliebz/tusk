@@ -16,7 +16,7 @@ import (
 // newBaseApp creates a basic cli.App with top-level flags.
 func newBaseApp() *cli.App {
 	app := cli.NewApp()
-	app.Usage = "a task runner built with simplicity in mind"
+	app.Usage = "the modern task runner"
 	app.HideVersion = true
 	app.HideHelp = true
 	app.EnableBashCompletion = true
