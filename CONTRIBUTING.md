@@ -12,7 +12,7 @@ encounter any issue, or if you have an idea on how Tusk can improve. Missing
 or incorrect documentation are issues too, so feel free to open one whenever
 you feel there is a chance to make Tusk better.
 
-When reporting a bug, make sure to include the expected behavior and steps to 
+When reporting a bug, make sure to include the expected behavior and steps to
 reproduce. The more descriptive you can be, the faster the issue can be
 resolved.
 
@@ -23,15 +23,18 @@ For big or breaking changes, you might consider opening an issue first to check
 interest, but it is absolutely not required to make a contribution.
 
 Tests are run automatically on each PR, and 100% test and lint pass rate is
-required to get the code merged in, although it is absolutely fine to have
-work-in-progress pull requests open if you are trying to debug. details on how
-to run the test suite can be found [here](#running-tests).
+required to get the code merged in, although it is fine to have work-in-
+progress pull requests open while debugging. Details on how to run the test
+suite can be found [here](#running-tests).
+
+For features which change the spec of the configuration file, documentation
+should be added in [docs/spec.md](docs/spec.md).
 
 ## Setting Up a Development Environment
 
 For local development, you will need Go version 1.9+ installed.
 
-To avoid issues with imports, Go projects must be placed on the 
+To avoid issues with imports, Go projects must be placed on the
 [`GOPATH`][GOPATH], which defaults to `$HOME/go`:
 
 ```bash
@@ -95,7 +98,7 @@ tusk test
 ```
 
 If the gometalinter fails, execution will stop short and not actually run the
-unit test suite. If there is a linter error that is a false-positive, or the 
+unit test suite. If there is a linter error that is a false-positive, or the
 violation is necessary for your contribution, you can disable a specific linter
 for that line:
 
