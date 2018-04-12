@@ -1,6 +1,8 @@
 package option
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 	"github.com/rliebz/tusk/config/marshal"
 	yaml "gopkg.in/yaml.v2"
@@ -34,9 +36,18 @@ func (a *Arg) Evaluate() (string, error) {
 func GetArgsWithOrder(ms yaml.MapSlice) (map[string]*Arg, []string, error) {
 	args := make(map[string]*Arg, len(ms))
 	assign := func(name string, text []byte) error {
-		arg := &Arg{Name: name}
+		var arg *Arg
+		if err := yaml.Unmarshal(text, &arg); err != nil {
+			return err
+		}
+
+		if arg == nil {
+			return fmt.Errorf("argument %q cannot be defined as null", name)
+		}
+
+		arg.Name = name
 		args[name] = arg
-		return yaml.Unmarshal(text, arg)
+		return nil
 	}
 
 	ordered, err := marshal.ParseOrderedMap(ms, assign)

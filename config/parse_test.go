@@ -798,6 +798,18 @@ tasks:
 		map[string]string{},
 		"mytask",
 	},
+	{
+		"null argument",
+		`
+tasks:
+  mytask:
+    args:
+      foo: null
+`,
+		[]string{"foo"},
+		map[string]string{},
+		"mytask",
+	},
 }
 
 func TestParseComplete_invalid(t *testing.T) {
