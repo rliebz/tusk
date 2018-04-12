@@ -147,34 +147,31 @@ documentation</a>.</p>
 <h3 id="installation">Installation</h3>
 <p>The latest version can be installed from the <a href="https://github.com/rliebz/tusk/releases">releases page</a>.</p>
 <p>On macOS, installation is also available through <a href="https://brew.sh">homebrew</a>:</p>
-<div class="codehilite"><pre><span></span>brew install rliebz/tusk/tusk
-</pre></div>
+<pre class="codehilite"><code class="language-bash">brew install rliebz/tusk/tusk</code></pre>
 
 
 <h3 id="usage">Usage</h3>
 <p>Create a <code>tusk.yml</code> file in the root of a project repository:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">greet</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Say hello to someone</span>
-    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">A person to say &quot;Hello&quot; to</span>
-        <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">World</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, ${name}!&quot;</span>
-</pre></div>
+<pre class="codehilite"><code class="language-yaml">tasks:
+  greet:
+    usage: Say hello to someone
+    options:
+      name:
+        usage: A person to say &quot;Hello&quot; to
+        default: World
+    run: echo &quot;Hello, ${name}!&quot;</code></pre>
 
 
 <p>As long as there is a <code>tusk.yml</code> file in the working or any parent directory,
 tasks can be run:</p>
-<div class="codehilite"><pre><span></span>$ tusk greet --name friend
+<pre class="codehilite"><code class="language-text">$ tusk greet --name friend
 Running: echo &quot;Hello, friend!&quot;
-Hello, friend!
-</pre></div>
+Hello, friend!</code></pre>
 
 
 <p>Help messages are dynamically generated based on the YAML configuration:</p>
-<div class="codehilite"><pre><span></span>$ tusk --help
-tusk - a task runner built with simplicity in mind
+<pre class="codehilite"><code class="language-text">$ tusk --help
+tusk - the modern task runner
 
 Usage:
    tusk [global options] &lt;task&gt; [task options]
@@ -183,25 +180,23 @@ Tasks:
    greet  Say hello to someone
 
 Global Options:
-   -f, --file file  Set file to use as the config file
-   -h, --help       Show help and exit
-   ...
-</pre></div>
+   -f, --file &lt;file&gt;  Set file to use as the config file
+   -h, --help         Show help and exit
+   ...</code></pre>
 
 
 <p>Individual tasks have help messages as well:</p>
-<div class="codehilite"><pre><span></span>$ tusk greet --help
+<pre class="codehilite"><code class="language-text">$ tusk greet --help
 tusk greet - Say hello to someone
 
 Usage:
    tusk greet [options]
 
 Options:
-   --name value  A person to say &quot;Hello&quot; to
-</pre></div>
+   --name value  A person to say &quot;Hello&quot; to</code></pre>
 
 
-<p>Additional information on the configuration spec can be found <a href="https://rliebz.github.io/tusk/spec/">in the project
+<p>Additional information on the configuration spec can be found in the <a href="https://rliebz.github.io/tusk/spec/">project
 documentation</a>.</p>
 <p>For more detailed examples, check out the project's own <a href="https://github.com/rliebz/tusk/blob/master/tusk.yml"><code>tusk.yml</code></a>
 file.</p>
@@ -262,5 +257,5 @@ can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING
 
 <!--
 MkDocs version : 0.17.3
-Build Date UTC : 2018-04-10 00:42:55
+Build Date UTC : 2018-04-12 03:48:49
 -->
