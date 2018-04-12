@@ -10,7 +10,10 @@ RUN apt-get update && \
       chmod +x /tmp/goreleaser && \
       mv /tmp/goreleaser /usr/local/bin
 RUN apt-get update && \
-      apt-get install -y python-pip python-dev build-essential && \
-      pip install --no-cache-dir mkdocs==0.17.3 mkdocs-cinder==0.11.0
+      apt-get install -y python-pip && \
+      pip install --no-cache-dir \
+      mkdocs==0.17.3 \
+      mkdocs-cinder==0.11.0 \
+      Pygments==2.2.0
 
 CMD [ "bash" ]
