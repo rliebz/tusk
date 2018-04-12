@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.3.5 (2018-04-11)
 ### Added
 - Positional arguments for tasks are now supported. All positional arguments
   specified in the config file are required.
