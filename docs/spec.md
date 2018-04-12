@@ -109,23 +109,30 @@ tasks:
       - command: echo "Inside two"
 ```
 
-For any option that a sub-task defines, the parent task can pass a value, which
-is treated the same way as passing by command-line would be. To do so, use the
-long definition of a sub-task:
+For any arg or option that a sub-task defines, the parent task can pass a
+value, which is treated the same way as passing by command-line would be. Args
+are passed in as a list, while options are a map from flag name to value.
+
+To pass values, use the long definition of a sub-task:
 
 ```yaml
 tasks:
   greet:
+    args:
+      name:
+        usage: The person to greet
     options:
-      person:
-        default: World
-    run: echo "Hello, ${person}!"
+      greeting:
+        default: Hello
+    run: echo "${greeting}, ${person}!"
   greet-myself:
     run:
       task:
         name: greet
+        args:
+          - me
         options:
-          person: me
+          greeting: Howdy
 ```
 
 In cases where a sub-task may not be useful on its own, define it as private to
@@ -190,6 +197,45 @@ tasks:
           - command: command -v cat
         command: cat my_file.txt
 ```
+
+### Args
+
+Tasks may have args that are passed directly as inputs. Any arg that is defined
+is required for the task to execute.
+
+```yaml
+tasks:
+  greet:
+    args:
+      name:
+        usage: The person to greet
+    run: echo "Hello, ${name}!"
+```
+
+The task can be invoked as such:
+
+```text
+$ tusk greet friend
+Hello, friend!
+```
+
+#### Arg Values
+
+Args can specify which values are considered valid:
+
+```yaml
+tasks:
+  greet:
+    args:
+      name:
+        values:
+          - Abby
+          - Bobby
+          - Carl
+```
+
+Any value passed by command-line must be one of the listed values, or the
+command will fail to execute.
 
 ### Options
 
@@ -304,7 +350,7 @@ options:
 
 #### Option Values
 
-An option can specify which values are considered valid:
+Like args, an option can specify which values are considered valid:
 
 ```yaml
 options:
@@ -371,6 +417,10 @@ Any shared variables referenced by a task will be exposed by command-line when
 invoking that task. Shared variables referenced by a sub-task will be evaluated
 as needed, but not exposed by command-line.
 
+Tasks that define an argument or option with the same name as a shared task will
+overwrite the value of the shared option for the length of that task, not
+including sub-tasks.
+
 ### CLI Metadata
 
 It is also possible to create a custom CLI tool for use outside of a project's
@@ -409,10 +459,20 @@ The interpolation syntax for a variable `foo` is `${foo}`, meaning any instances
 of `${foo}` in the configuration file will be replaced with the value of `foo`
 during execution.
 
-Interpolation is done on a task-by-task basis, meaning options defined in one
-task will not interpolate to any other tasks. For each task, interpolation is
-done iteratively in the order that variables are defined, with shared variables
-being evaluated first. This means that options can reference other options:
+Interpolation is done on a task-by-task basis, meaning args and options defined
+in one task will not interpolate to any other tasks. Shared options, on the
+other hand, will only be evaluated once per execution.
+
+The execution order is as followed:
+
+1. Shared options are interpolated first, in the order defined by the config
+   file. The results of global interpolation are cached and not re-run.
+2. The args for the current task being run are interpolated, in order.
+3. The options for the current task being run are interpolated, in order.
+4. For each call to a sub-task, the process is repeated, ignoring the task-
+   specific interpolations for parent tasks, using the cached shared options.
+
+This means that options can reference other options or args:
 
 ```yaml
 options:

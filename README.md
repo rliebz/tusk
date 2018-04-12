@@ -65,7 +65,7 @@ Help messages are dynamically generated based on the YAML configuration:
 
 ```text
 $ tusk --help
-tusk - a task runner built with simplicity in mind
+tusk - the modern task runner
 
 Usage:
    tusk [global options] <task> [task options]
@@ -74,8 +74,8 @@ Tasks:
    greet  Say hello to someone
 
 Global Options:
-   -f, --file file  Set file to use as the config file
-   -h, --help       Show help and exit
+   -f, --file <file>  Set file to use as the config file
+   -h, --help         Show help and exit
    ...
 ```
 
@@ -92,7 +92,7 @@ Options:
    --name value  A person to say "Hello" to
 ```
 
-Additional information on the configuration spec can be found [in the project
+Additional information on the configuration spec can be found in the [project
 documentation][spec].
 
 For more detailed examples, check out the project's own [`tusk.yml`][tusk.yml]
