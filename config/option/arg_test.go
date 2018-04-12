@@ -110,3 +110,25 @@ func TestGetArgsWithOrder(t *testing.T) {
 	}
 
 }
+
+func TestGetArgsWithOrder_null_arg(t *testing.T) {
+	ms := yaml.MapSlice{
+		{Key: "foo", Value: nil},
+	}
+
+	_, _, err := GetArgsWithOrder(ms)
+	if err == nil {
+		t.Error("GetArgsWithOrder() => expected error for null argument")
+	}
+}
+
+func TestGetArgsWithOrder_invalid(t *testing.T) {
+	ms := yaml.MapSlice{
+		{Key: "foo", Value: "not an arg"},
+	}
+
+	_, _, err := GetArgsWithOrder(ms)
+	if err == nil {
+		t.Error("GetArgsWithOrder() => expected yaml parsing error")
+	}
+}
