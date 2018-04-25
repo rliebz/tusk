@@ -35,7 +35,7 @@ defaults:
     name: Run go test
     command: |
       trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-      tusk --quiet test --verbose --no-lint | tee $TEST_RESULTS/go-test.out
+      tusk --quiet test --verbose | tee $TEST_RESULTS/go-test.out
 
   release: &release
     name: Run goreleaser

@@ -32,4 +32,4 @@ deploy: false
 test_script:
   - go install
   - tusk --quiet lint
-  - tusk --quiet test --verbose --no-lint
+  - tusk --quiet test --verbose

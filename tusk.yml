@@ -29,15 +29,15 @@ tasks:
   test:
     usage: Run go test and gometalinter
     description: |
-      Runs the full test suite using `go test -cover ./...`. Also runs the
-      linter by default, and linter errors are considered failed tests.
+      Runs the full test suite using `go test -cover ./...`.
     options:
-      fast:
-        usage: Only run fast tests and linters
+      all:
+        usage: Run all tests and linters
+        short: a
         type: bool
-      no-lint:
-        usage: Skip running gometalinter
         default: false
+      fast:
+        usage: Only run fast tests
         type: bool
       verbose:
         usage: Run the tests in verbose mode
@@ -57,7 +57,7 @@ tasks:
           value: -short
     run:
       - when:
-          equal: {no-lint: false}
+          equal: {all: true}
         task:
           name: lint
           options:
