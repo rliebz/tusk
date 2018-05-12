@@ -26,28 +26,56 @@ type When struct {
 }
 
 func (w When) String() string {
-	output := "When{"
+	output := make([]string, 0, 6)
 	if len(w.Command) > 0 {
-		output += fmt.Sprintf("command: %s", w.Command)
+		output = append(output, fmt.Sprintf("command:%s", w.Command))
 	}
 	if len(w.Exists) > 0 {
-		output += fmt.Sprintf("exists: %s", w.Exists)
+		output = append(output, fmt.Sprintf("exists:%s", w.Exists))
 	}
 	if len(w.OS) > 0 {
-		output += fmt.Sprintf("os: %s", w.OS)
+		output = append(output, fmt.Sprintf("os:%s", w.OS))
 	}
 	if len(w.Environment) > 0 {
-		output += fmt.Sprintf("environment: %v", w.Environment)
+		output = append(output, "environment:"+sprintNullableMap(w.Environment))
 	}
 	if len(w.Equal) > 0 {
-		output += fmt.Sprintf("equal: %v", w.Equal)
+		output = append(output, "equal:"+sprintMap(w.Equal))
 	}
 	if len(w.NotEqual) > 0 {
-		output += fmt.Sprintf("not-equal: %v", w.NotEqual)
+		output = append(output, "not-equal:"+sprintMap(w.NotEqual))
 	}
 
-	output += "}"
-	return output
+	return "When{" + strings.Join(output, ",") + "}"
+}
+
+func sprintNullableMap(m map[string]marshal.NullableStringList) string {
+	output := make([]string, 0, len(m))
+	for k, v := range m {
+		list := make([]string, 0, len(v))
+		for _, item := range v {
+			if item == nil {
+				list = append(list, "nil")
+			} else {
+				list = append(list, *item)
+			}
+		}
+		listString := "[" + strings.Join(list, ",") + "]"
+		output = append(output, fmt.Sprintf("%s:%s", k, listString))
+	}
+
+	return "{" + strings.Join(output, ",") + "}"
+
+}
+
+func sprintMap(m map[string]marshal.StringList) string {
+	output := make([]string, 0, len(m))
+	for k, v := range m {
+		listString := "[" + strings.Join(v, ",") + "]"
+		output = append(output, fmt.Sprintf("%s:%s", k, listString))
+	}
+
+	return "{" + strings.Join(output, ",") + "}"
 }
 
 // UnmarshalYAML warns about deprecated features.
