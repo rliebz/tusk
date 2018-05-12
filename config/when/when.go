@@ -18,11 +18,36 @@ type When struct {
 	Exists  marshal.StringList `yaml:",omitempty"`
 	OS      marshal.StringList `yaml:",omitempty"`
 
-	Environment map[string]*string            `yaml:",omitempty"`
-	Equal       map[string]marshal.StringList `yaml:",omitempty"`
-	NotEqual    map[string]marshal.StringList `yaml:"not-equal,omitempty"`
+	Environment map[string]marshal.NullableStringList `yaml:",omitempty"`
+	Equal       map[string]marshal.StringList         `yaml:",omitempty"`
+	NotEqual    map[string]marshal.StringList         `yaml:"not-equal,omitempty"`
 	// Deprecated: Use `not-equal` instead of `not_equal`
 	NotEqualDeprecated map[string]marshal.StringList `yaml:"not_equal,omitempty"`
+}
+
+func (w When) String() string {
+	output := "When{"
+	if len(w.Command) > 0 {
+		output += fmt.Sprintf("command: %s", w.Command)
+	}
+	if len(w.Exists) > 0 {
+		output += fmt.Sprintf("exists: %s", w.Exists)
+	}
+	if len(w.OS) > 0 {
+		output += fmt.Sprintf("os: %s", w.OS)
+	}
+	if len(w.Environment) > 0 {
+		output += fmt.Sprintf("environment: %v", w.Environment)
+	}
+	if len(w.Equal) > 0 {
+		output += fmt.Sprintf("equal: %v", w.Equal)
+	}
+	if len(w.NotEqual) > 0 {
+		output += fmt.Sprintf("not-equal: %v", w.NotEqual)
+	}
+
+	output += "}"
+	return output
 }
 
 // UnmarshalYAML warns about deprecated features.
@@ -81,57 +106,70 @@ func (w *When) Validate(vars map[string]string) error {
 		return nil
 	}
 
-	if err := w.validateExists(); err != nil {
-		return err
+	return validateAny(
+		w.validateOS(),
+		w.validateEqual(vars),
+		w.validateNotEqual(vars),
+		w.validateEnv(),
+		w.validateExists(),
+		w.validateCommand(),
+	)
+}
+
+// TODO: Should this be done in parallel?
+func validateAny(errs ...error) error {
+	var errOutput error
+	for _, err := range errs {
+		if err == nil {
+			return nil
+		}
+
+		if errOutput == nil && !IsUnspecifiedClause(err) {
+			errOutput = err
+		}
 	}
 
-	if err := w.validateOS(); err != nil {
-		return err
-	}
-
-	if err := w.validateEnv(); err != nil {
-		return err
-	}
-
-	if err := w.validateEqual(vars); err != nil {
-		return err
-	}
-
-	if err := w.validateNotEqual(vars); err != nil {
-		return err
-	}
-
-	if err := w.validateCommand(); err != nil {
-		return err
-	}
-
-	return nil
+	return errOutput
 }
 
 func (w *When) validateCommand() error {
+	if len(w.Command) == 0 {
+		return newUnspecifiedError("command")
+	}
+
 	for _, command := range w.Command {
-		if err := testCommand(command); err != nil {
-			return newCondFailErrorf(`test failed: %s`, command)
+		if err := testCommand(command); err == nil {
+			return nil
 		}
 	}
 
-	return nil
+	return newCondFailErrorf("no commands exited successfully")
 }
 
 func (w *When) validateExists() error {
-	for _, f := range w.Exists {
-		if _, err := os.Stat(f); err != nil {
-			if os.IsNotExist(err) {
-				return newCondFailErrorf(`file "%s" does not exist`, f)
-			}
-			return err
-		}
+	if len(w.Exists) == 0 {
+		return newUnspecifiedError("exists")
 	}
 
-	return nil
+	for _, f := range w.Exists {
+		if _, err := os.Stat(f); err != nil {
+			if !os.IsNotExist(err) {
+				return err
+			}
+			continue
+		}
+
+		return nil
+	}
+
+	return newCondFailErrorf("no required file existed: %s", w.Exists)
 }
 
 func (w *When) validateOS() error {
+	if len(w.OS) == 0 {
+		return newUnspecifiedError("os")
+	}
+
 	return validateOneOf(
 		"current OS", runtime.GOOS, w.OS,
 		func(expected, actual string) bool {
@@ -141,79 +179,72 @@ func (w *When) validateOS() error {
 }
 
 func (w *When) validateEnv() error {
-	for varName, expected := range w.Environment {
+	if len(w.Environment) == 0 {
+		return newUnspecifiedError("env")
+	}
+
+	for varName, values := range w.Environment {
+		stringValues := make([]string, 0, len(values))
+		for _, value := range values {
+			if value != nil {
+				stringValues = append(stringValues, *value)
+			}
+		}
+
+		isNullAllowed := len(values) != len(stringValues)
+
 		actual, ok := os.LookupEnv(varName)
-		if expected == nil {
-			if ok {
-				return newCondFailErrorf(
-					`environment variable %s ("%s") must not be set`,
-					varName, actual,
-				)
+		if !ok {
+			if isNullAllowed {
+				return nil
 			}
 
 			continue
 		}
 
-		if *expected != actual {
-			return newCondFailErrorf(
-				`environment variable %s ("%s") does not match expected value (%s)`,
-				varName, actual, expected,
-			)
+		if err := validateOneOf(
+			fmt.Sprintf("environment variable %s", varName),
+			actual,
+			stringValues,
+			func(a, b string) bool { return a == b },
+		); err == nil {
+			return nil
 		}
 	}
 
-	return nil
+	return newCondFailError("no environment variables matched")
 }
 
 func (w *When) validateEqual(vars map[string]string) error {
+	if len(w.Equal) == 0 {
+		return newUnspecifiedError("equal")
+	}
+
 	return validateEquality(vars, w.Equal, func(a, b string) bool {
 		return a == b
 	})
 }
 
 func (w *When) validateNotEqual(vars map[string]string) error {
+	if len(w.NotEqual) == 0 {
+		return newUnspecifiedError("not-equal")
+	}
+
 	return validateEquality(vars, w.NotEqual, func(a, b string) bool {
 		return a != b
 	})
 }
 
-// nolint: unparam
 func validateOneOf(
 	desc, value string, required []string, compare func(string, string) bool,
 ) error {
-	if len(required) == 0 {
-		return nil
-	}
-
 	for _, expected := range required {
 		if compare(expected, value) {
 			return nil
 		}
 	}
 
-	return newCondFailErrorf(`%s (%s) not listed in %v`, desc, value, required)
-}
-
-// validateAllOf is a stand-in for validateOneOf to be backward compatible.
-// Behavior will change in an upcoming major version, as this behavior has
-// been deprecated.
-func validateAllOf(
-	desc, value string, required []string, compare func(string, string) bool,
-) error {
-	if len(required) == 0 {
-		return nil
-	}
-
-	for _, expected := range required {
-		if !compare(expected, value) {
-			return newCondFailErrorf(
-				`%s (%s) does not match expected value (%s)`,
-				desc, value, expected,
-			)
-		}
-	}
-
-	return nil
+	return newCondFailErrorf("%s (%s) not listed in %v", desc, value, required)
 }
 
 func normalizeOS(os string) string {
@@ -248,20 +279,20 @@ func validateEquality(
 	for optionName, values := range cases {
 		actual, ok := options[optionName]
 		if !ok {
-			return newCondFailErrorf(`option "%s" not defined`, optionName)
+			continue
 		}
 
-		if err := validateAllOf(
+		if err := validateOneOf(
 			fmt.Sprintf(`option "%s"`, optionName),
 			actual,
 			values,
 			compare,
-		); err != nil {
-			return err
+		); err == nil {
+			return nil
 		}
 	}
 
-	return nil
+	return newCondFailError("no options matched")
 }
 
 func warnDeprecations(w *When) {
@@ -314,6 +345,7 @@ func warnMultiClauseDeprecation(w *When) {
 	}
 }
 
+// TODO: Remove deprecations
 func warnListDeprecation(list marshal.StringList, field string) {
 	if len(list) > 1 {
 		deprecateWhenBehavior(

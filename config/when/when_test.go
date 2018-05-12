@@ -137,26 +137,31 @@ var whenValidateTests = []struct {
 	{Create(WithCommandSuccess), nil, false},
 	{Create(WithCommandFailure), nil, true},
 	{Create(WithCommandSuccess, WithCommandSuccess), nil, false},
-	{Create(WithCommandSuccess, WithCommandFailure), nil, true},
+	{Create(WithCommandSuccess, WithCommandFailure), nil, false},
+	{Create(WithCommandFailure, WithCommandFailure), nil, true},
 
 	// Exist Clauses
 	{Create(WithExists("when_test.go")), nil, false},
 	{Create(WithExists("fakefile")), nil, true},
-	{Create(WithExists("fakefile"), WithExists("when_test.go")), nil, true},
+	{Create(WithExists("fakefile"), WithExists("when_test.go")), nil, false},
+	{Create(WithExists("when_test.go"), WithExists("fakefile")), nil, false},
+	{Create(WithExists("fakefile"), WithExists("fakefile2")), nil, true},
 
 	// OS Clauses
 	{Create(WithOSSuccess), nil, false},
 	{Create(WithOSFailure), nil, true},
 	{Create(WithOSSuccess, WithOSFailure), nil, false},
 	{Create(WithOSFailure, WithOSSuccess), nil, false},
+	{Create(WithOSFailure, WithOSFailure), nil, true},
 
 	// Environment Clauses
 	{Create(WithEnvSuccess), nil, false},
 	{Create(WithoutEnvSuccess), nil, false},
 	{Create(WithEnvFailure), nil, true},
 	{Create(WithoutEnvFailure), nil, true},
-	{Create(WithEnvSuccess, WithoutEnvFailure), nil, true},
-	{Create(WithEnvFailure, WithoutEnvSuccess), nil, true},
+	{Create(WithEnvSuccess, WithoutEnvFailure), nil, false},
+	{Create(WithEnvFailure, WithoutEnvSuccess), nil, false},
+	{Create(WithEnvFailure, WithoutEnvFailure), nil, true},
 
 	// Equal Clauses
 	{
@@ -167,6 +172,16 @@ var whenValidateTests = []struct {
 	{
 		Create(WithEqual("foo", "true"), WithEqual("bar", "false")),
 		map[string]string{"foo": "true", "bar": "false"},
+		false,
+	},
+	{
+		Create(WithEqual("foo", "true"), WithEqual("bar", "false")),
+		map[string]string{"foo": "true", "bar": "true"},
+		false,
+	},
+	{
+		Create(WithEqual("foo", "true"), WithEqual("bar", "false")),
+		map[string]string{"foo": "true"},
 		false,
 	},
 	{
@@ -202,6 +217,16 @@ var whenValidateTests = []struct {
 		false,
 	},
 	{
+		Create(WithNotEqual("foo", "true"), WithNotEqual("bar", "false")),
+		map[string]string{"foo": "true", "bar": "true"},
+		false,
+	},
+	{
+		Create(WithNotEqual("foo", "true"), WithNotEqual("bar", "false")),
+		map[string]string{"foo": "false"},
+		false,
+	},
+	{
 		Create(WithNotEqual("foo", "true")),
 		map[string]string{},
 		true,
@@ -219,6 +244,92 @@ var whenValidateTests = []struct {
 	{
 		Create(WithNotEqual("foo", "true"), WithNotEqual("bar", "true")),
 		map[string]string{"foo": "false", "bar": "false"},
+		false,
+	},
+
+	// Combinations
+	{
+		Create(
+			WithCommandFailure,
+			WithExists("fakefile"),
+			WithOSFailure,
+			WithEnvFailure,
+			WithEqual("foo", "wrong"),
+			WithNotEqual("foo", "true"),
+		),
+		map[string]string{"foo": "true"},
+		true,
+	},
+	{
+		Create(
+			WithCommandSuccess,
+			WithExists("fakefile"),
+			WithOSFailure,
+			WithEnvFailure,
+			WithEqual("foo", "wrong"),
+			WithNotEqual("foo", "true"),
+		),
+		map[string]string{"foo": "true"},
+		false,
+	},
+	{
+		Create(
+			WithCommandFailure,
+			WithExists("when_test.go"),
+			WithOSFailure,
+			WithEnvFailure,
+			WithEqual("foo", "wrong"),
+			WithNotEqual("foo", "true"),
+		),
+		map[string]string{"foo": "true"},
+		false,
+	},
+	{
+		Create(
+			WithCommandFailure,
+			WithExists("fakefile"),
+			WithOSSuccess,
+			WithEnvFailure,
+			WithEqual("foo", "wrong"),
+			WithNotEqual("foo", "true"),
+		),
+		map[string]string{"foo": "true"},
+		false,
+	},
+	{
+		Create(
+			WithCommandFailure,
+			WithExists("fakefile"),
+			WithOSFailure,
+			WithEnvSuccess,
+			WithEqual("foo", "wrong"),
+			WithNotEqual("foo", "true"),
+		),
+		map[string]string{"foo": "true"},
+		false,
+	},
+	{
+		Create(
+			WithCommandFailure,
+			WithExists("fakefile"),
+			WithOSFailure,
+			WithEnvFailure,
+			WithEqual("foo", "true"),
+			WithNotEqual("foo", "true"),
+		),
+		map[string]string{"foo": "true"},
+		false,
+	},
+	{
+		Create(
+			WithCommandFailure,
+			WithExists("fakefile"),
+			WithOSFailure,
+			WithEnvFailure,
+			WithEqual("foo", "wrong"),
+			WithNotEqual("foo", "fake"),
+		),
+		map[string]string{"foo": "true"},
 		false,
 	},
 }
