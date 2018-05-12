@@ -70,7 +70,7 @@ var WithOSFailure = func(w *When) {
 func WithEnv(key string, value string) func(w *When) {
 	return func(w *When) {
 		ensureEnv(w)
-		w.Environment[key] = &value
+		w.Environment[key] = append(w.Environment[key], &value)
 	}
 }
 
@@ -78,7 +78,7 @@ func WithEnv(key string, value string) func(w *When) {
 func WithoutEnv(key string) func(w *When) {
 	return func(w *When) {
 		ensureEnv(w)
-		w.Environment[key] = nil
+		w.Environment[key] = append(w.Environment[key], nil)
 	}
 }
 
@@ -88,7 +88,7 @@ var WithEnvSuccess = func(w *When) {
 	key := randomString()
 	value := randomString()
 	os.Setenv(key, value) // nolint: errcheck
-	w.Environment[key] = &value
+	w.Environment[key] = append(w.Environment[key], &value)
 }
 
 // WithEnvFailure is an operator that requires a set environment variable.
@@ -96,14 +96,14 @@ var WithEnvFailure = func(w *When) {
 	ensureEnv(w)
 	key := randomString()
 	value := randomString()
-	w.Environment[key] = &value
+	w.Environment[key] = append(w.Environment[key], &value)
 }
 
 // WithoutEnvSuccess is an operator that requires an unset environment variable.
 var WithoutEnvSuccess = func(w *When) {
 	ensureEnv(w)
 	key := randomString()
-	w.Environment[key] = nil
+	w.Environment[key] = append(w.Environment[key], nil)
 }
 
 // WithoutEnvFailure is an operator that requires an unset environment variable.
@@ -112,7 +112,7 @@ var WithoutEnvFailure = func(w *When) {
 	key := randomString()
 	value := randomString()
 	os.Setenv(key, value) // nolint: errcheck
-	w.Environment[key] = nil
+	w.Environment[key] = append(w.Environment[key], nil)
 }
 
 func randomString() string {
@@ -126,7 +126,7 @@ func randomString() string {
 
 func ensureEnv(w *When) {
 	if w.Environment == nil {
-		w.Environment = make(map[string]*string)
+		w.Environment = make(map[string]marshal.NullableStringList)
 	}
 }
 
