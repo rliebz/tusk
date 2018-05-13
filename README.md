@@ -89,7 +89,7 @@ Usage:
    tusk greet [options]
 
 Options:
-   --name value  A person to say "Hello" to
+   --name <value>  A person to say "Hello" to
 ```
 
 Additional information on the configuration spec can be found in the [project
