@@ -164,16 +164,18 @@ run:
 In a `run` clause, any item with a true `when` clause will execute. There are
 five different checks supported:
 
-- `command` (string): Execute if the command runs with an exit code of `0`.
-- `exists` (string): Execute if the file exists.
+- `command` (list): Execute if any command runs with an exit code of `0`.
+  Commands will execute in the order defined and stop execution at the first
+  successful command.
+- `exists` (list): Execute if any file listed exists.
 - `os` (list): Execute if the operating system matches any one from the list.
-- `environment` (map[string -> string]): Execute if the environment variable
-  matches the value it maps to. To check if a variable is not set, the value
-  should be `~` or `null`.
-- `equal` (map[string -> string]): Execute if the given option equals the value
-  it maps to.
-- `not-equal` (map[string -> string]): Execute if the given option does not
-  equal the value it maps to.
+- `environment` (map[string -> list]): Execute if the environment variable
+  matches any of the values it maps to. To check if a variable is not set, the
+  value should be `~` or `null`.
+- `equal` (map[string -> list]): Execute if the given option equals any of the
+  values it maps to.
+- `not-equal` (map[string -> list]): Execute if the given option is not equal to
+  any one of the values it maps to.
 
 The `when` clause supports any number of different checks as a list, where each
 check must pass individually for the clause to evaluate to true. Here is a more
@@ -196,6 +198,32 @@ tasks:
           - equal: {cat: true}
           - command: command -v cat
         command: cat my_file.txt
+```
+
+#### When Any/All Logic
+
+A `when` clause takes a list of items, where each item can have multiple checks.
+Each `when` item will pass if _any_ of the checks pass, while the whole clause
+will only pass if _all_ of the items pass. These properties can be combined for
+more complicated logic:
+
+```yaml
+tasks:
+  echo:
+    options:
+      verbose:
+        type: bool
+      ignore-os:
+        type: bool
+    run:
+      - when:
+          # (OS is linux OR darwin OR ignore OS is true) AND (verbose is true)
+          - os:
+              - linux
+              - darwin
+            equal: {ignore-os: true}
+          - equal: {verbose: true}
+        command: echo "This is a unix machine"
 ```
 
 ### Args
