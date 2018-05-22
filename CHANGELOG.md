@@ -2,6 +2,12 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- A `when` item now evaluates to true if ANY tests pass rather than if ALL tests
+  pass. All `when` items in a clause must still pass.
+- `environment` clauses in `when` items now support mapping a single key to
+  multiple values.
+
 ### Removed
 - Remove deprecated `not_equal` syntax in favor of `not-equal`.
 
@@ -16,6 +22,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Help documentation for flags with placeholder options now display them using
   angular brackets.
 - Minor changes to certain error messages.
+
 
 ## 0.3.4 (2018-03-14)
 ### Added
