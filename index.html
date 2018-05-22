@@ -145,7 +145,17 @@ documentation</a>.</p>
 </ul>
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="installation">Installation</h3>
-<p>The latest version can be installed from the <a href="https://github.com/rliebz/tusk/releases">releases page</a>.</p>
+<p>The latest version can be downloaded from the <a href="https://github.com/rliebz/tusk/releases">releases page</a>.</p>
+<h4 id="installation-script">Installation Script</h4>
+<p>To install automatically, or for use in CI, run the following command:</p>
+<div class="codehilite"><pre><span></span>curl -sL https://raw.githubusercontent.com/rliebz/tusk/master/install.sh <span class="p">|</span> bash -s -- -b /usr/local/bin latest
+</pre></div>
+
+
+<p>To pin to a specific version, which is recommended for automated scripts,
+replace <code>latest</code> with the tag for that version.</p>
+<p>To install to another directory, change the path passed to <code>-b</code>.</p>
+<h4 id="homebrew">Homebrew</h4>
 <p>On macOS, installation is also available through <a href="https://brew.sh">homebrew</a>:</p>
 <div class="codehilite"><pre><span></span>brew install rliebz/tusk/tusk
 </pre></div>
@@ -197,7 +207,7 @@ Usage:
    tusk greet [options]
 
 Options:
-   --name value  A person to say &quot;Hello&quot; to
+   --name &lt;value&gt;  A person to say &quot;Hello&quot; to
 </pre></div>
 
 
@@ -262,5 +272,5 @@ can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING
 
 <!--
 MkDocs version : 0.17.3
-Build Date UTC : 2018-04-12 03:51:52
+Build Date UTC : 2018-05-22 03:11:09
 -->

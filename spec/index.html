@@ -117,6 +117,7 @@
                 <li class="third-level"><a href="#sub-tasks">Sub-Tasks</a></li>
             <li class="second-level"><a href="#when">When</a></li>
                 
+                <li class="third-level"><a href="#when-anyall-logic">When Any/All Logic</a></li>
             <li class="second-level"><a href="#args">Args</a></li>
                 
                 <li class="third-level"><a href="#arg-values">Arg Values</a></li>
@@ -279,16 +280,18 @@ prevent it from being invoked directly from the command-line. For example:</p>
 <p>In a <code>run</code> clause, any item with a true <code>when</code> clause will execute. There are
 five different checks supported:</p>
 <ul>
-<li><code>command</code> (string): Execute if the command runs with an exit code of <code>0</code>.</li>
-<li><code>exists</code> (string): Execute if the file exists.</li>
+<li><code>command</code> (list): Execute if any command runs with an exit code of <code>0</code>.
+  Commands will execute in the order defined and stop execution at the first
+  successful command.</li>
+<li><code>exists</code> (list): Execute if any file listed exists.</li>
 <li><code>os</code> (list): Execute if the operating system matches any one from the list.</li>
-<li><code>environment</code> (map[string -&gt; string]): Execute if the environment variable
-  matches the value it maps to. To check if a variable is not set, the value
-  should be <code>~</code> or <code>null</code>.</li>
-<li><code>equal</code> (map[string -&gt; string]): Execute if the given option equals the value
-  it maps to.</li>
-<li><code>not-equal</code> (map[string -&gt; string]): Execute if the given option does not
-  equal the value it maps to.</li>
+<li><code>environment</code> (map[string -&gt; list]): Execute if the environment variable
+  matches any of the values it maps to. To check if a variable is not set, the
+  value should be <code>~</code> or <code>null</code>.</li>
+<li><code>equal</code> (map[string -&gt; list]): Execute if the given option equals any of the
+  values it maps to.</li>
+<li><code>not-equal</code> (map[string -&gt; list]): Execute if the given option is not equal to
+  any one of the values it maps to.</li>
 </ul>
 <p>The <code>when</code> clause supports any number of different checks as a list, where each
 check must pass individually for the clause to evaluate to true. Here is a more
@@ -309,6 +312,30 @@ complicated example of how <code>when</code> can be used:</p>
           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">cat</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">command -v cat</span>
         <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">cat my_file.txt</span>
+</pre></div>
+
+
+<h4 id="when-anyall-logic">When Any/All Logic</h4>
+<p>A <code>when</code> clause takes a list of items, where each item can have multiple checks.
+Each <code>when</code> item will pass if <em>any</em> of the checks pass, while the whole clause
+will only pass if <em>all</em> of the items pass. These properties can be combined for
+more complicated logic:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">echo</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">verbose</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">bool</span>
+      <span class="l l-Scalar l-Scalar-Plain">ignore-os</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">bool</span>
+    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
+          <span class="c1"># (OS is linux OR darwin OR ignore OS is true) AND (verbose is true)</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">os</span><span class="p p-Indicator">:</span>
+              <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linux</span>
+              <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">darwin</span>
+            <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">ignore-os</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">verbose</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
+        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;This is a unix machine&quot;</span>
 </pre></div>
 
 
@@ -368,6 +395,8 @@ priority:</p>
 <li>The value of the environment variable (<code>GREET_NAME</code>), if set</li>
 <li>The value set in default</li>
 </ol>
+<p>For short flag names, values can be combined such that <code>tusk foo -ab</code> is exactly
+equivalent to <code>tusk foo -a -b</code>.</p>
 <h4 id="option-types">Option Types</h4>
 <p>Options can be of the types <code>string</code>, <code>integer</code>, <code>float</code>, or <code>boolean</code>, using
 the zero-value of that type as the default if not set. Options without types
