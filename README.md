@@ -29,7 +29,22 @@ documentation][documentation].
 
 ### Installation
 
-The latest version can be installed from the [releases page][releases].
+The latest version can be downloaded from the [releases page][releases].
+
+#### Installation Script
+
+To install automatically, or for use in CI, run the following script:
+
+```bash
+curl -sL https://raw.githubusercontent.com/rliebz/tusk/master/install.sh | bash -s -- -b /usr/local/bin latest
+```
+
+To pin to a specific version, which is recommended for any automated scripts,
+replace `latest` with the tag for that version.
+
+To install to another directory, change the path passed to `-b`.
+
+#### Homebrew
 
 On macOS, installation is also available through [homebrew][homebrew]:
 
