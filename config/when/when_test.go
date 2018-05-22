@@ -75,11 +75,6 @@ var unmarshalTests = []struct {
 	expected When
 }{
 	{
-		"not_equal",
-		`not_equal: {foo: bar}`,
-		Create(WithNotEqual("foo", "bar")),
-	},
-	{
 		"not-equal",
 		`not-equal: {foo: bar}`,
 		Create(WithNotEqual("foo", "bar")),
@@ -103,18 +98,6 @@ func TestWhen_UnmarshalYAML(t *testing.T) {
 				tt.desc, tt.expected.NotEqual, w.NotEqual,
 			)
 		}
-	}
-}
-
-func TestWhen_UnmarshalYAML_invalid(t *testing.T) {
-	w := When{}
-	input := []byte("not_equal: {foo: bar}\nnot-equal: {bar: baz}")
-	expected := "both `not_equal` and `not-equal` are defined in a single `when` clause"
-	if err := yaml.Unmarshal(input, &w); expected != err.Error() {
-		t.Errorf(
-			"expected error: %s\nactual: %s",
-			expected, err,
-		)
 	}
 }
 
