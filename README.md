@@ -33,13 +33,13 @@ The latest version can be downloaded from the [releases page][releases].
 
 #### Installation Script
 
-To install automatically, or for use in CI, run the following script:
+To install automatically, or for use in CI, run the following command:
 
 ```bash
 curl -sL https://raw.githubusercontent.com/rliebz/tusk/master/install.sh | bash -s -- -b /usr/local/bin latest
 ```
 
-To pin to a specific version, which is recommended for any automated scripts,
+To pin to a specific version, which is recommended for automated scripts,
 replace `latest` with the tag for that version.
 
 To install to another directory, change the path passed to `-b`.
