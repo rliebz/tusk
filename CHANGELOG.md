@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Short-flag combination is now supported.
+
 ### Changed
 - A `when` item now evaluates to true if ANY tests pass rather than if ALL tests
   pass. All `when` items in a clause must still pass.

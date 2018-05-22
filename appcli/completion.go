@@ -68,14 +68,12 @@ func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli
 			return
 		}
 
-		flagName := strings.TrimLeft(trailingArg, "-")
-
 		options, err := config.FindAllOptions(t, cfg)
 		if err != nil {
 			return
 		}
 
-		opt, ok := getOptionFlag(flagName, options)
+		opt, ok := getOptionFlag(trailingArg, options)
 		if !ok {
 			return
 		}
@@ -93,7 +91,8 @@ func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli
 	}
 }
 
-func getOptionFlag(flagName string, options []*option.Option) (*option.Option, bool) {
+func getOptionFlag(flag string, options []*option.Option) (*option.Option, bool) {
+	flagName := getFlagName(flag)
 	for _, opt := range options {
 		if flagName == opt.Name || flagName == opt.Short {
 			return opt, true
@@ -156,8 +155,8 @@ func isCompletingArg(flags []cli.Flag, arg string) bool {
 		return false
 	}
 
-	name := strings.TrimLeft(arg, "-")
-	short := len(arg) == len(name)+1
+	name := getFlagName(arg)
+	short := !strings.HasPrefix(arg, "--")
 
 	for _, flag := range flags {
 		if _, ok := flag.(cli.BoolFlag); ok {
@@ -179,6 +178,14 @@ func isCompletingArg(flags []cli.Flag, arg string) bool {
 	}
 
 	return false
+}
+
+func getFlagName(flag string) string {
+	if strings.HasPrefix(flag, "--") {
+		return flag[2:]
+	}
+
+	return flag[len(flag)-1:]
 }
 
 func isFlagArgumentError(err error) bool {

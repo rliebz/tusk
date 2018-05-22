@@ -290,6 +290,9 @@ priority:
 2. The value of the environment variable (`GREET_NAME`), if set
 3. The value set in default
 
+For short flag names, values can be combined such that `tusk foo -ab` is exactly
+equivalent to `tusk foo -a -b`.
+
 #### Option Types
 
 Options can be of the types `string`, `integer`, `float`, or `boolean`, using
