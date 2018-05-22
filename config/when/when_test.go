@@ -79,6 +79,20 @@ var unmarshalTests = []struct {
 		`not-equal: {foo: bar}`,
 		Create(WithNotEqual("foo", "bar")),
 	},
+	{
+		"null environment",
+		`environment: {foo: null}`,
+		Create(WithoutEnv("foo")),
+	},
+	{
+		"environment list with null",
+		`environment: {foo: ["a", null, "b"]}`,
+		Create(
+			WithEnv("foo", "a"),
+			WithoutEnv("foo"),
+			WithEnv("foo", "b"),
+		),
+	},
 }
 
 func TestWhen_UnmarshalYAML(t *testing.T) {
@@ -92,11 +106,11 @@ func TestWhen_UnmarshalYAML(t *testing.T) {
 			continue
 		}
 
-		if !reflect.DeepEqual(tt.expected.NotEqual, w.NotEqual) {
-			t.Errorf(
-				"NotEqual for %s:\nexpected: %v\nactual: %v",
-				tt.desc, tt.expected.NotEqual, w.NotEqual,
-			)
+		expected := tt.expected.String()
+		actual := w.String()
+
+		if expected != actual {
+			t.Errorf("want %q, got %q", expected, actual)
 		}
 	}
 }

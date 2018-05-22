@@ -9,6 +9,7 @@ import (
 
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/ui"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // When defines the conditions for running a task.
@@ -84,6 +85,28 @@ func (w *When) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	warnDeprecations(w)
+
+	ms := yaml.MapSlice{}
+	if err := unmarshal(&ms); err != nil {
+		return err
+	}
+
+	for _, clauseMS := range ms {
+		if name, ok := clauseMS.Key.(string); !ok || name != "environment" {
+			continue
+		}
+
+		for _, envMS := range clauseMS.Value.(yaml.MapSlice) {
+			envVar, ok := envMS.Key.(string)
+			if !ok {
+				return fmt.Errorf("invalid environment variable name %q", envMS.Key)
+			}
+
+			if envMS.Value == nil {
+				w.Environment[envVar] = marshal.NullableStringList{nil}
+			}
+		}
+	}
 
 	return nil
 }
