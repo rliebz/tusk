@@ -36,7 +36,7 @@ The latest version can be downloaded from the [releases page][releases].
 To install automatically, or for use in CI, run the following command:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/rliebz/tusk/master/install.sh | bash -s -- -b /usr/local/bin latest
+curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
 ```
 
 To pin to a specific version, which is recommended for automated scripts,
