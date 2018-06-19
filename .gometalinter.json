@@ -23,5 +23,6 @@
     "vetshadow"
   ],
   "linelength": 120,
+  "test": true,
   "vendor": true
 }

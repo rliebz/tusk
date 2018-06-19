@@ -18,7 +18,7 @@ func ParseOrderedMap(
 	for _, itemMS := range ms {
 		name, ok := itemMS.Key.(string)
 		if !ok {
-			return nil, fmt.Errorf("%q is not a valid key name", name)
+			return nil, fmt.Errorf("%q is not a valid key name", itemMS.Key)
 		}
 		ordered = append(ordered, name)
 

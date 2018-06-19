@@ -2,6 +2,7 @@ package marshal
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 
 	yaml "gopkg.in/yaml.v2"
@@ -40,7 +41,15 @@ func TestParseOrderedMap(t *testing.T) {
 		return nil
 	}
 
-	ParseOrderedMap(ms, assign)
+	actual, err := ParseOrderedMap(ms, assign)
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+
+	expected := []string{"foo", "bar"}
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("want %v, got %v", expected, actual)
+	}
 }
 
 func TestParseOrderedMap_stops_on_failure(t *testing.T) {
@@ -62,7 +71,9 @@ func TestParseOrderedMap_stops_on_failure(t *testing.T) {
 		return errors.New("uh oh")
 	}
 
-	ParseOrderedMap(ms, assign)
+	if _, err := ParseOrderedMap(ms, assign); err == nil {
+		t.Fatal("want error \"uh oh\", got nil")
+	}
 }
 
 func TestParseOrderedMap_validates_key(t *testing.T) {
@@ -74,5 +85,7 @@ func TestParseOrderedMap_validates_key(t *testing.T) {
 		return nil
 	}
 
-	ParseOrderedMap(ms, assign)
+	if _, err := ParseOrderedMap(ms, assign); err == nil {
+		t.Fatal("want error for invalid key, got nil")
+	}
 }
