@@ -53,6 +53,9 @@ func main() {
 
 	if err := app.Run(os.Args); err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
+			if ui.Verbosity >= ui.VerbosityLevelVerbose {
+				ui.Error(err)
+			}
 			ws := exitErr.Sys().(syscall.WaitStatus)
 			os.Exit(ws.ExitStatus())
 		} else {

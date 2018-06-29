@@ -193,6 +193,10 @@ func interpolateTask(t *task.Task, passed, vars map[string]string) error {
 		return err
 	}
 
+	if err := interp.Marshallable(&t.Finally, taskVars); err != nil {
+		return err
+	}
+
 	t.Vars = taskVars
 
 	return nil
@@ -200,7 +204,7 @@ func interpolateTask(t *task.Task, passed, vars map[string]string) error {
 
 func addSubTasks(t *task.Task, cfg *Config) error {
 
-	for _, run := range t.RunList {
+	for _, run := range t.AllRunItems() {
 		for _, subTaskDesc := range run.SubTaskList {
 			st, ok := cfg.Tasks[subTaskDesc.Name]
 			if !ok {
