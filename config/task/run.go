@@ -2,7 +2,6 @@ package task
 
 import (
 	"errors"
-	"os"
 
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/when"
@@ -90,45 +89,6 @@ func (r *Run) shouldRun(vars map[string]string) (bool, error) {
 	}
 
 	return true, nil
-}
-
-func (r *Run) runCommands() error {
-	for _, command := range r.Command {
-		if err := execCommand(command); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (r *Run) runSubTasks() error {
-	for _, subTask := range r.Tasks {
-		if err := subTask.Execute(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (r *Run) runEnvironment() error {
-	ui.PrintEnvironment(r.SetEnvironment)
-	for key, value := range r.SetEnvironment {
-		if value == nil {
-			if err := os.Unsetenv(key); err != nil {
-				return err
-			}
-
-			continue
-		}
-
-		if err := os.Setenv(key, *value); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 // RunList is a list of run items with custom yaml unmarshalling.

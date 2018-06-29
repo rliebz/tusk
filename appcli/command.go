@@ -19,7 +19,7 @@ func createExecuteCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
 				t.Name, len(t.Args), len(c.Args()),
 			)
 		}
-		return t.Execute()
+		return t.Execute(false)
 	}), nil
 }
 

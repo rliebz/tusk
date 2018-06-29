@@ -2,9 +2,18 @@ package task
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/rliebz/tusk/config/option"
+	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
+)
+
+type executionState int
+
+const (
+	stateRunning executionState = iota
+	stateFinally executionState = iota
 )
 
 // Task is a single task to be run by CLI.
@@ -13,6 +22,7 @@ type Task struct {
 	OptionMapSlice yaml.MapSlice `yaml:"options,omitempty"`
 
 	RunList     RunList `yaml:"run"`
+	Finally     RunList `yaml:"finally,omitempty"`
 	Usage       string  `yaml:",omitempty"`
 	Description string  `yaml:",omitempty"`
 	Private     bool
@@ -62,15 +72,20 @@ func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
+// AllRunItems returns all run items referenced, including `run` and `finally`.
+func (t *Task) AllRunItems() RunList {
+	return append(t.RunList, t.Finally...)
+}
+
 // Dependencies returns a list of options that are required explicitly.
 // This does not include interpolations.
 func (t *Task) Dependencies() []string {
-	options := make([]string, 0, len(t.Options)+len(t.RunList))
+	options := make([]string, 0, len(t.Options)+len(t.AllRunItems()))
 
 	for _, opt := range t.Options {
 		options = append(options, opt.Dependencies()...)
 	}
-	for _, run := range t.RunList {
+	for _, run := range t.AllRunItems() {
 		options = append(options, run.When.Dependencies()...)
 	}
 
@@ -78,9 +93,68 @@ func (t *Task) Dependencies() []string {
 }
 
 // Execute runs the Run scripts in the task.
-func (t *Task) Execute() error {
+func (t *Task) Execute(asSubTask bool) (err error) {
+	ui.PrintTask(t.Name, asSubTask)
+
+	defer ui.PrintTaskCompleted(t.Name, asSubTask)
+	defer t.runFinally(&err, asSubTask)
+
 	for _, r := range t.RunList {
-		if err := t.run(r); err != nil {
+		if rerr := t.run(r, stateRunning); rerr != nil {
+			return rerr
+		}
+	}
+
+	return err
+}
+
+func (t *Task) runFinally(err *error, asSubTask bool) {
+	if len(t.Finally) == 0 {
+		return
+	}
+
+	ui.PrintTaskFinally(t.Name, asSubTask)
+
+	for _, r := range t.Finally {
+		if rerr := t.run(r, stateFinally); rerr != nil {
+			*err = rerr
+			return
+		}
+	}
+}
+
+// run executes a Run struct.
+func (t *Task) run(r *Run, s executionState) error {
+	if ok, err := r.shouldRun(t.Vars); !ok || err != nil {
+		return err
+	}
+
+	if err := t.runCommands(r, s); err != nil {
+		return err
+	}
+
+	if err := t.runSubTasks(r); err != nil {
+		return err
+	}
+
+	if err := t.runEnvironment(r); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *Task) runCommands(r *Run, s executionState) error {
+	for _, command := range r.Command {
+		switch s {
+		case stateFinally:
+			ui.PrintCommandWithParenthetical(command, t.Name, "finally")
+		default:
+			ui.PrintCommand(command, t.Name)
+		}
+
+		if err := execCommand(command); err != nil {
+			ui.PrintCommandError(err)
 			return err
 		}
 	}
@@ -88,22 +162,30 @@ func (t *Task) Execute() error {
 	return nil
 }
 
-// run executes a Run struct.
-func (t *Task) run(r *Run) error {
-	if ok, err := r.shouldRun(t.Vars); !ok || err != nil {
-		return err
+func (t *Task) runSubTasks(r *Run) error {
+	for _, subTask := range r.Tasks {
+		if err := subTask.Execute(true); err != nil {
+			return err
+		}
 	}
 
-	if err := r.runCommands(); err != nil {
-		return err
-	}
+	return nil
+}
 
-	if err := r.runSubTasks(); err != nil {
-		return err
-	}
+func (t *Task) runEnvironment(r *Run) error {
+	ui.PrintEnvironment(r.SetEnvironment)
+	for key, value := range r.SetEnvironment {
+		if value == nil {
+			if err := os.Unsetenv(key); err != nil {
+				return err
+			}
 
-	if err := r.runEnvironment(); err != nil {
-		return err
+			continue
+		}
+
+		if err := os.Setenv(key, *value); err != nil {
+			return err
+		}
 	}
 
 	return nil

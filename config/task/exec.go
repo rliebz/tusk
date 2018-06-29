@@ -12,8 +12,6 @@ const defaultShell = "sh"
 
 // execCommand executes a shell command.
 func execCommand(command string) error {
-	ui.PrintCommand(command)
-
 	shell := getShell()
 	cmd := exec.Command(shell, "-c", command) // nolint: gas
 	cmd.Stdin = os.Stdin
@@ -23,7 +21,6 @@ func execCommand(command string) error {
 	}
 
 	if err := cmd.Run(); err != nil {
-		ui.PrintCommandError(err)
 		return err
 	}
 

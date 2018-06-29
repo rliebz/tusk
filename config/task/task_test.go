@@ -1,10 +1,14 @@
 package task
 
 import (
+	"bytes"
+	"errors"
+	"log"
 	"os"
 	"testing"
 
 	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -93,7 +97,7 @@ func TestTask_run_commands(t *testing.T) {
 		Command: marshal.StringList{"exit 0"},
 	}
 
-	if err := task.run(runSuccess); err != nil {
+	if err := task.run(runSuccess, stateRunning); err != nil {
 		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
@@ -101,7 +105,7 @@ func TestTask_run_commands(t *testing.T) {
 		Command: marshal.StringList{"exit 0", "exit 1"},
 	}
 
-	if err := task.run(runFailure); err == nil {
+	if err := task.run(runFailure, stateRunning); err == nil {
 		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
 	}
 }
@@ -127,13 +131,13 @@ func TestTask_run_sub_tasks(t *testing.T) {
 
 	task := Task{}
 
-	if err := task.run(r); err != nil {
+	if err := task.run(r, stateRunning); err != nil {
 		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
 	r.Tasks = append(r.Tasks, taskFailure)
 
-	if err := task.run(r); err == nil {
+	if err := task.run(r, stateRunning); err == nil {
 		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
 	}
 }
@@ -176,7 +180,7 @@ func TestTask_run_environment(t *testing.T) {
 		},
 	}
 
-	if err := task.run(r); err != nil {
+	if err := task.run(r, stateRunning); err != nil {
 		t.Errorf("task.run(): unexpected error: %s", err)
 	}
 
@@ -194,4 +198,116 @@ func TestTask_run_environment(t *testing.T) {
 		)
 	}
 
+}
+
+func TestTask_run_finally(t *testing.T) {
+	task := Task{
+		Finally: RunList{
+			&Run{Command: marshal.StringList{"exit 0"}},
+		},
+	}
+
+	var err error
+	if task.runFinally(&err, false); err != nil {
+		t.Errorf("task.runFinally(): unexpected error: %s", err)
+	}
+}
+
+func TestTask_run_finally_error(t *testing.T) {
+	task := Task{
+		Finally: RunList{
+			&Run{Command: marshal.StringList{"exit 1"}},
+		},
+	}
+
+	var err error
+	if task.runFinally(&err, false); err == nil {
+		t.Error("task.runFinally(): want error for exit status 1, got nil")
+	}
+}
+
+func TestTask_run_finally_ui(t *testing.T) {
+	defer func(l *log.Logger, ll ui.VerbosityLevel) {
+		ui.LoggerStderr = l
+		ui.Verbosity = ll
+	}(ui.LoggerStderr, ui.Verbosity)
+
+	ui.LoggerStderr = log.New(os.Stderr, "", 0)
+	ui.Verbosity = ui.VerbosityLevelVerbose
+	taskName := "foo"
+	command := "exit 0"
+
+	bufExpected := new(bytes.Buffer)
+	ui.LoggerStderr.SetOutput(bufExpected)
+	ui.PrintTaskFinally(taskName, false)
+	ui.PrintCommandWithParenthetical(command, taskName, "finally")
+	expected := bufExpected.String()
+
+	bufActual := new(bytes.Buffer)
+	ui.LoggerStderr.SetOutput(bufActual)
+
+	task := Task{
+		Name: taskName,
+		Finally: RunList{
+			&Run{Command: marshal.StringList{command}},
+		},
+	}
+
+	var err error
+	if task.runFinally(&err, false); err != nil {
+		t.Fatalf("task.runFinally(): unexpected error: %s", err)
+	}
+
+	actual := bufActual.String()
+
+	if expected != actual {
+		t.Fatalf(
+			"task.runFinally(): want to print %q, got %q",
+			expected, actual,
+		)
+	}
+}
+
+func TestTask_run_finally_ui_fails(t *testing.T) {
+	defer func(l *log.Logger, ll ui.VerbosityLevel) {
+		ui.LoggerStderr = l
+		ui.Verbosity = ll
+	}(ui.LoggerStderr, ui.Verbosity)
+
+	ui.LoggerStderr = log.New(os.Stderr, "", 0)
+	ui.Verbosity = ui.VerbosityLevelVerbose
+	taskName := "foo"
+	command := "exit 1"
+	errExpected := errors.New("exit status 1")
+
+	bufExpected := new(bytes.Buffer)
+	ui.LoggerStderr.SetOutput(bufExpected)
+	ui.PrintTaskFinally(taskName, false)
+	ui.PrintCommandWithParenthetical(command, taskName, "finally")
+	ui.PrintCommandError(errExpected)
+	expected := bufExpected.String()
+
+	bufActual := new(bytes.Buffer)
+	ui.LoggerStderr.SetOutput(bufActual)
+
+	task := Task{
+		Name: taskName,
+		Finally: RunList{
+			&Run{Command: marshal.StringList{command}},
+		},
+	}
+
+	var err error
+	if task.runFinally(&err, false); err == nil {
+		t.Error("task.runFinally(): want error for exit status 1, got nil")
+	}
+
+	actual := bufActual.String()
+
+	if expected != actual {
+		t.Fatalf(
+			"task.runFinally(): want to print %q, got %q",
+			expected, actual,
+		)
+	}
 }

@@ -9,7 +9,7 @@ import (
 )
 
 // VerbosityLevel describes the verbosity of output.
-type VerbosityLevel uint8
+type VerbosityLevel int
 
 const (
 	// VerbosityLevelSilent does not print any output to stderr/stdout.
@@ -52,6 +52,7 @@ var (
 	bold   = conditionalColor(color.Bold)
 	blue   = conditionalColor(color.FgBlue)
 	cyan   = conditionalColor(color.FgCyan)
+	green  = conditionalColor(color.FgGreen)
 	red    = conditionalColor(color.FgRed)
 	yellow = conditionalColor(color.FgYellow)
 )
