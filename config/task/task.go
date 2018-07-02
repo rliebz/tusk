@@ -117,7 +117,10 @@ func (t *Task) runFinally(err *error, asSubTask bool) {
 
 	for _, r := range t.Finally {
 		if rerr := t.run(r, stateFinally); rerr != nil {
-			*err = rerr
+			// Do not overwrite existing errors
+			if *err == nil {
+				*err = rerr
+			}
 			return
 		}
 	}

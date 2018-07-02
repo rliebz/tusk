@@ -90,6 +90,49 @@ args: { foo: {} }
 	}
 }
 
+var executeTests = []struct {
+	desc     string
+	run      string
+	finally  string
+	expected error
+}{
+	{
+		"run error only",
+		"exit 1",
+		"exit 0",
+		errors.New("exit status 1"),
+	},
+	{
+		"finally error only",
+		"exit 0",
+		"exit 1",
+		errors.New("exit status 1"),
+	},
+	{
+		"run and finally error",
+		"exit 1",
+		"exit 2",
+		errors.New("exit status 1"),
+	},
+}
+
+func TestTaskExecute_errors_returned(t *testing.T) {
+	for _, tt := range executeTests {
+		t.Run(tt.desc, func(t *testing.T) {
+			run := Run{Command: marshal.StringList{tt.run}}
+			finally := Run{Command: marshal.StringList{tt.finally}}
+			task := Task{
+				RunList: RunList{&run},
+				Finally: RunList{&finally},
+			}
+
+			if actual := task.Execute(false); actual.Error() != tt.expected.Error() {
+				t.Errorf("want error %s, got %s", tt.expected, actual)
+			}
+		})
+	}
+}
+
 func TestTask_run_commands(t *testing.T) {
 	var task Task
 
