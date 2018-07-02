@@ -480,6 +480,86 @@ tasks:
 	},
 
 	{
+		"finally dependencies",
+		`
+options:
+  foo:
+    default: foovalue
+tasks:
+  pretask:
+    run: echo ${foo}
+  mytask:
+    run: echo hello
+    finally:
+      task: pretask
+`,
+		[]string{},
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo hello"},
+		}, {
+			Command: marshal.StringList{"echo foovalue"},
+		}},
+	},
+
+	{
+		"sub-task finally dependencies",
+		`
+options:
+  foo:
+    default: foovalue
+  bar:
+    default: barvalue
+tasks:
+  pretask:
+    run: echo pre-${foo}
+    finally: echo pre-${bar}
+  mytask:
+    run: echo first
+    finally:
+      - task: pretask
+      - command: echo done
+`,
+		[]string{},
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo first"},
+		}, {
+			Command: marshal.StringList{"echo pre-foovalue"},
+		}, {
+			Command: marshal.StringList{"echo pre-barvalue"},
+		}, {
+			Command: marshal.StringList{"echo done"},
+		}},
+	},
+
+	{
+		"nested sub-task finally dependencies",
+		`
+tasks:
+  roottask:
+    options:
+      foo:
+        default: foovalue
+    finally: echo ${foo}
+  pretask:
+    finally:
+      task: roottask
+  mytask:
+    finally:
+      task: pretask
+`,
+		[]string{},
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue"},
+		}},
+	},
+
+	{
 		"when clauses",
 		`
 tasks:
@@ -586,7 +666,7 @@ given input:
 			continue
 		}
 
-		actual := flattenRuns(cfg.Tasks[tt.taskName].RunList)
+		actual := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
 
 		if len(tt.expected) != len(actual) {
 			t.Errorf(
@@ -612,7 +692,7 @@ func flattenRuns(runList task.RunList) task.RunList {
 		}
 
 		for _, t := range run.Tasks {
-			flattened = append(flattened, flattenRuns(t.RunList)...)
+			flattened = append(flattened, flattenRuns(t.AllRunItems())...)
 		}
 	}
 
