@@ -2,6 +2,14 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Add `finally` clause to run cleanup logic after tasks have completed. This
+  clause takes the same arguments as `run`.
+
+### Changed
+- Update UI theme to include more relevant information in normal and verbose
+  modes.
+
 
 ## 0.4.0 (2018-05-21)
 ### Added
