@@ -11,7 +11,7 @@ const (
 	completedString        = "Completed"
 	environmentString      = "Setting Environment"
 	finallyString          = "Finally"
-	runningString          = "Running"
+	startedString          = "Started"
 	setEnvironmentString   = "set"
 	skippedString          = "Skipping"
 	subTaskString          = "Sub-Task"
@@ -135,7 +135,7 @@ func PrintTask(taskName string, asSubTask bool) {
 		return
 	}
 
-	s := fmt.Sprintf("%s %s", getTaskString(asSubTask), runningString)
+	s := fmt.Sprintf("%s %s", getTaskString(asSubTask), startedString)
 
 	printf(
 		LoggerStderr,

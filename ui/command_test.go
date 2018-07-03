@@ -73,7 +73,7 @@ var commandTests = []printTestCase{
 		func() { PrintTask("foo", false) },
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
-		"Task Running: foo\n",
+		"Task Started: foo\n",
 	},
 	{
 		`PrintTask("foo", true)`,
@@ -81,7 +81,7 @@ var commandTests = []printTestCase{
 		func() { PrintTask("foo", true) },
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
-		"Sub-Task Running: foo\n",
+		"Sub-Task Started: foo\n",
 	},
 	{
 		`PrintTaskFinally("foo", false)`,
