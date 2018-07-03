@@ -452,6 +452,30 @@ Tasks that define an argument or option with the same name as a shared task will
 overwrite the value of the shared option for the length of that task, not
 including sub-tasks.
 
+### Finally
+
+The `finally` clause is run after a task's `run` logic has completed, whether or
+not that task was successful. This can be useful for clean-up logic. A `finally`
+clause has the same format as a `run` clause:
+
+```yaml
+tasks:
+  hello:
+    run:
+      - echo "Hello"
+      - exit 1          # `run` clause stops here
+      - echo "Oops!"    # Never prints
+    finally:
+      - echo "Goodbye"  # Always prints
+      - task: cleanup
+  # ...
+```
+
+If the `finally` clause runs an unsuccessful command, it will terminate early
+the same way that a `run` clause would. The exit code is still passed back to
+the command line. However, if both the `run` clause and `finally` clause fail,
+the exit code from the `run` clause takes precedence.
+
 ### CLI Metadata
 
 It is also possible to create a custom CLI tool for use outside of a project's
