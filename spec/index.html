@@ -129,6 +129,8 @@
                 <li class="third-level"><a href="#required-options">Required Options</a></li>
                 <li class="third-level"><a href="#private-options">Private Options</a></li>
                 <li class="third-level"><a href="#shared-options">Shared Options</a></li>
+            <li class="second-level"><a href="#finally">Finally</a></li>
+                
             <li class="second-level"><a href="#cli-metadata">CLI Metadata</a></li>
                 
             <li class="second-level"><a href="#interpolation">Interpolation</a></li>
@@ -532,6 +534,27 @@ as needed, but not exposed by command-line.</p>
 <p>Tasks that define an argument or option with the same name as a shared task will
 overwrite the value of the shared option for the length of that task, not
 including sub-tasks.</p>
+<h3 id="finally">Finally</h3>
+<p>The <code>finally</code> clause is run after a task's <code>run</code> logic has completed, whether or
+not that task was successful. This can be useful for clean-up logic. A <code>finally</code>
+clause has the same format as a <code>run</code> clause:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">exit 1</span>          <span class="c1"># `run` clause stops here</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Oops!&quot;</span>    <span class="c1"># Never prints</span>
+    <span class="l l-Scalar l-Scalar-Plain">finally</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Goodbye&quot;</span>  <span class="c1"># Always prints</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">task</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">cleanup</span>
+  <span class="c1"># ...</span>
+</pre></div>
+
+
+<p>If the <code>finally</code> clause runs an unsuccessful command, it will terminate early
+the same way that a <code>run</code> clause would. The exit code is still passed back to
+the command line. However, if both the <code>run</code> clause and <code>finally</code> clause fail,
+the exit code from the <code>run</code> clause takes precedence.</p>
 <h3 id="cli-metadata">CLI Metadata</h3>
 <p>It is also possible to create a custom CLI tool for use outside of a project's
 directory by using shell aliases:</p>
