@@ -41,7 +41,7 @@ defaults:
     name: Run goreleaser
     command: |
       # Pin goreleaser version
-      VERSION=v0.62.3 tusk release ${RELEASE_FLAGS}
+      VERSION=v0.62.3 tusk --quiet release ${RELEASE_FLAGS}
 
   publish_docs: &publish_docs
     name: Run mkdocs
