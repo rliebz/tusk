@@ -2,7 +2,7 @@ FROM golang:1.10
 
 WORKDIR /go/src/github.com/rliebz/tusk
 
-RUN go get github.com/alecthomas/gometalinter && gometalinter --install
+RUN go get gopkg.in/alecthomas/gometalinter.v2 && gometalinter.v2 --install
 RUN go get github.com/jstemmer/go-junit-report
 RUN apt-get update && \
       apt-get -y install rpm && \
