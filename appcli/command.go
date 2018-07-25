@@ -11,7 +11,7 @@ import (
 
 type commandCreator func(app *cli.App, t *task.Task) (*cli.Command, error)
 
-func createExecuteCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
+func createExecuteCommand(_ *cli.App, t *task.Task) (*cli.Command, error) {
 	return createCommand(t, func(c *cli.Context) error {
 		if len(t.Args) != len(c.Args()) {
 			return fmt.Errorf(

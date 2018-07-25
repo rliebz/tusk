@@ -9,6 +9,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// executionState indicates whether a task is "running" or "finally".
 type executionState int
 
 const (
@@ -132,16 +133,16 @@ func (t *Task) run(r *Run, s executionState) error {
 		return err
 	}
 
-	if err := t.runCommands(r, s); err != nil {
-		return err
+	runFuncs := []func() error{
+		func() error { return t.runCommands(r, s) },
+		func() error { return t.runSubTasks(r) },
+		func() error { return t.runEnvironment(r) },
 	}
 
-	if err := t.runSubTasks(r); err != nil {
-		return err
-	}
-
-	if err := t.runEnvironment(r); err != nil {
-		return err
+	for i := range runFuncs {
+		if err := runFuncs[i](); err != nil {
+			return err
+		}
 	}
 
 	return nil

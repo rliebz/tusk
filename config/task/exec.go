@@ -20,11 +20,7 @@ func execCommand(command string) error {
 		cmd.Stderr = os.Stderr
 	}
 
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-
-	return nil
+	return cmd.Run()
 }
 
 // getShell returns the value of the `SHELL` environment variable, or `sh`.

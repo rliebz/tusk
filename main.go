@@ -58,10 +58,10 @@ func main() {
 			}
 			ws := exitErr.Sys().(syscall.WaitStatus)
 			os.Exit(ws.ExitStatus())
-		} else {
-			ui.Error(err)
-			os.Exit(1)
 		}
+
+		ui.Error(err)
+		os.Exit(1)
 	}
 }
 
