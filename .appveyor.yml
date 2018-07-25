@@ -23,8 +23,7 @@ install:
   - go get -u github.com/golang/dep/cmd/dep
   - dep ensure
   # Install test dependencies
-  - go get -u github.com/alecthomas/gometalinter
-  - gometalinter --install
+  - curl -sL https://raw.githubusercontent.com/alecthomas/gometalinter/v2.0.6/scripts/install.sh | bash -s -- -b /usr/local/bin v2.0.5
 
 build: false
 deploy: false
