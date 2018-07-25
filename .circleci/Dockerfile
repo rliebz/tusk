@@ -2,8 +2,7 @@ FROM golang:1.10
 
 WORKDIR /go/src/github.com/rliebz/tusk
 
-# Use install script v2.0.6 for binary v2.0.5
-RUN curl -sL https://raw.githubusercontent.com/alecthomas/gometalinter/v2.0.6/scripts/install.sh | bash -s -- -b /usr/local/bin v2.0.5
+RUN go get gopkg.in/alecthomas/gometalinter.v2 && gometalinter.v2 --install
 RUN go get github.com/jstemmer/go-junit-report
 RUN apt-get update && \
       apt-get -y install rpm && \
