@@ -195,13 +195,14 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 }
 
 func setMetadataVerbosity(metadata *config.Metadata, c *cli.Context) {
-	if c.Bool("silent") {
+	switch {
+	case c.Bool("silent"):
 		metadata.Verbosity = ui.VerbosityLevelSilent
-	} else if c.Bool("quiet") {
+	case c.Bool("quiet"):
 		metadata.Verbosity = ui.VerbosityLevelQuiet
-	} else if c.Bool("verbose") {
+	case c.Bool("verbose"):
 		metadata.Verbosity = ui.VerbosityLevelVerbose
-	} else {
+	default:
 		metadata.Verbosity = ui.VerbosityLevelNormal
 	}
 }
