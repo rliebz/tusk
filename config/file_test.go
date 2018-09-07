@@ -121,7 +121,7 @@ func mkDir(t *testing.T, elem ...string) string {
 	t.Helper()
 
 	fullPath := filepath.Join(elem...)
-	if err := os.MkdirAll(fullPath, 0755); err != nil {
+	if err := os.MkdirAll(fullPath, 0750); err != nil {
 		t.Fatalf("failed to make directory: %v", err)
 	}
 

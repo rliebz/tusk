@@ -68,7 +68,7 @@ func PrintEnvironment(variables map[string]*string) {
 	)
 
 	// Print in deterministic order
-	var keys []string
+	keys := make([]string, 0, len(variables))
 	for key := range variables {
 		keys = append(keys, key)
 	}
