@@ -91,19 +91,25 @@ will be cut separately.
 
 ## Running Tests
 
-To run the full test suite, along with `gometalinter`:
+To run the unit tests:
 
 ```bash
 tusk test
 ```
 
-If the gometalinter fails, execution will stop short and not actually run the
+To run the full test suite, along with the linter:
+
+```bash
+tusk test -a
+```
+
+If the linter fails, execution will stop short and not actually run the
 unit test suite. If there is a linter error that is a false-positive, or the
 violation is necessary for your contribution, you can disable a specific linter
 for that line:
 
 ```golang
-cmd := exec.Command("sh", "-c", command) // nolint: gas
+cmd := exec.Command("sh", "-c", command) // nolint: gosec
 ```
 
 For a slightly higher-fidelity test suite, you can [configure the `circleci`

@@ -33,7 +33,7 @@ func TestParseOrderedMap(t *testing.T) {
 		if value, ok := ms[index].Value.(string); !ok || value+"\n" != string(text) {
 			t.Errorf(
 				"want value at index %d to be %q, got %q",
-				index, string(value), string(text),
+				index, value, string(text),
 			)
 		}
 

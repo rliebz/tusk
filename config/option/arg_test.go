@@ -62,6 +62,7 @@ func TestEvaluate_nil(t *testing.T) {
 	}
 }
 
+// nolint: dupl
 func TestGetArgsWithOrder(t *testing.T) {
 	name := "foo"
 	usage := "foo usage"

@@ -1,0 +1,42 @@
+[issues]
+exclude = [
+  # goconst: Ignore for example/test data
+  'string `(foo|bar|baz|qux|example|exit \d|mytask|OPTION_VAR)` has \d+ occurrences',
+  # golint: false positives for multi-file packages
+  'should have a package comment',
+  # golint: Allow unexported return types intentionally
+  'exported func .* returns .*, which can be annoying to use',
+  # gosec: Duplicate of errcheck
+  'G104: Errors unhandled',
+  # gosec: Allow file inclusions
+  'G304: Potential file inclusion via variable',
+]
+exclude-use-default = false
+
+[linters]
+enable-all = true
+disable = [
+  "maligned",
+]
+fast = false
+
+[linters-settings]
+
+  [linters-settings.goconst]
+  min-len = 0
+  min-occurrences = 2
+
+  [linters-settings.gocyclo]
+  min-complexity = 10
+
+  [linters-settings.golint]
+  min-confidence = 0.0
+
+  [linters-settings.govet]
+  check-shadowing = true
+
+  [linters-settings.misspell]
+  locale = "US"
+
+  [linters-settings.nakedret]
+  max-func-lines = 0

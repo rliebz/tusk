@@ -299,7 +299,7 @@ func normalizeOS(os string) string {
 }
 
 func testCommand(command string) error {
-	_, err := exec.Command("sh", "-c", command).Output() // nolint: gas
+	_, err := exec.Command("sh", "-c", command).Output() // nolint: gosec
 	return err
 }
 

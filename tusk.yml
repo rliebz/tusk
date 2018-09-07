@@ -7,27 +7,27 @@ tasks:
     run:
       - go get -u github.com/golang/dep/cmd/dep
       - dep ensure
-      - go get -u gopkg.in/alecthomas/gometalinter.v2
-      - gometalinter.v2 --install
+      - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
   lint:
-    usage: Run gometalinter for static analysis
+    usage: Run static analysis
     description: |
-      Runs gometalinter using the configuration specified in .gometalinter.json.
+      Runs golangci-lint using the configuration specified in .golangci.toml
     options:
       fast:
         usage: Only run fast linters
         type: bool
+        short: f
       opts:
         private: true
         default:
           when:
             equal: {fast: true}
           value: --fast
-    run: gometalinter.v2 --config .gometalinter.json ${opts} ./...
+    run: golangci-lint run ${opts} ./...
 
   test:
-    usage: Run go test and gometalinter
+    usage: Run the tests
     description: |
       Runs the full test suite using `go test -cover ./...`.
     options:
