@@ -21,7 +21,7 @@ type Value struct {
 func (v *Value) commandValueOrDefault() (string, error) {
 
 	if v.Command != "" {
-		out, err := exec.Command("sh", "-c", v.Command).Output() // nolint: gas
+		out, err := exec.Command("sh", "-c", v.Command).Output() // nolint: gosec
 		if err != nil {
 			return "", err
 		}

@@ -13,7 +13,7 @@ const defaultShell = "sh"
 // execCommand executes a shell command.
 func execCommand(command string) error {
 	shell := getShell()
-	cmd := exec.Command(shell, "-c", command) // nolint: gas
+	cmd := exec.Command(shell, "-c", command) // nolint: gosec
 	cmd.Stdin = os.Stdin
 	if ui.Verbosity > ui.VerbosityLevelSilent {
 		cmd.Stdout = os.Stdout

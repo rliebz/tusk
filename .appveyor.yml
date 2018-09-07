@@ -23,8 +23,7 @@ install:
   - go get -u github.com/golang/dep/cmd/dep
   - dep ensure
   # Install test dependencies
-  - go get -u gopkg.in/alecthomas/gometalinter.v2
-  - gometalinter.v2 --install
+  - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
 build: false
 deploy: false
