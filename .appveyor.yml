@@ -4,11 +4,11 @@ branches:
   only:
     - master
 
-clone_folder: c:\gopath\src\github.com\rliebz\tusk
+clone_folder: c:\tusk
 
 environment:
   GOPATH: c:\gopath
-  GOVERSION: '1.10'
+  GOVERSION: '1.11.1'
 
 init:
   - git config --global core.autocrlf input
@@ -19,9 +19,6 @@ install:
   - appveyor DownloadFile https://storage.googleapis.com/golang/go%GOVERSION%.windows-amd64.msi
   - msiexec /i go%GOVERSION%.windows-amd64.msi /q
   - set Path=c:\go\bin;c:\gopath\bin;%Path%
-  # Install vendor dependencies
-  - go get -u github.com/golang/dep/cmd/dep
-  - dep ensure
   # Install test dependencies
   - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 

@@ -5,8 +5,6 @@ tasks:
     description: |
       Install all dependencies for building and testing the application.
     run:
-      - go get -u github.com/golang/dep/cmd/dep
-      - dep ensure
       - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
   lint:

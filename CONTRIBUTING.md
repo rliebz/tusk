@@ -32,14 +32,14 @@ should be added in [docs/spec.md](docs/spec.md).
 
 ## Setting Up a Development Environment
 
-For local development, you will need Go version 1.9+ installed.
+For local development, you will need Go version 1.11+ installed.
 
-To avoid issues with imports, Go projects must be placed on the
-[`GOPATH`][GOPATH], which defaults to `$HOME/go`:
+Tusk uses go modules for dependency management, so make sure to clone the
+project outside of the `GOPATH`. If that doesn't mean anything to you, you're
+probably fine.
 
 ```bash
-git clone https://github.com/rliebz/tusk.git $(go env GOPATH)/src/github.com/rliebz/tusk
-cd $(go env GOPATH)/src/github.com/rliebz/tusk
+git clone https://github.com/rliebz/tusk.git
 ```
 
 If it is not already on your path, you probably also want to have the `GOPATH`
@@ -50,15 +50,7 @@ To do so, add the following to your `.bash_profile` or `.zshrc`:
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
-Tusk currently uses [dep][dep] to manage its dependencies. To install
-dependencies into the `vendor/` directory:
-
-```bash
-go get -u github.com/golang/dep/cmd/dep
-dep ensure
-```
-
-Finally, to install Tusk:
+To install Tusk:
 
 ```bash
 go install
@@ -123,5 +115,3 @@ tusk circleci
 ```
 
 [circleci-cli]: https://circleci.com/docs/2.0/local-jobs/#installing-the-cli-locally
-[dep]: https://github.com/golang/dep
-[GOPATH]: https://golang.org/doc/code.html#GOPATH
