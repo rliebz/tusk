@@ -8,7 +8,7 @@ import (
 )
 
 // init sets the help templates for urfave/cli.
-// nolint: lll
+// nolint: lll, gochecknoinits
 func init() {
 
 	cli.HelpPrinter = helpPrinter
