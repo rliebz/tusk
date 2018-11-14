@@ -16,9 +16,11 @@ exclude-use-default = false
 [linters]
 enable-all = true
 disable = [
-  "maligned",
+  "gochecknoglobals", # There are valid use cases for globals
+  "goimports",        # Performance: https://github.com/golangci/golangci-lint/issues/263
+  "maligned",         # Readability is more important than saving bytes
+  "scopelint",        # False positives in tests: https://github.com/kyoh86/scopelint/issues/4
 ]
-fast = false
 
 [linters-settings]
 
