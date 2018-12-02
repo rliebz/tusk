@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Contributing - tusk</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link href="../pygments.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Contributing";
+    var mkdocs_page_input_path = "CONTRIBUTING.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> tusk</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="tocbase current">
+    
+    
+      
+
+
+  <li class="navtree toctree-l1 inactive">
+    <a class="" href="..">Tusk</a>
+  </li>
+    
+      
+
+
+  <li class="navtree toctree-l1 inactive">
+    <a class="" href="../spec/">The Spec</a>
+  </li>
+    
+      
+
+
+  
+    
+    <li class="navtree toctree-l1 page current">
+      <a class="current" href="./">
+        Contributing
+      </a>
+    </li>
+    
+      
+
+
+
+  <li class="toctree-l1 current">
+    <ul class="subnav-l1 current">
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#opening-issues">Opening Issues</a>
+        </li>
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#opening-pull-requests">Opening Pull Requests</a>
+        </li>
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#setting-up-a-development-environment">Setting Up a Development Environment</a>
+        </li>
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#making-changes">Making Changes</a>
+        </li>
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#running-tests">Running Tests</a>
+        </li>
+    
+    </ul>
+  </li>
+
+
+  
+    
+  </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">tusk</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Contributing</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/rliebz/tusk/edit/master/docs/CONTRIBUTING.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="contributing">Contributing</h1>
+<p>All contributions are welcome and appreciated. Feel free to open issues or pull
+requests for any fixes, changes, or new features, and if you are not sure about
+anything, open it anyway. Issues and pull requests are a great forum for
+discussion and a great opportunity to help improve the code as a whole.</p>
+<h2 id="opening-issues">Opening Issues</h2>
+<p>A great way to contribute to the project is to open GitHub issues whenever you
+encounter any issue, or if you have an idea on how Tusk can improve. Missing
+or incorrect documentation are issues too, so feel free to open one whenever
+you feel there is a chance to make Tusk better.</p>
+<p>When reporting a bug, make sure to include the expected behavior and steps to
+reproduce. The more descriptive you can be, the faster the issue can be
+resolved.</p>
+<h2 id="opening-pull-requests">Opening Pull Requests</h2>
+<p>Always feel free to open a pull request, whether it is a fix or a new addition.
+For big or breaking changes, you might consider opening an issue first to check
+interest, but it is absolutely not required to make a contribution.</p>
+<p>Tests are run automatically on each PR, and 100% test and lint pass rate is
+required to get the code merged in, although it is fine to have work-in-
+progress pull requests open while debugging. Details on how to run the test
+suite can be found <a href="#running-tests">here</a>.</p>
+<p>For features which change the spec of the configuration file, documentation
+should be added in <a href="https://github.com/rliebz/tusk/blob/master/docs/spec.md">docs/spec.md</a>.</p>
+<h2 id="setting-up-a-development-environment">Setting Up a Development Environment</h2>
+<p>For local development, you will need Go version 1.11+ installed.</p>
+<p>Tusk uses go modules for dependency management, so make sure to clone the
+project outside of the <code>GOPATH</code>. If that doesn't mean anything to you, you're
+probably fine.</p>
+<div class="codehilite"><pre><span></span>git clone https://github.com/rliebz/tusk.git
+</pre></div>
+
+
+<p>If it is not already on your path, you probably also want to have the <code>GOPATH</code>
+binary directory available for projects installed by <code>go get</code> and <code>go install</code>.
+To do so, add the following to your <code>.bash_profile</code> or <code>.zshrc</code>:</p>
+<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="k">$(</span>go env GOPATH<span class="k">)</span><span class="s2">/bin&quot;</span>
+</pre></div>
+
+
+<p>To install Tusk:</p>
+<div class="codehilite"><pre><span></span>go install
+</pre></div>
+
+
+<p>If you have already installed tusk from another source, make sure you test
+against the development version installed locally. If you do not get <code>dev</code> as
+the version, you may need to move your Go binary path earlier in your <code>PATH</code>:</p>
+<div class="codehilite"><pre><span></span>$ tusk --version
+dev
+</pre></div>
+
+
+<p>Once <code>tusk</code> is on your path, make sure to run the <code>bootstrap</code> command to
+install all other dependencies:</p>
+<div class="codehilite"><pre><span></span>tusk bootstrap
+</pre></div>
+
+
+<h2 id="making-changes">Making Changes</h2>
+<p>If you have not yet done so, make sure you fork the repository so you can push
+your changes back to your own fork on GitHub.</p>
+<p>When starting work on a new feature, create a new branch based off the <code>master</code>
+branch. Pull requests should generally target the <code>master</code> branch, and releases
+will be cut separately.</p>
+<h2 id="running-tests">Running Tests</h2>
+<p>To run the unit tests:</p>
+<div class="codehilite"><pre><span></span>tusk <span class="nb">test</span>
+</pre></div>
+
+
+<p>To run the full test suite, along with the linter:</p>
+<div class="codehilite"><pre><span></span>tusk <span class="nb">test</span> -a
+</pre></div>
+
+
+<p>If the linter fails, execution will stop short and not actually run the
+unit test suite. If there is a linter error that is a false-positive, or the
+violation is necessary for your contribution, you can disable a specific linter
+for that line:</p>
+<div class="codehilite"><pre><span></span>cmd := exec.Command(&quot;sh&quot;, &quot;-c&quot;, command) // nolint: gosec
+</pre></div>
+
+
+<p>For a slightly higher-fidelity test suite, you can <a href="https://circleci.com/docs/2.0/local-cli/">configure the <code>circleci</code>
+command line tool</a> along with docker to run your tests locally in
+containers the same way they would be run against a pull request.</p>
+<p>With docker running locally:</p>
+<div class="codehilite"><pre><span></span>tusk circleci
+</pre></div>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../spec/" class="btn btn-neutral" title="The Spec"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/rliebz/tusk/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../spec/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>
