@@ -4,8 +4,6 @@ exclude = [
   'string `(foo|bar|baz|qux|example|exit \d|mytask|OPTION_VAR)` has \d+ occurrences',
   # golint: false positives for multi-file packages
   'should have a package comment',
-  # golint: Allow unexported return types intentionally
-  'exported func .* returns .*, which can be annoying to use',
   # gosec: Duplicate of errcheck
   'G104: Errors unhandled',
   # gosec: Allow file inclusions
