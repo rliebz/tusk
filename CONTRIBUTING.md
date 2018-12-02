@@ -28,7 +28,7 @@ progress pull requests open while debugging. Details on how to run the test
 suite can be found [here](#running-tests).
 
 For features which change the spec of the configuration file, documentation
-should be added in [docs/spec.md](docs/spec.md).
+should be added in [docs/spec.md][spec.md].
 
 ## Setting Up a Development Environment
 
@@ -47,7 +47,7 @@ binary directory available for projects installed by `go get` and `go install`.
 To do so, add the following to your `.bash_profile` or `.zshrc`:
 
 ```bash
-export PATH=$PATH:$(go env GOPATH)/bin
+export PATH="$PATH:$(go env GOPATH)/bin"
 ```
 
 To install Tusk:
@@ -114,4 +114,5 @@ With docker running locally:
 tusk circleci
 ```
 
-[circleci-cli]: https://circleci.com/docs/2.0/local-jobs/#installing-the-cli-locally
+[circleci-cli]: https://circleci.com/docs/2.0/local-cli/
+[spec.md]: https://github.com/rliebz/tusk/blob/master/docs/spec.md
