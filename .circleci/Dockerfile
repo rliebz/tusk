@@ -1,4 +1,4 @@
-FROM golang:1.11.1
+FROM golang:1.11.2
 
 WORKDIR /tusk
 
@@ -13,8 +13,8 @@ RUN apt-get update && \
 RUN apt-get update && \
       apt-get install -y python-pip && \
       pip install --no-cache-dir \
-      mkdocs==0.17.3 \
-      mkdocs-cinder==0.11.0 \
-      Pygments==2.2.0
+      mkdocs==1.0.4 \
+      mkdocs-rtd-dropdown==1.0.2 \
+      Pygments==2.3.0
 
 CMD [ "bash" ]

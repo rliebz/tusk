@@ -1,14 +1,13 @@
 site_name: tusk
-theme: cinder
+theme: rtd-dropdown
 repo_url: https://github.com/rliebz/tusk
-edit_uri: ""
 
-pages:
-  - Getting Started: index.md
+nav:
+  - Tusk: index.md
   - The Spec: spec.md
+  - Contributing: CONTRIBUTING.md
 
 markdown_extensions:
   - codehilite
 
 extra_css: [pygments.css]
-extra_templates: [.circleci/config.yml]
