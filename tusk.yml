@@ -4,8 +4,15 @@ tasks:
     usage: Set up app dependencies for first time use
     description: |
       Install all dependencies for building and testing the application.
+    options:
+      bin-dir:
+        usage: The location for binary files. Defaults to $GOPATH/bin
+        default: $(go env GOPATH)/bin
+      golangci-url:
+        private: true
+        default: https://install.goreleaser.com/github.com/golangci/golangci-lint.sh
     run:
-      - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+      - curl -sfL ${golangci-url} | bash -s -- -b $(go env GOPATH)/bin v1.12.2
 
   lint:
     usage: Run static analysis
