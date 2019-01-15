@@ -2,7 +2,6 @@ package appcli
 
 import (
 	"io/ioutil"
-	"path/filepath"
 	"sort"
 
 	"github.com/pkg/errors"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/config/task"
-	"github.com/rliebz/tusk/ui"
 )
 
 // newBaseApp creates a basic cli.App with top-level flags.
@@ -150,41 +148,15 @@ func getPassedValues(app *cli.App) ([]string, map[string]string, error) {
 
 // GetConfigMetadata returns a metadata object based on global options passed.
 func GetConfigMetadata(args []string) (*config.Metadata, error) {
-
 	var err error
 	app := newSilentApp()
 	metadata := new(config.Metadata)
 
-	// To prevent app from exiting, the app.Action must return nil on error.
-	// The enclosing function will still return the error.
 	app.Action = func(c *cli.Context) error {
-		fullPath := c.String("file")
-		if fullPath != "" {
-			metadata.CfgText, err = ioutil.ReadFile(fullPath)
-			if err != nil {
-				return nil
-			}
-		} else {
-			var found bool
-			fullPath, found, err = config.SearchForFile()
-			if err != nil {
-				return nil
-			}
-
-			if found {
-				metadata.CfgText, err = ioutil.ReadFile(fullPath)
-				if err != nil {
-					return nil
-				}
-			}
-		}
-
-		metadata.Directory = filepath.Dir(fullPath)
-		metadata.PrintHelp = c.Bool("help")
-		metadata.PrintVersion = c.Bool("version")
-		setMetadataVerbosity(metadata, c)
-
-		return err
+		// To prevent app from exiting, app.Action must return nil on error.
+		// The enclosing function will still return the error.
+		err = metadata.Set(c)
+		return nil
 	}
 
 	if runErr := populateMetadata(app, args); runErr != nil {
@@ -192,19 +164,6 @@ func GetConfigMetadata(args []string) (*config.Metadata, error) {
 	}
 
 	return metadata, err
-}
-
-func setMetadataVerbosity(metadata *config.Metadata, c *cli.Context) {
-	switch {
-	case c.Bool("silent"):
-		metadata.Verbosity = ui.VerbosityLevelSilent
-	case c.Bool("quiet"):
-		metadata.Verbosity = ui.VerbosityLevelQuiet
-	case c.Bool("verbose"):
-		metadata.Verbosity = ui.VerbosityLevelVerbose
-	default:
-		metadata.Verbosity = ui.VerbosityLevelNormal
-	}
 }
 
 // populateMetadata runs the app to populate the metadata struct.

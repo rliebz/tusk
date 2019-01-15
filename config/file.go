@@ -7,11 +7,11 @@ import (
 
 var defaultFiles = []string{"tusk.yml", "tusk.yaml"}
 
-// SearchForFile checks the working directory and every parent directory to
+// searchForFile checks the working directory and every parent directory to
 // find a configuration file with the default name.
 // This should be called when an explicit file is not passed in to determine
 // the full path to the relevant config file.
-func SearchForFile() (fullPath string, found bool, err error) {
+func searchForFile() (fullPath string, found bool, err error) {
 	prevPath := ""
 	dirPath, err := os.Getwd()
 	if err != nil {

@@ -3,7 +3,6 @@ package config
 import (
 	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/config/task"
-	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -41,13 +40,4 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	return nil
-}
-
-// Metadata contains global configuration settings.
-type Metadata struct {
-	CfgText      []byte
-	Directory    string
-	PrintHelp    bool
-	PrintVersion bool
-	Verbosity    ui.VerbosityLevel
 }

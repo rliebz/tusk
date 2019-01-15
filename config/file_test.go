@@ -61,7 +61,7 @@ func TestSearchForFile(t *testing.T) {
 			t.Fatalf("failed to change directory: %v", err)
 		}
 
-		fullPath, found, err := SearchForFile()
+		fullPath, found, err := searchForFile()
 		if err != nil {
 			t.Errorf("unexpected error: %v", err)
 			continue
