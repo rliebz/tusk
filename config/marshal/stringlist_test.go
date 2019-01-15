@@ -1,8 +1,11 @@
 package marshal
 
-import "testing"
-import "gopkg.in/yaml.v2"
-import "reflect"
+import (
+	"reflect"
+	"testing"
+
+	yaml "gopkg.in/yaml.v2"
+)
 
 type StringListHolder struct {
 	Foo StringList

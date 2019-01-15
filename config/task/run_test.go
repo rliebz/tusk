@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/rliebz/tusk/config/when"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func TestRun_UnmarshalYAML(t *testing.T) {
