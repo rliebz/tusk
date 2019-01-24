@@ -132,6 +132,11 @@
     
       
         <li class="toctree-l3">
+          <a class="toctree-l4" href="#short-form">Short Form</a>
+        </li>
+    
+      
+        <li class="toctree-l3">
           <a class="toctree-l4" href="#when-anyall-logic">When Any/All Logic</a>
         </li>
     
@@ -453,6 +458,20 @@ complicated example of how <code>when</code> can be used:</p>
           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">cat</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">command -v cat</span>
         <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">cat my_file.txt</span>
+</pre></div>
+
+
+<h4 id="short-form">Short Form</h4>
+<p>Because it's common to check if a boolean flag is set to true, <code>when</code> clauses
+also accept strings as shorthand. Consider the following example, which checks
+to see if some option <code>foo</code> has been set to <code>true</code>:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">foo</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
+</pre></div>
+
+
+<p>This can be expressed more succinctly as the following:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">foo</span>
 </pre></div>
 
 
