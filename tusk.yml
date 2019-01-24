@@ -26,8 +26,7 @@ tasks:
       opts:
         private: true
         default:
-          when:
-            equal: {fast: true}
+          when: fast
           value: --fast
     run: golangci-lint run ${opts} ./...
 
@@ -51,18 +50,15 @@ tasks:
       verbose-string:
         private: true
         default:
-          when:
-            equal: {verbose: true}
+          when: verbose
           value: -v
       short-string:
         private: true
         default:
-          when:
-            equal: {fast: true}
+          when: fast
           value: -short
     run:
-      - when:
-          equal: {all: true}
+      - when: all
         task:
           name: lint
           options:
@@ -106,8 +102,7 @@ tasks:
       snapshot-flags:
         private: true
         default:
-          when:
-            equal: {snapshot: true}
+          when: snapshot
           value: --snapshot
     run: |
       header='^## [0-9]+\.[0-9]+\.[0-9]+'

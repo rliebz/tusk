@@ -78,34 +78,54 @@ func sprintMap(m map[string]marshal.StringList) string {
 // UnmarshalYAML warns about deprecated features.
 func (w *When) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
+	var equal marshal.StringList
+	slCandidate := marshal.UnmarshalCandidate{
+		Unmarshal: func() error { return unmarshal(&equal) },
+		Assign: func() {
+			equalityMap := make(map[string]marshal.StringList, len(equal))
+			for _, key := range equal {
+				equalityMap[key] = marshal.StringList{"true"}
+			}
+			*w = When{Equal: equalityMap}
+		},
+	}
+
 	type whenType When // Use new type to avoid recursion
-	if err := unmarshal((*whenType)(w)); err != nil {
-		return err
-	}
-
-	ms := yaml.MapSlice{}
-	if err := unmarshal(&ms); err != nil {
-		return err
-	}
-
-	for _, clauseMS := range ms {
-		if name, ok := clauseMS.Key.(string); !ok || name != "environment" {
-			continue
-		}
-
-		for _, envMS := range clauseMS.Value.(yaml.MapSlice) {
-			envVar, ok := envMS.Key.(string)
-			if !ok {
-				return fmt.Errorf("invalid environment variable name %q", envMS.Key)
+	var whenItem whenType
+	var ms yaml.MapSlice
+	whenCandidate := marshal.UnmarshalCandidate{
+		Unmarshal: func() error {
+			if err := unmarshal(&whenItem); err != nil {
+				return err
 			}
 
-			if envMS.Value == nil {
-				w.Environment[envVar] = marshal.NullableStringList{nil}
+			if err := unmarshal(&ms); err != nil {
+				return err
 			}
-		}
+
+			return nil
+		},
+		Assign: func() {
+			*w = When(whenItem)
+
+			// nil values on nullable string lists should be [nil], not []
+			for _, clauseMS := range ms {
+				if name, ok := clauseMS.Key.(string); !ok || name != "environment" {
+					continue
+				}
+
+				for _, envMS := range clauseMS.Value.(yaml.MapSlice) {
+					envVar := envMS.Key.(string)
+
+					if envMS.Value == nil {
+						w.Environment[envVar] = marshal.NullableStringList{nil}
+					}
+				}
+			}
+		},
 	}
 
-	return nil
+	return marshal.UnmarshalOneOf(slCandidate, whenCandidate)
 }
 
 // Dependencies returns a list of options that are required explicitly.

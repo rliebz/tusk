@@ -1,45 +1,66 @@
 package when
 
 import (
-	"reflect"
+	"fmt"
 	"testing"
 
 	yaml "gopkg.in/yaml.v2"
 )
 
 func TestList_UnmarshalYAML(t *testing.T) {
-	s1 := []byte(`os: linux`)
-	s2 := []byte(`[os: linux]`)
-	l1 := List{}
-	l2 := List{}
-
-	if err := yaml.Unmarshal(s1, &l1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
+	var unmarshalTests = []struct {
+		desc     string
+		input    string
+		expected List
+	}{
+		{
+			"single item",
+			"os: linux",
+			List{Create(WithOS("linux"))},
+		},
+		{
+			"list length 1",
+			"[os: linux]",
+			List{Create(WithOS("linux"))},
+		},
+		{
+			"single item short",
+			"foo",
+			List{Create(WithEqual("foo", "true"))},
+		},
+		{
+			"list implies multiple whens",
+			"[foo, bar]",
+			List{Create(WithEqual("foo", "true")), Create(WithEqual("bar", "true"))},
+		},
+		{
+			"nested short lists",
+			"[[foo, bar], [baz]]",
+			List{
+				Create(WithEqual("foo", "true"), WithEqual("bar", "true")),
+				Create(WithEqual("baz", "true")),
+			},
+		},
 	}
 
-	if err := yaml.Unmarshal(s2, &l2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
-	}
+	for _, tt := range unmarshalTests {
+		t.Run(tt.desc, func(t *testing.T) {
+			l := List{}
+			if err := yaml.Unmarshal([]byte(tt.input), &l); err != nil {
+				t.Fatalf(
+					`Unmarshalling %s: unexpected error: %s`,
+					tt.desc, err,
+				)
+			}
 
-	if !reflect.DeepEqual(l1, l2) {
-		t.Errorf(
-			"Unmarshalling of Lists `%s` and `%s` not equal:\n%#v != %#v",
-			s1, s2, l1, l2,
-		)
-	}
+			// Rely on string representation of When for comparison
+			expected := fmt.Sprintf("%s", tt.expected)
+			actual := fmt.Sprintf("%s", l)
 
-	if len(l1) != 1 {
-		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected 1 item, actual %d",
-			s1, len(l1),
-		)
-	}
-
-	if l1[0].OS[0] != "linux" {
-		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected os `%s`, actual `%v`",
-			s1, "linux", l1[0].OS[0],
-		)
+			if expected != actual {
+				t.Errorf("want %q, got %q", expected, actual)
+			}
+		})
 	}
 }
 

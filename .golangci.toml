@@ -1,7 +1,7 @@
 [issues]
 exclude = [
   # goconst: Ignore for example/test data
-  'string `(foo|bar|baz|qux|example|exit \d|mytask|OPTION_VAR)` has \d+ occurrences',
+  'string `(foo|bar|baz|qux|true|false|example|exit \d|mytask|OPTION_VAR)` has \d+ occurrences',
   # golint: false positives for multi-file packages
   'should have a package comment',
   # gosec: Duplicate of errcheck

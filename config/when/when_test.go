@@ -75,6 +75,16 @@ var unmarshalTests = []struct {
 	expected When
 }{
 	{
+		"short notation",
+		`foo`,
+		Create(WithEqual("foo", "true")),
+	},
+	{
+		"list short notation",
+		`[foo, bar]`,
+		Create(WithEqual("foo", "true"), WithEqual("bar", "true")),
+	},
+	{
 		"not-equal",
 		`not-equal: {foo: bar}`,
 		Create(WithNotEqual("foo", "bar")),
