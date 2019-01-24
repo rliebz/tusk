@@ -11,9 +11,8 @@ github.com/mattn/go-isatty v0.0.4 h1:bnP0vzxcAdeI1zdubAl5PjU6zsERjGZb7raWodagDYs
 github.com/mattn/go-isatty v0.0.4/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=
 github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+github.com/rliebz/cli v0.0.0-20180414154221-d08042b11250 h1:y3pX7+bkWrHr3xj3HQH2jrhB+WgsbfYTXslnOxvOkYw=
 github.com/rliebz/cli v0.0.0-20180414154221-d08042b11250/go.mod h1:yxieUkZhNZE7SfvWw9KDqBXKp5XR2fRuQ49392uiS54=
-github.com/urfave/cli v0.0.0-20180414154221-d08042b11250 h1:ngfSd/ae7Kh89+wB8g7w5blUBEXjzqf+25znwYLoeqA=
-github.com/urfave/cli v0.0.0-20180414154221-d08042b11250/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
 golang.org/x/sys v0.0.0-20181026203630-95b1ffbd15a5 h1:x6r4Jo0KNzOOzYd8lbcRsqjuqEASK6ob3auvWYM4/8U=
 golang.org/x/sys v0.0.0-20181026203630-95b1ffbd15a5/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
