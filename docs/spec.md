@@ -200,6 +200,23 @@ tasks:
         command: cat my_file.txt
 ```
 
+#### Short Form
+
+Because it's common to check if a boolean flag is set to true, `when` clauses
+also accept strings as shorthand. Consider the following example, which checks
+to see if some option `foo` has been set to `true`:
+
+```yaml
+when:
+  equal: {foo: true}
+```
+
+This can be expressed more succinctly as the following:
+
+```yaml
+when: foo
+```
+
 #### When Any/All Logic
 
 A `when` clause takes a list of items, where each item can have multiple checks.

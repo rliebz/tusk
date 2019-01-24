@@ -3,6 +3,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 0.4.2 (2019-01-23)
+### Added
+- Add short form for `when` clauses to express equal-true relationships.
+
 ## 0.4.1 (2018-07-03)
 ### Added
 - Add `finally` clause to run cleanup logic after tasks have completed. This
