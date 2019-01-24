@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"sort"
 	"strings"
 
 	"github.com/rliebz/tusk/config/marshal"
@@ -67,8 +68,15 @@ func sprintNullableMap(m map[string]marshal.NullableStringList) string {
 
 func sprintMap(m map[string]marshal.StringList) string {
 	output := make([]string, 0, len(m))
-	for k, v := range m {
-		listString := "[" + strings.Join(v, ",") + "]"
+
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		listString := "[" + strings.Join(m[k], ",") + "]"
 		output = append(output, fmt.Sprintf("%s:%s", k, listString))
 	}
 

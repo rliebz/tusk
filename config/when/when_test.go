@@ -81,8 +81,8 @@ var unmarshalTests = []struct {
 	},
 	{
 		"list short notation",
-		`[foo, bar]`,
-		Create(WithEqual("foo", "true"), WithEqual("bar", "true")),
+		`[foo, bar, baz]`,
+		Create(WithEqual("foo", "true"), WithEqual("bar", "true"), WithEqual("baz", "true")),
 	},
 	{
 		"not-equal",
