@@ -57,5 +57,7 @@ func createCommand(t *task.Task, actionFunc func(*cli.Context) error) *cli.Comma
 		command.ArgsUsage += fmt.Sprintf("<%s> ", name)
 	}
 
+	command.CustomHelpTemplate = createCommandHelp(t)
+
 	return command
 }

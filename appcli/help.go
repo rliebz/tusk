@@ -1,9 +1,13 @@
 package appcli
 
 import (
+	"bytes"
+	"fmt"
+	"html/template"
 	"io"
 	"strings"
 
+	"github.com/rliebz/tusk/config/task"
 	"github.com/urfave/cli"
 )
 
@@ -35,22 +39,6 @@ Global Options:
 
 Copyright:
    {{.Copyright}}{{end}}
-`
-
-	cli.CommandHelpTemplate = `{{.HelpName}}{{if .Usage}} - {{.Usage}}{{end}}
-
-Usage:
-   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}}{{if .VisibleFlags}} [options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{end}}{{end}}{{if .Category}}
-
-Category:
-   {{.Category}}{{end}}{{if .Description}}
-
-Description:
-{{indent 3 .Description}}{{end}}{{if .VisibleFlags}}
-
-Options:
-   {{range  $index, $option := .VisibleFlags}}{{if $index}}
-   {{end}}{{$option}}{{end}}{{end}}
 `
 }
 
@@ -111,4 +99,63 @@ func prependHyphens(flagName string) string {
 	}
 
 	return "--" + flagName
+}
+
+func createCommandHelp(t *task.Task) string {
+	// nolint: lll
+	return fmt.Sprintf(`{{.HelpName}}{{if .Usage}} - {{.Usage}}{{end}}
+
+Usage:
+   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}}{{if .VisibleFlags}} [options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{end}}{{end}}{{if .Category}}
+
+Category:
+   {{.Category}}{{end}}{{if .Description}}
+
+Description:
+{{indent 3 .Description}}{{end}}%s{{if .VisibleFlags}}
+
+Options:
+   {{range  $index, $option := .VisibleFlags}}{{if $index}}
+   {{end}}{{$option}}{{end}}{{end}}
+`, createArgsSection(t))
+}
+
+func createArgsSection(t *task.Task) string {
+	argsTpl := `{{if .}}
+
+Arguments:
+   {{range  $index, $arg := .}}{{if $index}}
+   {{end}}{{$arg}}{{end}}{{end}}`
+
+	tpl := template.New(fmt.Sprintf("%s help", t.Name))
+	tpl = template.Must(tpl.Parse(argsTpl))
+
+	padArg := getArgPadder(t)
+
+	argList := make([]string, 0, len(t.OrderedArgNames))
+	for _, name := range t.OrderedArgNames {
+		arg := t.Args[name]
+		argText := fmt.Sprintf("%s%s", padArg(arg.Name), arg.Usage)
+		argList = append(argList, strings.Trim(argText, " "))
+	}
+
+	var argsSection bytes.Buffer
+	if err := tpl.Execute(&argsSection, argList); err != nil {
+		panic(err)
+	}
+
+	return argsSection.String()
+}
+
+func getArgPadder(t *task.Task) func(string) string {
+	maxLength := 0
+	for _, arg := range t.OrderedArgNames {
+		if len(arg) > maxLength {
+			maxLength = len(arg)
+		}
+	}
+	s := fmt.Sprintf("%%-%ds", maxLength+2)
+	return func(text string) string {
+		return fmt.Sprintf(s, text)
+	}
 }

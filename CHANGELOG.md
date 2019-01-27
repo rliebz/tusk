@@ -2,6 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Help text for commands now includes arguments section.
 
 ## 0.4.2 (2019-01-23)
 ### Added
