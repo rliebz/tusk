@@ -126,7 +126,8 @@ func TestTaskExecute_errors_returned(t *testing.T) {
 				Finally: RunList{&finally},
 			}
 
-			if actual := task.Execute(false); actual.Error() != tt.expected.Error() {
+			actual := task.Execute(RunContext{})
+			if actual.Error() != tt.expected.Error() {
 				t.Errorf("want error %s, got %s", tt.expected, actual)
 			}
 		})
@@ -140,7 +141,7 @@ func TestTask_run_commands(t *testing.T) {
 		Command: marshal.StringList{"exit 0"},
 	}
 
-	if err := task.run(runSuccess, stateRunning); err != nil {
+	if err := task.run(RunContext{}, runSuccess, stateRunning); err != nil {
 		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
@@ -148,7 +149,7 @@ func TestTask_run_commands(t *testing.T) {
 		Command: marshal.StringList{"exit 0", "exit 1"},
 	}
 
-	if err := task.run(runFailure, stateRunning); err == nil {
+	if err := task.run(RunContext{}, runFailure, stateRunning); err == nil {
 		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
 	}
 }
@@ -174,13 +175,13 @@ func TestTask_run_sub_tasks(t *testing.T) {
 
 	task := Task{}
 
-	if err := task.run(r, stateRunning); err != nil {
+	if err := task.run(RunContext{}, r, stateRunning); err != nil {
 		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
 	r.Tasks = append(r.Tasks, taskFailure)
 
-	if err := task.run(r, stateRunning); err == nil {
+	if err := task.run(RunContext{}, r, stateRunning); err == nil {
 		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
 	}
 }
@@ -223,7 +224,7 @@ func TestTask_run_environment(t *testing.T) {
 		},
 	}
 
-	if err := task.run(r, stateRunning); err != nil {
+	if err := task.run(RunContext{}, r, stateRunning); err != nil {
 		t.Errorf("task.run(): unexpected error: %s", err)
 	}
 
@@ -251,7 +252,7 @@ func TestTask_run_finally(t *testing.T) {
 	}
 
 	var err error
-	if task.runFinally(&err, false); err != nil {
+	if task.runFinally(RunContext{}, &err); err != nil {
 		t.Errorf("task.runFinally(): unexpected error: %s", err)
 	}
 }
@@ -264,7 +265,7 @@ func TestTask_run_finally_error(t *testing.T) {
 	}
 
 	var err error
-	if task.runFinally(&err, false); err == nil {
+	if task.runFinally(RunContext{}, &err); err == nil {
 		t.Error("task.runFinally(): want error for exit status 1, got nil")
 	}
 }
@@ -282,8 +283,8 @@ func TestTask_run_finally_ui(t *testing.T) {
 
 	bufExpected := new(bytes.Buffer)
 	ui.LoggerStderr.SetOutput(bufExpected)
-	ui.PrintTaskFinally(taskName, false)
-	ui.PrintCommandWithParenthetical(command, taskName, "finally")
+	ui.PrintTaskFinally(taskName)
+	ui.PrintCommandWithParenthetical(command, "finally", taskName)
 	expected := bufExpected.String()
 
 	bufActual := new(bytes.Buffer)
@@ -296,8 +297,11 @@ func TestTask_run_finally_ui(t *testing.T) {
 		},
 	}
 
+	ctx := RunContext{}
+	ctx.PushTask(&task)
+
 	var err error
-	if task.runFinally(&err, false); err != nil {
+	if task.runFinally(ctx, &err); err != nil {
 		t.Fatalf("task.runFinally(): unexpected error: %s", err)
 	}
 
@@ -325,8 +329,8 @@ func TestTask_run_finally_ui_fails(t *testing.T) {
 
 	bufExpected := new(bytes.Buffer)
 	ui.LoggerStderr.SetOutput(bufExpected)
-	ui.PrintTaskFinally(taskName, false)
-	ui.PrintCommandWithParenthetical(command, taskName, "finally")
+	ui.PrintTaskFinally(taskName)
+	ui.PrintCommandWithParenthetical(command, "finally", taskName)
 	ui.PrintCommandError(errExpected)
 	expected := bufExpected.String()
 
@@ -340,8 +344,11 @@ func TestTask_run_finally_ui_fails(t *testing.T) {
 		},
 	}
 
+	ctx := RunContext{}
+	ctx.PushTask(&task)
+
 	var err error
-	if task.runFinally(&err, false); err == nil {
+	if task.runFinally(ctx, &err); err == nil {
 		t.Error("task.runFinally(): want error for exit status 1, got nil")
 	}
 

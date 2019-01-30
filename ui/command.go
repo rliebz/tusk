@@ -3,10 +3,12 @@ package ui
 import (
 	"fmt"
 	"sort"
+	"strings"
 )
 
 const (
-	promptCharacter = "$"
+	namespaceSeparator = " > "
+	promptCharacter    = "$"
 
 	completedString        = "Completed"
 	environmentString      = "Setting Environment"
@@ -14,38 +16,49 @@ const (
 	startedString          = "Started"
 	setEnvironmentString   = "set"
 	skippedString          = "Skipping"
-	subTaskString          = "Sub-Task"
 	taskString             = "Task"
 	unsetEnvironmentString = "unset"
 )
 
 // PrintCommand prints the command to be executed.
-func PrintCommand(command, context string) {
+func PrintCommand(command string, namespaces ...string) {
 	if Verbosity <= VerbosityLevelQuiet {
 		return
 	}
 
+	for i, ns := range namespaces {
+		namespaces[i] = green(ns)
+	}
+
+	s := strings.Join(namespaces, bold(blue(namespaceSeparator)))
+
 	printf(
 		LoggerStderr,
 		"%s %s %s",
-		green(context),
-		green(promptCharacter),
+		s,
+		bold(blue(promptCharacter)),
 		bold(command),
 	)
 }
 
 // PrintCommandWithParenthetical prints a command with additional information.
-func PrintCommandWithParenthetical(command, context, parenthetical string) {
+func PrintCommandWithParenthetical(command, parenthetical string, namespaces ...string) {
 	if Verbosity <= VerbosityLevelQuiet {
 		return
 	}
 
+	for i, ns := range namespaces {
+		namespaces[i] = green(ns)
+	}
+
+	s := strings.Join(namespaces, bold(blue(namespaceSeparator)))
+
 	printf(
 		LoggerStderr,
 		"%s (%s) %s %s",
-		green(context),
+		s,
 		yellow(parenthetical),
-		green(promptCharacter),
+		bold(blue(promptCharacter)),
 		bold(command),
 	)
 }
@@ -130,12 +143,12 @@ func PrintSkipped(command string, reason string) {
 }
 
 // PrintTask prints when a task has begun.
-func PrintTask(taskName string, asSubTask bool) {
+func PrintTask(taskName string) {
 	if Verbosity <= VerbosityLevelNormal {
 		return
 	}
 
-	s := fmt.Sprintf("%s %s", getTaskString(asSubTask), startedString)
+	s := fmt.Sprintf("%s %s", taskString, startedString)
 
 	printf(
 		LoggerStderr,
@@ -146,12 +159,12 @@ func PrintTask(taskName string, asSubTask bool) {
 }
 
 // PrintTaskFinally prints when a task's finally clause has begun.
-func PrintTaskFinally(taskName string, asSubTask bool) {
+func PrintTaskFinally(taskName string) {
 	if Verbosity <= VerbosityLevelNormal {
 		return
 	}
 
-	s := fmt.Sprintf("%s %s", getTaskString(asSubTask), finallyString)
+	s := fmt.Sprintf("%s %s", taskString, finallyString)
 
 	printf(
 		LoggerStderr,
@@ -162,12 +175,12 @@ func PrintTaskFinally(taskName string, asSubTask bool) {
 }
 
 // PrintTaskCompleted prints when a task has completed.
-func PrintTaskCompleted(taskName string, asSubTask bool) {
+func PrintTaskCompleted(taskName string) {
 	if Verbosity <= VerbosityLevelNormal {
 		return
 	}
 
-	s := fmt.Sprintf("%s %s", getTaskString(asSubTask), completedString)
+	s := fmt.Sprintf("%s %s", taskString, completedString)
 
 	printf(
 		LoggerStderr,
@@ -175,14 +188,6 @@ func PrintTaskCompleted(taskName string, asSubTask bool) {
 		tag(s, blue),
 		bold(taskName),
 	)
-}
-
-func getTaskString(asSubTask bool) string {
-	if asSubTask {
-		return subTaskString
-	}
-
-	return taskString
 }
 
 // PrintCommandError prints an error from a running command.

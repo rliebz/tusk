@@ -94,14 +94,18 @@ func (t *Task) Dependencies() []string {
 }
 
 // Execute runs the Run scripts in the task.
-func (t *Task) Execute(asSubTask bool) (err error) {
-	ui.PrintTask(t.Name, asSubTask)
+func (t *Task) Execute(ctx RunContext) (err error) {
+	if !t.Private {
+		ctx.PushTask(t)
+	}
 
-	defer ui.PrintTaskCompleted(t.Name, asSubTask)
-	defer t.runFinally(&err, asSubTask)
+	ui.PrintTask(t.Name)
+
+	defer ui.PrintTaskCompleted(t.Name)
+	defer t.runFinally(ctx, &err)
 
 	for _, r := range t.RunList {
-		if rerr := t.run(r, stateRunning); rerr != nil {
+		if rerr := t.run(ctx, r, stateRunning); rerr != nil {
 			return rerr
 		}
 	}
@@ -109,15 +113,15 @@ func (t *Task) Execute(asSubTask bool) (err error) {
 	return err
 }
 
-func (t *Task) runFinally(err *error, asSubTask bool) {
+func (t *Task) runFinally(ctx RunContext, err *error) {
 	if len(t.Finally) == 0 {
 		return
 	}
 
-	ui.PrintTaskFinally(t.Name, asSubTask)
+	ui.PrintTaskFinally(t.Name)
 
 	for _, r := range t.Finally {
-		if rerr := t.run(r, stateFinally); rerr != nil {
+		if rerr := t.run(ctx, r, stateFinally); rerr != nil {
 			// Do not overwrite existing errors
 			if *err == nil {
 				*err = rerr
@@ -128,14 +132,14 @@ func (t *Task) runFinally(err *error, asSubTask bool) {
 }
 
 // run executes a Run struct.
-func (t *Task) run(r *Run, s executionState) error {
+func (t *Task) run(ctx RunContext, r *Run, s executionState) error {
 	if ok, err := r.shouldRun(t.Vars); !ok || err != nil {
 		return err
 	}
 
 	runFuncs := []func() error{
-		func() error { return t.runCommands(r, s) },
-		func() error { return t.runSubTasks(r) },
+		func() error { return t.runCommands(ctx, r, s) },
+		func() error { return t.runSubTasks(ctx, r) },
 		func() error { return t.runEnvironment(r) },
 	}
 
@@ -148,13 +152,13 @@ func (t *Task) run(r *Run, s executionState) error {
 	return nil
 }
 
-func (t *Task) runCommands(r *Run, s executionState) error {
+func (t *Task) runCommands(ctx RunContext, r *Run, s executionState) error {
 	for _, command := range r.Command {
 		switch s {
 		case stateFinally:
-			ui.PrintCommandWithParenthetical(command, t.Name, "finally")
+			ui.PrintCommandWithParenthetical(command, "finally", ctx.Tasks()...)
 		default:
-			ui.PrintCommand(command, t.Name)
+			ui.PrintCommand(command, ctx.Tasks()...)
 		}
 
 		if err := execCommand(command); err != nil {
@@ -166,9 +170,9 @@ func (t *Task) runCommands(r *Run, s executionState) error {
 	return nil
 }
 
-func (t *Task) runSubTasks(r *Run) error {
+func (t *Task) runSubTasks(ctx RunContext, r *Run) error {
 	for _, subTask := range r.Tasks {
-		if err := subTask.Execute(true); err != nil {
+		if err := subTask.Execute(ctx); err != nil {
 			return err
 		}
 	}
