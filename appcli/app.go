@@ -19,6 +19,7 @@ func newBaseApp() *cli.App {
 	app.HideHelp = true
 	app.EnableBashCompletion = true
 	app.UseShortOptionHandling = true
+	app.ExitErrHandler = func(*cli.Context, error) {}
 
 	app.Flags = append(app.Flags,
 		cli.BoolFlag{

@@ -180,6 +180,37 @@ tasks: { "%s": {} }
 	}
 }
 
+func TestNewApp_exit_code(t *testing.T) {
+	args := []string{"tusk", "foo"}
+	expectedCode := 99
+	cfgText := []byte(`
+tasks:
+  foo:
+    run: exit 99`)
+	meta := &config.Metadata{CfgText: cfgText}
+
+	app, err := NewApp(args, meta)
+	if err != nil {
+		t.Errorf("NewApp(): unexpected error: %v", err)
+	}
+
+	if len(app.Commands) != 1 {
+		t.Fatalf(
+			"For config: `%s`\nexpected 1 command, got %#v",
+			string(cfgText), app.Commands,
+		)
+	}
+
+	exitErr, ok := app.Run(args).(*exec.ExitError)
+	if !ok {
+		t.Fatalf("app.Run(%v): expected exit err, got %#v", args, err)
+	}
+
+	if actual := exitErr.Sys().(syscall.WaitStatus).ExitStatus(); actual != expectedCode {
+		t.Fatalf("app.Run(%v): expected error code 99, actual: %d", args, actual)
+	}
+}
+
 func TestNewApp_private_task(t *testing.T) {
 	args := []string{"tusk", "public"}
 	expectedCode := 99
