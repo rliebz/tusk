@@ -61,7 +61,7 @@ func TestParseOrderedMap_stops_on_failure(t *testing.T) {
 	}
 
 	defer func() {
-		if 1 != index {
+		if index != 1 {
 			t.Errorf("want 1 call to `assign`, got %d", index)
 		}
 	}()

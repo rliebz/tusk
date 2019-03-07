@@ -34,7 +34,7 @@ func testPrint(t *testing.T, tt printTestCase) {
 	tt.printFunc()
 	actual := buf.String()
 
-	if "" != actual {
+	if actual != "" {
 		t.Errorf(
 			`%s with verbosity %v: expected no output, actual: "%s"`,
 			tt.name,

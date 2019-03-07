@@ -158,7 +158,7 @@ tasks: { "%s": {} }
 		t.Errorf("NewApp(): unexpected error: %v", err)
 	}
 
-	if 1 != len(app.Commands) {
+	if len(app.Commands) != 1 {
 		t.Errorf(
 			"For config: `%s`\nexpected 1 command, got %#v",
 			string(cfgText), app.Commands,
@@ -197,7 +197,7 @@ tasks:
 		t.Errorf("NewApp(): unexpected error: %v", err)
 	}
 
-	if 1 != len(app.Commands) {
+	if len(app.Commands) != 1 {
 		t.Fatalf(
 			"For config: `%s`\nexpected 1 command, got %#v",
 			string(cfgText), app.Commands,
