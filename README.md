@@ -14,12 +14,14 @@ documentation][documentation].
 
 ## Features
 
-- __Customizable__: Specify your own tasks and options with support for command-line
-  flags, environment variables, conditional logic, and more.
-- __Explorable__: All the help you need to get started is available straight from the command line. Help documentation is generated dynamically and support for Bash and Zsh tab completion is available. 
-- __Accessible__: Built for usability with a simple YAML configuration, familiar
-  syntax for passing options, Bash-like variable interpolation, and a colorful
-  terminal output.
+- __Customizable__: Specify your own tasks and options with support for
+  command-line flags, environment variables, conditional logic, and more.
+- __Explorable__: All the help you need to get started is available straight
+  from the command line. Help documentation is generated dynamically, and
+  support for Bash and Zsh tab completion is available.
+- __Accessible__: Built for usability with a simple YAML configuration,
+  familiar syntax for passing options, Bash-like variable interpolation, and a
+  colorful terminal output.
 - __Zero Dependencies__: All you need is a single binary file to get started on
   Linux, macOS, or Windows.
 
@@ -37,7 +39,8 @@ To install automatically, or for use in CI, run the following command:
 curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
 ```
 
-To pin to a specific version, replace `latest` with the tag for that version. This is recommended for automated scripts.
+To pin to a specific version, replace `latest` with the tag for that version.
+This is recommended for automated scripts.
 
 To install to another directory, change the path passed to `-b`.
 
