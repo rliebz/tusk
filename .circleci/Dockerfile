@@ -1,9 +1,9 @@
-FROM golang:1.11.2
+FROM golang:1.12.1
 
 WORKDIR /tusk
 
 RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh \
-      | bash -s -- -b $GOPATH/bin v1.12.2
+      | bash -s -- -b $GOPATH/bin v1.15.0
 RUN go get github.com/jstemmer/go-junit-report
 RUN apt-get update && \
       apt-get -y install rpm && \
