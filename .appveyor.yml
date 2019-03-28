@@ -4,18 +4,19 @@ branches:
   only:
     - master
 
-clone_folder: c:\tusk
-
 environment:
   GOPATH: c:\gopath
+  GO_VERSION: 1.12.1
 
-stack: go 1.11
-
-init:
+install:
+  # Install specific Go version
+  - rmdir c:\go /s /q
+  - appveyor DownloadFile https://storage.googleapis.com/golang/go%GO_VERSION%.windows-amd64.msi
+  - msiexec /i go%GO_VERSION%.windows-amd64.msi /q
   # Add GOPATH to reference installed binary
   - set PATH=%GOPATH%\bin;%PATH%
   # Add MinGW for gcc
-  - set PATH=C:\msys64\mingw64\bin;%PATH%
+  - set PATH=c:\msys64\mingw64\bin;%PATH%
 
 build_script:
   - go install
