@@ -2,9 +2,9 @@ package config
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/config/when"
@@ -668,16 +668,8 @@ given input:
 
 		actual := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
 
-		if len(tt.expected) != len(actual) {
-			t.Errorf(
-				context+"task %q expected %d runs, actual: %d",
-				tt.taskName, len(tt.expected), len(actual),
-			)
-			return
-		}
-
-		for i := range tt.expected {
-			runsAreEquivalent(t, context, tt.expected[i], actual[i])
+		if !cmp.Equal(tt.expected, actual) {
+			t.Errorf("%stask mismatch:\n%s", context, cmp.Diff(tt.expected, actual))
 		}
 	}
 }
@@ -697,35 +689,6 @@ func flattenRuns(runList task.RunList) task.RunList {
 	}
 
 	return flattened
-}
-
-func runsAreEquivalent(t *testing.T, context string, r1 *task.Run, r2 *task.Run) {
-	t.Helper()
-
-	if !reflect.DeepEqual(r1.When, r2.When) {
-		t.Errorf(
-			context+"expected when: %#v\nactual: %#v",
-			r1.When, r2.When,
-		)
-		return
-	}
-
-	if len(r1.Command) != len(r2.Command) {
-		t.Errorf(
-			context+`expected %d commands, actual: %d`,
-			len(r1.Command), len(r2.Command),
-		)
-		return
-	}
-
-	for i := range r1.Command {
-		if r1.Command[i] != r2.Command[i] {
-			t.Errorf(
-				context+"expected command: %s\nactual: %s",
-				r1.Command[i], r2.Command[i],
-			)
-		}
-	}
 }
 
 var invalidinterpolatetests = []struct {
