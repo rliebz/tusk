@@ -247,8 +247,8 @@ func validateOneOf(
 	return newCondFailErrorf("%s (%s) not listed in %v", desc, value, required)
 }
 
-func normalizeOS(os string) string {
-	lower := strings.ToLower(os)
+func normalizeOS(name string) string {
+	lower := strings.ToLower(name)
 
 	for _, alt := range []string{"mac", "macos", "osx"} {
 		if lower == alt {

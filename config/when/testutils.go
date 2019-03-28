@@ -67,7 +67,7 @@ var WithOSFailure = func(w *When) {
 }
 
 // WithEnv returns an operator that requires an env var to be set.
-func WithEnv(key string, value string) func(w *When) {
+func WithEnv(key, value string) func(w *When) {
 	return func(w *When) {
 		ensureEnv(w)
 		w.Environment[key] = append(w.Environment[key], &value)
