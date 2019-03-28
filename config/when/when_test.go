@@ -4,70 +4,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rliebz/tusk/config/marshal"
+	"github.com/google/go-cmp/cmp"
 	yaml "gopkg.in/yaml.v2"
 )
-
-var s = "string"
-var stringTests = []struct {
-	desc     string
-	input    When
-	expected string
-}{
-	{
-		"no fields",
-		When{},
-		"When{}",
-	},
-	{
-		"one list",
-		When{Command: marshal.StringList{"foo"}},
-		"When{command:[foo]}",
-	},
-	{
-		"one nullable map",
-		When{
-			Environment: map[string]marshal.NullableStringList{"foo": {nil, &s}},
-		},
-		"When{environment:{foo:[nil,string]}}",
-	},
-	{
-		"one map",
-		When{
-			Equal: map[string]marshal.StringList{"foo": {"bar", "baz"}},
-		},
-		"When{equal:{foo:[bar,baz]}}",
-	},
-	{
-		"all lists",
-		When{
-			Command: marshal.StringList{"foo"},
-			Exists:  marshal.StringList{"bar"},
-			OS:      marshal.StringList{"baz"},
-		},
-		"When{command:[foo],exists:[bar],os:[baz]}",
-	},
-	{
-		"all maps",
-		When{
-			Environment: map[string]marshal.NullableStringList{"env": {nil, &s}},
-			Equal:       map[string]marshal.StringList{"foo": {"bar", "baz"}},
-			NotEqual:    map[string]marshal.StringList{"a": {"b", "c"}},
-		},
-		"When{environment:{env:[nil,string]},equal:{foo:[bar,baz]},not-equal:{a:[b,c]}}",
-	},
-}
-
-func TestWhen_String(t *testing.T) {
-	for _, tt := range stringTests {
-		t.Run(tt.desc, func(t *testing.T) {
-			actual := tt.input.String()
-			if tt.expected != actual {
-				t.Errorf("want %q; got %q", tt.expected, actual)
-			}
-		})
-	}
-}
 
 var unmarshalTests = []struct {
 	desc     string
@@ -116,11 +55,8 @@ func TestWhen_UnmarshalYAML(t *testing.T) {
 			continue
 		}
 
-		expected := tt.expected.String()
-		actual := w.String()
-
-		if expected != actual {
-			t.Errorf("want %q, got %q", expected, actual)
+		if !cmp.Equal(w, tt.expected) {
+			t.Errorf("mismatch:\n%s", cmp.Diff(tt.expected, w))
 		}
 	}
 }

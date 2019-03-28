@@ -1,9 +1,9 @@
 package when
 
 import (
-	"fmt"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -53,12 +53,8 @@ func TestList_UnmarshalYAML(t *testing.T) {
 				)
 			}
 
-			// Rely on string representation of When for comparison
-			expected := fmt.Sprintf("%s", tt.expected)
-			actual := fmt.Sprintf("%s", l)
-
-			if expected != actual {
-				t.Errorf("want %q, got %q", expected, actual)
+			if !cmp.Equal(l, tt.expected) {
+				t.Errorf("unmarshal mismatch:\n%s", cmp.Diff(tt.expected, l))
 			}
 		})
 	}

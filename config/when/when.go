@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"sort"
 	"strings"
 
 	"github.com/rliebz/tusk/config/marshal"
@@ -21,66 +20,6 @@ type When struct {
 	Environment map[string]marshal.NullableStringList `yaml:",omitempty"`
 	Equal       map[string]marshal.StringList         `yaml:",omitempty"`
 	NotEqual    map[string]marshal.StringList         `yaml:"not-equal,omitempty"`
-}
-
-func (w When) String() string {
-	output := make([]string, 0, 6)
-	if len(w.Command) > 0 {
-		output = append(output, fmt.Sprintf("command:%s", w.Command))
-	}
-	if len(w.Exists) > 0 {
-		output = append(output, fmt.Sprintf("exists:%s", w.Exists))
-	}
-	if len(w.OS) > 0 {
-		output = append(output, fmt.Sprintf("os:%s", w.OS))
-	}
-	if len(w.Environment) > 0 {
-		output = append(output, "environment:"+sprintNullableMap(w.Environment))
-	}
-	if len(w.Equal) > 0 {
-		output = append(output, "equal:"+sprintMap(w.Equal))
-	}
-	if len(w.NotEqual) > 0 {
-		output = append(output, "not-equal:"+sprintMap(w.NotEqual))
-	}
-
-	return "When{" + strings.Join(output, ",") + "}"
-}
-
-func sprintNullableMap(m map[string]marshal.NullableStringList) string {
-	output := make([]string, 0, len(m))
-	for k, v := range m {
-		list := make([]string, 0, len(v))
-		for _, item := range v {
-			if item == nil {
-				list = append(list, "nil")
-			} else {
-				list = append(list, *item)
-			}
-		}
-		listString := "[" + strings.Join(list, ",") + "]"
-		output = append(output, fmt.Sprintf("%s:%s", k, listString))
-	}
-
-	return "{" + strings.Join(output, ",") + "}"
-
-}
-
-func sprintMap(m map[string]marshal.StringList) string {
-	output := make([]string, 0, len(m))
-
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	for _, k := range keys {
-		listString := "[" + strings.Join(m[k], ",") + "]"
-		output = append(output, fmt.Sprintf("%s:%s", k, listString))
-	}
-
-	return "{" + strings.Join(output, ",") + "}"
 }
 
 // UnmarshalYAML warns about deprecated features.
