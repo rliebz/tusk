@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
@@ -11,63 +12,66 @@ import (
 
 var version = "dev"
 
-// nolint: gocyclo
 func main() {
-	defer gracefulRecover()
+	status, err := run(os.Args)
+	if err != nil {
+		ui.Error(err)
+	}
+	os.Exit(status)
+}
 
-	args := os.Args
+// nolint: gocyclo
+func run(args []string) (exitStatus int, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			exitStatus = 1
+			err = fmt.Errorf("recovered from panic: %v", r)
+		}
+	}()
+
 	if args[len(args)-1] == appcli.CompletionFlag {
 		ui.Verbosity = ui.VerbosityLevelSilent
 	}
 
 	meta, err := appcli.GetConfigMetadata(args)
 	if err != nil {
-		ui.Error(err)
-		os.Exit(1)
+		return 1, err
 	}
 
 	if ui.Verbosity != ui.VerbosityLevelSilent {
 		ui.Verbosity = meta.Verbosity
 	}
 
-	if err = os.Chdir(meta.Directory); err != nil {
-		ui.Error(err)
-		os.Exit(1)
-	}
-
 	if meta.PrintVersion && !meta.PrintHelp {
 		ui.Println(version)
-		os.Exit(0)
+		return 0, nil
 	}
 
-	app, err := appcli.NewApp(os.Args, meta)
+	if err = os.Chdir(meta.Directory); err != nil {
+		return 1, err
+	}
+
+	app, err := appcli.NewApp(args, meta)
 	if err != nil {
-		ui.Error(err)
-		os.Exit(1)
+		return 1, err
 	}
 
 	if meta.PrintHelp {
 		appcli.ShowAppHelp(app)
-		os.Exit(0)
+		return 0, nil
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(args); err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
-			if ui.Verbosity >= ui.VerbosityLevelVerbose {
-				ui.Error(err)
+			if ui.Verbosity < ui.VerbosityLevelVerbose {
+				err = nil
 			}
 			ws := exitErr.Sys().(syscall.WaitStatus)
-			os.Exit(ws.ExitStatus())
+			return ws.ExitStatus(), err
 		}
 
-		ui.Error(err)
-		os.Exit(1)
+		return 1, err
 	}
-}
 
-func gracefulRecover() {
-	if r := recover(); r != nil {
-		ui.Error("recovered from panic: ", r)
-		os.Exit(1)
-	}
+	return 0, nil
 }
