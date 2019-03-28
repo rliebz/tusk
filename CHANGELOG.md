@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ## Unreleased
 ### Added
 - Help text for commands now includes arguments section.
+- Include subtask hierarchy on command run.
+
+### Changed
+- UI theme is now slightly more colorful.
+- Hidden task names do not appear in console output.
+
 
 ## 0.4.2 (2019-01-23)
 ### Added
