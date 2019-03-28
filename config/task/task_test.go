@@ -271,10 +271,10 @@ func TestTask_run_finally_error(t *testing.T) {
 }
 
 func TestTask_run_finally_ui(t *testing.T) {
-	defer func(l *log.Logger, ll ui.VerbosityLevel) {
-		ui.LoggerStderr = l
-		ui.Verbosity = ll
-	}(ui.LoggerStderr, ui.Verbosity)
+	defer func(level ui.VerbosityLevel) {
+		ui.LoggerStderr.SetOutput(os.Stderr)
+		ui.Verbosity = level
+	}(ui.Verbosity)
 
 	ui.LoggerStderr = log.New(os.Stderr, "", 0)
 	ui.Verbosity = ui.VerbosityLevelVerbose
