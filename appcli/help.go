@@ -53,7 +53,7 @@ func helpPrinter(out io.Writer, templ string, data interface{}) {
 	customFunc := map[string]interface{}{
 		"indent": func(spaces int, text string) string {
 			padding := strings.Repeat(" ", spaces)
-			return padding + strings.ReplaceAll(text, "\n", "\n"+padding)
+			return padding + strings.Replace(text, "\n", "\n"+padding, -1)
 		},
 	}
 

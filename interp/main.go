@@ -43,7 +43,7 @@ func FindPotentialVariables(text []byte) []string {
 
 // escape escapes all instances of $$ with $.
 func escape(text []byte) []byte {
-	return bytes.ReplaceAll(text, []byte("$$"), []byte("$"))
+	return bytes.Replace(text, []byte("$$"), []byte("$"), -1)
 }
 
 // interpolate replaces instances of the name pattern with the value.
@@ -82,10 +82,10 @@ func compile(name string) (*regexp.Regexp, error) {
 
 // escapePattern escapes unwanted potential interpolation targets.
 func escapePattern(text []byte) []byte {
-	return bytes.ReplaceAll(text, []byte("$$"), escSeq)
+	return bytes.Replace(text, []byte("$$"), escSeq, -1)
 }
 
 // unescapePattern returns unwanted potential interpolation targets.
 func unescapePattern(text []byte) []byte {
-	return bytes.ReplaceAll(text, escSeq, []byte("$$"))
+	return bytes.Replace(text, escSeq, []byte("$$"), -1)
 }

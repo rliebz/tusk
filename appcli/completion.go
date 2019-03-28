@@ -115,7 +115,7 @@ func printCommand(command *cli.Command) {
 	fmt.Printf(
 		"%s:%s\n",
 		command.Name,
-		strings.ReplaceAll(command.Usage, "\n", ""),
+		strings.Replace(command.Usage, "\n", "", -1),
 	)
 }
 
@@ -128,7 +128,7 @@ func printFlag(c *cli.Context, flag cli.Flag) {
 		fmt.Printf(
 			"--%s:%s\n",
 			value,
-			strings.ReplaceAll(getDescription(flag), "\n", ""),
+			strings.Replace(getDescription(flag), "\n", "", -1),
 		)
 	}
 }

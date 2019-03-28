@@ -9,7 +9,7 @@ clone_folder: c:\tusk
 environment:
   GOPATH: c:\gopath
 
-stack: go 1.12
+stack: go 1.11
 
 init:
   # Add GOPATH to reference installed binary
