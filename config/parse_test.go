@@ -691,8 +691,8 @@ func flattenRuns(runList task.RunList) task.RunList {
 			continue
 		}
 
-		for _, t := range run.Tasks {
-			flattened = append(flattened, flattenRuns(t.AllRunItems())...)
+		for i := range run.Tasks {
+			flattened = append(flattened, flattenRuns(run.Tasks[i].AllRunItems())...)
 		}
 	}
 

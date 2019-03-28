@@ -171,8 +171,8 @@ func (t *Task) runCommands(ctx RunContext, r *Run, s executionState) error {
 }
 
 func (t *Task) runSubTasks(ctx RunContext, r *Run) error {
-	for _, subTask := range r.Tasks {
-		if err := subTask.Execute(ctx); err != nil {
+	for i := range r.Tasks {
+		if err := r.Tasks[i].Execute(ctx); err != nil {
 			return err
 		}
 	}

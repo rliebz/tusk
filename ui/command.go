@@ -120,7 +120,7 @@ func PrintEnvironment(variables map[string]*string) {
 }
 
 // PrintSkipped prints the command skipped and the reason.
-func PrintSkipped(command string, reason string) {
+func PrintSkipped(command, reason string) {
 	if Verbosity < VerbosityLevelVerbose {
 		return
 	}

@@ -83,7 +83,7 @@ func TestSearchForFile(t *testing.T) {
 	}
 }
 
-func useTempDir(t *testing.T) (string, func()) {
+func useTempDir(t *testing.T) (dirname string, cleanup func()) {
 	t.Helper()
 
 	tmpdir, err := ioutil.TempDir("", "tusk-test")
@@ -105,7 +105,7 @@ func useTempDir(t *testing.T) (string, func()) {
 		t.Fatalf("failed to change directory: %v", err)
 	}
 
-	cleanup := func() {
+	cleanup = func() {
 		if err := os.RemoveAll(tmpdir); err != nil {
 			t.Logf("failed to remove tmpdir: %v", err)
 		}

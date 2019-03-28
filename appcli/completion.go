@@ -27,8 +27,8 @@ func createDefaultComplete(app *cli.App) func(c *cli.Context) {
 		isCompleting := isCompletingArg(app.Flags, trailingArg)
 		if !isCompleting {
 			fmt.Println("normal")
-			for _, command := range app.Commands {
-				printCommand(command)
+			for i := range app.Commands {
+				printCommand(&app.Commands[i])
 			}
 			for _, flag := range app.Flags {
 				printFlag(c, flag)
@@ -102,7 +102,7 @@ func getOptionFlag(flag string, options []*option.Option) (*option.Option, bool)
 	return nil, false
 }
 
-func printCommand(command cli.Command) {
+func printCommand(command *cli.Command) {
 	if command.Hidden {
 		return
 	}
@@ -115,7 +115,7 @@ func printCommand(command cli.Command) {
 	fmt.Printf(
 		"%s:%s\n",
 		command.Name,
-		strings.Replace(command.Usage, "\n", "", -1),
+		strings.ReplaceAll(command.Usage, "\n", ""),
 	)
 }
 
@@ -128,7 +128,7 @@ func printFlag(c *cli.Context, flag cli.Flag) {
 		fmt.Printf(
 			"--%s:%s\n",
 			value,
-			strings.Replace(getDescription(flag), "\n", "", -1),
+			strings.ReplaceAll(getDescription(flag), "\n", ""),
 		)
 	}
 }

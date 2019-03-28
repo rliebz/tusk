@@ -74,7 +74,7 @@ func newMetaApp(cfgText []byte) (*cli.App, error) {
 	app.Metadata["argsPassed"] = []string{}
 	app.Metadata["flagsPassed"] = make(map[string]string)
 
-	if err = addTasks(app, cfg, createMetadataBuildCommand); err != nil {
+	if err := addTasks(app, cfg, createMetadataBuildCommand); err != nil {
 		return nil, err
 	}
 
@@ -88,8 +88,8 @@ func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 		return nil, err
 	}
 
-	if err = metaApp.Run(args); err != nil {
-		return nil, err
+	if rerr := metaApp.Run(args); rerr != nil {
+		return nil, rerr
 	}
 
 	var taskName string
@@ -134,7 +134,7 @@ func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 }
 
 // getPassedValues returns the args and flags passed by command line.
-func getPassedValues(app *cli.App) ([]string, map[string]string, error) {
+func getPassedValues(app *cli.App) (args []string, flags map[string]string, err error) {
 	argsPassed, ok := app.Metadata["argsPassed"].([]string)
 	if !ok {
 		return nil, nil, errors.New("could not read args from metadata")
