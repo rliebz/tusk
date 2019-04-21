@@ -41,7 +41,7 @@ brew:
     owner: rliebz
     name: homebrew-tusk
   homepage: https://github.com/rliebz/tusk
-  description: A tusk runner built with simplicity in mind
+  description: The modern task runner
   install: |
     bin.install "tusk"
 
@@ -52,7 +52,7 @@ brew:
 nfpm:
   maintainer: Robert Liebowitz <rliebz@gmail.com>
   homepage: https://gihub.com/rliebz/tusk
-  description: A task runner built with simplicity in mind
+  description: The modern task runner
   license: MIT
   formats:
     - deb
