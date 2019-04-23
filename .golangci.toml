@@ -23,7 +23,7 @@ disable = [
 
   [linters-settings.goconst]
   min-len = 0
-  min-occurrences = 2
+  min-occurrences = 3
 
   [linters-settings.gocyclo]
   min-complexity = 10
