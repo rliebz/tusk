@@ -82,18 +82,22 @@ func appendIfAbsent(path, text string) error {
 
 	scanner := bufio.NewScanner(f)
 
-	isEmpty := true
+	prependNewline := false
 	for scanner.Scan() {
-		isEmpty = false
-		if scanner.Text() == text {
+		switch scanner.Text() {
+		case text:
 			return nil
+		case "":
+			prependNewline = false
+		default:
+			prependNewline = true
 		}
 	}
 	if serr := scanner.Err(); serr != nil {
 		return serr
 	}
 
-	if !isEmpty {
+	if prependNewline {
 		text = "\n" + text
 	}
 
@@ -125,16 +129,23 @@ func removeLineInFile(path, text string) error {
 
 	scanner := bufio.NewScanner(rf)
 
+	buf := ""
 	for scanner.Scan() {
 		line := scanner.Text()
-		if line == text {
+		switch line {
+		case text:
+			continue
+		case "":
+			buf += "\n"
 			continue
 		}
 
-		_, err := fmt.Fprintln(wf, line)
+		_, err := fmt.Fprintln(wf, buf+line)
 		if err != nil {
 			return err
 		}
+
+		buf = ""
 	}
 
 	return os.Rename(wf.Name(), path)
