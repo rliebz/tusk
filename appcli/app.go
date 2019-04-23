@@ -34,6 +34,10 @@ func newBaseApp() *cli.App {
 			Name:  "install-completions",
 			Usage: "Install completions for a `shell`",
 		},
+		cli.StringFlag{
+			Name:  "uninstall-completions",
+			Usage: "Uninstall completions for a `shell`",
+		},
 		cli.BoolFlag{
 			Name:  "q, quiet",
 			Usage: "Only print command output and application errors",

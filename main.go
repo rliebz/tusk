@@ -45,11 +45,12 @@ func run(args []string) (exitStatus int, err error) {
 		ui.Verbosity = meta.Verbosity
 	}
 
-	if meta.InstallCompletions != "" {
+	switch {
+	case meta.InstallCompletions != "":
 		return 0, appcli.InstallCompletions(meta.InstallCompletions)
-	}
-
-	if meta.PrintVersion && !meta.PrintHelp {
+	case meta.UninstallCompletions != "":
+		return 0, appcli.UninstallCompletions(meta.UninstallCompletions)
+	case meta.PrintVersion && !meta.PrintHelp:
 		ui.Println(version)
 		return 0, nil
 	}

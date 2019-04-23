@@ -21,6 +21,16 @@ func InstallCompletions(shell string) error {
 	}
 }
 
+// UninstallCompletions uninstalls command line completions for a given shell.
+func UninstallCompletions(shell string) error {
+	switch shell {
+	case "zsh":
+		return uninstallZshCompletion(zshInstallDir)
+	default:
+		return fmt.Errorf("tab completion for %q is not supported", shell)
+	}
+}
+
 func installZshCompletion(dir string) error {
 	// nolint: gosec
 	if err := os.MkdirAll(dir, 0755); err != nil {
@@ -33,5 +43,14 @@ func installZshCompletion(dir string) error {
 	}
 
 	ui.Info("zsh completions successfully installed", target)
+	return nil
+}
+
+func uninstallZshCompletion(dir string) error {
+	err := os.Remove(filepath.Join(dir, "_tusk"))
+	if !os.IsNotExist(err) {
+		return err
+	}
+
 	return nil
 }
