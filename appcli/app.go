@@ -30,6 +30,10 @@ func newBaseApp() *cli.App {
 			Name:  "f, file",
 			Usage: "Set `file` to use as the config file",
 		},
+		cli.StringFlag{
+			Name:  "install-completions",
+			Usage: "Install completions for a `shell`",
+		},
 		cli.BoolFlag{
 			Name:  "q, quiet",
 			Usage: "Only print command output and application errors",

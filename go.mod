@@ -8,9 +8,10 @@ require (
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/urfave/cli v1.20.0
-	golang.org/x/sys v0.0.0-20190419153524-e8e3143a4f4a // indirect
+	golang.org/x/sys v0.0.0-20190422165155-953cdadca894 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v2 v2.2.2
+	gotest.tools v2.2.0+incompatible
 )
 
 replace github.com/urfave/cli => github.com/rliebz/cli v0.0.1-tusk

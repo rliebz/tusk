@@ -16,6 +16,9 @@ func main() {
 	status, err := run(os.Args)
 	if err != nil {
 		ui.Error(err)
+		if status == 0 {
+			status = 1
+		}
 	}
 	os.Exit(status)
 }
@@ -40,6 +43,10 @@ func run(args []string) (exitStatus int, err error) {
 
 	if ui.Verbosity != ui.VerbosityLevelSilent {
 		ui.Verbosity = meta.Verbosity
+	}
+
+	if meta.InstallCompletions != "" {
+		return 0, appcli.InstallCompletions(meta.InstallCompletions)
 	}
 
 	if meta.PrintVersion && !meta.PrintHelp {
