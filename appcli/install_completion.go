@@ -79,13 +79,20 @@ func appendIfAbsent(path, text string) error {
 	defer f.Close() // nolint: errcheck
 
 	scanner := bufio.NewScanner(f)
+
+	isEmpty := true
 	for scanner.Scan() {
+		isEmpty = false
 		if scanner.Text() == text {
 			return nil
 		}
 	}
 	if serr := scanner.Err(); serr != nil {
 		return serr
+	}
+
+	if !isEmpty {
+		text = "\n" + text
 	}
 
 	_, err = fmt.Fprintln(f, text)

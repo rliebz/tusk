@@ -68,7 +68,7 @@ func TestGetBashRCFile(t *testing.T) {
 }
 
 func TestAppendIfAbsent(t *testing.T) {
-	existing := "# First Line\n"
+	existing := "# First Line"
 	f := fs.NewFile(t, "bashrc", fs.WithContent(existing))
 	defer f.Remove()
 
@@ -76,7 +76,7 @@ func TestAppendIfAbsent(t *testing.T) {
 	err := appendIfAbsent(f.Path(), text)
 	assert.NilError(t, err)
 
-	want := existing + text + "\n"
+	want := existing + "\n" + text + "\n"
 	got, err := ioutil.ReadFile(f.Path())
 	assert.NilError(t, err)
 
