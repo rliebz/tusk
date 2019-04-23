@@ -27,6 +27,8 @@ func InstallCompletions(shell string) error {
 // UninstallCompletions uninstalls command line completions for a given shell.
 func UninstallCompletions(shell string) error {
 	switch shell {
+	case "bash":
+		return uninstallBashCompletion()
 	case "zsh":
 		return uninstallZshCompletion(zshInstallDir)
 	default:
@@ -97,6 +99,45 @@ func appendIfAbsent(path, text string) error {
 
 	_, err = fmt.Fprintln(f, text)
 	return err
+}
+
+func uninstallBashCompletion() error {
+	rcfile, err := getBashRCFile()
+	if err != nil {
+		return err
+	}
+
+	return removeLineInFile(rcfile, bashCommand)
+}
+
+func removeLineInFile(path, text string) error {
+	rf, err := os.OpenFile(path, os.O_RDONLY, 0644) // nolint: gosec
+	if err != nil {
+		return err
+	}
+	defer rf.Close() // nolint: errcheck
+
+	wf, err := ioutil.TempFile("", ".profile.tusk.bkp")
+	if err != nil {
+		return err
+	}
+	defer wf.Close() // nolint: errcheck
+
+	scanner := bufio.NewScanner(rf)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == text {
+			continue
+		}
+
+		_, err := fmt.Fprintln(wf, line)
+		if err != nil {
+			return err
+		}
+	}
+
+	return os.Rename(wf.Name(), path)
 }
 
 func installZshCompletion(dir string) error {
