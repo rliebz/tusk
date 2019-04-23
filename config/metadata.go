@@ -9,12 +9,13 @@ import (
 
 // Metadata contains global configuration settings.
 type Metadata struct {
-	CfgText            []byte
-	Directory          string
-	InstallCompletions string
-	PrintHelp          bool
-	PrintVersion       bool
-	Verbosity          ui.VerbosityLevel
+	CfgText              []byte
+	Directory            string
+	InstallCompletions   string
+	UninstallCompletions string
+	PrintHelp            bool
+	PrintVersion         bool
+	Verbosity            ui.VerbosityLevel
 }
 
 // Set sets the metadata based on options.
@@ -41,6 +42,7 @@ func (m *Metadata) Set(o OptGetter) error {
 	}
 
 	m.InstallCompletions = o.String("install-completions")
+	m.UninstallCompletions = o.String("uninstall-completions")
 	m.Directory = filepath.Dir(fullPath)
 	m.PrintHelp = o.Bool("help")
 	m.PrintVersion = o.Bool("version")
