@@ -12,6 +12,35 @@ import (
 	"gotest.tools/fs"
 )
 
+func TestInstallBashCompletion(t *testing.T) {
+	homedir := fs.NewDir(t, "home")
+	defer homedir.Remove()
+
+	datadir := fs.NewDir(t, "data")
+	defer datadir.Remove()
+
+	defer env.PatchAll(t, map[string]string{
+		"HOME":          homedir.Path(),
+		"USERPROFILE":   homedir.Path(),
+		"XDG_DATA_HOME": datadir.Path(),
+	})()
+
+	err := installBashCompletion()
+	assert.NilError(t, err)
+
+	completionFile := filepath.Join(datadir.Path(), "tusk-completion.bash")
+	contents, err := ioutil.ReadFile(completionFile)
+	assert.NilError(t, err)
+
+	assert.Check(t, cmp.Equal(string(contents), rawBashCompletion))
+
+	rcfile := filepath.Join(homedir.Path(), ".bashrc")
+	rcContents, err := ioutil.ReadFile(rcfile)
+	assert.NilError(t, err)
+
+	assert.Check(t, cmp.Contains(string(rcContents), "source "+completionFile))
+}
+
 func TestGetBashRCFile(t *testing.T) {
 	tests := []struct {
 		name   string
