@@ -31,13 +31,13 @@ func newBaseApp() *cli.App {
 			Usage: "Set `file` to use as the config file",
 		},
 		cli.StringFlag{
-			Name:   "install-completions",
-			Usage:  "Install completions for a `shell`",
+			Name:   "install-completion",
+			Usage:  "Install tab completion for a `shell`",
 			Hidden: true,
 		},
 		cli.StringFlag{
-			Name:   "uninstall-completions",
-			Usage:  "Uninstall completions for a `shell`",
+			Name:   "uninstall-completion",
+			Usage:  "Uninstall tab completion for a `shell`",
 			Hidden: true,
 		},
 		cli.BoolFlag{

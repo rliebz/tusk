@@ -46,10 +46,10 @@ func run(args []string) (exitStatus int, err error) {
 	}
 
 	switch {
-	case meta.InstallCompletions != "":
-		return 0, appcli.InstallCompletions(meta.InstallCompletions)
-	case meta.UninstallCompletions != "":
-		return 0, appcli.UninstallCompletions(meta.UninstallCompletions)
+	case meta.InstallCompletion != "":
+		return 0, appcli.InstallCompletion(meta.InstallCompletion)
+	case meta.UninstallCompletion != "":
+		return 0, appcli.UninstallCompletion(meta.UninstallCompletion)
 	case meta.PrintVersion && !meta.PrintHelp:
 		ui.Println(version)
 		return 0, nil
