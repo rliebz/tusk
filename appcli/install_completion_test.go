@@ -1,6 +1,7 @@
 package appcli
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -49,7 +50,8 @@ func TestInstallBashCompletion(t *testing.T) {
 	rcContents, err := ioutil.ReadFile(rcfile)
 	assert.NilError(t, err)
 
-	assert.Check(t, cmp.Contains(string(rcContents), "source "+completionFile))
+	command := fmt.Sprintf("source %q", filepath.ToSlash(completionFile))
+	assert.Check(t, cmp.Contains(string(rcContents), command))
 }
 
 func TestGetBashRCFile(t *testing.T) {
@@ -175,7 +177,8 @@ func TestUninstallBashCompletion(t *testing.T) {
 
 	rcfile := filepath.Join(datadir.Path(), "tusk-completion.bash")
 
-	homedir := fs.NewDir(t, "home", fs.WithFile(".bashrc", "# Preamble\nsource "+rcfile))
+	contents := fmt.Sprintf("# Preamble\nsource %q", filepath.ToSlash(rcfile))
+	homedir := fs.NewDir(t, "home", fs.WithFile(".bashrc", contents))
 	defer homedir.Remove()
 
 	defer env.PatchAll(t, map[string]string{
