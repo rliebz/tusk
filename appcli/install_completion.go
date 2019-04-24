@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/ui"
@@ -37,9 +38,6 @@ func UninstallCompletions(shell string) error {
 	}
 }
 
-// TODO: Write the real command
-const bashCommand = `echo "Hello, world"`
-
 var bashRCFiles = []string{".bashrc", ".bash_profile", ".profile"}
 
 func installBashCompletion() error {
@@ -58,7 +56,8 @@ func installBashCompletion() error {
 		return err
 	}
 
-	return appendIfAbsent(rcfile, bashCommand)
+	command := "source " + filepath.Join(dir, "tusk-completion.bash")
+	return appendIfAbsent(rcfile, command)
 }
 
 func getBashRCFile() (string, error) {
@@ -132,10 +131,11 @@ func uninstallBashCompletion() error {
 		return err
 	}
 
-	return removeLineInFile(rcfile, bashCommand)
+	re := regexp.MustCompile("source .*/tusk-completion.bash")
+	return removeLineInFile(rcfile, re)
 }
 
-func removeLineInFile(path, text string) error {
+func removeLineInFile(path string, re *regexp.Regexp) error {
 	rf, err := os.OpenFile(path, os.O_RDONLY, 0644) // nolint: gosec
 	if err != nil {
 		return err
@@ -153,10 +153,10 @@ func removeLineInFile(path, text string) error {
 	buf := ""
 	for scanner.Scan() {
 		line := scanner.Text()
-		switch line {
-		case text:
+		switch {
+		case re.MatchString(line):
 			continue
-		case "":
+		case line == "":
 			buf += "\n"
 			continue
 		}
