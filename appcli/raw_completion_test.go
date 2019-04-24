@@ -14,6 +14,7 @@ func TestCompletionsUpToDate(t *testing.T) {
 		want  []byte
 	}{
 		{"zsh", "../completion/_tusk", []byte(rawZshCompletion)},
+		{"bash", "../completion/tusk-completion.bash", []byte(rawBashCompletion)},
 	}
 
 	for _, tt := range tests {

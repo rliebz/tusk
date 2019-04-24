@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/ui"
 )
 
@@ -42,6 +43,16 @@ const bashCommand = `echo "Hello, world"`
 var bashRCFiles = []string{".bashrc", ".bash_profile", ".profile"}
 
 func installBashCompletion() error {
+	dir, err := config.DataHome()
+	if err != nil {
+		return err
+	}
+
+	err = installFileInDir(dir, "tusk-completion.bash", []byte(rawBashCompletion))
+	if err != nil {
+		return err
+	}
+
 	rcfile, err := getBashRCFile()
 	if err != nil {
 		return err
@@ -106,6 +117,16 @@ func appendIfAbsent(path, text string) error {
 }
 
 func uninstallBashCompletion() error {
+	dir, err := config.DataHome()
+	if err != nil {
+		return err
+	}
+
+	err = uninstallFileFromDir(dir, "tusk-completion.bash")
+	if err != nil {
+		return err
+	}
+
 	rcfile, err := getBashRCFile()
 	if err != nil {
 		return err
@@ -152,22 +173,31 @@ func removeLineInFile(path, text string) error {
 }
 
 func installZshCompletion(dir string) error {
+	return installFileInDir(dir, "_tusk", []byte(rawZshCompletion))
+}
+
+func installFileInDir(dir, file string, content []byte) error {
 	// nolint: gosec
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
 	}
 
-	target := filepath.Join(dir, "_tusk")
-	if err := ioutil.WriteFile(target, []byte(rawZshCompletion), 0644); err != nil {
+	target := filepath.Join(dir, file)
+	if err := ioutil.WriteFile(target, content, 0644); err != nil {
 		return err
 	}
 
-	ui.Info("zsh completions successfully installed", target)
+	ui.Info("Completions successfully installed", target)
+	ui.Info("You may need to restart your shell for completions to take effect")
 	return nil
 }
 
 func uninstallZshCompletion(dir string) error {
-	err := os.Remove(filepath.Join(dir, "_tusk"))
+	return uninstallFileFromDir(dir, "_tusk")
+}
+
+func uninstallFileFromDir(dir, file string) error {
+	err := os.Remove(filepath.Join(dir, file))
 	if !os.IsNotExist(err) {
 		return err
 	}
