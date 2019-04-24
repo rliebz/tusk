@@ -1,6 +1,7 @@
 package appcli
 
 import (
+	"bytes"
 	"io/ioutil"
 	"testing"
 
@@ -19,10 +20,13 @@ func TestCompletionsUpToDate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.shell, func(t *testing.T) {
-			got, err := ioutil.ReadFile(tt.path)
+			contents, err := ioutil.ReadFile(tt.path)
 			if err != nil {
 				t.Fatal(err)
 			}
+
+			// Ignore windows line endings
+			got := bytes.ReplaceAll(contents, []byte("\r\n"), []byte("\n"))
 
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("completions out of date between in-memory file and %q", tt.path)
