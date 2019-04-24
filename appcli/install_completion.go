@@ -173,6 +173,9 @@ func removeLineInFile(path string, re *regexp.Regexp) error {
 
 		buf = ""
 	}
+	if serr := scanner.Err(); serr != nil {
+		return serr
+	}
 
 	rf.Close() // nolint: errcheck
 	wf.Close() // nolint: errcheck
