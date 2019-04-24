@@ -14,12 +14,12 @@ import (
 )
 
 func TestInstallCompletionUnsupported(t *testing.T) {
-	err := InstallCompletions("fake")
+	err := InstallCompletion("fake")
 	assert.ErrorContains(t, err, `tab completion for "fake" is not supported`)
 }
 
 func TestUninstallCompletionUnsupported(t *testing.T) {
-	err := UninstallCompletions("fake")
+	err := UninstallCompletion("fake")
 	assert.ErrorContains(t, err, `tab completion for "fake" is not supported`)
 }
 

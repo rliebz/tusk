@@ -20,8 +20,8 @@ const (
 
 var bashRCFiles = []string{".bashrc", ".bash_profile", ".profile"}
 
-// InstallCompletions installs command line completions for a given shell.
-func InstallCompletions(shell string) error {
+// InstallCompletion installs command line tab completion for a given shell.
+func InstallCompletion(shell string) error {
 	switch shell {
 	case "bash":
 		return installBashCompletion()
@@ -32,8 +32,8 @@ func InstallCompletions(shell string) error {
 	}
 }
 
-// UninstallCompletions uninstalls command line completions for a given shell.
-func UninstallCompletions(shell string) error {
+// UninstallCompletion uninstalls command line tab completion for a given shell.
+func UninstallCompletion(shell string) error {
 	switch shell {
 	case "bash":
 		return uninstallBashCompletion()
@@ -191,8 +191,8 @@ func installFileInDir(dir, file string, content []byte) error {
 		return err
 	}
 
-	ui.Info("Completions successfully installed", target)
-	ui.Info("You may need to restart your shell for completions to take effect")
+	ui.Info("Tab completion successfully installed", target)
+	ui.Info("You may need to restart your shell for completion to take effect")
 	return nil
 }
 
