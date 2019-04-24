@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	"gotest.tools/assert"
@@ -11,6 +12,16 @@ import (
 	"gotest.tools/env"
 	"gotest.tools/fs"
 )
+
+func TestInstallCompletionUnsupported(t *testing.T) {
+	err := InstallCompletions("fake")
+	assert.ErrorContains(t, err, `tab completion for "fake" is not supported`)
+}
+
+func TestUninstallCompletionUnsupported(t *testing.T) {
+	err := UninstallCompletions("fake")
+	assert.ErrorContains(t, err, `tab completion for "fake" is not supported`)
+}
 
 func TestInstallBashCompletion(t *testing.T) {
 	homedir := fs.NewDir(t, "home")
@@ -156,6 +167,57 @@ func TestAppendIfAbsent_no_file(t *testing.T) {
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(text+"\n", string(got)))
+}
+
+func TestUninstallBashCompletion(t *testing.T) {
+	datadir := fs.NewDir(t, "data", fs.WithFile("tusk-completion.bash", rawBashCompletion))
+	defer datadir.Remove()
+
+	rcfile := filepath.Join(datadir.Path(), "tusk-completion.bash")
+
+	homedir := fs.NewDir(t, "home", fs.WithFile(".bashrc", "# Preamble\nsource "+rcfile))
+	defer homedir.Remove()
+
+	defer env.PatchAll(t, map[string]string{
+		"HOME":          homedir.Path(),
+		"USERPROFILE":   homedir.Path(),
+		"XDG_DATA_HOME": datadir.Path(),
+	})()
+
+	err := uninstallBashCompletion()
+	assert.NilError(t, err)
+
+	_, err = os.Stat(rcfile)
+	assert.Check(t, os.IsNotExist(err))
+
+	got, err := ioutil.ReadFile(filepath.Join(homedir.Path(), ".bashrc"))
+	assert.NilError(t, err)
+
+	assert.Check(t, cmp.Equal("# Preamble\n", string(got)))
+}
+
+func TestRemoveLineInFile(t *testing.T) {
+	content := `# First
+match
+
+# Second
+
+match`
+	want := `# First
+
+# Second
+`
+
+	file := fs.NewFile(t, "file", fs.WithContent(content))
+	defer file.Remove()
+
+	err := removeLineInFile(file.Path(), regexp.MustCompile("match"))
+	assert.NilError(t, err)
+
+	got, err := ioutil.ReadFile(file.Path())
+	assert.NilError(t, err)
+
+	assert.Check(t, cmp.Equal(want, string(got)))
 }
 
 func TestInstallZshCompletion(t *testing.T) {
