@@ -12,7 +12,13 @@ import (
 	"github.com/rliebz/tusk/ui"
 )
 
-const zshInstallDir = "/usr/local/share/zsh/site-functions"
+const (
+	bashCompletionFile = "tusk-completion.bash"
+	zshCompletionFile  = "_tusk"
+	zshInstallDir      = "/usr/local/share/zsh/site-functions"
+)
+
+var bashRCFiles = []string{".bashrc", ".bash_profile", ".profile"}
 
 // InstallCompletions installs command line completions for a given shell.
 func InstallCompletions(shell string) error {
@@ -38,15 +44,13 @@ func UninstallCompletions(shell string) error {
 	}
 }
 
-var bashRCFiles = []string{".bashrc", ".bash_profile", ".profile"}
-
 func installBashCompletion() error {
 	dir, err := config.DataHome()
 	if err != nil {
 		return err
 	}
 
-	err = installFileInDir(dir, "tusk-completion.bash", []byte(rawBashCompletion))
+	err = installFileInDir(dir, bashCompletionFile, []byte(rawBashCompletion))
 	if err != nil {
 		return err
 	}
@@ -56,7 +60,7 @@ func installBashCompletion() error {
 		return err
 	}
 
-	command := "source " + filepath.Join(dir, "tusk-completion.bash")
+	command := "source " + filepath.Join(dir, bashCompletionFile)
 	return appendIfAbsent(rcfile, command)
 }
 
@@ -121,7 +125,7 @@ func uninstallBashCompletion() error {
 		return err
 	}
 
-	err = uninstallFileFromDir(dir, "tusk-completion.bash")
+	err = uninstallFileFromDir(dir, bashCompletionFile)
 	if err != nil {
 		return err
 	}
@@ -131,7 +135,7 @@ func uninstallBashCompletion() error {
 		return err
 	}
 
-	re := regexp.MustCompile("source .*/tusk-completion.bash")
+	re := regexp.MustCompile("source .*/" + bashCompletionFile)
 	return removeLineInFile(rcfile, re)
 }
 
@@ -173,7 +177,7 @@ func removeLineInFile(path string, re *regexp.Regexp) error {
 }
 
 func installZshCompletion(dir string) error {
-	return installFileInDir(dir, "_tusk", []byte(rawZshCompletion))
+	return installFileInDir(dir, zshCompletionFile, []byte(rawZshCompletion))
 }
 
 func installFileInDir(dir, file string, content []byte) error {
@@ -193,7 +197,7 @@ func installFileInDir(dir, file string, content []byte) error {
 }
 
 func uninstallZshCompletion(dir string) error {
-	return uninstallFileFromDir(dir, "_tusk")
+	return uninstallFileFromDir(dir, zshCompletionFile)
 }
 
 func uninstallFileFromDir(dir, file string) error {
