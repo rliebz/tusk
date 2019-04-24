@@ -52,6 +52,24 @@ On macOS, installation is also available through [homebrew][homebrew]:
 brew install rliebz/tusk/tusk
 ```
 
+With Homebrew, tab completion is installed automatically.
+
+#### Tab Completion
+
+For bash:
+
+```bash
+tusk --install-completion bash
+```
+
+For zsh:
+
+```zsh
+tusk --install-completion zsh
+```
+
+Completions can be uninstalled as well with the `--uninstall-completion` flag.
+
 ### Usage
 
 Create a `tusk.yml` file in the root of a project repository:
