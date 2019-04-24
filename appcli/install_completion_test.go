@@ -96,7 +96,23 @@ func TestGetBashRCFile(t *testing.T) {
 	}
 }
 
-func TestAppendIfAbsent(t *testing.T) {
+func TestAppendIfAbsent_trailing_newlines(t *testing.T) {
+	existing := "# First Line\n\n"
+	f := fs.NewFile(t, "bashrc", fs.WithContent(existing))
+	defer f.Remove()
+
+	text := "# Second Line"
+	err := appendIfAbsent(f.Path(), text)
+	assert.NilError(t, err)
+
+	want := existing + text + "\n"
+	got, err := ioutil.ReadFile(f.Path())
+	assert.NilError(t, err)
+
+	assert.Check(t, cmp.Equal(want, string(got)))
+}
+
+func TestAppendIfAbsent_no_trailing_newline(t *testing.T) {
 	existing := "# First Line"
 	f := fs.NewFile(t, "bashrc", fs.WithContent(existing))
 	defer f.Remove()
