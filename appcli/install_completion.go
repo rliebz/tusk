@@ -60,7 +60,8 @@ func installBashCompletion() error {
 		return err
 	}
 
-	command := "source " + filepath.Join(dir, bashCompletionFile)
+	slashPath := filepath.ToSlash(filepath.Join(dir, bashCompletionFile))
+	command := fmt.Sprintf("source %q", slashPath)
 	return appendIfAbsent(rcfile, command)
 }
 
@@ -135,7 +136,7 @@ func uninstallBashCompletion() error {
 		return err
 	}
 
-	re := regexp.MustCompile("source .*/" + bashCompletionFile)
+	re := regexp.MustCompile(fmt.Sprintf(`source ".*/%s"`, bashCompletionFile))
 	return removeLineInFile(rcfile, re)
 }
 
@@ -173,6 +174,8 @@ func removeLineInFile(path string, re *regexp.Regexp) error {
 		buf = ""
 	}
 
+	rf.Close() // nolint: errcheck
+	wf.Close() // nolint: errcheck
 	return os.Rename(wf.Name(), path)
 }
 
