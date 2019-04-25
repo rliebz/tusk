@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+
+## 0.4.4 (2018-04-24)
 ### Added
 - Bash and zsh completion can be installed and uninstalled by command-line.
 
