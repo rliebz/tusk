@@ -168,7 +168,7 @@ five different checks supported:
   Commands will execute in the order defined and stop execution at the first
   successful command.
 - `exists` (list): Execute if any of the listed files exists.
-- `not-exists` (list): Execute if any of the listed files doesn't exists.
+- `not-exists` (list): Execute if any of the listed files doesn't exist.
 - `os` (list): Execute if the operating system matches any one from the list.
 - `environment` (map[string -> list]): Execute if the environment variable
   matches any of the values it maps to. To check if a variable is not set, the
@@ -222,8 +222,26 @@ when: foo
 
 A `when` clause takes a list of items, where each item can have multiple checks.
 Each `when` item will pass if _any_ of the checks pass, while the whole clause
-will only pass if _all_ of the items pass. These properties can be combined for
-more complicated logic:
+will only pass if _all_ of the items pass. For example:
+
+```yaml
+tasks:
+  exists:
+    run:
+      - when:
+          # There is a single `when` item with two checks
+          exists:
+            - file_one.txt
+            - file_two.txt
+        command: echo "At least one file exists"
+      - when:
+          # There are two separate `when` items with one check each
+          - exists: file_one.txt
+          - exists: file_two.txt
+        command: echo "Both files exist"
+```
+
+These properties can be combined for more complicated logic:
 
 ```yaml
 tasks:
