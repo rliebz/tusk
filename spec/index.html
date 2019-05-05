@@ -429,7 +429,8 @@ five different checks supported:</p>
 <li><code>command</code> (list): Execute if any command runs with an exit code of <code>0</code>.
   Commands will execute in the order defined and stop execution at the first
   successful command.</li>
-<li><code>exists</code> (list): Execute if any file listed exists.</li>
+<li><code>exists</code> (list): Execute if any of the listed files exists.</li>
+<li><code>not-exists</code> (list): Execute if any of the listed files doesn't exist.</li>
 <li><code>os</code> (list): Execute if the operating system matches any one from the list.</li>
 <li><code>environment</code> (map[string -&gt; list]): Execute if the environment variable
   matches any of the values it maps to. To check if a variable is not set, the
@@ -478,8 +479,25 @@ to see if some option <code>foo</code> has been set to <code>true</code>:</p>
 <h4 id="when-anyall-logic">When Any/All Logic</h4>
 <p>A <code>when</code> clause takes a list of items, where each item can have multiple checks.
 Each <code>when</code> item will pass if <em>any</em> of the checks pass, while the whole clause
-will only pass if <em>all</em> of the items pass. These properties can be combined for
-more complicated logic:</p>
+will only pass if <em>all</em> of the items pass. For example:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">exists</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
+          <span class="c1"># There is a single `when` item with two checks</span>
+          <span class="l l-Scalar l-Scalar-Plain">exists</span><span class="p p-Indicator">:</span>
+            <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">file_one.txt</span>
+            <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">file_two.txt</span>
+        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;At least one file exists&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
+          <span class="c1"># There are two separate `when` items with one check each</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">exists</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">file_one.txt</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">exists</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">file_two.txt</span>
+        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Both files exist&quot;</span>
+</pre></div>
+
+
+<p>These properties can be combined for more complicated logic:</p>
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
   <span class="l l-Scalar l-Scalar-Plain">echo</span><span class="p p-Indicator">:</span>
     <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
