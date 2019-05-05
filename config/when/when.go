@@ -175,15 +175,13 @@ func (w *When) validateNotExists() error {
 	for _, f := range w.NotExists {
 		if _, err := os.Stat(f); err != nil {
 			if os.IsNotExist(err) {
-				continue
+				return nil
 			}
 			return err
 		}
-
-		return newCondFailErrorf("file exists, but shouldn't: %s", w.NotExists)
 	}
 
-	return nil
+	return newCondFailErrorf("all files exist: %s", w.NotExists)
 }
 
 func (w *When) validateOS() error {
