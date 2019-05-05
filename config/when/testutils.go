@@ -49,6 +49,13 @@ func WithExists(filename string) func(w *When) {
 	}
 }
 
+// WithNotExists returns an operator that requires a file to not exist.
+func WithNotExists(filename string) func(w *When) {
+	return func(w *When) {
+		w.NotExists = append(w.NotExists, filename)
+	}
+}
+
 // WithOS returns an operator that requires an arbitrary OS.
 func WithOS(name string) func(w *When) {
 	return func(w *When) {
