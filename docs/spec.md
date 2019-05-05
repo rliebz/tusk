@@ -167,8 +167,8 @@ five different checks supported:
 - `command` (list): Execute if any command runs with an exit code of `0`.
   Commands will execute in the order defined and stop execution at the first
   successful command.
-- `exists` (list): Execute if all files listed exists.
-- `not-exists` (list): Execute if all files listed doesn't exists.
+- `exists` (list): Execute if any of the listed files exists.
+- `not-exists` (list): Execute if any of the listed files doesn't exists.
 - `os` (list): Execute if the operating system matches any one from the list.
 - `environment` (map[string -> list]): Execute if the environment variable
   matches any of the values it maps to. To check if a variable is not set, the
