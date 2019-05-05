@@ -155,8 +155,8 @@ var whenValidateTests = []struct {
 	// Not Exist Clauses
 	{Create(WithNotExists("when_test.go")), nil, true},
 	{Create(WithNotExists("fakefile")), nil, false},
-	{Create(WithNotExists("fakefile"), WithNotExists("when_test.go")), nil, true},
-	{Create(WithNotExists("when_test.go"), WithNotExists("fakefile")), nil, true},
+	{Create(WithNotExists("fakefile"), WithNotExists("when_test.go")), nil, false},
+	{Create(WithNotExists("when_test.go"), WithNotExists("fakefile")), nil, false},
 	{Create(WithNotExists("fakefile"), WithNotExists("fakefile2")), nil, false},
 
 	// OS Clauses
