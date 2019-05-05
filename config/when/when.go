@@ -13,9 +13,10 @@ import (
 
 // When defines the conditions for running a task.
 type When struct {
-	Command marshal.StringList `yaml:",omitempty"`
-	Exists  marshal.StringList `yaml:",omitempty"`
-	OS      marshal.StringList `yaml:",omitempty"`
+	Command   marshal.StringList `yaml:",omitempty"`
+	Exists    marshal.StringList `yaml:",omitempty"`
+	NotExists marshal.StringList `yaml:"not-exists,omitempty"`
+	OS        marshal.StringList `yaml:",omitempty"`
 
 	Environment map[string]marshal.NullableStringList `yaml:",omitempty"`
 	Equal       map[string]marshal.StringList         `yaml:",omitempty"`
@@ -112,6 +113,7 @@ func (w *When) Validate(vars map[string]string) error {
 		w.validateNotEqual(vars),
 		w.validateEnv(),
 		w.validateExists(),
+		w.validateNotExists(),
 		w.validateCommand(),
 	)
 }
@@ -163,6 +165,25 @@ func (w *When) validateExists() error {
 	}
 
 	return newCondFailErrorf("no required file existed: %s", w.Exists)
+}
+
+func (w *When) validateNotExists() error {
+	if len(w.NotExists) == 0 {
+		return newUnspecifiedError("not-exists")
+	}
+
+	for _, f := range w.NotExists {
+		if _, err := os.Stat(f); err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
+			return err
+		}
+
+		return newCondFailErrorf("file exists, but shouldn't: %s", w.NotExists)
+	}
+
+	return nil
 }
 
 func (w *When) validateOS() error {
