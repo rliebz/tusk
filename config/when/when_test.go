@@ -29,6 +29,11 @@ var unmarshalTests = []struct {
 		Create(WithNotEqual("foo", "bar")),
 	},
 	{
+		"not-exists",
+		`not-exists: file.txt`,
+		Create(WithNotExists("file.txt")),
+	},
+	{
 		"null environment",
 		`environment: {foo: null}`,
 		Create(WithoutEnv("foo")),
@@ -158,6 +163,7 @@ var whenValidateTests = []struct {
 	{Create(WithNotExists("fakefile"), WithNotExists("when_test.go")), nil, false},
 	{Create(WithNotExists("when_test.go"), WithNotExists("fakefile")), nil, false},
 	{Create(WithNotExists("fakefile"), WithNotExists("fakefile2")), nil, false},
+	{Create(WithNotExists("when.go"), WithNotExists("when_test.go")), nil, true},
 
 	// OS Clauses
 	{Create(WithOSSuccess), nil, false},
@@ -264,6 +270,7 @@ var whenValidateTests = []struct {
 		Create(
 			WithCommandFailure,
 			WithExists("fakefile"),
+			WithNotExists("when_test.go"),
 			WithOSFailure,
 			WithEnvFailure,
 			WithEqual("foo", "wrong"),
@@ -276,6 +283,7 @@ var whenValidateTests = []struct {
 		Create(
 			WithCommandSuccess,
 			WithExists("fakefile"),
+			WithNotExists("when_test.go"),
 			WithOSFailure,
 			WithEnvFailure,
 			WithEqual("foo", "wrong"),
@@ -288,6 +296,7 @@ var whenValidateTests = []struct {
 		Create(
 			WithCommandFailure,
 			WithExists("when_test.go"),
+			WithNotExists("when_test.go"),
 			WithOSFailure,
 			WithEnvFailure,
 			WithEqual("foo", "wrong"),
@@ -300,6 +309,20 @@ var whenValidateTests = []struct {
 		Create(
 			WithCommandFailure,
 			WithExists("fakefile"),
+			WithNotExists("fakefile"),
+			WithOSFailure,
+			WithEnvFailure,
+			WithEqual("foo", "wrong"),
+			WithNotEqual("foo", "true"),
+		),
+		map[string]string{"foo": "true"},
+		false,
+	},
+	{
+		Create(
+			WithCommandFailure,
+			WithExists("fakefile"),
+			WithNotExists("when_test.go"),
 			WithOSSuccess,
 			WithEnvFailure,
 			WithEqual("foo", "wrong"),
@@ -312,6 +335,7 @@ var whenValidateTests = []struct {
 		Create(
 			WithCommandFailure,
 			WithExists("fakefile"),
+			WithNotExists("when_test.go"),
 			WithOSFailure,
 			WithEnvSuccess,
 			WithEqual("foo", "wrong"),
@@ -324,6 +348,7 @@ var whenValidateTests = []struct {
 		Create(
 			WithCommandFailure,
 			WithExists("fakefile"),
+			WithNotExists("when_test.go"),
 			WithOSFailure,
 			WithEnvFailure,
 			WithEqual("foo", "true"),
@@ -336,6 +361,7 @@ var whenValidateTests = []struct {
 		Create(
 			WithCommandFailure,
 			WithExists("fakefile"),
+			WithNotExists("when_test.go"),
 			WithOSFailure,
 			WithEnvFailure,
 			WithEqual("foo", "wrong"),
