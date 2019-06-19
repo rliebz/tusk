@@ -48,8 +48,7 @@ defaults:
 
 version: 2
 jobs:
-  # For running tests locally
-  build:
+  local:
     <<: *job_dry_run
     steps:
       - checkout

@@ -7,14 +7,24 @@ tasks:
       application.
     options:
       bin-dir:
-        usage: The location for binary files. Defaults to $GOPATH/bin
-        default: $(go env GOPATH)/bin
+        usage: The location for binary files. Defaults to /usr/local/bin
+        default: /usr/local/bin
       golangci-url:
         private: true
         default: https://install.goreleaser.com/github.com/golangci/golangci-lint.sh
+      golangci-version:
+        private: true
+        default: 1.15.0
     run:
-      - curl -sfL ${golangci-url} | bash -s -- -b $(go env GOPATH)/bin v1.15.0
-      - go get -u golang.org/x/tools/cmd/goimports
+      - when:
+          command: golangci-lint --version | grep -qv ${golangci-version}
+        command: curl -fLSs ${golangci-url} | bash -s -- -b ${bin-dir} v${golangci-version}
+      - when:
+          command: "! command -v goimports"
+        command: GO111MODULE=off go get golang.org/x/tools/cmd/goimports
+      - when:
+          command: '! command -v circleci'
+        command: curl -fLSs https://circle.ci/cli | DESTDIR=${bin-dir} bash
 
   lint:
     usage: Run static analysis
@@ -76,30 +86,15 @@ tasks:
   circleci:
     usage: Run the circleci build locally
     description: |
-      Alternative to `tusk test`.
+      Alternative to `tusk test --all`.
 
-      Download the circleci agent if needed and run `circleci build`. This will
-      spin up a docker container locally and run linters and tests in an
-      environment that more closely resembles the pipeline run on CircleCI, but
-      is not easily configurable.
+      Run the local build using the CircleCI command-line tool. This will spin
+      up a docker container locally and run linters and tests in an environment
+      that more closely resembles the pipeline run on CircleCI, but is not
+      easily configurable.
 
       Requires docker to be running locally.
-    options:
-      bin-path:
-        private: true
-        default: /usr/local/bin/circleci
-      download-path:
-        private: true
-        default: https://circle-downloads.s3.amazonaws.com/releases/build_agent_wrapper/circleci
-      no-install:
-        usage: Do not install the CLI locally if not already available
-        type: bool
-    run:
-      - when:
-          - not-equal: {no-install: true}
-          - command: '! command -v circleci'
-        command: curl -o ${bin-path} ${download-path} && chmod +x ${bin-path}
-      - command: circleci build
+    run: circleci local execute --job local
 
   release:
     usage: Release the latest version with goreleaser
