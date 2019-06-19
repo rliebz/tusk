@@ -14,7 +14,7 @@ tasks:
         default: https://install.goreleaser.com/github.com/golangci/golangci-lint.sh
       golangci-version:
         private: true
-        default: 1.15.0
+        default: 1.17.1
     run:
       - when:
           command: golangci-lint --version | grep -qv ${golangci-version}
