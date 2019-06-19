@@ -9,7 +9,7 @@ type SubTask struct {
 	Options map[string]string
 }
 
-// UnmarshalYAML allows unmarshalling a string to represent the subtask name.
+// UnmarshalYAML allows unmarshaling a string to represent the subtask name.
 func (s *SubTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var name string
@@ -28,7 +28,7 @@ func (s *SubTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return marshal.UnmarshalOneOf(nameCandidate, subTaskCandidate)
 }
 
-// SubTaskList is a list of subtasks with custom yaml unmarshalling.
+// SubTaskList is a list of subtasks with custom yaml unmarshaling.
 type SubTaskList []*SubTask
 
 // UnmarshalYAML allows single items to be used as lists.

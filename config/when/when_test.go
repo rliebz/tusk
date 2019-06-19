@@ -54,7 +54,7 @@ func TestWhen_UnmarshalYAML(t *testing.T) {
 		w := When{}
 		if err := yaml.Unmarshal([]byte(tt.input), &w); err != nil {
 			t.Errorf(
-				`Unmarshalling %s: unexpected error: %s`,
+				`Unmarshaling %s: unexpected error: %s`,
 				tt.desc, err,
 			)
 			continue

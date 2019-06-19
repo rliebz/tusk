@@ -91,7 +91,7 @@ func (r *Run) shouldRun(vars map[string]string) (bool, error) {
 	return true, nil
 }
 
-// RunList is a list of run items with custom yaml unmarshalling.
+// RunList is a list of run items with custom yaml unmarshaling.
 type RunList []*Run
 
 // UnmarshalYAML allows single items to be used as lists.

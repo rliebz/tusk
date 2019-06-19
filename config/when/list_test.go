@@ -48,7 +48,7 @@ func TestList_UnmarshalYAML(t *testing.T) {
 			l := List{}
 			if err := yaml.Unmarshal([]byte(tt.input), &l); err != nil {
 				t.Fatalf(
-					`Unmarshalling %s: unexpected error: %s`,
+					`Unmarshaling %s: unexpected error: %s`,
 					tt.desc, err,
 				)
 			}

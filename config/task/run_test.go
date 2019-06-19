@@ -24,7 +24,7 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 
 	if !reflect.DeepEqual(r1, r2) {
 		t.Errorf(
-			"Unmarshalling of runs `%s` and `%s` not equal:\n%#v != %#v",
+			"Unmarshaling of runs `%s` and `%s` not equal:\n%#v != %#v",
 			s1, s2, r1, r2,
 		)
 	}
@@ -167,7 +167,7 @@ func TestRunList_UnmarshalYAML(t *testing.T) {
 
 	if !reflect.DeepEqual(h1, h2) {
 		t.Errorf(
-			"Unmarshalling of runLists `%s` and `%s` not equal:\n%#v != %#v",
+			"Unmarshaling of runLists `%s` and `%s` not equal:\n%#v != %#v",
 			s1, s2, h1, h2,
 		)
 	}

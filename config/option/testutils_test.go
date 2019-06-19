@@ -33,7 +33,7 @@ func TestWithDependency(t *testing.T) {
 
 	actual, err := yaml.Marshal(o)
 	if err != nil {
-		t.Fatalf("unexpected error marshalling option: %s", err)
+		t.Fatalf("unexpected error marshaling option: %s", err)
 	}
 
 	if !strings.Contains(string(actual), expectedA) {

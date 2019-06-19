@@ -23,7 +23,7 @@ func TestValue_UnmarshalYAML(t *testing.T) {
 
 	if !reflect.DeepEqual(v1, v2) {
 		t.Errorf(
-			"Unmarshalling of values `%s` and `%s` not equal:\n%#v != %#v",
+			"Unmarshaling of values `%s` and `%s` not equal:\n%#v != %#v",
 			s1, s2, v1, v2,
 		)
 	}
@@ -63,7 +63,7 @@ func TestValueList_UnmarshalYAML(t *testing.T) {
 
 	if !reflect.DeepEqual(v1, v2) {
 		t.Errorf(
-			"Unmarshalling of valueLists `%s` and `%s` not equal:\n%#v != %#v",
+			"Unmarshaling of valueLists `%s` and `%s` not equal:\n%#v != %#v",
 			s1, s2, v1, v2,
 		)
 	}

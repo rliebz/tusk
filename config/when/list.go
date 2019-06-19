@@ -2,7 +2,7 @@ package when
 
 import "github.com/rliebz/tusk/config/marshal"
 
-// List is a list of when items with custom yaml unmarshalling.
+// List is a list of when items with custom yaml unmarshaling.
 type List []When
 
 // UnmarshalYAML allows single items to be used as lists.

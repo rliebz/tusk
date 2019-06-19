@@ -6,20 +6,20 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// UnmarshalCandidate is a candidate for unmarshalling.
+// UnmarshalCandidate is a candidate for unmarshaling.
 // Candidates should only be defined inside of an UnmarshalYAML function.
 type UnmarshalCandidate struct {
 	// Unmarshal should return the result of UnmarshalYAML's unmarshal function.
 	// This simply provides a closure so that different data types can be
-	// safely passed into the unmarshalling function without reflection.
+	// safely passed into the unmarshaling function without reflection.
 	Unmarshal func() error
 
-	// Assign assigns the newly unmarshalled item using a closure.
-	// This allows the resulting value from an unmarshalling to be assigned
+	// Assign assigns the newly unmarshaled item using a closure.
+	// This allows the resulting value from an unmarshaling to be assigned
 	// to the receiver of the custom UnmarshalYAML function.
 	Assign func()
 
-	// Validate is an optional function that can validate after unmarshalling.
+	// Validate is an optional function that can validate after unmarshaling.
 	// Assignment will not occur if validation fails.
 	Validate func() error
 }

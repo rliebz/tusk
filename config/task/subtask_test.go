@@ -23,7 +23,7 @@ func TestSubTask_UnmarshalYAML(t *testing.T) {
 
 	if !reflect.DeepEqual(st1, st2) {
 		t.Errorf(
-			"Unmarshalling of subtasks `%s` and `%s` not equal:\n%#v != %#v",
+			"Unmarshaling of subtasks `%s` and `%s` not equal:\n%#v != %#v",
 			s1, s2, st1, st2,
 		)
 	}
@@ -52,7 +52,7 @@ func TestSubTaskList_UnmarshalYAML(t *testing.T) {
 
 	if !reflect.DeepEqual(l1, l2) {
 		t.Errorf(
-			"Unmarshalling of SubTaskLists `%s` and `%s` not equal:\n%#v != %#v",
+			"Unmarshaling of SubTaskLists `%s` and `%s` not equal:\n%#v != %#v",
 			s1, s2, l1, l2,
 		)
 	}

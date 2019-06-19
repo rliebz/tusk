@@ -62,7 +62,7 @@ func (v *Value) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return marshal.UnmarshalOneOf(stringCandidate, valueCandidate)
 }
 
-// ValueList is a slice of values with custom unmarshalling.
+// ValueList is a slice of values with custom unmarshaling.
 type ValueList []Value
 
 // UnmarshalYAML allows single items to be used as lists.

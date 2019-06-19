@@ -8,7 +8,7 @@ import (
 
 // ParseOrderedMap returns a list of keys in order and performs map assignment.
 // The assign function passed allows a closure to handle the map assignment in
-// a type-safe manner using the keyname and raw text ready to be unmarshalled.
+// a type-safe manner using the keyname and raw text ready to be unmarshaled.
 func ParseOrderedMap(
 	ms yaml.MapSlice,
 	assign func(string, []byte) error,

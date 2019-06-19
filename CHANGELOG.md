@@ -216,7 +216,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Options can be exported to environment variables.
 
 ### Changed
-- Improve error handling in custom yaml unmarshalling.
+- Improve error handling in custom yaml unmarshaling.
 - Exit for unexpected errors occuring during when clause validation.
 - Use exit code 1 for all unexpected errors.
 - Unexpected arguments now cause an error.

@@ -85,12 +85,12 @@ func getDependencies(item dependencyGetter) ([]string, error) {
 
 	// TODO: Remove json dependency by implementing stringer interface
 	// json is used to print computed fields that should not be yaml parseable
-	marshalled, err := json.Marshal(item)
+	marshaled, err := json.Marshal(item)
 	if err != nil {
 		return nil, err
 	}
 
-	names := interp.FindPotentialVariables(marshalled)
+	names := interp.FindPotentialVariables(marshaled)
 	names = append(names, item.Dependencies()...)
 
 	return names, nil

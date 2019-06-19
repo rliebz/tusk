@@ -28,7 +28,7 @@ func TestStringList(t *testing.T) {
 
 	if !reflect.DeepEqual(h1, h2) {
 		t.Errorf(
-			"Unmarshalling of StringLists `%s` and `%s` not equal:\n%#v != %#v",
+			"Unmarshaling of StringLists `%s` and `%s` not equal:\n%#v != %#v",
 			s1, s2, h1, h2,
 		)
 	}
@@ -81,7 +81,7 @@ func TestNullableStringList(t *testing.T) {
 
 	if !reflect.DeepEqual(nsl1, nsl2) {
 		t.Errorf(
-			"Unmarshalling of NullableStringLists `%s` and `%s` not equal:\n%#v != %#v",
+			"Unmarshaling of NullableStringLists `%s` and `%s` not equal:\n%#v != %#v",
 			s1, s2, nsl1, nsl2,
 		)
 	}

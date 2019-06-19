@@ -1,7 +1,7 @@
 package marshal
 
 // StringList is a list of strings optionally represented in yaml as a string.
-// A single string in yaml will be unmarshalled as the first entry in a list,
+// A single string in yaml will be unmarshaled as the first entry in a list,
 // so the internal representation is always a list.
 type StringList []string
 
@@ -23,7 +23,7 @@ func (sl *StringList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 // NullableStringList is a list of nullable strings optionally represented in
-// yaml as a string. A single string in yaml will be unmarshalled as the first
+// yaml as a string. A single string in yaml will be unmarshaled as the first
 // entry in a list, so the internal representation is always a list.  Due to a
 // quirk of the yaml-parsing library, a single null item will be interpretted as
 // a null list rather than a list containing a single null item.
