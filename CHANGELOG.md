@@ -3,17 +3,22 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
-## 0.4.5 (2018-05-05)
+## 0.4.6 (2019-06-30)
+### Added
+- Support Alpine Linux with binary releases.
+
+
+## 0.4.5 (2019-05-05)
 ### Added
 - Support `not-exists` check inside `when` clauses.
 
 
-## 0.4.4 (2018-04-24)
+## 0.4.4 (2019-04-24)
 ### Added
 - Bash and zsh completion can be installed and uninstalled by command-line.
 
 
-## 0.4.3 (2018-03-31)
+## 0.4.3 (2019-03-31)
 ### Added
 - Help text for commands now includes arguments section.
 - Include subtask hierarchy on command run.
