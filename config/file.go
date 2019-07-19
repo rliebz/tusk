@@ -46,7 +46,6 @@ func searchForFile() (fullPath string, found bool, err error) {
 }
 
 func findFileInDir(dirPath string) (fullPath string, found bool, err error) {
-
 	for _, fileName := range defaultFiles {
 		fullPath, found, err = findFileInDirByName(dirPath, fileName)
 		if err != nil || found {
@@ -58,7 +57,6 @@ func findFileInDir(dirPath string) (fullPath string, found bool, err error) {
 }
 
 func findFileInDirByName(dirPath, fileName string) (fullPath string, found bool, err error) {
-
 	fullPath = filepath.Join(dirPath, fileName)
 	if _, err := os.Stat(fullPath); err != nil {
 		if os.IsNotExist(err) {

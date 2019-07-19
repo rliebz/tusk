@@ -42,7 +42,6 @@ func FindAllOptions(t *task.Task, cfg *Config) ([]*option.Option, error) {
 func findRequiredOptionsRecursively(
 	entry []string, candidates map[string]*option.Option, found []*option.Option,
 ) ([]*option.Option, error) {
-
 candidates:
 	for _, item := range entry {
 		candidate := candidates[item]
@@ -82,7 +81,6 @@ type dependencyGetter interface {
 }
 
 func getDependencies(item dependencyGetter) ([]string, error) {
-
 	// TODO: Remove json dependency by implementing stringer interface
 	// json is used to print computed fields that should not be yaml parseable
 	marshaled, err := json.Marshal(item)

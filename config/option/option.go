@@ -45,7 +45,6 @@ func (o *Option) Dependencies() []string {
 
 // UnmarshalYAML ensures that the option definition is valid.
 func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	type optionType Option // Use new type to avoid recursion
 	if err := unmarshal((*optionType)(o)); err != nil {
 		return err
@@ -128,7 +127,6 @@ func (o *Option) getValue(vars map[string]string) (string, error) {
 }
 
 func (o *Option) getSpecified() (value string, found bool) {
-
 	if o.Passed != "" {
 		return o.Passed, true
 	}

@@ -11,7 +11,6 @@ type SubTask struct {
 
 // UnmarshalYAML allows unmarshaling a string to represent the subtask name.
 func (s *SubTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	var name string
 	nameCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&name) },
@@ -33,7 +32,6 @@ type SubTaskList []*SubTask
 
 // UnmarshalYAML allows single items to be used as lists.
 func (l *SubTaskList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	var subTaskSlice []*SubTask
 	sliceCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&subTaskSlice) },

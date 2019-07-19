@@ -66,7 +66,6 @@ func Deprecate(a ...interface{}) {
 	if len(a) > 0 {
 		message := fmt.Sprint(a[0])
 		for _, d := range deprecations {
-
 			if message == d {
 				return
 			}

@@ -109,7 +109,6 @@ func TestGetArgsWithOrder(t *testing.T) {
 			expectedOrder, ordered,
 		)
 	}
-
 }
 
 func TestGetArgsWithOrder_null_arg(t *testing.T) {

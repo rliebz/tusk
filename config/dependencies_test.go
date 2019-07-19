@@ -203,7 +203,6 @@ var findalloptionstests = []struct {
 }
 
 func TestFindAllOptions(t *testing.T) {
-
 	for _, tt := range findalloptionstests {
 
 		tsk := task.Task{

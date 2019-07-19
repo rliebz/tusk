@@ -7,7 +7,6 @@ type List []When
 
 // UnmarshalYAML allows single items to be used as lists.
 func (l *List) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	var whenSlice []When
 	sliceCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&whenSlice) },

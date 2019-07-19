@@ -150,7 +150,6 @@ func removeCompletionArg(args []string) []string {
 
 // isCompletingArg returns if the trailing arg is an incomplete flag.
 func isCompletingArg(flags []cli.Flag, arg string) bool {
-
 	if !strings.HasPrefix(arg, "-") {
 		return false
 	}

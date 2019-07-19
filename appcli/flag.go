@@ -28,7 +28,6 @@ func copyFlags(target, source *cli.App) {
 
 // addAllFlagsUsed adds the top-level flags to tasks where interpolation is used.
 func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) error {
-
 	dependencies, err := config.FindAllOptions(t, cfg)
 	if err != nil {
 		return err
@@ -72,7 +71,6 @@ func addFlag(command *cli.Command, opt *option.Option) error {
 
 // createCLIFlag converts an Option into a cli.Flag.
 func createCLIFlag(opt *option.Option) (cli.Flag, error) {
-
 	name := opt.Name
 	if opt.Short != "" {
 		name = fmt.Sprintf("%s, %s", name, opt.Short)

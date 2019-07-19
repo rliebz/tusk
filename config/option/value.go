@@ -19,7 +19,6 @@ type Value struct {
 
 // commandValueOrDefault validates a content definition, then gets the value.
 func (v *Value) commandValueOrDefault() (string, error) {
-
 	if v.Command != "" {
 		out, err := exec.Command("sh", "-c", v.Command).Output() // nolint: gosec
 		if err != nil {
@@ -35,7 +34,6 @@ func (v *Value) commandValueOrDefault() (string, error) {
 // UnmarshalYAML allows plain strings to represent a full struct. The value of
 // the string is used as the Default field.
 func (v *Value) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	var valueString string
 	stringCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&valueString) },
@@ -67,7 +65,6 @@ type ValueList []Value
 
 // UnmarshalYAML allows single items to be used as lists.
 func (vl *ValueList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	var valueSlice []Value
 	sliceCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&valueSlice) },

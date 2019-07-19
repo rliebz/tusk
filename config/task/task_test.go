@@ -241,7 +241,6 @@ func TestTask_run_environment(t *testing.T) {
 			toBeUnset, actual,
 		)
 	}
-
 }
 
 func TestTask_run_finally(t *testing.T) {

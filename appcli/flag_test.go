@@ -19,7 +19,6 @@ func TestCreateCLIFlag_undefined(t *testing.T) {
 }
 
 func TestAddFlag_no_duplicates(t *testing.T) {
-
 	command := &cli.Command{}
 
 	opt := &option.Option{
@@ -41,5 +40,4 @@ func TestAddFlag_no_duplicates(t *testing.T) {
 			2, len(command.Flags),
 		)
 	}
-
 }

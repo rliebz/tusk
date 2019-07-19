@@ -367,7 +367,6 @@ func TestOption_UnmarshalYAML(t *testing.T) {
 			s, expected, actual,
 		)
 	}
-
 }
 
 var unmarshalOptionErrorTests = []struct {
@@ -459,5 +458,4 @@ func TestGetOptionsWithOrder(t *testing.T) {
 			expectedOrder, ordered,
 		)
 	}
-
 }

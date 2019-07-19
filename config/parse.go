@@ -27,7 +27,6 @@ func ParseComplete(
 	args []string,
 	flags map[string]string,
 ) (*Config, error) {
-
 	cfg, err := Parse(cfgText)
 	if err != nil {
 		return nil, err
@@ -89,7 +88,6 @@ func passTaskValues(t *task.Task, cfg *Config, passed map[string]string) error {
 func interpolateGlobalOptions(
 	t *task.Task, cfg *Config, passed map[string]string,
 ) (map[string]string, error) {
-
 	globalOptions, err := getRequiredGlobalOptions(t, cfg)
 	if err != nil {
 		return nil, err
@@ -167,7 +165,6 @@ func interpolateOption(o *option.Option, passed, vars map[string]string) error {
 }
 
 func interpolateTask(t *task.Task, passed, vars map[string]string) error {
-
 	taskVars := make(map[string]string, len(vars)+len(t.Args)+len(t.Options))
 	for k, v := range vars {
 		taskVars[k] = v
@@ -203,7 +200,6 @@ func interpolateTask(t *task.Task, passed, vars map[string]string) error {
 }
 
 func addSubTasks(t *task.Task, cfg *Config) error {
-
 	for _, run := range t.AllRunItems() {
 		for _, subTaskDesc := range run.SubTaskList {
 			st, ok := cfg.Tasks[subTaskDesc.Name]
@@ -266,7 +262,6 @@ func copyTask(t *task.Task) *task.Task {
 func getArgValues(
 	subTask *task.Task, argsPassed []string,
 ) (map[string]string, error) {
-
 	if len(argsPassed) != len(subTask.Args) {
 		return nil, fmt.Errorf(
 			"subtask %q requires %d args but got %d",
@@ -280,5 +275,4 @@ func getArgValues(
 	}
 
 	return values, nil
-
 }

@@ -14,7 +14,6 @@ import (
 // init sets the help templates for urfave/cli.
 // nolint: lll, gochecknoinits
 func init() {
-
 	cli.HelpPrinter = helpPrinter
 	cli.FlagNamePrefixer = flagPrefixer
 

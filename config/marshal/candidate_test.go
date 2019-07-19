@@ -74,11 +74,9 @@ func TestOneOf_error(t *testing.T) {
 	); err == nil {
 		t.Error("OneOf(invalid): expected error, got nil")
 	}
-
 }
 
 func TestOneOf_success(t *testing.T) {
-
 	validateCalled := false
 	assignCalled := false
 
@@ -111,5 +109,4 @@ func TestOneOf_success(t *testing.T) {
 	); err != nil {
 		t.Errorf(`OneOf(failed, invalid, success): unexpected error: %s`, err)
 	}
-
 }

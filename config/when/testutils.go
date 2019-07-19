@@ -123,7 +123,7 @@ var WithoutEnvFailure = func(w *When) {
 }
 
 func randomString() string {
-	var letters = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ_")
+	letters := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ_")
 	a := make([]rune, 20)
 	for i := range a {
 		a[i] = letters[rand.Intn(len(letters))]

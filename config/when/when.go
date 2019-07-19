@@ -25,7 +25,6 @@ type When struct {
 
 // UnmarshalYAML warns about deprecated features.
 func (w *When) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	var equal marshal.StringList
 	slCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&equal) },
@@ -294,7 +293,6 @@ func validateEquality(
 	cases map[string]marshal.StringList,
 	compare func(string, string) bool,
 ) error {
-
 	for optionName, values := range cases {
 		actual, ok := options[optionName]
 		if !ok {

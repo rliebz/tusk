@@ -8,7 +8,7 @@ import (
 )
 
 func TestList_UnmarshalYAML(t *testing.T) {
-	var unmarshalTests = []struct {
+	unmarshalTests := []struct {
 		desc     string
 		input    string
 		expected List

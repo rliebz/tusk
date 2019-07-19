@@ -24,7 +24,6 @@ type Run struct {
 // UnmarshalYAML allows plain strings to represent a run struct. The value of
 // the string is used as the Command field.
 func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	var command string
 	commandCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&command) },
@@ -96,7 +95,6 @@ type RunList []*Run
 
 // UnmarshalYAML allows single items to be used as lists.
 func (rl *RunList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	var runSlice []*Run
 	sliceCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&runSlice) },

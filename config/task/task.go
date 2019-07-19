@@ -39,7 +39,6 @@ type Task struct {
 
 // UnmarshalYAML unmarshals and assigns names to options.
 func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
-
 	type taskType Task // Use new type to avoid recursion
 	if err := unmarshal((*taskType)(t)); err != nil {
 		return err

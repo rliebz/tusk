@@ -33,5 +33,4 @@ func TestCompletionsUpToDate(t *testing.T) {
 			}
 		})
 	}
-
 }

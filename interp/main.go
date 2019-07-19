@@ -62,7 +62,6 @@ func interpolate(text []byte, name, value string) ([]byte, error) {
 
 // mapInterpolate runs interpolation over a map from variable name to value.
 func mapInterpolate(text []byte, m map[string]string) ([]byte, error) {
-
 	for variable, value := range m {
 		var err error
 		text, err = interpolate(text, variable, value)
