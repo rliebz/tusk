@@ -8,8 +8,8 @@ import (
 
 // Config is a struct representing the format for configuration settings.
 type Config struct {
-	Name  *string
-	Usage *string
+	Name  string
+	Usage string
 
 	Tasks          map[string]*task.Task
 	OptionMapSlice yaml.MapSlice `yaml:"options,omitempty"`

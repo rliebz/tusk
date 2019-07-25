@@ -119,12 +119,12 @@ func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 	}
 
 	app := newBaseApp()
-	if cfg.Name != nil {
-		app.Name = *cfg.Name
-		app.HelpName = *cfg.Name
+	if cfg.Name != "" {
+		app.Name = cfg.Name
+		app.HelpName = cfg.Name
 	}
-	if cfg.Usage != nil {
-		app.Usage = *cfg.Usage
+	if cfg.Usage != "" {
+		app.Usage = cfg.Usage
 	}
 
 	if err := addTasks(app, cfg, createExecuteCommand); err != nil {
