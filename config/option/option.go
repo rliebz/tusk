@@ -190,15 +190,52 @@ func (o *Option) isBoolean() bool {
 	}
 }
 
-// GetOptionsWithOrder returns both the option map and the ordered names.
-func GetOptionsWithOrder(ms yaml.MapSlice) (map[string]*Option, []string, error) {
-	options := make(map[string]*Option, len(ms))
-	assign := func(name string, text []byte) error {
-		opt := &Option{Name: name}
-		options[name] = opt
-		return yaml.Unmarshal(text, opt)
+// Options represents an ordered set of options as specified in the config.
+type Options []*Option
+
+// UnmarshalYAML unmarshals an ordered set of options and assigns names.
+func (o *Options) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var ms yaml.MapSlice
+	if err := unmarshal(&ms); err != nil {
+		return err
 	}
 
-	ordered, err := marshal.ParseOrderedMap(ms, assign)
-	return options, ordered, err
+	options, err := GetOptionsWithOrder(ms)
+	if err != nil {
+		return err
+	}
+
+	*o = options
+
+	return nil
+}
+
+// Lookup finds an option by name.
+func (o *Options) Lookup(name string) (*Option, bool) {
+	for _, opt := range *o {
+		if opt.Name == name {
+			return opt, true
+		}
+	}
+
+	return nil, false
+}
+
+// GetOptionsWithOrder returns both the option map and the ordered names.
+func GetOptionsWithOrder(ms yaml.MapSlice) ([]*Option, error) {
+	options := make([]*Option, 0, len(ms))
+	assign := func(name string, text []byte) error {
+		var opt Option
+		if err := yaml.Unmarshal(text, &opt); err != nil {
+			return err
+		}
+		opt.Name = name
+
+		options = append(options, &opt)
+
+		return nil
+	}
+
+	_, err := marshal.ParseOrderedMap(ms, assign)
+	return options, err
 }

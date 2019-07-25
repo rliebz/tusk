@@ -94,8 +94,7 @@ func interpolateGlobalOptions(
 	}
 
 	vars := make(map[string]string, len(globalOptions))
-	for _, name := range globalOptions {
-		o := cfg.Options[name]
+	for _, o := range globalOptions {
 		if err := interpolateOption(o, passed, vars); err != nil {
 			return nil, err
 		}
@@ -104,16 +103,16 @@ func interpolateGlobalOptions(
 	return vars, nil
 }
 
-func getRequiredGlobalOptions(t *task.Task, cfg *Config) ([]string, error) {
+func getRequiredGlobalOptions(t *task.Task, cfg *Config) (option.Options, error) {
 	required, err := FindAllOptions(t, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	var output []string
-	for _, o := range cfg.OrderedOptionNames {
+	var output option.Options
+	for _, o := range cfg.Options {
 		for _, r := range required {
-			if r.Name != o {
+			if r.Name != o.Name {
 				continue
 			}
 
@@ -178,9 +177,7 @@ func interpolateTask(t *task.Task, passed, vars map[string]string) error {
 		}
 	}
 
-	for _, name := range t.OrderedOptionNames {
-		o := t.Options[name]
-
+	for _, o := range t.Options {
 		if err := interpolateOption(o, passed, taskVars); err != nil {
 			return err
 		}
@@ -218,7 +215,7 @@ func addSubTasks(t *task.Task, cfg *Config) error {
 			}
 
 			for optName, opt := range subTaskDesc.Options {
-				if _, isValidOption := subTask.Options[optName]; !isValidOption {
+				if _, isValidOption := subTask.Options.Lookup(optName); !isValidOption {
 					return fmt.Errorf(
 						"option %q cannot be passed to task %q",
 						optName, subTask.Name,
@@ -249,10 +246,10 @@ func copyTask(t *task.Task) *task.Task {
 	}
 	newTask.Args = argsCopy
 
-	optionsCopy := make(map[string]*option.Option, len(newTask.Options))
-	for name, ptr := range newTask.Options {
+	optionsCopy := make(option.Options, 0, len(newTask.Options))
+	for _, ptr := range newTask.Options {
 		opt := *ptr
-		optionsCopy[name] = &opt
+		optionsCopy = append(optionsCopy, &opt)
 	}
 	newTask.Options = optionsCopy
 

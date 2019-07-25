@@ -420,22 +420,19 @@ func TestGetOptionsWithOrder(t *testing.T) {
 		{Key: "bar", Value: &Option{Environment: "barenv"}},
 	}
 
-	options, ordered, err := GetOptionsWithOrder(ms)
+	options, err := GetOptionsWithOrder(ms)
 	if err != nil {
 		t.Fatalf("GetOptionsWithOrder(ms) => unexpected error: %v", err)
 	}
 
-	if len(ms) != len(options) || len(ms) != len(ordered) {
+	if len(ms) != len(options) {
 		t.Fatalf(
-			"GetOptionsWithOrder(ms) => want %d items, got %d in map and %d in slice",
-			len(ms), len(options), len(ordered),
+			"GetOptionsWithOrder(ms) => want %d items, got %d",
+			len(ms), len(options),
 		)
 	}
 
-	opt, ok := options[name]
-	if !ok {
-		t.Fatalf("GetOptionsWithOrder(ms) => item %q is not in map", name)
-	}
+	opt := options[0]
 
 	if name != opt.Name {
 		t.Errorf(
@@ -451,11 +448,7 @@ func TestGetOptionsWithOrder(t *testing.T) {
 		)
 	}
 
-	expectedOrder := []string{"foo", "bar"}
-	if !reflect.DeepEqual(expectedOrder, ordered) {
-		t.Errorf(
-			"GetOptionsWithOrder(ms) => want ordered %v, got %v",
-			expectedOrder, ordered,
-		)
+	if options[1].Name != "bar" {
+		t.Errorf("GetOptionsWithOrder(ms) => want 2nd option %q, got %q", "bar", options[1].Name)
 	}
 }

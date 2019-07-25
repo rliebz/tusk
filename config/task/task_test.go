@@ -26,17 +26,8 @@ args: { three: {}, four: {} }
 		)
 	}
 
-	for _, expected := range []string{"one", "two"} {
-		opt, ok := task.Options[expected]
-		if !ok {
-			t.Errorf(
-				`yaml.Unmarshal(%q, %+v): did not find option %q`,
-				string(y), task, expected,
-			)
-			continue
-		}
-
-		actual := opt.Name
+	for i, expected := range []string{"one", "two"} {
+		actual := task.Options[i].Name
 		if expected != actual {
 			t.Errorf(
 				`yaml.Unmarshal("%s", %+v): expected option name: %s, actual: %s`,

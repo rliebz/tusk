@@ -16,18 +16,18 @@ func FindAllOptions(t *task.Task, cfg *Config) ([]*option.Option, error) {
 	}
 
 	candidates := make(map[string]*option.Option)
-	for name, opt := range cfg.Options {
+	for _, opt := range cfg.Options {
 		// Args that share a name with global options take priority
-		if _, ok := t.Args[name]; ok {
+		if _, ok := t.Args[opt.Name]; ok {
 			continue
 		}
 
-		candidates[name] = opt
+		candidates[opt.Name] = opt
 	}
 
 	required := make([]*option.Option, 0, len(t.Options))
-	for name, opt := range t.Options {
-		candidates[name] = opt
+	for _, opt := range t.Options {
+		candidates[opt.Name] = opt
 		required = append(required, opt)
 	}
 

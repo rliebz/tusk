@@ -205,18 +205,14 @@ var findalloptionstests = []struct {
 func TestFindAllOptions(t *testing.T) {
 	for _, tt := range findalloptionstests {
 
-		tsk := task.Task{
-			Options: map[string]*option.Option{},
-		}
-		for i, o := range tt.taskOptions {
-			tsk.Options[o.Name] = &tt.taskOptions[i]
+		tsk := task.Task{}
+		for i := range tt.taskOptions {
+			tsk.Options = append(tsk.Options, &tt.taskOptions[i])
 		}
 
-		cfg := Config{
-			Options: map[string]*option.Option{},
-		}
-		for i, o := range tt.cfgOptions {
-			cfg.Options[o.Name] = &tt.cfgOptions[i]
+		cfg := Config{}
+		for i := range tt.cfgOptions {
+			cfg.Options = append(cfg.Options, &tt.cfgOptions[i])
 		}
 
 		actual, err := FindAllOptions(&tsk, &cfg)
@@ -259,8 +255,8 @@ func assertOptionsEqualUnordered(t *testing.T, desc string, a, b []*option.Optio
 	for _, item := range a {
 		if _, ok := bMap[item]; !ok {
 			t.Errorf(
-				"expected item %s not in actual list",
-				item.Name,
+				"options for %s: expected item %s not in actual list",
+				desc, item.Name,
 			)
 			continue
 		}

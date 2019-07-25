@@ -894,7 +894,7 @@ tasks:
 	}
 
 	expectedBar := "${foo}"
-	actualBar := cfg.Options["bar"].DefaultValues[0].Value
+	actualBar := cfg.Options[1].DefaultValues[0].Value
 
 	if expectedBar != actualBar {
 		t.Errorf(
