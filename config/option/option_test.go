@@ -420,7 +420,7 @@ func TestGetOptionsWithOrder(t *testing.T) {
 		{Key: "bar", Value: &Option{Environment: "barenv"}},
 	}
 
-	options, err := GetOptionsWithOrder(ms)
+	options, err := getOptionsWithOrder(ms)
 	if err != nil {
 		t.Fatalf("GetOptionsWithOrder(ms) => unexpected error: %v", err)
 	}

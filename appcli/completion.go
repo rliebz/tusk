@@ -54,8 +54,7 @@ func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli
 		if !isCompleting {
 			if len(c.Args())+1 <= len(t.Args) {
 				fmt.Println("task-args")
-				argName := t.OrderedArgNames[len(c.Args())]
-				arg := t.Args[argName]
+				arg := t.Args[len(c.Args())]
 				for _, value := range arg.ValuesAllowed {
 					fmt.Println(value)
 				}

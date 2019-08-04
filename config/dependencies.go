@@ -18,7 +18,7 @@ func FindAllOptions(t *task.Task, cfg *Config) ([]*option.Option, error) {
 	candidates := make(map[string]*option.Option)
 	for _, opt := range cfg.Options {
 		// Args that share a name with global options take priority
-		if _, ok := t.Args[opt.Name]; ok {
+		if _, ok := t.Args.Lookup(opt.Name); ok {
 			continue
 		}
 

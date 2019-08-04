@@ -1,7 +1,6 @@
 package option
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/rliebz/tusk/config/marshal"
@@ -65,60 +64,42 @@ func TestEvaluate_nil(t *testing.T) {
 // nolint: dupl
 func TestGetArgsWithOrder(t *testing.T) {
 	name := "foo"
-	usage := "foo usage"
+	usage := "use me"
 	ms := yaml.MapSlice{
 		{Key: name, Value: &Arg{Usage: usage}},
-		{Key: "bar", Value: &Arg{Usage: "bar usage"}},
+		{Key: "bar", Value: &Arg{Usage: "other usage"}},
 	}
 
-	args, ordered, err := GetArgsWithOrder(ms)
+	args, err := getArgsWithOrder(ms)
 	if err != nil {
 		t.Fatalf("GetArgsWithOrder(ms) => unexpected error: %v", err)
 	}
 
-	if len(ms) != len(args) || len(ms) != len(ordered) {
+	if len(ms) != len(args) {
 		t.Fatalf(
-			"GetArgsWithOrder(ms) => want %d items, got %d in map and %d in slice",
-			len(ms), len(args), len(ordered),
+			"GetArgsWithOrder(ms) => want %d items, got %d",
+			len(ms), len(args),
 		)
 	}
 
-	arg, ok := args[name]
-	if !ok {
-		t.Fatalf("GetArgsWithOrder(ms) => item %q is not in map", name)
-	}
+	opt := args[0]
 
-	if name != arg.Name {
+	if name != opt.Name {
 		t.Errorf(
-			"GetArgsWithOrder(ms) => want arg.Name %q, got %q",
-			name, arg.Name,
+			"GetArgsWithOrder(ms) => want opt.Name %q, got %q",
+			name, opt.Name,
 		)
 	}
 
-	if usage != arg.Usage {
+	if usage != opt.Usage {
 		t.Errorf(
 			"GetArgsWithOrder(ms) => want arg.Usage %q, got %q",
-			usage, arg.Usage,
+			usage, opt.Usage,
 		)
 	}
 
-	expectedOrder := []string{"foo", "bar"}
-	if !reflect.DeepEqual(expectedOrder, ordered) {
-		t.Errorf(
-			"GetArgsWithOrder(ms) => want ordered %v, got %v",
-			expectedOrder, ordered,
-		)
-	}
-}
-
-func TestGetArgsWithOrder_null_arg(t *testing.T) {
-	ms := yaml.MapSlice{
-		{Key: "foo", Value: nil},
-	}
-
-	_, _, err := GetArgsWithOrder(ms)
-	if err == nil {
-		t.Error("GetArgsWithOrder() => expected error for null argument")
+	if args[1].Name != "bar" {
+		t.Errorf("GetArgsWithOrder(ms) => want 2nd arg %q, got %q", "bar", args[1].Name)
 	}
 }
 
@@ -127,7 +108,7 @@ func TestGetArgsWithOrder_invalid(t *testing.T) {
 		{Key: "foo", Value: "not an arg"},
 	}
 
-	_, _, err := GetArgsWithOrder(ms)
+	_, err := getArgsWithOrder(ms)
 	if err == nil {
 		t.Error("GetArgsWithOrder() => expected yaml parsing error")
 	}

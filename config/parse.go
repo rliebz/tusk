@@ -61,8 +61,8 @@ func combineArgsAndFlags(
 
 	passed := make(map[string]string, len(args)+len(flags))
 	i := 0
-	for name := range t.Args {
-		passed[name] = args[i]
+	for _, arg := range t.Args {
+		passed[arg.Name] = args[i]
 		i++
 	}
 	for name, value := range flags {
@@ -169,9 +169,7 @@ func interpolateTask(t *task.Task, passed, vars map[string]string) error {
 		taskVars[k] = v
 	}
 
-	for _, name := range t.OrderedArgNames {
-		a := t.Args[name]
-
+	for _, a := range t.Args {
 		if err := interpolateArg(a, passed, taskVars); err != nil {
 			return err
 		}
@@ -239,10 +237,10 @@ func addSubTasks(t *task.Task, cfg *Config) error {
 func copyTask(t *task.Task) *task.Task {
 	newTask := *t
 
-	argsCopy := make(map[string]*option.Arg, len(newTask.Args))
-	for name, ptr := range newTask.Args {
+	argsCopy := make(option.Args, 0, len(newTask.Args))
+	for _, ptr := range newTask.Args {
 		arg := *ptr
-		argsCopy[name] = &arg
+		argsCopy = append(argsCopy, &arg)
 	}
 	newTask.Args = argsCopy
 
@@ -267,8 +265,8 @@ func getArgValues(
 	}
 
 	values := make(map[string]string)
-	for i, argName := range subTask.OrderedArgNames {
-		values[argName] = argsPassed[i]
+	for i, arg := range subTask.Args {
+		values[arg.Name] = argsPassed[i]
 	}
 
 	return values, nil

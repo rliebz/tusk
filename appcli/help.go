@@ -131,15 +131,14 @@ Arguments:
 
 	padArg := getArgPadder(t)
 
-	argList := make([]string, 0, len(t.OrderedArgNames))
-	for _, name := range t.OrderedArgNames {
-		arg := t.Args[name]
-		argText := fmt.Sprintf("%s%s", padArg(arg.Name), arg.Usage)
-		argList = append(argList, strings.Trim(argText, " "))
+	args := make([]string, 0, len(t.Args))
+	for _, arg := range t.Args {
+		text := fmt.Sprintf("%s%s", padArg(arg.Name), arg.Usage)
+		args = append(args, strings.Trim(text, " "))
 	}
 
 	var argsSection bytes.Buffer
-	if err := tpl.Execute(&argsSection, argList); err != nil {
+	if err := tpl.Execute(&argsSection, args); err != nil {
 		panic(err)
 	}
 
@@ -148,9 +147,9 @@ Arguments:
 
 func getArgPadder(t *task.Task) func(string) string {
 	maxLength := 0
-	for _, arg := range t.OrderedArgNames {
-		if len(arg) > maxLength {
-			maxLength = len(arg)
+	for _, arg := range t.Args {
+		if len(arg.Name) > maxLength {
+			maxLength = len(arg.Name)
 		}
 	}
 	s := fmt.Sprintf("%%-%ds", maxLength+2)

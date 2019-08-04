@@ -37,7 +37,7 @@ args: { three: {}, four: {} }
 	}
 
 	for _, expected := range []string{"three", "four"} {
-		arg, ok := task.Args[expected]
+		arg, ok := task.Args.Lookup(expected)
 		if !ok {
 			t.Errorf(
 				`yaml.Unmarshal(%q, %+v): did not find arg %q`,

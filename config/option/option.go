@@ -200,7 +200,7 @@ func (o *Options) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return err
 	}
 
-	options, err := GetOptionsWithOrder(ms)
+	options, err := getOptionsWithOrder(ms)
 	if err != nil {
 		return err
 	}
@@ -210,7 +210,7 @@ func (o *Options) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-// Lookup finds an option by name.
+// Lookup finds an Option by name.
 func (o *Options) Lookup(name string) (*Option, bool) {
 	for _, opt := range *o {
 		if opt.Name == name {
@@ -221,8 +221,8 @@ func (o *Options) Lookup(name string) (*Option, bool) {
 	return nil, false
 }
 
-// GetOptionsWithOrder returns both the option map and the ordered names.
-func GetOptionsWithOrder(ms yaml.MapSlice) ([]*Option, error) {
+// getOptionsWithOrder returns both the option map and the ordered names.
+func getOptionsWithOrder(ms yaml.MapSlice) ([]*Option, error) {
 	options := make([]*Option, 0, len(ms))
 	assign := func(name string, text []byte) error {
 		var opt Option
