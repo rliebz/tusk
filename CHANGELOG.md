@@ -3,6 +3,11 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 0.4.7 (2019-08-06)
+### Fixed
+- Fix issue where args could be passed to tasks out of order.
+
+
 ## 0.4.6 (2019-06-30)
 ### Added
 - Support Alpine Linux with binary releases.
