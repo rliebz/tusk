@@ -60,10 +60,8 @@ func combineArgsAndFlags(
 	}
 
 	passed := make(map[string]string, len(args)+len(flags))
-	i := 0
-	for _, arg := range t.Args {
+	for i, arg := range t.Args {
 		passed[arg.Name] = args[i]
-		i++
 	}
 	for name, value := range flags {
 		passed[name] = value

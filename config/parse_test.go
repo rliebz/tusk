@@ -36,6 +36,24 @@ tasks:
 	},
 
 	{
+		"multiple argument interpolation",
+		`
+tasks:
+  mytask:
+    args:
+      foo: {}
+      bar: {}
+    run: echo ${foo} ${bar}
+`,
+		[]string{"foovalue", "barvalue"},
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: marshal.StringList{"echo foovalue barvalue"},
+		}},
+	},
+
+	{
 		"argument with global interpolation",
 		`
 options:
