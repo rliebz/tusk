@@ -11,7 +11,7 @@ import (
 // Run defines a a single runnable item within a task.
 type Run struct {
 	When           when.List          `yaml:",omitempty"`
-	Command        marshal.StringList `yaml:",omitempty"`
+	Command        CommandList        `yaml:",omitempty"`
 	SubTaskList    SubTaskList        `yaml:"task,omitempty"`
 	SetEnvironment map[string]*string `yaml:"set-environment,omitempty"`
 	// Deprecated: Use SetEnvironment instead
@@ -21,13 +21,12 @@ type Run struct {
 	Tasks []Task `yaml:"-"`
 }
 
-// UnmarshalYAML allows plain strings to represent a run struct. The value of
-// the string is used as the Command field.
+// UnmarshalYAML allows simple commands to represent run structs.
 func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var command string
+	var cl CommandList
 	commandCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&command) },
-		Assign:    func() { *r = Run{Command: marshal.StringList{command}} },
+		Unmarshal: func() error { return unmarshal(&cl) },
+		Assign:    func() { *r = Run{Command: cl} },
 	}
 
 	type runType Run // Use new type to avoid recursion
@@ -77,7 +76,7 @@ func (r *Run) shouldRun(vars map[string]string) (bool, error) {
 		}
 
 		for _, command := range r.Command {
-			ui.PrintSkipped(command, err.Error())
+			ui.PrintSkipped(command.Print, err.Error())
 		}
 
 		for _, subTask := range r.SubTaskList {

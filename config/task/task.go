@@ -136,12 +136,12 @@ func (t *Task) runCommands(ctx RunContext, r *Run, s executionState) error {
 	for _, command := range r.Command {
 		switch s {
 		case stateFinally:
-			ui.PrintCommandWithParenthetical(command, "finally", ctx.Tasks()...)
+			ui.PrintCommandWithParenthetical(command.Print, "finally", ctx.Tasks()...)
 		default:
-			ui.PrintCommand(command, ctx.Tasks()...)
+			ui.PrintCommand(command.Print, ctx.Tasks()...)
 		}
 
-		if err := execCommand(command); err != nil {
+		if err := execCommand(command.Do); err != nil {
 			ui.PrintCommandError(err)
 			return err
 		}

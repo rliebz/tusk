@@ -7,7 +7,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -110,8 +109,8 @@ var executeTests = []struct {
 func TestTaskExecute_errors_returned(t *testing.T) {
 	for _, tt := range executeTests {
 		t.Run(tt.desc, func(t *testing.T) {
-			run := Run{Command: marshal.StringList{tt.run}}
-			finally := Run{Command: marshal.StringList{tt.finally}}
+			run := Run{Command: CommandList{{Do: tt.run}}}
+			finally := Run{Command: CommandList{{Do: tt.finally}}}
 			task := Task{
 				RunList: RunList{&run},
 				Finally: RunList{&finally},
@@ -129,7 +128,7 @@ func TestTask_run_commands(t *testing.T) {
 	var task Task
 
 	runSuccess := &Run{
-		Command: marshal.StringList{"exit 0"},
+		Command: CommandList{{Do: "exit 0"}},
 	}
 
 	if err := task.run(RunContext{}, runSuccess, stateRunning); err != nil {
@@ -137,7 +136,10 @@ func TestTask_run_commands(t *testing.T) {
 	}
 
 	runFailure := &Run{
-		Command: marshal.StringList{"exit 0", "exit 1"},
+		Command: CommandList{
+			{Do: "exit 0"},
+			{Do: "exit 1"},
+		},
 	}
 
 	if err := task.run(RunContext{}, runFailure, stateRunning); err == nil {
@@ -149,14 +151,14 @@ func TestTask_run_sub_tasks(t *testing.T) {
 	taskSuccess := Task{
 		Name: "success",
 		RunList: RunList{
-			&Run{Command: marshal.StringList{"exit 0"}},
+			&Run{Command: CommandList{{Do: "exit 0"}}},
 		},
 	}
 
 	taskFailure := Task{
 		Name: "failure",
 		RunList: RunList{
-			&Run{Command: marshal.StringList{"exit 1"}},
+			&Run{Command: CommandList{{Do: "exit 1"}}},
 		},
 	}
 
@@ -237,7 +239,7 @@ func TestTask_run_environment(t *testing.T) {
 func TestTask_run_finally(t *testing.T) {
 	task := Task{
 		Finally: RunList{
-			&Run{Command: marshal.StringList{"exit 0"}},
+			&Run{Command: CommandList{{Do: "exit 0"}}},
 		},
 	}
 
@@ -250,7 +252,7 @@ func TestTask_run_finally(t *testing.T) {
 func TestTask_run_finally_error(t *testing.T) {
 	task := Task{
 		Finally: RunList{
-			&Run{Command: marshal.StringList{"exit 1"}},
+			&Run{Command: CommandList{{Do: "exit 1"}}},
 		},
 	}
 
@@ -283,7 +285,7 @@ func TestTask_run_finally_ui(t *testing.T) {
 	task := Task{
 		Name: taskName,
 		Finally: RunList{
-			&Run{Command: marshal.StringList{command}},
+			&Run{Command: CommandList{{Print: command}}},
 		},
 	}
 
@@ -330,7 +332,7 @@ func TestTask_run_finally_ui_fails(t *testing.T) {
 	task := Task{
 		Name: taskName,
 		Finally: RunList{
-			&Run{Command: marshal.StringList{command}},
+			&Run{Command: CommandList{{Do: command, Print: command}}},
 		},
 	}
 

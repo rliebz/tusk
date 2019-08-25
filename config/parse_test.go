@@ -31,7 +31,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -49,7 +52,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue barvalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue barvalue",
+				Print: "echo foovalue barvalue",
+			}},
 		}},
 	},
 
@@ -69,7 +75,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -89,7 +98,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue foovalue",
+				Print: "echo foovalue foovalue",
+			}},
 		}},
 	},
 
@@ -107,7 +119,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo bar"},
+			Command: task.CommandList{{
+				Do:    "echo bar",
+				Print: "echo bar",
+			}},
 		}},
 	},
 
@@ -125,7 +140,10 @@ tasks:
 		map[string]string{"foo": "passed"},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo passed"},
+			Command: task.CommandList{{
+				Do:    "echo passed",
+				Print: "echo passed",
+			}},
 		}},
 	},
 
@@ -147,7 +165,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -170,7 +191,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo ${bar}"},
+			Command: task.CommandList{{
+				Do:    "echo ${bar}",
+				Print: "echo ${bar}",
+			}},
 		}},
 	},
 
@@ -190,7 +214,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -210,7 +237,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -231,7 +261,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -252,7 +285,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo newvalue"},
+			Command: task.CommandList{{
+				Do:    "echo newvalue",
+				Print: "echo newvalue",
+			}},
 		}},
 	},
 
@@ -275,7 +311,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo barvalue"},
+			Command: task.CommandList{{
+				Do:    "echo barvalue",
+				Print: "echo barvalue",
+			}},
 		}},
 	},
 
@@ -296,7 +335,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -320,7 +362,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -356,7 +401,10 @@ tasks:
 		map[string]string{"foo": "passed"},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo passed-1-2"},
+			Command: task.CommandList{{
+				Do:    "echo passed-1-2",
+				Print: "echo passed-1-2",
+			}},
 		}},
 	},
 
@@ -406,9 +454,15 @@ tasks:
 		map[string]string{"foo": "passed"},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo passed-1-2"},
+			Command: task.CommandList{{
+				Do:    "echo passed-1-2",
+				Print: "echo passed-1-2",
+			}},
 		}, {
-			Command: marshal.StringList{"echo onevalue-2 twovalue-2"},
+			Command: task.CommandList{{
+				Do:    "echo onevalue-2 twovalue-2",
+				Print: "echo onevalue-2 twovalue-2",
+			}},
 		}},
 	},
 
@@ -438,9 +492,15 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo one two"},
+			Command: task.CommandList{{
+				Do:    "echo one two",
+				Print: "echo one two",
+			}},
 		}, {
-			Command: marshal.StringList{"echo three four"},
+			Command: task.CommandList{{
+				Do:    "echo three four",
+				Print: "echo three four",
+			}},
 		}},
 	},
 
@@ -467,9 +527,15 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo one"},
+			Command: task.CommandList{{
+				Do:    "echo one",
+				Print: "echo one",
+			}},
 		}, {
-			Command: marshal.StringList{"echo two"},
+			Command: task.CommandList{{
+				Do:    "echo two",
+				Print: "echo two",
+			}},
 		}},
 	},
 
@@ -493,7 +559,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -515,9 +584,15 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo hello"},
+			Command: task.CommandList{{
+				Do:    "echo hello",
+				Print: "echo hello",
+			}},
 		}, {
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -543,13 +618,25 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo first"},
+			Command: task.CommandList{{
+				Do:    "echo first",
+				Print: "echo first",
+			}},
 		}, {
-			Command: marshal.StringList{"echo pre-foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo pre-foovalue",
+				Print: "echo pre-foovalue",
+			}},
 		}, {
-			Command: marshal.StringList{"echo pre-barvalue"},
+			Command: task.CommandList{{
+				Do:    "echo pre-barvalue",
+				Print: "echo pre-barvalue",
+			}},
 		}, {
-			Command: marshal.StringList{"echo done"},
+			Command: task.CommandList{{
+				Do:    "echo done",
+				Print: "echo done",
+			}},
 		}},
 	},
 
@@ -573,7 +660,10 @@ tasks:
 		map[string]string{},
 		"mytask",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}},
 	},
 
@@ -599,7 +689,10 @@ tasks:
 				when.Create(when.WithOS("os1"), when.WithOS("os2")),
 				when.Create(when.WithCommand("echo hello"), when.WithOS("os3")),
 			},
-			Command: marshal.StringList{"echo goodbye"},
+			Command: task.CommandList{{
+				Do:    "echo goodbye",
+				Print: "echo goodbye",
+			}},
 		}},
 	},
 
@@ -634,7 +727,10 @@ tasks:
 					"foo": {"true"},
 				},
 			}},
-			Command: marshal.StringList{"echo yo"},
+			Command: task.CommandList{{
+				Do:    "echo yo",
+				Print: "echo yo",
+			}},
 		}},
 	},
 
@@ -658,9 +754,38 @@ tasks:
 		map[string]string{},
 		"two",
 		task.RunList{{
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
 		}, {
-			Command: marshal.StringList{"echo foovalue"},
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "echo foovalue",
+			}},
+		}},
+	},
+
+	{
+		"command with echo",
+		`
+tasks:
+  mytask:
+    args:
+      foo: {}
+    run:
+      - command:
+          do: echo ${foo}
+          print: don't echo ${foo}
+`,
+		[]string{"foovalue"},
+		map[string]string{},
+		"mytask",
+		task.RunList{{
+			Command: task.CommandList{{
+				Do:    "echo foovalue",
+				Print: "don't echo foovalue",
+			}},
 		}},
 	},
 }
@@ -912,7 +1037,7 @@ tasks:
 	expectedCommand := "echo ${bar}"
 	actualCommand := cfg.Tasks["mytask"].RunList[0].Command[0]
 
-	if expectedCommand != actualCommand {
+	if expectedCommand != actualCommand.Do {
 		t.Errorf(
 			`expected raw command for mytask: "%s", actual: "%s"`,
 			expectedCommand, actualCommand,

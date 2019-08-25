@@ -1,46 +1,57 @@
 package task
 
 import (
-	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/tusk/config/when"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func TestRun_UnmarshalYAML(t *testing.T) {
-	s1 := []byte(`command: example`)
-	s2 := []byte(`example`)
-	r1 := Run{}
-	r2 := Run{}
-
-	if err := yaml.UnmarshalStrict(s1, &r1); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
+	tests := []struct {
+		name string
+		yaml string
+		want Run
+	}{
+		{
+			"short-command",
+			`example`,
+			Run{
+				Command: CommandList{{Do: "example", Print: "example"}},
+			},
+		},
+		{
+			"short-command-list",
+			`[one,two]`,
+			Run{
+				Command: CommandList{
+					{Do: "one", Print: "one"},
+					{Do: "two", Print: "two"},
+				},
+			},
+		},
+		{
+			"named-command",
+			`command: example`,
+			Run{
+				Command: CommandList{{Do: "example", Print: "example"}},
+			},
+		},
 	}
 
-	if err := yaml.UnmarshalStrict(s2, &r2); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var got Run
 
-	if !reflect.DeepEqual(r1, r2) {
-		t.Errorf(
-			"Unmarshaling of runs `%s` and `%s` not equal:\n%#v != %#v",
-			s1, s2, r1, r2,
-		)
-	}
+			if err := yaml.UnmarshalStrict([]byte(tt.yaml), &got); err != nil {
+				t.Fatalf("failed to unmarshal: %v", err)
+			}
 
-	if len(r1.Command) != 1 {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
-			s1, len(r1.Command),
-		)
-	}
-
-	if r1.Command[0] != "example" {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
-			s1, "example", r1.Command,
-		)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("mismatched values:\n%s", diff)
+			}
+		})
 	}
 }
 
@@ -146,50 +157,48 @@ func TestRun_shouldRun(t *testing.T) {
 	}
 }
 
-type runListHolder struct {
-	Foo RunList
-}
-
 func TestRunList_UnmarshalYAML(t *testing.T) {
-	s1 := []byte(`foo: example`)
-	s2 := []byte(`foo: [example]`)
-
-	h1 := runListHolder{}
-	h2 := runListHolder{}
-
-	if err := yaml.UnmarshalStrict(s1, &h1); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
+	tests := []struct {
+		name string
+		yaml string
+		want RunList
+	}{
+		{
+			"single-short-run",
+			`example`,
+			RunList{
+				{Command: CommandList{{Do: "example", Print: "example"}}},
+			},
+		},
+		{
+			"list-short-runs",
+			`[one,two]`,
+			RunList{
+				{Command: CommandList{{Do: "one", Print: "one"}}},
+				{Command: CommandList{{Do: "two", Print: "two"}}},
+			},
+		},
+		{
+			"list-full-runs",
+			`[{command: foo},{set-environment: {bar: null}}]`,
+			RunList{
+				{Command: CommandList{{Do: "foo", Print: "foo"}}},
+				{SetEnvironment: map[string]*string{"bar": nil}},
+			},
+		},
 	}
 
-	if err := yaml.UnmarshalStrict(s2, &h2); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var got RunList
 
-	if !reflect.DeepEqual(h1, h2) {
-		t.Errorf(
-			"Unmarshaling of runLists `%s` and `%s` not equal:\n%#v != %#v",
-			s1, s2, h1, h2,
-		)
-	}
+			if err := yaml.UnmarshalStrict([]byte(tt.yaml), &got); err != nil {
+				t.Fatalf("failed to unmarshal: %v", err)
+			}
 
-	if len(h1.Foo) != 1 {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
-			s1, len(h1.Foo),
-		)
-	}
-
-	if len(h1.Foo[0].Command) != 1 {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected 1 command, actual %d",
-			s1, len(h1.Foo[0].Command),
-		)
-	}
-
-	if h1.Foo[0].Command[0] != "example" {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%v`",
-			s1, "example", h1.Foo[0],
-		)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("mismatched values:\n%s", diff)
+			}
+		})
 	}
 }
