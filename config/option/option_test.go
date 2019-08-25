@@ -347,7 +347,7 @@ func TestOption_Evaluate_type_defaults(t *testing.T) {
 }
 
 func TestOption_UnmarshalYAML(t *testing.T) {
-	s := []byte(`{usage: foo, values: [foo, bar], name: ignored}`)
+	s := []byte(`{usage: foo, values: [foo, bar]}`)
 	expected := Option{
 		Usage: "foo",
 		valueWithList: valueWithList{
@@ -357,13 +357,13 @@ func TestOption_UnmarshalYAML(t *testing.T) {
 	}
 	actual := Option{}
 
-	if err := yaml.Unmarshal(s, &actual); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s, err)
+	if err := yaml.UnmarshalStrict(s, &actual); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s, err)
 	}
 
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf(
-			`yaml.Unmarshal(%s, ...): expected "%#v", actual "%#v"`,
+			`yaml.UnmarshalStrict(%s, ...): expected "%#v", actual "%#v"`,
 			s, expected, actual,
 		)
 	}
@@ -402,9 +402,9 @@ var unmarshalOptionErrorTests = []struct {
 func TestOption_UnmarshalYAML_invalid_definitions(t *testing.T) {
 	for _, tt := range unmarshalOptionErrorTests {
 		o := Option{}
-		if err := yaml.Unmarshal([]byte(tt.input), &o); err == nil {
+		if err := yaml.UnmarshalStrict([]byte(tt.input), &o); err == nil {
 			t.Errorf(
-				"yaml.Unmarshal(%s, ...): expected error for %s, actual nil",
+				"yaml.UnmarshalStrict(%s, ...): expected error for %s, actual nil",
 				tt.input, tt.desc,
 			)
 		}

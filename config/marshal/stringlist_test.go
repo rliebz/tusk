@@ -18,12 +18,12 @@ func TestStringList(t *testing.T) {
 	h1 := StringListHolder{}
 	h2 := StringListHolder{}
 
-	if err := yaml.Unmarshal(s1, &h1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
+	if err := yaml.UnmarshalStrict(s1, &h1); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpcted error: %s", s1, err)
 	}
 
-	if err := yaml.Unmarshal(s2, &h2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s2, err)
+	if err := yaml.UnmarshalStrict(s2, &h2); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpcted error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(h1, h2) {
@@ -35,14 +35,14 @@ func TestStringList(t *testing.T) {
 
 	if len(h1.Foo) != 1 {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected 1 item, actual %d",
+			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
 			s1, len(h1.Foo),
 		)
 	}
 
 	if h1.Foo[0] != "example" {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
+			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
 			s1, "example", h1.Foo[0],
 		)
 	}
@@ -52,15 +52,15 @@ func TestStringList_fails(t *testing.T) {
 	s1 := []byte(`foo: [bar: baz]`)
 	h1 := StringListHolder{}
 
-	if err := yaml.Unmarshal(s1, &h1); err == nil {
-		t.Errorf("yaml.Unmarshal(%s, ...): expected error, got nil", s1)
+	if err := yaml.UnmarshalStrict(s1, &h1); err == nil {
+		t.Errorf("yaml.UnmarshalStrict(%s, ...): expected error, got nil", s1)
 	}
 
 	s2 := []byte(`foo: bar: baz`)
 	h2 := StringListHolder{}
 
-	if err := yaml.Unmarshal(s2, &h2); err == nil {
-		t.Errorf("yaml.Unmarshal(%s, ...): expected error, got nil", s2)
+	if err := yaml.UnmarshalStrict(s2, &h2); err == nil {
+		t.Errorf("yaml.UnmarshalStrict(%s, ...): expected error, got nil", s2)
 	}
 }
 
@@ -71,12 +71,12 @@ func TestNullableStringList(t *testing.T) {
 	nsl1 := NullableStringList{}
 	nsl2 := NullableStringList{}
 
-	if err := yaml.Unmarshal(s1, &nsl1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
+	if err := yaml.UnmarshalStrict(s1, &nsl1); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
 	}
 
-	if err := yaml.Unmarshal(s2, &nsl2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
+	if err := yaml.UnmarshalStrict(s2, &nsl2); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(nsl1, nsl2) {
@@ -88,14 +88,14 @@ func TestNullableStringList(t *testing.T) {
 
 	if len(nsl1) != 1 {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected 1 item, actual %d",
+			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
 			s1, len(nsl1),
 		)
 	}
 
 	if *nsl1[0] != "example" {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
+			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
 			s1, "example", *nsl1[0],
 		)
 	}
@@ -106,8 +106,8 @@ func TestNullableStringList_null(t *testing.T) {
 
 	nsl := NullableStringList{}
 
-	if err := yaml.Unmarshal(s, &nsl); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s, err)
+	if err := yaml.UnmarshalStrict(s, &nsl); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s, err)
 	}
 
 	if len(nsl) != 0 {
@@ -119,8 +119,8 @@ func TestNullableStringList_null_item(t *testing.T) {
 	s := []byte("[one, null, two]")
 	nsl := NullableStringList{}
 
-	if err := yaml.Unmarshal(s, &nsl); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s, err)
+	if err := yaml.UnmarshalStrict(s, &nsl); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s, err)
 	}
 
 	if len(nsl) != 3 {
@@ -136,14 +136,14 @@ func TestNullableStringList_fails(t *testing.T) {
 	s1 := []byte(`[bar: baz]`)
 	nsl1 := NullableStringList{}
 
-	if err := yaml.Unmarshal(s1, &nsl1); err == nil {
-		t.Errorf("yaml.Unmarshal(%s, ...): expected error, got nil", s1)
+	if err := yaml.UnmarshalStrict(s1, &nsl1); err == nil {
+		t.Errorf("yaml.UnmarshalStrict(%s, ...): expected error, got nil", s1)
 	}
 
 	s2 := []byte(`foo: bar: baz`)
 	nsl2 := NullableStringList{}
 
-	if err := yaml.Unmarshal(s2, &nsl2); err == nil {
-		t.Errorf("yaml.Unmarshal(%s, ...): expected error, got nil", s2)
+	if err := yaml.UnmarshalStrict(s2, &nsl2); err == nil {
+		t.Errorf("yaml.UnmarshalStrict(%s, ...): expected error, got nil", s2)
 	}
 }

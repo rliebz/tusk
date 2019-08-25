@@ -19,9 +19,9 @@ args: { three: {}, four: {} }
 `)
 	task := Task{}
 
-	if err := yaml.Unmarshal(y, &task); err != nil {
+	if err := yaml.UnmarshalStrict(y, &task); err != nil {
 		t.Fatalf(
-			`yaml.Unmarshal("%s", %+v): unexpected error: %s`,
+			`yaml.UnmarshalStrict("%s", %+v): unexpected error: %s`,
 			string(y), task, err,
 		)
 	}
@@ -30,7 +30,7 @@ args: { three: {}, four: {} }
 		actual := task.Options[i].Name
 		if expected != actual {
 			t.Errorf(
-				`yaml.Unmarshal("%s", %+v): expected option name: %s, actual: %s`,
+				`yaml.UnmarshalStrict("%s", %+v): expected option name: %s, actual: %s`,
 				string(y), task, expected, actual,
 			)
 		}
@@ -40,7 +40,7 @@ args: { three: {}, four: {} }
 		arg, ok := task.Args.Lookup(expected)
 		if !ok {
 			t.Errorf(
-				`yaml.Unmarshal(%q, %+v): did not find arg %q`,
+				`yaml.UnmarshalStrict(%q, %+v): did not find arg %q`,
 				string(y), task, expected,
 			)
 			continue
@@ -49,7 +49,7 @@ args: { three: {}, four: {} }
 		actual := arg.Name
 		if expected != actual {
 			t.Errorf(
-				`yaml.Unmarshal(%q, %+v): expected arg name: %s, actual: %s`,
+				`yaml.UnmarshalStrict(%q, %+v): expected arg name: %s, actual: %s`,
 				string(y), task, expected, actual,
 			)
 		}
@@ -60,9 +60,9 @@ func TestTask_UnmarshalYAML_invalid(t *testing.T) {
 	y := []byte(`[invalid]`)
 	task := Task{}
 
-	if err := yaml.Unmarshal(y, &task); err == nil {
+	if err := yaml.UnmarshalStrict(y, &task); err == nil {
 		t.Fatalf(
-			"yaml.Unmarshal(%s, ...): expected error, actual nil", string(y),
+			"yaml.UnmarshalStrict(%s, ...): expected error, actual nil", string(y),
 		)
 	}
 }
@@ -74,9 +74,9 @@ args: { foo: {} }
 `)
 	task := Task{}
 
-	if err := yaml.Unmarshal(y, &task); err == nil {
+	if err := yaml.UnmarshalStrict(y, &task); err == nil {
 		t.Fatalf(
-			"yaml.Unmarshal(%s, ...): expected error, actual nil", string(y),
+			"yaml.UnmarshalStrict(%s, ...): expected error, actual nil", string(y),
 		)
 	}
 }

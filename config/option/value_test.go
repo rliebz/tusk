@@ -13,12 +13,12 @@ func TestValue_UnmarshalYAML(t *testing.T) {
 	v1 := Value{}
 	v2 := Value{}
 
-	if err := yaml.Unmarshal(s1, &v1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
+	if err := yaml.UnmarshalStrict(s1, &v1); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
 	}
 
-	if err := yaml.Unmarshal(s2, &v2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
+	if err := yaml.UnmarshalStrict(s2, &v2); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(v1, v2) {
@@ -30,7 +30,7 @@ func TestValue_UnmarshalYAML(t *testing.T) {
 
 	if v1.Value != "example" {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
+			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
 			s1, "example", v1.Command,
 		)
 	}
@@ -40,9 +40,9 @@ func TestValue_UnmarshalYAML_value_and_command(t *testing.T) {
 	s := []byte(`{value: "example", command: "echo hello"}`)
 	v := Value{}
 
-	if err := yaml.Unmarshal(s, &v); err == nil {
+	if err := yaml.UnmarshalStrict(s, &v); err == nil {
 		t.Fatalf(
-			"yaml.Unmarshal(%s, ...): expected err, actual nil", s,
+			"yaml.UnmarshalStrict(%s, ...): expected err, actual nil", s,
 		)
 	}
 }
@@ -53,12 +53,12 @@ func TestValueList_UnmarshalYAML(t *testing.T) {
 	v1 := ValueList{}
 	v2 := ValueList{}
 
-	if err := yaml.Unmarshal(s1, &v1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s1, err)
+	if err := yaml.UnmarshalStrict(s1, &v1); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpcted error: %s", s1, err)
 	}
 
-	if err := yaml.Unmarshal(s2, &v2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpcted error: %s", s2, err)
+	if err := yaml.UnmarshalStrict(s2, &v2); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpcted error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(v1, v2) {
@@ -70,14 +70,14 @@ func TestValueList_UnmarshalYAML(t *testing.T) {
 
 	if len(v1) != 1 {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected 1 item, actual %d",
+			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
 			s1, len(v1),
 		)
 	}
 
 	if v1[0].Value != "example" {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
+			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
 			s1, "example", v1[0].Value,
 		)
 	}

@@ -2,6 +2,12 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Fixed
+- **BREAKING**: Unspecified fields in the YAML or duplicate map keys should
+  more consistently raise errors when parsing. Some `tusk.yml` files with
+  issues that were treated as valid in previous versions may no longer be
+  considered valid.
+
 
 ## 0.4.7 (2019-08-06)
 ### Fixed

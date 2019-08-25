@@ -13,12 +13,12 @@ func TestSubTask_UnmarshalYAML(t *testing.T) {
 	st1 := SubTask{}
 	st2 := SubTask{}
 
-	if err := yaml.Unmarshal(s1, &st1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
+	if err := yaml.UnmarshalStrict(s1, &st1); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
 	}
 
-	if err := yaml.Unmarshal(s2, &st2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
+	if err := yaml.UnmarshalStrict(s2, &st2); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(st1, st2) {
@@ -30,7 +30,7 @@ func TestSubTask_UnmarshalYAML(t *testing.T) {
 
 	if st1.Name != "example" {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
+			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
 			s1, "example", st1.Name,
 		)
 	}
@@ -42,12 +42,12 @@ func TestSubTaskList_UnmarshalYAML(t *testing.T) {
 	l1 := SubTaskList{}
 	l2 := SubTaskList{}
 
-	if err := yaml.Unmarshal(s1, &l1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
+	if err := yaml.UnmarshalStrict(s1, &l1); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
 	}
 
-	if err := yaml.Unmarshal(s2, &l2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
+	if err := yaml.UnmarshalStrict(s2, &l2); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(l1, l2) {
@@ -59,14 +59,14 @@ func TestSubTaskList_UnmarshalYAML(t *testing.T) {
 
 	if len(l1) != 1 {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected 1 item, actual %d",
+			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
 			s1, len(l1),
 		)
 	}
 
 	if l1[0].Name != "example" {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%v`",
+			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%v`",
 			s1, "example", l1[0].Name,
 		)
 	}

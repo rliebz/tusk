@@ -52,7 +52,7 @@ var unmarshalTests = []struct {
 func TestWhen_UnmarshalYAML(t *testing.T) {
 	for _, tt := range unmarshalTests {
 		w := When{}
-		if err := yaml.Unmarshal([]byte(tt.input), &w); err != nil {
+		if err := yaml.UnmarshalStrict([]byte(tt.input), &w); err != nil {
 			t.Errorf(
 				`Unmarshaling %s: unexpected error: %s`,
 				tt.desc, err,

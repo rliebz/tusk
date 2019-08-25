@@ -14,12 +14,12 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 	r1 := Run{}
 	r2 := Run{}
 
-	if err := yaml.Unmarshal(s1, &r1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
+	if err := yaml.UnmarshalStrict(s1, &r1); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
 	}
 
-	if err := yaml.Unmarshal(s2, &r2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
+	if err := yaml.UnmarshalStrict(s2, &r2); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(r1, r2) {
@@ -31,14 +31,14 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 
 	if len(r1.Command) != 1 {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected 1 item, actual %d",
+			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
 			s1, len(r1.Command),
 		)
 	}
 
 	if r1.Command[0] != "example" {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%s`",
+			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
 			s1, "example", r1.Command,
 		)
 	}
@@ -61,9 +61,9 @@ func TestRun_UnmarshalYAML_SetEnvironment(t *testing.T) {
 	for _, testCase := range environmentTests {
 		r := Run{}
 
-		if err := yaml.Unmarshal([]byte(testCase.input), &r); err != nil {
+		if err := yaml.UnmarshalStrict([]byte(testCase.input), &r); err != nil {
 			t.Errorf(
-				"yaml.Unmarshal(%s, ...): unexpected error: %s",
+				"yaml.UnmarshalStrict(%s, ...): unexpected error: %s",
 				testCase.input, err,
 			)
 			continue
@@ -71,7 +71,7 @@ func TestRun_UnmarshalYAML_SetEnvironment(t *testing.T) {
 
 		if testCase.expectedLength != len(r.SetEnvironment) {
 			t.Errorf(
-				"yaml.Unmarshal(%s, ...): expected %d environment items, got %d",
+				"yaml.UnmarshalStrict(%s, ...): expected %d environment items, got %d",
 				testCase.input, testCase.expectedLength, len(r.SetEnvironment),
 			)
 		}
@@ -89,9 +89,9 @@ var multipleActionTests = []string{
 func TestRun_UnmarshalYAML_command_and_subtask(t *testing.T) {
 	for _, input := range multipleActionTests {
 		r := Run{}
-		if err := yaml.Unmarshal([]byte(input), &r); err == nil {
+		if err := yaml.UnmarshalStrict([]byte(input), &r); err == nil {
 			t.Errorf(
-				"yaml.Unmarshal(%s, ...): expected error, received nil",
+				"yaml.UnmarshalStrict(%s, ...): expected error, received nil",
 				input,
 			)
 		}
@@ -157,12 +157,12 @@ func TestRunList_UnmarshalYAML(t *testing.T) {
 	h1 := runListHolder{}
 	h2 := runListHolder{}
 
-	if err := yaml.Unmarshal(s1, &h1); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s1, err)
+	if err := yaml.UnmarshalStrict(s1, &h1); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
 	}
 
-	if err := yaml.Unmarshal(s2, &h2); err != nil {
-		t.Fatalf("yaml.Unmarshal(%s, ...): unexpected error: %s", s2, err)
+	if err := yaml.UnmarshalStrict(s2, &h2); err != nil {
+		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
 	}
 
 	if !reflect.DeepEqual(h1, h2) {
@@ -174,21 +174,21 @@ func TestRunList_UnmarshalYAML(t *testing.T) {
 
 	if len(h1.Foo) != 1 {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected 1 item, actual %d",
+			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
 			s1, len(h1.Foo),
 		)
 	}
 
 	if len(h1.Foo[0].Command) != 1 {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected 1 command, actual %d",
+			"yaml.UnmarshalStrict(%s, ...): expected 1 command, actual %d",
 			s1, len(h1.Foo[0].Command),
 		)
 	}
 
 	if h1.Foo[0].Command[0] != "example" {
 		t.Errorf(
-			"yaml.Unmarshal(%s, ...): expected member `%s`, actual `%v`",
+			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%v`",
 			s1, "example", h1.Foo[0],
 		)
 	}

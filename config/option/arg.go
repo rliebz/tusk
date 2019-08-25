@@ -66,7 +66,7 @@ func getArgsWithOrder(ms yaml.MapSlice) ([]*Arg, error) {
 	args := make([]*Arg, 0, len(ms))
 	assign := func(name string, text []byte) error {
 		var arg Arg
-		if err := yaml.Unmarshal(text, &arg); err != nil {
+		if err := yaml.UnmarshalStrict(text, &arg); err != nil {
 			return err
 		}
 

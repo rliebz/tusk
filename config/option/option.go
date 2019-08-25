@@ -226,7 +226,7 @@ func getOptionsWithOrder(ms yaml.MapSlice) ([]*Option, error) {
 	options := make([]*Option, 0, len(ms))
 	assign := func(name string, text []byte) error {
 		var opt Option
-		if err := yaml.Unmarshal(text, &opt); err != nil {
+		if err := yaml.UnmarshalStrict(text, &opt); err != nil {
 			return err
 		}
 		opt.Name = name
