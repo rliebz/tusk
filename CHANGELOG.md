@@ -1,7 +1,17 @@
 # Changelog
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Unreleased 
+### Added
+- The `command` clause now accepts a `print` option to override the command
+  text that is printed to screen.
+
+### Changed
+- The `command` clause now has a longer form, where string literals now map to
+  the `do` field. This longer form allows additional options such as `print` to
+  be specified in a command when necessary while maintaining backward
+  compatibility.
+
 ### Fixed
 - **BREAKING**: Unspecified fields in the YAML or duplicate map keys should
   more consistently raise errors when parsing. Some `tusk.yml` files with
