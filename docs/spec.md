@@ -45,8 +45,6 @@ used for commands, sub-tasks, or setting environment variables. Although each
 `run` item can only perform one of these actions, they can be run in succession
 to handle complex scenarios.
 
-#### Command
-
 In its simplest form, `run` can be given a string or list of strings to be
 executed serially as shell commands:
 
@@ -62,21 +60,85 @@ This is a shorthand syntax for the following:
 tasks:
   hello:
     run:
-      - command: echo "Hello!"
+      - command:
+          do: echo "Hello!"
 ```
+
+The `run` clause tasks a list of `run` items, which allow executing shell
+commands with `command`, setting or unsetting environment variables with
+`set-environment`, running other tasks with `task`, and controlling conditional
+execution with `when`.
+
+#### Command
+
+The `command` clause is the most common thing to do during a `run`, so for
+convenience, passing a string or single item will be correctly interpreted.
+Here are several examples of equivalent `run` clauses:
+
+```yaml
+run: echo "Hello!"
+
+run:
+  - echo "Hello!"
+
+run:
+  command: echo "Hello!"
+
+run:
+  - command: echo "Hello!"
+
+run:
+  - command:
+      do: echo "Hello!"
+```
+
+##### Do
+
+The `do` clause contains the actual shell command to be performed.
 
 If any of the run commands execute with a non-zero exit code, Tusk will
 immediately exit with the same exit code without executing any other commands.
 
-For executing shell commands, the interpreter used will be the value of the
-`SHELL` environment variable. If no environment variable is set, the default is
-`sh`.
+Commands are executed using the `$SHELL` environment variable, defaulting to
+`sh`. Each command in a `run` clause gets its own sub-shell, so things like
+declaring functions and environment variables will not be available across
+separate run commmands, although it is possible to run the `set-environment`
+clause or use a multi-line shell command.
+
+For multi-line shell commands, to preserve the exit-on-error behavior, it is
+recommend to run `set -e` at the top of the script, much like any shell script.
+
+```yaml
+tasks:
+  hello:
+    run: |
+      set -e
+      errcho() {
+        >&2 echo "$@"
+      }
+      errcho "Hello, world!"
+      errcho "Goodbye, world!"
+```
+
+##### Print
+
+Sometimes it may not be desirable to print the exact command run, for example,
+if it's overly verbose or contains secrets. In that case, the `command` clause
+can be passed a `print` string to use as an alternative:
+
+```yaml
+tasks:
+  hello:
+    run:
+      - command:
+          do: echo "SECRET_VALUE"
+          print: echo "*****"
+```
 
 #### Set Environment
 
-The second type of action a `run` clause can perform is setting or unsetting
-environment variables. To do so, simply define a map of environment variable
-names to their desired values:
+To set or unset environment variables, simply define a map of environment
+variable names to their desired values:
 
 ```yaml
 tasks:
@@ -92,8 +154,10 @@ tasks:
       - command: curl http://example.com
 ```
 
-Passing `~` or `null` to an environment variable will explicitly unset it, while
-passing an empty string will set it to an empty string.
+Passing `~` or `null` to an environment variable will explicitly unset it,
+while passing an empty string will set it to an empty string.
+
+Environment variables once modified will persist until Tusk exits.
 
 #### Sub-Tasks
 
