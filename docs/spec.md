@@ -130,9 +130,22 @@ can be passed a `print` string to use as an alternative:
 tasks:
   hello:
     run:
-      - command:
-          do: echo "SECRET_VALUE"
-          print: echo "*****"
+      command:
+        do: echo "SECRET_VALUE"
+        print: echo "*****"
+```
+
+##### Dir
+
+The `dir` clause sets the working directory for a specific command:
+
+```yaml
+tasks:
+  hello:
+    run:
+      command:
+        do: echo "Hello from $PWD!"
+        dir: ./subdir
 ```
 
 #### Set Environment

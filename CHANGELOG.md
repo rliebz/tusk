@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Added
 - The `command` clause now accepts a `print` option to override the command
   text that is printed to screen.
+- The `command` clause now acccepts a `dir` option to change the working
+  directory for that command.
 
 ### Changed
 - The `command` clause now has a longer form, where string literals now map to

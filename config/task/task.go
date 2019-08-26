@@ -141,7 +141,7 @@ func (t *Task) runCommands(ctx RunContext, r *Run, s executionState) error {
 			ui.PrintCommand(command.Print, ctx.Tasks()...)
 		}
 
-		if err := execCommand(command.Do); err != nil {
+		if err := command.exec(); err != nil {
 			ui.PrintCommandError(err)
 			return err
 		}

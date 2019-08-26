@@ -13,10 +13,14 @@ const (
 	defaultShell = "sh"
 )
 
+// execCommand allows overwriting during tests.
+var execCommand = exec.Command
+
 // Command is a command passed to the shell.
 type Command struct {
 	Do    string `yaml:"do"`
 	Print string `yaml:"print"`
+	Dir   string `yaml:"dir"`
 }
 
 // UnmarshalYAML allows strings to be interpreted as Do actions.
@@ -47,6 +51,20 @@ func (c *Command) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return marshal.UnmarshalOneOf(doCandidate, commandCandidate)
 }
 
+// execCommand executes a shell command.
+func (c *Command) exec() error {
+	shell := getShell()
+	cmd := execCommand(shell, "-c", c.Do)
+	cmd.Dir = c.Dir
+	cmd.Stdin = os.Stdin
+	if ui.Verbosity > ui.VerbosityLevelSilent {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
+
+	return cmd.Run()
+}
+
 // CommandList is a list of commands with custom yaml unamrshaling.
 type CommandList []Command
 
@@ -65,19 +83,6 @@ func (cl *CommandList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)
-}
-
-// execCommand executes a shell command.
-func execCommand(command string) error {
-	shell := getShell()
-	cmd := exec.Command(shell, "-c", command) // nolint: gosec
-	cmd.Stdin = os.Stdin
-	if ui.Verbosity > ui.VerbosityLevelSilent {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-	}
-
-	return cmd.Run()
 }
 
 // getShell returns the value of the `SHELL` environment variable, or `sh`.
