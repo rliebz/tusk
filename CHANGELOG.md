@@ -75,7 +75,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
   multiple values.
 
 ### Removed
-- Remove deprecated `not_equal` syntax in favor of `not-equal`.
+- **BREAKING**: Remove deprecated `not_equal` syntax in favor of `not-equal`.
 
 
 ## 0.3.5 (2018-04-11)
@@ -135,7 +135,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## 0.3.0 (2018-01-04)
 ### Changed
-- Interpolation is now done per task. This has the following effects:
+- **BREAKING**: Interpolation is now done per task. This has the following
+  effects:
   - Sub-task options are no longer exposed to the command line.
   - Sub-task options are now exposed in run clauses and can be passed by a
     parent task to a sub-task.
@@ -149,8 +150,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
   the same sub-task is referenced in multiple places.
 
 ### Removed
-- Environment variables can no longer be set inside of an `option` clause.
-  Using `environment` inside a `run` clause is the replacement behavior.
+- **BREAKING**: Environment variables can no longer be set inside of an
+  `option` clause. Using `environment` inside a `run` clause is the replacement
+  behavior.
 
 
 ## 0.2.3 (2017-12-19)
@@ -190,8 +192,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - New -s/--silent global option available for no stderr/stdout.
 
 ### Changed
-- Shell commands are now executed by the `SHELL` environment variable by
-  default. If `SHELL` is not set, `sh` is used.
+- **BREAKING**: Shell commands are now executed by the `SHELL` environment
+  variable by default. If `SHELL` is not set, `sh` is used.
 - Commands and flags are now listed in alphabetical order.
 
 ### Fixed
