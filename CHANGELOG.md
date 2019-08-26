@@ -18,6 +18,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
   issues that were treated as valid in previous versions may no longer be
   considered valid.
 
+### Removed
+- **BREAKING**: Setting environment variables with `environment` has been
+  removed in favor of `set-environment`.
+
 
 ## 0.4.7 (2019-08-06)
 ### Fixed

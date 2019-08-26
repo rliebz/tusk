@@ -60,11 +60,8 @@ var environmentTests = []struct {
 	expectedLength int
 }{
 	{`{}`, 0},
-	{`{environment: {}}`, 0},
 	{`{set-environment: {}}`, 0},
-	{`{environment: {foo: bar}}`, 1},
 	{`{set-environment: {foo: bar}}`, 1},
-	{`{environment: {foo: bar, bar: baz}}`, 2},
 	{`{set-environment: {foo: bar, bar: baz}}`, 2},
 }
 

@@ -14,8 +14,6 @@ type Run struct {
 	Command        CommandList        `yaml:",omitempty"`
 	SubTaskList    SubTaskList        `yaml:"task,omitempty"`
 	SetEnvironment map[string]*string `yaml:"set-environment,omitempty"`
-	// Deprecated: Use SetEnvironment instead
-	Environment map[string]*string `yaml:",omitempty"`
 
 	// Computed members not specified in yaml file
 	Tasks []Task `yaml:"-"`
@@ -38,7 +36,6 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			actionUsedList := []bool{
 				len(runItem.Command) != 0,
 				len(runItem.SubTaskList) != 0,
-				runItem.Environment != nil,
 				runItem.SetEnvironment != nil,
 			}
 
@@ -51,15 +48,6 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 			if count > 1 {
 				return errors.New("only one action can be defined in `run`")
-			}
-
-			if len(runItem.Environment) > 0 {
-				ui.Deprecate(
-					"The `environment` key has been deprecated in `run` clauses",
-					"Use `set-environment` instead",
-				)
-				runItem.SetEnvironment = runItem.Environment
-				runItem.Environment = nil
 			}
 
 			return nil
