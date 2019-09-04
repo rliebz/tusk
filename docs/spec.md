@@ -61,7 +61,7 @@ tasks:
   hello:
     run:
       - command:
-          do: echo "Hello!"
+          exec: echo "Hello!"
 ```
 
 The `run` clause tasks a list of `run` items, which allow executing shell
@@ -89,12 +89,12 @@ run:
 
 run:
   - command:
-      do: echo "Hello!"
+      exec: echo "Hello!"
 ```
 
-##### Do
+##### Exec
 
-The `do` clause contains the actual shell command to be performed.
+The `exec` clause contains the actual shell command to be performed.
 
 If any of the run commands execute with a non-zero exit code, Tusk will
 immediately exit with the same exit code without executing any other commands.
@@ -131,7 +131,7 @@ tasks:
   hello:
     run:
       command:
-        do: echo "SECRET_VALUE"
+        exec: echo "SECRET_VALUE"
         print: echo "*****"
 ```
 
@@ -144,7 +144,7 @@ tasks:
   hello:
     run:
       command:
-        do: echo "Hello from $PWD!"
+        exec: echo "Hello from $PWD!"
         dir: ./subdir
 ```
 

@@ -18,7 +18,7 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 			"short-command",
 			`example`,
 			Run{
-				Command: CommandList{{Do: "example", Print: "example"}},
+				Command: CommandList{{Exec: "example", Print: "example"}},
 			},
 		},
 		{
@@ -26,8 +26,8 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 			`[one,two]`,
 			Run{
 				Command: CommandList{
-					{Do: "one", Print: "one"},
-					{Do: "two", Print: "two"},
+					{Exec: "one", Print: "one"},
+					{Exec: "two", Print: "two"},
 				},
 			},
 		},
@@ -35,7 +35,7 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 			"named-command",
 			`command: example`,
 			Run{
-				Command: CommandList{{Do: "example", Print: "example"}},
+				Command: CommandList{{Exec: "example", Print: "example"}},
 			},
 		},
 	}
@@ -164,22 +164,22 @@ func TestRunList_UnmarshalYAML(t *testing.T) {
 			"single-short-run",
 			`example`,
 			RunList{
-				{Command: CommandList{{Do: "example", Print: "example"}}},
+				{Command: CommandList{{Exec: "example", Print: "example"}}},
 			},
 		},
 		{
 			"list-short-runs",
 			`[one,two]`,
 			RunList{
-				{Command: CommandList{{Do: "one", Print: "one"}}},
-				{Command: CommandList{{Do: "two", Print: "two"}}},
+				{Command: CommandList{{Exec: "one", Print: "one"}}},
+				{Command: CommandList{{Exec: "two", Print: "two"}}},
 			},
 		},
 		{
 			"list-full-runs",
 			`[{command: foo},{set-environment: {bar: null}}]`,
 			RunList{
-				{Command: CommandList{{Do: "foo", Print: "foo"}}},
+				{Command: CommandList{{Exec: "foo", Print: "foo"}}},
 				{SetEnvironment: map[string]*string{"bar": nil}},
 			},
 		},

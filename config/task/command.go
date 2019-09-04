@@ -18,7 +18,7 @@ var execCommand = exec.Command
 
 // Command is a command passed to the shell.
 type Command struct {
-	Do    string `yaml:"do"`
+	Exec  string `yaml:"exec"`
 	Print string `yaml:"print"`
 	Dir   string `yaml:"dir"`
 }
@@ -30,7 +30,7 @@ func (c *Command) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		Unmarshal: func() error { return unmarshal(&do) },
 		Assign: func() {
 			*c = Command{
-				Do:    do,
+				Exec:  do,
 				Print: do,
 			}
 		},
@@ -43,7 +43,7 @@ func (c *Command) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		Assign: func() {
 			*c = Command(commandItem)
 			if c.Print == "" {
-				c.Print = c.Do
+				c.Print = c.Exec
 			}
 		},
 	}
@@ -54,7 +54,7 @@ func (c *Command) UnmarshalYAML(unmarshal func(interface{}) error) error {
 // execCommand executes a shell command.
 func (c *Command) exec() error {
 	shell := getShell()
-	cmd := execCommand(shell, "-c", c.Do)
+	cmd := execCommand(shell, "-c", c.Exec)
 	cmd.Dir = c.Dir
 	cmd.Stdin = os.Stdin
 	if ui.Verbosity > ui.VerbosityLevelSilent {

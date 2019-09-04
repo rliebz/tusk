@@ -32,7 +32,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -53,7 +53,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue barvalue",
+				Exec:  "echo foovalue barvalue",
 				Print: "echo foovalue barvalue",
 			}},
 		}},
@@ -76,7 +76,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -99,7 +99,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue foovalue",
+				Exec:  "echo foovalue foovalue",
 				Print: "echo foovalue foovalue",
 			}},
 		}},
@@ -120,7 +120,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo bar",
+				Exec:  "echo bar",
 				Print: "echo bar",
 			}},
 		}},
@@ -141,7 +141,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo passed",
+				Exec:  "echo passed",
 				Print: "echo passed",
 			}},
 		}},
@@ -166,7 +166,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -192,7 +192,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo ${bar}",
+				Exec:  "echo ${bar}",
 				Print: "echo ${bar}",
 			}},
 		}},
@@ -215,7 +215,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -238,7 +238,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -262,7 +262,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -286,7 +286,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo newvalue",
+				Exec:  "echo newvalue",
 				Print: "echo newvalue",
 			}},
 		}},
@@ -312,7 +312,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo barvalue",
+				Exec:  "echo barvalue",
 				Print: "echo barvalue",
 			}},
 		}},
@@ -336,7 +336,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -363,7 +363,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -402,7 +402,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo passed-1-2",
+				Exec:  "echo passed-1-2",
 				Print: "echo passed-1-2",
 			}},
 		}},
@@ -455,12 +455,12 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo passed-1-2",
+				Exec:  "echo passed-1-2",
 				Print: "echo passed-1-2",
 			}},
 		}, {
 			Command: task.CommandList{{
-				Do:    "echo onevalue-2 twovalue-2",
+				Exec:  "echo onevalue-2 twovalue-2",
 				Print: "echo onevalue-2 twovalue-2",
 			}},
 		}},
@@ -493,12 +493,12 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo one two",
+				Exec:  "echo one two",
 				Print: "echo one two",
 			}},
 		}, {
 			Command: task.CommandList{{
-				Do:    "echo three four",
+				Exec:  "echo three four",
 				Print: "echo three four",
 			}},
 		}},
@@ -528,12 +528,12 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo one",
+				Exec:  "echo one",
 				Print: "echo one",
 			}},
 		}, {
 			Command: task.CommandList{{
-				Do:    "echo two",
+				Exec:  "echo two",
 				Print: "echo two",
 			}},
 		}},
@@ -560,7 +560,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -585,12 +585,12 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo hello",
+				Exec:  "echo hello",
 				Print: "echo hello",
 			}},
 		}, {
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -619,22 +619,22 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo first",
+				Exec:  "echo first",
 				Print: "echo first",
 			}},
 		}, {
 			Command: task.CommandList{{
-				Do:    "echo pre-foovalue",
+				Exec:  "echo pre-foovalue",
 				Print: "echo pre-foovalue",
 			}},
 		}, {
 			Command: task.CommandList{{
-				Do:    "echo pre-barvalue",
+				Exec:  "echo pre-barvalue",
 				Print: "echo pre-barvalue",
 			}},
 		}, {
 			Command: task.CommandList{{
-				Do:    "echo done",
+				Exec:  "echo done",
 				Print: "echo done",
 			}},
 		}},
@@ -661,7 +661,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -690,7 +690,7 @@ tasks:
 				when.Create(when.WithCommand("echo hello"), when.WithOS("os3")),
 			},
 			Command: task.CommandList{{
-				Do:    "echo goodbye",
+				Exec:  "echo goodbye",
 				Print: "echo goodbye",
 			}},
 		}},
@@ -728,7 +728,7 @@ tasks:
 				},
 			}},
 			Command: task.CommandList{{
-				Do:    "echo yo",
+				Exec:  "echo yo",
 				Print: "echo yo",
 			}},
 		}},
@@ -755,12 +755,12 @@ tasks:
 		"two",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}, {
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}},
@@ -775,7 +775,7 @@ tasks:
       foo: {}
     run:
       - command:
-          do: echo ${foo}
+          exec: echo ${foo}
           print: don't echo ${foo}
 `,
 		[]string{"foovalue"},
@@ -783,7 +783,7 @@ tasks:
 		"mytask",
 		task.RunList{{
 			Command: task.CommandList{{
-				Do:    "echo foovalue",
+				Exec:  "echo foovalue",
 				Print: "don't echo foovalue",
 			}},
 		}},
@@ -1037,7 +1037,7 @@ tasks:
 	expectedCommand := "echo ${bar}"
 	actualCommand := cfg.Tasks["mytask"].RunList[0].Command[0]
 
-	if expectedCommand != actualCommand.Do {
+	if expectedCommand != actualCommand.Exec {
 		t.Errorf(
 			`expected raw command for mytask: "%s", actual: "%s"`,
 			expectedCommand, actualCommand,

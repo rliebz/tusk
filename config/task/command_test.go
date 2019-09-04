@@ -21,31 +21,31 @@ func TestCommand_UnmarshalYAML(t *testing.T) {
 			"short-command",
 			`example`,
 			Command{
-				Do:    "example",
+				Exec:  "example",
 				Print: "example",
 			},
 		},
 		{
 			"do-no-echo",
-			`do: example`,
+			`exec: example`,
 			Command{
-				Do:    "example",
+				Exec:  "example",
 				Print: "example",
 			},
 		},
 		{
 			"command-with-print",
-			`{do: something, print: echo example}`,
+			`{exec: something, print: echo example}`,
 			Command{
-				Do:    "something",
+				Exec:  "something",
 				Print: "echo example",
 			},
 		},
 		{
 			"many-fields",
-			`{do: dovalue, print: printvalue, dir: dirvalue}`,
+			`{exec: dovalue, print: printvalue, dir: dirvalue}`,
 			Command{
-				Do:    "dovalue",
+				Exec:  "dovalue",
 				Print: "printvalue",
 				Dir:   "dirvalue",
 			},
@@ -116,8 +116,8 @@ func TestCommand_exec(t *testing.T) {
 	wantDir := filepath.Dir(wd)
 
 	command := Command{
-		Do:  wantCommand,
-		Dir: "..",
+		Exec: wantCommand,
+		Dir:  "..",
 	}
 
 	execCommand = func(name string, arg ...string) *exec.Cmd {
@@ -148,30 +148,30 @@ func TestCommandList_UnmarshalYAML(t *testing.T) {
 			"single-short-command",
 			`example`,
 			CommandList{
-				{Do: "example", Print: "example"},
+				{Exec: "example", Print: "example"},
 			},
 		},
 		{
 			"list-short-commands",
 			`[one,two]`,
 			CommandList{
-				{Do: "one", Print: "one"},
-				{Do: "two", Print: "two"},
+				{Exec: "one", Print: "one"},
+				{Exec: "two", Print: "two"},
 			},
 		},
 		{
 			"single-do-command",
-			`do: example`,
+			`exec: example`,
 			CommandList{
-				{Do: "example", Print: "example"},
+				{Exec: "example", Print: "example"},
 			},
 		},
 		{
 			"list-do-commands",
-			`[{do: one},{do: two}]`,
+			`[{exec: one},{exec: two}]`,
 			CommandList{
-				{Do: "one", Print: "one"},
-				{Do: "two", Print: "two"},
+				{Exec: "one", Print: "one"},
+				{Exec: "two", Print: "two"},
 			},
 		},
 		{

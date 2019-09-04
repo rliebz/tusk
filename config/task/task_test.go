@@ -109,8 +109,8 @@ var executeTests = []struct {
 func TestTaskExecute_errors_returned(t *testing.T) {
 	for _, tt := range executeTests {
 		t.Run(tt.desc, func(t *testing.T) {
-			run := Run{Command: CommandList{{Do: tt.run}}}
-			finally := Run{Command: CommandList{{Do: tt.finally}}}
+			run := Run{Command: CommandList{{Exec: tt.run}}}
+			finally := Run{Command: CommandList{{Exec: tt.finally}}}
 			task := Task{
 				RunList: RunList{&run},
 				Finally: RunList{&finally},
@@ -128,7 +128,7 @@ func TestTask_run_commands(t *testing.T) {
 	var task Task
 
 	runSuccess := &Run{
-		Command: CommandList{{Do: "exit 0"}},
+		Command: CommandList{{Exec: "exit 0"}},
 	}
 
 	if err := task.run(RunContext{}, runSuccess, stateRunning); err != nil {
@@ -137,8 +137,8 @@ func TestTask_run_commands(t *testing.T) {
 
 	runFailure := &Run{
 		Command: CommandList{
-			{Do: "exit 0"},
-			{Do: "exit 1"},
+			{Exec: "exit 0"},
+			{Exec: "exit 1"},
 		},
 	}
 
@@ -151,14 +151,14 @@ func TestTask_run_sub_tasks(t *testing.T) {
 	taskSuccess := Task{
 		Name: "success",
 		RunList: RunList{
-			&Run{Command: CommandList{{Do: "exit 0"}}},
+			&Run{Command: CommandList{{Exec: "exit 0"}}},
 		},
 	}
 
 	taskFailure := Task{
 		Name: "failure",
 		RunList: RunList{
-			&Run{Command: CommandList{{Do: "exit 1"}}},
+			&Run{Command: CommandList{{Exec: "exit 1"}}},
 		},
 	}
 
@@ -239,7 +239,7 @@ func TestTask_run_environment(t *testing.T) {
 func TestTask_run_finally(t *testing.T) {
 	task := Task{
 		Finally: RunList{
-			&Run{Command: CommandList{{Do: "exit 0"}}},
+			&Run{Command: CommandList{{Exec: "exit 0"}}},
 		},
 	}
 
@@ -252,7 +252,7 @@ func TestTask_run_finally(t *testing.T) {
 func TestTask_run_finally_error(t *testing.T) {
 	task := Task{
 		Finally: RunList{
-			&Run{Command: CommandList{{Do: "exit 1"}}},
+			&Run{Command: CommandList{{Exec: "exit 1"}}},
 		},
 	}
 
@@ -332,7 +332,7 @@ func TestTask_run_finally_ui_fails(t *testing.T) {
 	task := Task{
 		Name: taskName,
 		Finally: RunList{
-			&Run{Command: CommandList{{Do: command, Print: command}}},
+			&Run{Command: CommandList{{Exec: command, Print: command}}},
 		},
 	}
 
