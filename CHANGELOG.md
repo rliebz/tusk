@@ -10,8 +10,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Changed
 - The `command` clause now has a longer form, where string literals now map to
-  the `do` field. This longer form allows additional options such as `print` to
-  be specified in a command when necessary while maintaining backward
+  the `exec` field. This longer form allows additional options such as `print`
+  to be specified in a command when necessary while maintaining backward
   compatibility.
 
 ### Fixed
