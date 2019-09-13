@@ -14,6 +14,7 @@ exclude-use-default = false
 [linters]
 enable-all = true
 disable = [
+  "funlen",           # Cyclomatic complexity is more valuable than function length
   "gochecknoglobals", # There are valid use cases for globals
   "maligned",         # Readability is more important than saving bytes
   "scopelint",        # False positives in tests: https://github.com/kyoh86/scopelint/issues/4
