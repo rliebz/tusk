@@ -3,7 +3,7 @@ defaults:
   job_defaults: &job_defaults
     working_directory: /tusk
     docker:
-      - image: tuskcli/ci:0.2.4
+      - image: tuskcli/ci:0.2.5
     environment: &environment_defaults
       TEST_RESULTS: /tmp/test-results
   job_dry_run: &job_dry_run

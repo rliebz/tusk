@@ -1,5 +1,7 @@
 module github.com/rliebz/tusk
 
+go 1.13
+
 require (
 	github.com/fatih/color v1.7.0
 	github.com/google/go-cmp v0.3.1
