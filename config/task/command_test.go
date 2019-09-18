@@ -1,6 +1,7 @@
 package task
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -75,9 +76,15 @@ func TestCommand_UnmarshalYAML(t *testing.T) {
 // - TUSK_TEST_COMMAND_ARGS: Set to a comma-separated list of expected command
 //   arguments.
 // - TUSK_TEST_COMMAND_DIR: Set to the expected directory
-func TestCommand_exec_helper(t *testing.T) {
+func TestCommand_exec_helper(*testing.T) {
 	if os.Getenv("TUSK_WANT_TEST_COMMAND") != "1" {
 		return
+	}
+	defer os.Exit(0)
+
+	fail := func(msg interface{}) {
+		fmt.Fprintln(os.Stderr, msg)
+		os.Exit(1)
 	}
 
 	wantArgs := strings.Split(os.Getenv("TUSK_TEST_COMMAND_ARGS"), ",")
@@ -91,17 +98,17 @@ func TestCommand_exec_helper(t *testing.T) {
 	}
 
 	if diff := cmp.Diff(wantArgs, args); diff != "" {
-		t.Errorf("arguments differ:\n%s", diff)
+		fail("arguments differ:\n" + diff)
 	}
 
 	dir, err := os.Getwd()
 	if err != nil {
-		t.Fatal("failed to get working dir: ", err)
+		fail("failed to get working dir: " + err.Error())
 	}
 
 	wantDir := os.Getenv("TUSK_TEST_COMMAND_DIR")
 	if wantDir != "" && dir != wantDir {
-		t.Errorf("want working dir %s, got %s", wantDir, dir)
+		fail(fmt.Sprintf("want working dir %s, got %s", wantDir, dir))
 	}
 }
 
