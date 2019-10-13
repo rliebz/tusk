@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"gotest.tools/assert"
-	"gotest.tools/env"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/env"
 )
 
 func TestDataHome_xdg(t *testing.T) {

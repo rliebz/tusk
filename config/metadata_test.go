@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/tusk/ui"
-	"gotest.tools/fs"
+	"gotest.tools/v3/fs"
 )
 
 // mockOptGetter returns opts from maps

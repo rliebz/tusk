@@ -8,10 +8,10 @@ import (
 	"regexp"
 	"testing"
 
-	"gotest.tools/assert"
-	"gotest.tools/assert/cmp"
-	"gotest.tools/env"
-	"gotest.tools/fs"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
+	"gotest.tools/v3/env"
+	"gotest.tools/v3/fs"
 )
 
 func TestInstallCompletionUnsupported(t *testing.T) {
