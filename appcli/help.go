@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/ui"
 	"github.com/urfave/cli"
 )
 
@@ -44,7 +45,7 @@ Copyright:
 // ShowAppHelp shows the help for a given app.
 func ShowAppHelp(app *cli.App) {
 	app.Setup()
-	cli.HelpPrinter(app.Writer, cli.AppHelpTemplate, app)
+	cli.HelpPrinter(ui.LoggerStdout.Writer(), cli.AppHelpTemplate, app)
 }
 
 // helpPrinter includes the custom indent template function.
