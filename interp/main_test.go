@@ -1,186 +1,124 @@
 package interp
 
 import (
-	"bytes"
-	"reflect"
 	"testing"
+
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
 func TestMarshallable_string(t *testing.T) {
-	actual := "My name is ${name}, not ${invalid}"
 	values := map[string]string{"name": "foo", "other": "bar"}
-	expected := "My name is foo, not ${invalid}"
 
-	if err := Marshallable(&actual, values); err != nil {
-		t.Errorf("Marshallable(): unexpected error: %s", err)
-	}
+	input := "My name is ${name}, not ${invalid}"
+	want := "My name is foo, not ${invalid}"
 
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf(
-			"Marshallable(): expected: %#v, actual: %#v",
-			expected, actual,
-		)
-	}
+	err := Marshallable(&input, values)
+	assert.NilError(t, err)
+
+	assert.Check(t, cmp.Equal(want, input))
 }
 
 func TestMarshallable_slice(t *testing.T) {
-	actual := []string{"My name", "is ${name}", "not ${invalid}"}
 	values := map[string]string{"name": "foo", "other": "bar"}
-	expected := []string{"My name", "is foo", "not ${invalid}"}
 
-	if err := Marshallable(&actual, values); err != nil {
-		t.Errorf("Marshallable(): unexpected error: %s", err)
-	}
+	input := []string{"My name", "is ${name}", "not ${invalid}"}
+	want := []string{"My name", "is foo", "not ${invalid}"}
 
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf(
-			"Marshallable(): expected: %#v, actual: %#v",
-			expected, actual,
-		)
-	}
+	err := Marshallable(&input, values)
+	assert.NilError(t, err)
+
+	assert.Check(t, cmp.DeepEqual(want, input))
 }
 
 func TestMarshallable_struct(t *testing.T) {
-	actual := struct {
-		Name string
-		Not  string
-	}{"it's ${name}", "not ${invalid}"}
 	values := map[string]string{"name": "foo", "other": "bar"}
 
-	expected := struct {
+	type s struct {
 		Name string
 		Not  string
-	}{"it's foo", "not ${invalid}"}
-
-	if err := Marshallable(&actual, values); err != nil {
-		t.Errorf("Marshallable(): unexpected error: %s", err)
 	}
 
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf(
-			"Marshallable(): expected: %#v, actual: %#v",
-			expected, actual,
-		)
-	}
-}
+	input := s{"it's ${name}", "not ${invalid}"}
+	want := s{"it's foo", "not ${invalid}"}
 
-var escapetests = []struct {
-	input    string
-	expected string
-}{
-	{"$", "$"},
-	{"$$", "$"},
-	{"$$$", "$$"},
+	err := Marshallable(&input, values)
+	assert.NilError(t, err)
+
+	assert.Check(t, cmp.Equal(want, input))
 }
 
 func TestEscape(t *testing.T) {
-	for _, tt := range escapetests {
-		escaped := escape([]byte(tt.input))
-		actual := string(escaped)
-
-		if tt.expected != actual {
-			t.Errorf(
-				"Escape(%s): expected: %s, actual: %s",
-				tt.input, tt.expected, actual,
-			)
-		}
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"$", "$"},
+		{"$$", "$"},
+		{"$$$", "$$"},
 	}
-}
 
-var maptests = []struct {
-	input    []byte
-	vars     map[string]string
-	expected []byte
-}{
-	{
-		[]byte("${foo}"),
-		map[string]string{"foo": "bar"},
-		[]byte("bar"),
-	},
-	{
-		[]byte("foo"),
-		map[string]string{"foo": "bar"},
-		[]byte("foo"),
-	},
-	{
-		[]byte("$foo"),
-		map[string]string{"foo": "bar"},
-		[]byte("$foo"),
-	},
-	{
-		[]byte("${foo}${foo}"),
-		map[string]string{"foo": "bar"},
-		[]byte("barbar"),
-	},
-	{
-		[]byte("${foo}${bar}"),
-		map[string]string{"foo": "bar"},
-		[]byte("bar${bar}"),
-	},
-	{
-		[]byte("$${foo}"),
-		map[string]string{"foo": "bar"},
-		[]byte("$${foo}"),
-	},
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			escaped := escape([]byte(tt.input))
+			got := string(escaped)
 
-	{
-		[]byte("$$${foo}"),
-		map[string]string{"foo": "bar"},
-		[]byte("$$bar"),
-	},
-	{
-		[]byte("$"),
-		map[string]string{"foo": "bar"},
-		[]byte("$"),
-	},
-	{
-		[]byte("$$"),
-		map[string]string{"foo": "bar"},
-		[]byte("$$"),
-	},
+			if tt.want != got {
+				t.Errorf("want %q, got %q", tt.want, got)
+			}
+		})
+	}
 }
 
 func TestMap(t *testing.T) {
-	for _, tt := range maptests {
-		actual, err := mapInterpolate(tt.input, tt.vars)
-		if err != nil {
-			t.Errorf("Unexpected err: %s", err)
-			continue
-		}
+	vars := map[string]string{"foo": "bar"}
 
-		if !bytes.Equal(tt.expected, actual) {
-			t.Errorf(
-				"Map(%s): expected: %s, actual: %s",
-				string(tt.input), string(tt.expected), string(actual),
-			)
-		}
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"${foo}", "bar"},
+		{"foo", "foo"},
+		{"$foo", "$foo"},
+		{"${foo}${foo}", "barbar"},
+		{"${foo}${bar}", "bar${bar}"},
+		{"$${foo}", "$${foo}"},
+		{"$$${foo}", "$$bar"},
+		{"$", "$"},
+		{"$$", "$$"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			actual, err := mapInterpolate([]byte(tt.input), vars)
+			assert.NilError(t, err)
+
+			assert.Check(t, cmp.Equal(tt.want, string(actual)))
+		})
 	}
 }
 
-var findtests = []struct {
-	input    []byte
-	expected []string
-}{
-	{[]byte(""), []string{}},
-	{[]byte("${}"), []string{}},
-	{[]byte("foo"), []string{}},
-	{[]byte("$foo"), []string{}},
-	{[]byte("${foo}"), []string{"foo"}},
-	{[]byte("${f-o-o}"), []string{"f-o-o"}},
-	{[]byte("${f_o_o}"), []string{"f_o_o"}},
-	{[]byte("${foo}${bar}"), []string{"foo", "bar"}},
-	{[]byte("${foo}${FOO}"), []string{"foo", "FOO"}},
-	{[]byte("_-${foo}.  ${bar} baz"), []string{"foo", "bar"}},
-}
-
 func TestFindPotentialVariables(t *testing.T) {
-	for _, tt := range findtests {
-		actual := FindPotentialVariables(tt.input)
-		if !reflect.DeepEqual(tt.expected, actual) {
-			t.Errorf(
-				`FindPotentialVariables("%s"): expected: %v, actual %v`,
-				string(tt.input), tt.expected, actual,
-			)
-		}
+	tests := []struct {
+		input string
+		want  []string
+	}{
+		{"", []string{}},
+		{"${}", []string{}},
+		{"foo", []string{}},
+		{"$foo", []string{}},
+		{"${foo}", []string{"foo"}},
+		{"${f-o-o}", []string{"f-o-o"}},
+		{"${f_o_o}", []string{"f_o_o"}},
+		{"${foo}${bar}", []string{"foo", "bar"}},
+		{"${foo}${FOO}", []string{"foo", "FOO"}},
+		{"_-${foo}.  ${bar} baz", []string{"foo", "bar"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			got := FindPotentialVariables([]byte(tt.input))
+			assert.Check(t, cmp.DeepEqual(tt.want, got))
+		})
 	}
 }
