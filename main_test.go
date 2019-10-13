@@ -10,8 +10,8 @@ import (
 	"gotest.tools/v3/assert/cmp"
 )
 
-func TestRun_PrintVersion(t *testing.T) {
-	stdout, _, cleanup := withCapturedOutput()
+func TestRun_printVersion(t *testing.T) {
+	stdout, _, cleanup := setupTestSandbox(t)
 	defer cleanup()
 
 	args := []string{"tusk", "--version"}
@@ -24,8 +24,8 @@ func TestRun_PrintVersion(t *testing.T) {
 	assert.Check(t, status == 0)
 }
 
-func TestRun_PrintHelp(t *testing.T) {
-	stdout, _, cleanup := withCapturedOutput()
+func TestRun_printHelp(t *testing.T) {
+	stdout, _, cleanup := setupTestSandbox(t)
 	defer cleanup()
 
 	args := []string{"tusk", "--help"}
@@ -59,10 +59,53 @@ Global Options:
 	assert.Check(t, status == 0)
 }
 
-func withCapturedOutput() (stdout, stderr *bytes.Buffer, cleanup func()) {
+func TestRun_exitCodeZero(t *testing.T) {
+	_, stderr, cleanup := setupTestSandbox(t)
+	defer cleanup()
+
+	args := []string{"tusk", "-f", "./testdata/tusk.yml", "exit", "0"}
+	status, err := run(args)
+	assert.NilError(t, err)
+
+	want := `exit $ exit 0
+`
+
+	got := stderr.String()
+
+	assert.Check(t, cmp.Equal(want, got))
+	assert.Check(t, cmp.Equal(status, 0))
+}
+
+func TestRun_exitCodeNonZero(t *testing.T) {
+	_, stderr, cleanup := setupTestSandbox(t)
+	defer cleanup()
+
+	args := []string{"tusk", "-f", "./testdata/tusk.yml", "exit", "5"}
+	status, err := run(args)
+	assert.NilError(t, err)
+
+	want := `exit $ exit 5
+exit status 5
+`
+
+	got := stderr.String()
+
+	assert.Check(t, cmp.Equal(want, got))
+	assert.Check(t, cmp.Equal(status, 5))
+}
+
+func setupTestSandbox(t *testing.T) (stdout, stderr *bytes.Buffer, cleanup func()) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	cleanup = func() {
 		ui.LoggerStdout.SetOutput(os.Stdout)
 		ui.LoggerStderr.SetOutput(os.Stderr)
+		if err := os.Chdir(wd); err != nil {
+			t.Error(err)
+		}
 	}
 
 	stdout = &bytes.Buffer{}

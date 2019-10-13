@@ -1,0 +1,6 @@
+tasks:
+  exit:
+    args:
+      code:
+        usage: The exit code to use
+    run: exit ${code}
