@@ -94,6 +94,28 @@ exit status 5
 	assert.Check(t, cmp.Equal(status, 5))
 }
 
+func TestRun_incorrectUsage(t *testing.T) {
+	_, _, cleanup := setupTestSandbox(t)
+	defer cleanup()
+
+	args := []string{"tusk", "-f", "./testdata/tusk.yml", "fake-command"}
+	status, err := run(args)
+	assert.Error(t, err, "No help topic for 'fake-command'")
+
+	assert.Check(t, cmp.Equal(status, 1))
+}
+
+func TestRun_badTuskYml(t *testing.T) {
+	_, _, cleanup := setupTestSandbox(t)
+	defer cleanup()
+
+	args := []string{"tusk", "-f", "./testdata/bad.yml"}
+	status, err := run(args)
+	assert.ErrorContains(t, err, "field key not found")
+
+	assert.Check(t, cmp.Equal(status, 1))
+}
+
 func setupTestSandbox(t *testing.T) (stdout, stderr *bytes.Buffer, cleanup func()) {
 	wd, err := os.Getwd()
 	if err != nil {
