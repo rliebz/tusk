@@ -15,7 +15,12 @@ import (
 // init sets the help templates for urfave/cli.
 // nolint: lll, gochecknoinits
 func init() {
-	cli.HelpPrinter = helpPrinter
+	// These are both used, so both must be overridden
+	cli.HelpPrinterCustom = wrapPrinter(cli.HelpPrinterCustom)
+	cli.HelpPrinter = func(w io.Writer, templ string, data interface{}) {
+		cli.HelpPrinterCustom(w, templ, data, nil)
+	}
+
 	cli.FlagNamePrefixer = flagPrefixer
 
 	cli.AppHelpTemplate = `{{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
@@ -48,16 +53,24 @@ func ShowAppHelp(app *cli.App) {
 	cli.HelpPrinter(ui.LoggerStdout.Writer(), cli.AppHelpTemplate, app)
 }
 
-// helpPrinter includes the custom indent template function.
-func helpPrinter(out io.Writer, templ string, data interface{}) {
-	customFunc := map[string]interface{}{
-		"indent": func(spaces int, text string) string {
-			padding := strings.Repeat(" ", spaces)
-			return padding + strings.ReplaceAll(text, "\n", "\n"+padding)
-		},
-	}
+type helpPrinterCustom = func(io.Writer, string, interface{}, map[string]interface{})
 
-	cli.HelpPrinterCustom(out, templ, data, customFunc)
+// helpPrinter includes the custom indent template function.
+func wrapPrinter(p helpPrinterCustom) helpPrinterCustom {
+	return func(w io.Writer, tpl string, data interface{}, funcs map[string]interface{}) {
+		customFuncs := map[string]interface{}{
+			"indent": func(spaces int, text string) string {
+				padding := strings.Repeat(" ", spaces)
+				return padding + strings.ReplaceAll(text, "\n", "\n"+padding)
+			},
+		}
+
+		for k, v := range funcs {
+			customFuncs[k] = v
+		}
+
+		p(w, tpl, data, customFuncs)
+	}
 }
 
 // flagPrefixer formats the command-line flag usage.

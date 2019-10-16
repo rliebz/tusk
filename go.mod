@@ -9,11 +9,9 @@ require (
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/pkg/errors v0.8.1
-	github.com/urfave/cli v1.22.1
+	github.com/urfave/cli v1.22.2-0.20191012165502-a221e662f14f
 	golang.org/x/sys v0.0.0-20191010194322-b09406accb47 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v2 v2.2.4
 	gotest.tools/v3 v3.0.0
 )
-
-replace github.com/urfave/cli => github.com/rliebz/cli v0.0.1-tusk
