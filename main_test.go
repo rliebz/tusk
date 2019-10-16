@@ -3,7 +3,9 @@ package main
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 	"testing"
+	"text/template"
 
 	"github.com/rliebz/tusk/ui"
 	"gotest.tools/v3/assert"
@@ -32,10 +34,12 @@ func TestRun_printHelp(t *testing.T) {
 	status, err := run(args)
 	assert.NilError(t, err)
 
-	want := `tusk.test - the modern task runner
+	executable := filepath.Base(os.Args[0])
+
+	message := `{{.}} - the modern task runner
 
 Usage:
-   tusk.test [global options] <task> [task options] 
+   {{.}} [global options] <task> [task options] 
 
 Tasks:
    bootstrap  Set up app dependencies for first time use
@@ -54,6 +58,13 @@ Global Options:
    -v, --verbose      Print verbose output
 `
 
+	tpl := template.Must(template.New("help").Parse(message))
+	var buf bytes.Buffer
+	if err := tpl.Execute(&buf, executable); err != nil {
+		t.Fatal(err)
+	}
+
+	want := buf.String()
 	got := stdout.String()
 	assert.Check(t, cmp.Equal(want, got))
 	assert.Check(t, status == 0)
