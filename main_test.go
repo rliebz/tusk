@@ -39,7 +39,7 @@ func TestRun_printHelp(t *testing.T) {
 	message := `{{.}} - the modern task runner
 
 Usage:
-   {{.}} [global options] <task> [task options] 
+   {{.}} [global options] <task> [task options]
 
 Tasks:
    bootstrap  Set up app dependencies for first time use
