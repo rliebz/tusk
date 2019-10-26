@@ -419,7 +419,6 @@ var verbosityFlagTests = []struct {
 
 func TestGetConfigMetadata_verbosity(t *testing.T) {
 	for _, tt := range verbosityFlagTests {
-
 		metadata, err := GetConfigMetadata(tt.args)
 		if err != nil {
 			t.Errorf(

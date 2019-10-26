@@ -12,12 +12,27 @@ exclude = [
 exclude-use-default = false
 
 [linters]
-enable-all = true
-disable = [
-  "funlen",           # Cyclomatic complexity is more valuable than function length
-  "gochecknoglobals", # There are valid use cases for globals
-  "maligned",         # Readability is more important than saving bytes
-  "scopelint",        # False positives in tests: https://github.com/kyoh86/scopelint/issues/4
+enable = [
+  "bodyclose",
+  "golint",
+  "stylecheck",
+  "gosec",
+  "interfacer",
+  "unconvert",
+  "dupl",
+  "goconst",
+  "gocyclo",
+  "gocognit",
+  "gofmt",
+  "goimports",
+  "lll",
+  "misspell",
+  "unparam",
+  "nakedret",
+  "prealloc",
+  "gocritic",
+  "gochecknoinits",
+  "whitespace",
 ]
 
 [linters-settings]
@@ -26,8 +41,14 @@ disable = [
   min-len = 0
   min-occurrences = 3
 
+  [linters-settings.gocognit]
+  min-complexity = 15
+
   [linters-settings.gocyclo]
   min-complexity = 10
+
+  [linters-settings.gofmt]
+  simplify = true
 
   [linters-settings.golint]
   min-confidence = 0.0
