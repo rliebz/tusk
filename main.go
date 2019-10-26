@@ -8,6 +8,7 @@ import (
 
 	"github.com/rliebz/tusk/appcli"
 	"github.com/rliebz/tusk/ui"
+	"github.com/urfave/cli"
 )
 
 var version = "dev"
@@ -69,6 +70,10 @@ func run(args []string) (exitStatus int, err error) {
 		return 0, nil
 	}
 
+	return runApp(app, args)
+}
+
+func runApp(app *cli.App, args []string) (int, error) {
 	if err := app.Run(args); err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			if ui.Verbosity < ui.VerbosityLevelVerbose {

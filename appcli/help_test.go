@@ -97,6 +97,5 @@ func TestCreateArgsSection(t *testing.T) {
 				)
 			}
 		})
-
 	}
 }
