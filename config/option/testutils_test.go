@@ -60,10 +60,13 @@ func TestWithWhenDependency(t *testing.T) {
 	for _, value := range o.DefaultValues {
 		for _, w := range value.When {
 			for key := range w.Equal {
-				if key == a {
+				switch key {
+				case a:
 					foundA = true
-				} else if key == b {
+				case b:
 					foundB = true
+				default:
+					t.Errorf("unexpected key: %s", key)
 				}
 			}
 		}

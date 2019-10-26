@@ -126,11 +126,12 @@ func interpolateArg(a *option.Arg, passed, vars map[string]string) error {
 		return err
 	}
 
-	if valuePassed, ok := passed[a.Name]; ok {
-		a.Passed = valuePassed
-	} else {
+	valuePassed, ok := passed[a.Name]
+	if !ok {
 		return fmt.Errorf("no value passed for arg %q", a.Name)
 	}
+
+	a.Passed = valuePassed
 
 	value, err := a.Evaluate()
 	if err != nil {
