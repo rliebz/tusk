@@ -96,9 +96,39 @@
     <ul class="subnav-l2 toc-hidden">
     
       
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#command">Command</a>
+          
+
+  <li class="toctree-l3 current with-children">
+    <a href="#command">
+      Command
+      <span class="toctree-expand"></span>
+    </a>
+  </li>
+
+
+
+  <li class="toctree-l3 current">
+    <ul class="subnav-l3 current">
+    
+      
+        <li class="toctree-l4">
+          <a class="toctree-l5" href="#exec">Exec</a>
         </li>
+    
+      
+        <li class="toctree-l4">
+          <a class="toctree-l5" href="#print">Print</a>
+        </li>
+    
+      
+        <li class="toctree-l4">
+          <a class="toctree-l5" href="#dir">Dir</a>
+        </li>
+    
+    </ul>
+  </li>
+
+      
     
       
         <li class="toctree-l3">
@@ -322,7 +352,6 @@ Hello, world!
 used for commands, sub-tasks, or setting environment variables. Although each
 <code>run</code> item can only perform one of these actions, they can be run in succession
 to handle complex scenarios.</p>
-<h4 id="command">Command</h4>
 <p>In its simplest form, <code>run</code> can be given a string or list of strings to be
 executed serially as shell commands:</p>
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
@@ -335,19 +364,86 @@ executed serially as shell commands:</p>
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
   <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
     <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span>
+          <span class="l l-Scalar l-Scalar-Plain">exec</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
 </pre></div>
 
 
+<p>The <code>run</code> clause tasks a list of <code>run</code> items, which allow executing shell
+commands with <code>command</code>, setting or unsetting environment variables with
+<code>set-environment</code>, running other tasks with <code>task</code>, and controlling conditional
+execution with <code>when</code>.</p>
+<h4 id="command">Command</h4>
+<p>The <code>command</code> clause is the most common thing to do during a <code>run</code>, so for
+convenience, passing a string or single item will be correctly interpreted.
+Here are several examples of equivalent <code>run</code> clauses:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">exec</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+</pre></div>
+
+
+<h5 id="exec">Exec</h5>
+<p>The <code>exec</code> clause contains the actual shell command to be performed.</p>
 <p>If any of the run commands execute with a non-zero exit code, Tusk will
 immediately exit with the same exit code without executing any other commands.</p>
-<p>For executing shell commands, the interpreter used will be the value of the
-<code>SHELL</code> environment variable. If no environment variable is set, the default is
-<code>sh</code>.</p>
+<p>Commands are executed using the <code>$SHELL</code> environment variable, defaulting to
+<code>sh</code>. Each command in a <code>run</code> clause gets its own sub-shell, so things like
+declaring functions and environment variables will not be available across
+separate run commmands, although it is possible to run the <code>set-environment</code>
+clause or use a multi-line shell command.</p>
+<p>For multi-line shell commands, to preserve the exit-on-error behavior, it is
+recommend to run <code>set -e</code> at the top of the script, much like any shell script.</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">|</span>
+      <span class="no">set -e</span>
+      <span class="no">errcho() {</span>
+        <span class="no">&gt;&amp;2 echo &quot;$@&quot;</span>
+      <span class="no">}</span>
+      <span class="no">errcho &quot;Hello, world!&quot;</span>
+      <span class="no">errcho &quot;Goodbye, world!&quot;</span>
+</pre></div>
+
+
+<h5 id="print">Print</h5>
+<p>Sometimes it may not be desirable to print the exact command run, for example,
+if it's overly verbose or contains secrets. In that case, the <code>command</code> clause
+can be passed a <code>print</code> string to use as an alternative:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">exec</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;SECRET_VALUE&quot;</span>
+        <span class="l l-Scalar l-Scalar-Plain">print</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;*****&quot;</span>
+</pre></div>
+
+
+<h5 id="dir">Dir</h5>
+<p>The <code>dir</code> clause sets the working directory for a specific command:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">exec</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello from $PWD!&quot;</span>
+        <span class="l l-Scalar l-Scalar-Plain">dir</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./subdir</span>
+</pre></div>
+
+
 <h4 id="set-environment">Set Environment</h4>
-<p>The second type of action a <code>run</code> clause can perform is setting or unsetting
-environment variables. To do so, simply define a map of environment variable
-names to their desired values:</p>
+<p>To set or unset environment variables, simply define a map of environment
+variable names to their desired values:</p>
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
   <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
     <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
@@ -362,8 +458,9 @@ names to their desired values:</p>
 </pre></div>
 
 
-<p>Passing <code>~</code> or <code>null</code> to an environment variable will explicitly unset it, while
-passing an empty string will set it to an empty string.</p>
+<p>Passing <code>~</code> or <code>null</code> to an environment variable will explicitly unset it,
+while passing an empty string will set it to an empty string.</p>
+<p>Environment variables once modified will persist until Tusk exits.</p>
 <h4 id="sub-tasks">Sub-Tasks</h4>
 <p>Run can also execute previously-defined tasks:</p>
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
