@@ -2,6 +2,7 @@ package appcli
 
 import (
 	"io/ioutil"
+	"os"
 	"sort"
 
 	"github.com/pkg/errors"
@@ -133,11 +134,10 @@ func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 
 	copyFlags(app, metaApp)
 
-	app.BashComplete = createDefaultComplete(app)
+	app.BashComplete = createDefaultComplete(os.Stdout, app)
 	for i := range app.Commands {
-		app.Commands[i].BashComplete = createCommandComplete(
-			&app.Commands[i], cfg,
-		)
+		cmd := &app.Commands[i]
+		cmd.BashComplete = createCommandComplete(os.Stdout, cmd, cfg)
 	}
 
 	return app, nil

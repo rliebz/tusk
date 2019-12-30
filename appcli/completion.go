@@ -2,6 +2,7 @@ package appcli
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -17,7 +18,7 @@ var CompletionFlag = "--" + cli.BashCompletionFlag.GetName()
 // The metadata includes the completion type followed by a list of options.
 // The available completion types are "normal" and "file". Normal will return
 // tasks and flags, while file allows completion engines to use system files.
-func createDefaultComplete(app *cli.App) func(c *cli.Context) {
+func createDefaultComplete(w io.Writer, app *cli.App) func(c *cli.Context) {
 	return func(c *cli.Context) {
 		if c.NArg() > 0 {
 			return
@@ -26,18 +27,18 @@ func createDefaultComplete(app *cli.App) func(c *cli.Context) {
 		trailingArg := os.Args[len(os.Args)-2]
 		isCompleting := isCompletingArg(app.Flags, trailingArg)
 		if !isCompleting {
-			fmt.Println("normal")
+			fmt.Fprintln(w, "normal")
 			for i := range app.Commands {
-				printCommand(&app.Commands[i])
+				printCommand(w, &app.Commands[i])
 			}
 			for _, flag := range app.Flags {
-				printFlag(c, flag)
+				printFlag(w, c, flag)
 			}
 			return
 		}
 
 		// Default to file completion
-		fmt.Println("file")
+		fmt.Fprintln(w, "file")
 	}
 }
 
@@ -45,7 +46,7 @@ func createDefaultComplete(app *cli.App) func(c *cli.Context) {
 // The metadata includes the completion type followed by a list of options.
 // The available completion types are "normal" and "file". Normal will return
 // task-specific flags, while file allows completion engines to use system files.
-func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli.Context) {
+func createCommandComplete(w io.Writer, command *cli.Command, cfg *config.Config) func(c *cli.Context) {
 	return func(c *cli.Context) {
 		t := cfg.Tasks[command.Name]
 		trailingArg := os.Args[len(os.Args)-2]
@@ -53,16 +54,16 @@ func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli
 
 		if !isCompleting {
 			if len(c.Args())+1 <= len(t.Args) {
-				fmt.Println("task-args")
+				fmt.Fprintln(w, "task-args")
 				arg := t.Args[len(c.Args())]
 				for _, value := range arg.ValuesAllowed {
-					fmt.Println(value)
+					fmt.Fprintln(w, value)
 				}
 			} else {
-				fmt.Println("task-no-args")
+				fmt.Fprintln(w, "task-no-args")
 			}
 			for _, flag := range command.Flags {
-				printFlag(c, flag)
+				printFlag(w, c, flag)
 			}
 			return
 		}
@@ -78,15 +79,15 @@ func createCommandComplete(command *cli.Command, cfg *config.Config) func(c *cli
 		}
 
 		if len(opt.ValuesAllowed) > 0 {
-			fmt.Println("value")
+			fmt.Fprintln(w, "value")
 			for _, value := range opt.ValuesAllowed {
-				fmt.Println(value)
+				fmt.Fprintln(w, value)
 			}
 			return
 		}
 
 		// Default to file completion
-		fmt.Println("file")
+		fmt.Fprintln(w, "file")
 	}
 }
 
@@ -101,30 +102,32 @@ func getOptionFlag(flag string, options []*option.Option) (*option.Option, bool)
 	return nil, false
 }
 
-func printCommand(command *cli.Command) {
+func printCommand(w io.Writer, command *cli.Command) {
 	if command.Hidden {
 		return
 	}
 
 	if command.Usage == "" {
-		fmt.Println(command.Name)
+		fmt.Fprintln(w, command.Name)
 		return
 	}
 
-	fmt.Printf(
+	fmt.Fprintf(
+		w,
 		"%s:%s\n",
 		command.Name,
 		strings.ReplaceAll(command.Usage, "\n", ""),
 	)
 }
 
-func printFlag(c *cli.Context, flag cli.Flag) {
+func printFlag(w io.Writer, c *cli.Context, flag cli.Flag) {
 	values := strings.Split(flag.GetName(), ", ")
 	for _, value := range values {
 		if len(value) == 1 || c.IsSet(value) {
 			continue
 		}
-		fmt.Printf(
+		fmt.Fprintf(
+			w,
 			"--%s:%s\n",
 			value,
 			strings.ReplaceAll(getDescription(flag), "\n", ""),
