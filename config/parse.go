@@ -195,41 +195,47 @@ func interpolateTask(t *task.Task, passed, vars map[string]string) error {
 
 func addSubTasks(t *task.Task, cfg *Config) error {
 	for _, run := range t.AllRunItems() {
-		for _, subTaskDesc := range run.SubTaskList {
-			st, ok := cfg.Tasks[subTaskDesc.Name]
-			if !ok {
-				return fmt.Errorf(
-					"sub-task %q does not exist",
-					subTaskDesc.Name,
-				)
-			}
-
-			subTask := copyTask(st)
-
-			values, err := getArgValues(subTask, subTaskDesc.Args)
+		for _, desc := range run.SubTaskList {
+			sub, err := newTaskFromSub(desc, cfg)
 			if err != nil {
 				return err
 			}
 
-			for optName, opt := range subTaskDesc.Options {
-				if _, isValidOption := subTask.Options.Lookup(optName); !isValidOption {
-					return fmt.Errorf(
-						"option %q cannot be passed to task %q",
-						optName, subTask.Name,
-					)
-				}
-				values[optName] = opt
-			}
-
-			if err := passTaskValues(subTask, cfg, values); err != nil {
-				return err
-			}
-
-			run.Tasks = append(run.Tasks, *subTask)
+			run.Tasks = append(run.Tasks, *sub)
 		}
 	}
 
 	return nil
+}
+
+func newTaskFromSub(desc *task.SubTask, cfg *Config) (*task.Task, error) {
+	st, ok := cfg.Tasks[desc.Name]
+	if !ok {
+		return nil, fmt.Errorf("sub-task %q does not exist", desc.Name)
+	}
+
+	subTask := copyTask(st)
+
+	values, err := getArgValues(subTask, desc.Args)
+	if err != nil {
+		return nil, err
+	}
+
+	for optName, opt := range desc.Options {
+		if _, isValidOption := subTask.Options.Lookup(optName); !isValidOption {
+			return nil, fmt.Errorf(
+				"option %q cannot be passed to task %q",
+				optName, subTask.Name,
+			)
+		}
+		values[optName] = opt
+	}
+
+	if err := passTaskValues(subTask, cfg, values); err != nil {
+		return nil, err
+	}
+
+	return subTask, nil
 }
 
 // copyTask returns a copy of a task, replacing references with new values.
