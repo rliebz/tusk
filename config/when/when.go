@@ -54,25 +54,30 @@ func (w *When) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		},
 		Assign: func() {
 			*w = When(whenItem)
-
-			// nil values on nullable string lists should be [nil], not []
-			for _, clauseMS := range ms {
-				if name, ok := clauseMS.Key.(string); !ok || name != "environment" {
-					continue
-				}
-
-				for _, envMS := range clauseMS.Value.(yaml.MapSlice) {
-					envVar := envMS.Key.(string)
-
-					if envMS.Value == nil {
-						w.Environment[envVar] = marshal.NullableStringList{nil}
-					}
-				}
-			}
+			fixNilEnvironment(w, ms)
 		},
 	}
 
 	return marshal.UnmarshalOneOf(slCandidate, whenCandidate)
+}
+
+// fixNilEnvironment replaces a single nil specified in a yaml configuration as
+// a list of nil, which is the more logical interpretation of the value in this
+// situation.
+func fixNilEnvironment(w *When, ms yaml.MapSlice) {
+	for _, clauseMS := range ms {
+		if name, ok := clauseMS.Key.(string); !ok || name != "environment" {
+			continue
+		}
+
+		for _, envMS := range clauseMS.Value.(yaml.MapSlice) {
+			envVar := envMS.Key.(string)
+
+			if envMS.Value == nil {
+				w.Environment[envVar] = marshal.NullableStringList{nil}
+			}
+		}
+	}
 }
 
 // Dependencies returns a list of options that are required explicitly.
