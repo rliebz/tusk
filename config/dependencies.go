@@ -42,18 +42,10 @@ func FindAllOptions(t *task.Task, cfg *Config) ([]*option.Option, error) {
 func findRequiredOptionsRecursively(
 	entry []string, candidates map[string]*option.Option, found []*option.Option,
 ) ([]*option.Option, error) {
-candidates:
 	for _, item := range entry {
-		candidate := candidates[item]
-
-		if candidate == nil {
+		candidate, ok := candidates[item]
+		if !ok || optionsContains(found, candidate) {
 			continue
-		}
-
-		for _, f := range found {
-			if f == candidate {
-				continue candidates
-			}
 		}
 
 		found = append(found, candidate)
@@ -74,6 +66,16 @@ candidates:
 	}
 
 	return found, nil
+}
+
+func optionsContains(items []*option.Option, item *option.Option) bool {
+	for _, want := range items {
+		if item == want {
+			return true
+		}
+	}
+
+	return false
 }
 
 type dependencyGetter interface {
