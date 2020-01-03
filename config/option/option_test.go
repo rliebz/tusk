@@ -206,7 +206,7 @@ func TestOption_Evaluate_required_with_environment(t *testing.T) {
 func TestOption_Evaluate_values_none_specified(t *testing.T) {
 	expected := ""
 	option := Option{
-		valueWithList: valueWithList{
+		ValueWithList: ValueWithList{
 			ValuesAllowed: marshal.StringList{"red", "herring"},
 		},
 	}
@@ -228,7 +228,7 @@ func TestOption_Evaluate_values_with_passed(t *testing.T) {
 	expected := "foo"
 	option := Option{
 		Passed: expected,
-		valueWithList: valueWithList{
+		ValueWithList: ValueWithList{
 			ValuesAllowed: marshal.StringList{"red", expected, "herring"},
 		},
 	}
@@ -252,7 +252,7 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 
 	option := Option{
 		Environment: envVar,
-		valueWithList: valueWithList{
+		ValueWithList: ValueWithList{
 			ValuesAllowed: marshal.StringList{"red", expected, "herring"},
 		},
 	}
@@ -278,7 +278,7 @@ func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
 	expected := "foo"
 	option := Option{
 		Passed: expected,
-		valueWithList: valueWithList{
+		ValueWithList: ValueWithList{
 			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
 		},
 	}
@@ -297,7 +297,7 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 
 	option := Option{
 		Environment: envVar,
-		valueWithList: valueWithList{
+		ValueWithList: ValueWithList{
 			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
 		},
 	}
@@ -350,7 +350,7 @@ func TestOption_UnmarshalYAML(t *testing.T) {
 	s := []byte(`{usage: foo, values: [foo, bar]}`)
 	expected := Option{
 		Usage: "foo",
-		valueWithList: valueWithList{
+		ValueWithList: ValueWithList{
 			ValuesAllowed: []string{"foo", "bar"},
 		},
 		Name: "",

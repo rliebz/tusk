@@ -8,7 +8,7 @@ import (
 
 // Arg represents a command-line argument.
 type Arg struct {
-	valueWithList `yaml:",inline"`
+	ValueWithList `yaml:",inline"`
 
 	Usage string
 

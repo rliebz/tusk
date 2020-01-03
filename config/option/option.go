@@ -13,7 +13,7 @@ import (
 
 // Option represents an abstract command line option.
 type Option struct {
-	valueWithList `yaml:",inline"`
+	ValueWithList `yaml:",inline"`
 
 	Short    string
 	Type     string
