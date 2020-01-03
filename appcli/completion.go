@@ -8,6 +8,7 @@ import (
 
 	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/config/option"
+	"github.com/rliebz/tusk/config/task"
 	"github.com/urfave/cli"
 )
 
@@ -42,20 +43,18 @@ func defaultComplete(w io.Writer, c context, app *cli.App) {
 	}
 
 	trailingArg := os.Args[len(os.Args)-2]
-	isCompleting := isCompletingArg(app.Flags, trailingArg)
-	if !isCompleting {
-		fmt.Fprintln(w, "normal")
-		for i := range app.Commands {
-			printCommand(w, &app.Commands[i])
-		}
-		for _, flag := range app.Flags {
-			printFlag(w, c, flag)
-		}
+	if isCompletingFlagArg(app.Flags, trailingArg) {
+		fmt.Fprintln(w, "file")
 		return
 	}
 
-	// Default to file completion
-	fmt.Fprintln(w, "file")
+	fmt.Fprintln(w, "normal")
+	for i := range app.Commands {
+		printCommand(w, &app.Commands[i])
+	}
+	for _, flag := range app.Flags {
+		printFlag(w, c, flag)
+	}
 }
 
 // createCommandComplete prints the completion metadata for a cli command.
@@ -71,24 +70,27 @@ func createCommandComplete(w io.Writer, command *cli.Command, cfg *config.Config
 func commandComplete(w io.Writer, c context, command *cli.Command, cfg *config.Config) {
 	t := cfg.Tasks[command.Name]
 	trailingArg := os.Args[len(os.Args)-2]
-	isCompleting := isCompletingArg(command.Flags, trailingArg)
 
-	if !isCompleting {
-		if c.NArg()+1 <= len(t.Args) {
-			fmt.Fprintln(w, "task-args")
-			arg := t.Args[c.NArg()]
-			for _, value := range arg.ValuesAllowed {
-				fmt.Fprintln(w, value)
-			}
-		} else {
-			fmt.Fprintln(w, "task-no-args")
-		}
-		for _, flag := range command.Flags {
-			printFlag(w, c, flag)
-		}
+	if isCompletingFlagArg(command.Flags, trailingArg) {
+		printCompletingFlagArg(w, t, cfg, trailingArg)
 		return
 	}
 
+	if c.NArg()+1 <= len(t.Args) {
+		fmt.Fprintln(w, "task-args")
+		arg := t.Args[c.NArg()]
+		for _, value := range arg.ValuesAllowed {
+			fmt.Fprintln(w, value)
+		}
+	} else {
+		fmt.Fprintln(w, "task-no-args")
+	}
+	for _, flag := range command.Flags {
+		printFlag(w, c, flag)
+	}
+}
+
+func printCompletingFlagArg(w io.Writer, t *task.Task, cfg *config.Config, trailingArg string) {
 	options, err := config.FindAllOptions(t, cfg)
 	if err != nil {
 		return
@@ -170,8 +172,8 @@ func removeCompletionArg(args []string) []string {
 	return output
 }
 
-// isCompletingArg returns if the trailing arg is an incomplete flag.
-func isCompletingArg(flags []cli.Flag, arg string) bool {
+// isCompletingFlagArg returns if the trailing arg is an incomplete flag.
+func isCompletingFlagArg(flags []cli.Flag, arg string) bool {
 	if !strings.HasPrefix(arg, "-") {
 		return false
 	}
@@ -180,21 +182,27 @@ func isCompletingArg(flags []cli.Flag, arg string) bool {
 	short := !strings.HasPrefix(arg, "--")
 
 	for _, flag := range flags {
-		if _, ok := flag.(cli.BoolFlag); ok {
+		switch flag.(type) {
+		case cli.BoolFlag, cli.BoolTFlag:
 			continue
 		}
 
-		if _, ok := flag.(cli.BoolTFlag); ok {
+		if flagMatchesName(flag, name, short) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func flagMatchesName(flag cli.Flag, name string, short bool) bool {
+	for _, candidate := range strings.Split(flag.GetName(), ", ") {
+		if len(candidate) == 1 && !short {
 			continue
 		}
 
-		for _, candidate := range strings.Split(flag.GetName(), ", ") {
-			if len(candidate) == 1 && !short {
-				continue
-			}
-			if name == candidate {
-				return true
-			}
+		if name == candidate {
+			return true
 		}
 	}
 

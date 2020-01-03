@@ -274,7 +274,7 @@ baz
 	}
 }
 
-func TestIsCompletingArg(t *testing.T) {
+func TestIsCompletingFlagArg(t *testing.T) {
 	tests := []struct {
 		flags    []cli.Flag
 		arg      string
@@ -297,10 +297,10 @@ func TestIsCompletingArg(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		actual := isCompletingArg(tt.flags, tt.arg)
+		actual := isCompletingFlagArg(tt.flags, tt.arg)
 		if tt.expected != actual {
 			t.Errorf(
-				"isCompletingArg(%#v, %s) => %t, want %t",
+				"isCompletingFlagArg(%#v, %s) => %t, want %t",
 				tt.flags, tt.arg, actual, tt.expected,
 			)
 		}
