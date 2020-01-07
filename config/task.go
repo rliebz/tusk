@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/ui"
 )
 
@@ -18,8 +17,8 @@ const (
 
 // Task is a single task to be run by CLI.
 type Task struct {
-	Args    option.Args    `yaml:"args,omitempty"`
-	Options option.Options `yaml:"options,omitempty"`
+	Args    Args    `yaml:"args,omitempty"`
+	Options Options `yaml:"options,omitempty"`
 
 	RunList     RunList `yaml:"run"`
 	Finally     RunList `yaml:"finally,omitempty"`

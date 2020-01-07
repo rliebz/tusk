@@ -2,23 +2,21 @@ package config
 
 import (
 	"testing"
-
-	"github.com/rliebz/tusk/config/option"
 )
 
 var findalloptionstests = []struct {
 	desc                string
-	taskOptions         []option.Option
-	cfgOptions          []option.Option
+	taskOptions         []Option
+	cfgOptions          []Option
 	expectedTaskIndices []int
 	expectedCfgIndices  []int
 }{
 	{
 		"no dependencies",
-		[]option.Option{},
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
+		[]Option{},
+		[]Option{
+			Create(
+				WithName("foo"),
 			),
 		},
 		[]int{},
@@ -26,38 +24,38 @@ var findalloptionstests = []struct {
 	},
 	{
 		"fake dependencies",
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
-				option.WithDependency("fake"),
+		[]Option{
+			Create(
+				WithName("foo"),
+				WithDependency("fake"),
 			),
 		},
-		[]option.Option{},
+		[]Option{},
 		[]int{0},
 		[]int{},
 	},
 	{
 		"multiple dependencies per option",
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
-				option.WithDependency("one"),
-				option.WithDependency("two"),
-				option.WithDependency("three"),
+		[]Option{
+			Create(
+				WithName("foo"),
+				WithDependency("one"),
+				WithDependency("two"),
+				WithDependency("three"),
 			),
 		},
-		[]option.Option{
-			option.Create(
-				option.WithName("one"),
+		[]Option{
+			Create(
+				WithName("one"),
 			),
-			option.Create(
-				option.WithName("two"),
+			Create(
+				WithName("two"),
 			),
-			option.Create(
-				option.WithName("three"),
+			Create(
+				WithName("three"),
 			),
-			option.Create(
-				option.WithName("wrong"),
+			Create(
+				WithName("wrong"),
 			),
 		},
 		[]int{0},
@@ -65,33 +63,33 @@ var findalloptionstests = []struct {
 	},
 	{
 		"only task dependencies",
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
+		[]Option{
+			Create(
+				WithName("foo"),
 			),
-			option.Create(
-				option.WithName("bar"),
-				option.WithDependency("foo"),
+			Create(
+				WithName("bar"),
+				WithDependency("foo"),
 			),
 		},
-		[]option.Option{},
+		[]Option{},
 		[]int{0, 1},
 		[]int{},
 	},
 	{
 		"overridden global dependencies",
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
+		[]Option{
+			Create(
+				WithName("foo"),
 			),
-			option.Create(
-				option.WithName("bar"),
-				option.WithDependency("foo"),
+			Create(
+				WithName("bar"),
+				WithDependency("foo"),
 			),
 		},
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
+		[]Option{
+			Create(
+				WithName("foo"),
 			),
 		},
 		[]int{0, 1},
@@ -99,30 +97,30 @@ var findalloptionstests = []struct {
 	},
 	{
 		"when dependencies",
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
+		[]Option{
+			Create(
+				WithName("foo"),
 			),
-			option.Create(
-				option.WithName("bar"),
-				option.WithWhenDependency("foo"),
+			Create(
+				WithName("bar"),
+				WithWhenDependency("foo"),
 			),
 		},
-		[]option.Option{},
+		[]Option{},
 		[]int{0, 1},
 		[]int{},
 	},
 	{
 		"task requires global",
-		[]option.Option{
-			option.Create(
-				option.WithName("bar"),
-				option.WithDependency("foo"),
+		[]Option{
+			Create(
+				WithName("bar"),
+				WithDependency("foo"),
 			),
 		},
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
+		[]Option{
+			Create(
+				WithName("foo"),
 			),
 		},
 		[]int{0},
@@ -130,15 +128,15 @@ var findalloptionstests = []struct {
 	},
 	{
 		"global requires task (false positive)",
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
+		[]Option{
+			Create(
+				WithName("foo"),
 			),
 		},
-		[]option.Option{
-			option.Create(
-				option.WithName("bar"),
-				option.WithDependency("foo"),
+		[]Option{
+			Create(
+				WithName("bar"),
+				WithDependency("foo"),
 			),
 		},
 		[]int{0},
@@ -146,23 +144,23 @@ var findalloptionstests = []struct {
 	},
 	{
 		"nested depdendencies",
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
-				option.WithDependency("bar"),
+		[]Option{
+			Create(
+				WithName("foo"),
+				WithDependency("bar"),
 			),
-			option.Create(
-				option.WithName("bar"),
-				option.WithDependency("baz"),
+			Create(
+				WithName("bar"),
+				WithDependency("baz"),
 			),
 		},
-		[]option.Option{
-			option.Create(
-				option.WithName("baz"),
-				option.WithDependency("qux"),
+		[]Option{
+			Create(
+				WithName("baz"),
+				WithDependency("qux"),
 			),
-			option.Create(
-				option.WithName("qux"),
+			Create(
+				WithName("qux"),
 			),
 		},
 		[]int{0, 1},
@@ -170,30 +168,30 @@ var findalloptionstests = []struct {
 	},
 	{
 		"nested depdendencies with ignored globals",
-		[]option.Option{
-			option.Create(
-				option.WithName("foo"),
-				option.WithDependency("bar"),
+		[]Option{
+			Create(
+				WithName("foo"),
+				WithDependency("bar"),
 			),
-			option.Create(
-				option.WithName("bar"),
-				option.WithDependency("baz"),
+			Create(
+				WithName("bar"),
+				WithDependency("baz"),
 			),
 		},
-		[]option.Option{
-			option.Create(
-				option.WithName("qux"),
+		[]Option{
+			Create(
+				WithName("qux"),
 			),
-			option.Create(
-				option.WithName("skiptwo"),
+			Create(
+				WithName("skiptwo"),
 			),
-			option.Create(
-				option.WithName("baz"),
-				option.WithDependency("qux"),
+			Create(
+				WithName("baz"),
+				WithDependency("qux"),
 			),
-			option.Create(
-				option.WithName("skipone"),
-				option.WithDependency("skiptwo"),
+			Create(
+				WithName("skipone"),
+				WithDependency("skiptwo"),
 			),
 		},
 		[]int{0, 1},
@@ -222,7 +220,7 @@ func TestFindAllOptions(t *testing.T) {
 			continue
 		}
 
-		var expected []*option.Option
+		var expected []*Option
 		for _, i := range tt.expectedTaskIndices {
 			expected = append(expected, &tt.taskOptions[i])
 		}
@@ -234,7 +232,7 @@ func TestFindAllOptions(t *testing.T) {
 	}
 }
 
-func assertOptionsEqualUnordered(t *testing.T, desc string, a, b []*option.Option) {
+func assertOptionsEqualUnordered(t *testing.T, desc string, a, b []*Option) {
 	t.Helper()
 
 	if len(a) != len(b) {
@@ -245,7 +243,7 @@ func assertOptionsEqualUnordered(t *testing.T, desc string, a, b []*option.Optio
 		return
 	}
 
-	bMap := make(map[*option.Option]interface{})
+	bMap := make(map[*Option]interface{})
 	for _, val := range b {
 		bMap[val] = struct{}{}
 	}

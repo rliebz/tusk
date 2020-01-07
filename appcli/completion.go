@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/rliebz/tusk/config"
-	"github.com/rliebz/tusk/config/option"
 	"github.com/urfave/cli"
 )
 
@@ -112,7 +111,7 @@ func printCompletingFlagArg(w io.Writer, t *config.Task, cfg *config.Config, tra
 	fmt.Fprintln(w, "file")
 }
 
-func getOptionFlag(flag string, options []*option.Option) (*option.Option, bool) {
+func getOptionFlag(flag string, options []*config.Option) (*config.Option, bool) {
 	flagName := getFlagName(flag)
 	for _, opt := range options {
 		if flagName == opt.Name || flagName == opt.Short {

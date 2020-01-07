@@ -1,16 +1,12 @@
 package config
 
-import (
-	"github.com/rliebz/tusk/config/option"
-)
-
 // Config is a struct representing the format for configuration settings.
 type Config struct {
 	Name  string `yaml:"name"`
 	Usage string `yaml:"usage"`
 
 	Tasks   map[string]*Task `yaml:"tasks"`
-	Options option.Options   `yaml:"options,omitempty"`
+	Options Options          `yaml:"options,omitempty"`
 }
 
 // UnmarshalYAML unmarshals and assigns names to options and tasks.

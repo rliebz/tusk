@@ -3,18 +3,17 @@ package config
 import (
 	"encoding/json"
 
-	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/interp"
 )
 
 // FindAllOptions returns a list of options relevant for a given
-func FindAllOptions(t *Task, cfg *Config) ([]*option.Option, error) {
+func FindAllOptions(t *Task, cfg *Config) ([]*Option, error) {
 	names, err := getDependencies(t)
 	if err != nil {
 		return nil, err
 	}
 
-	candidates := make(map[string]*option.Option)
+	candidates := make(map[string]*Option)
 	for _, opt := range cfg.Options {
 		// Args that share a name with global options take priority
 		if _, ok := t.Args.Lookup(opt.Name); ok {
@@ -24,7 +23,7 @@ func FindAllOptions(t *Task, cfg *Config) ([]*option.Option, error) {
 		candidates[opt.Name] = opt
 	}
 
-	required := make([]*option.Option, 0, len(t.Options))
+	required := make([]*Option, 0, len(t.Options))
 	for _, opt := range t.Options {
 		candidates[opt.Name] = opt
 		required = append(required, opt)
@@ -39,8 +38,8 @@ func FindAllOptions(t *Task, cfg *Config) ([]*option.Option, error) {
 }
 
 func findRequiredOptionsRecursively(
-	entry []string, candidates map[string]*option.Option, found []*option.Option,
-) ([]*option.Option, error) {
+	entry []string, candidates map[string]*Option, found []*Option,
+) ([]*Option, error) {
 	for _, item := range entry {
 		candidate, ok := candidates[item]
 		if !ok || optionsContains(found, candidate) {
@@ -67,7 +66,7 @@ func findRequiredOptionsRecursively(
 	return found, nil
 }
 
-func optionsContains(items []*option.Option, item *option.Option) bool {
+func optionsContains(items []*Option, item *Option) bool {
 	for _, want := range items {
 		if item == want {
 			return true

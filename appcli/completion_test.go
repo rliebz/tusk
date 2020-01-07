@@ -8,7 +8,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/config/marshal"
-	"github.com/rliebz/tusk/config/option"
 	"github.com/urfave/cli"
 )
 
@@ -103,7 +102,7 @@ func TestCommandComplete(t *testing.T) {
 		name     string
 		command  *cli.Command
 		narg     int
-		taskArgs option.Args
+		taskArgs config.Args
 		flagsSet []string
 		trailing string
 		want     string
@@ -126,16 +125,16 @@ bar
 --string:a string flag
 --values:a flag with limited allowed values
 `,
-			taskArgs: option.Args{
+			taskArgs: config.Args{
 				{
 					Name: "first",
-					ValueWithList: option.ValueWithList{
+					ValueWithList: config.ValueWithList{
 						ValuesAllowed: []string{"foo", "bar"},
 					},
 				},
 				{
 					Name: "second",
-					ValueWithList: option.ValueWithList{
+					ValueWithList: config.ValueWithList{
 						ValuesAllowed: []string{"baz"},
 					},
 				},
@@ -150,16 +149,16 @@ baz
 --string:a string flag
 --values:a flag with limited allowed values
 `,
-			taskArgs: option.Args{
+			taskArgs: config.Args{
 				{
 					Name: "first",
-					ValueWithList: option.ValueWithList{
+					ValueWithList: config.ValueWithList{
 						ValuesAllowed: []string{"foo", "bar"},
 					},
 				},
 				{
 					Name: "second",
-					ValueWithList: option.ValueWithList{
+					ValueWithList: config.ValueWithList{
 						ValuesAllowed: []string{"baz"},
 					},
 				},
@@ -176,10 +175,10 @@ baz
 --bool:a boolean flag
 --values:a flag with limited allowed values
 `,
-			taskArgs: option.Args{
+			taskArgs: config.Args{
 				{
 					Name: "foo",
-					ValueWithList: option.ValueWithList{
+					ValueWithList: config.ValueWithList{
 						ValuesAllowed: []string{"foo", "bar", "baz"},
 					},
 				},
@@ -245,12 +244,12 @@ baz
 				Tasks: map[string]*config.Task{
 					cmd.Name: {
 						Args: tt.taskArgs,
-						Options: option.Options{
+						Options: config.Options{
 							{Name: "bool", Type: "bool"},
 							{Name: "string"},
 							{
 								Name: "values",
-								ValueWithList: option.ValueWithList{
+								ValueWithList: config.ValueWithList{
 									ValuesAllowed: marshal.StringList{"foo", "bar", "baz"},
 								},
 							},

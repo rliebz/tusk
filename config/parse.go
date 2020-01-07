@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 
-	"github.com/rliebz/tusk/config/option"
 	"github.com/rliebz/tusk/interp"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -100,13 +99,13 @@ func interpolateGlobalOptions(
 	return vars, nil
 }
 
-func getRequiredGlobalOptions(t *Task, cfg *Config) (option.Options, error) {
+func getRequiredGlobalOptions(t *Task, cfg *Config) (Options, error) {
 	required, err := FindAllOptions(t, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	var output option.Options
+	var output Options
 	for _, o := range cfg.Options {
 		for _, r := range required {
 			if r.Name != o.Name {
@@ -120,7 +119,7 @@ func getRequiredGlobalOptions(t *Task, cfg *Config) (option.Options, error) {
 	return output, nil
 }
 
-func interpolateArg(a *option.Arg, passed, vars map[string]string) error {
+func interpolateArg(a *Arg, passed, vars map[string]string) error {
 	if err := interp.Marshallable(a, vars); err != nil {
 		return err
 	}
@@ -142,7 +141,7 @@ func interpolateArg(a *option.Arg, passed, vars map[string]string) error {
 	return nil
 }
 
-func interpolateOption(o *option.Option, passed, vars map[string]string) error {
+func interpolateOption(o *Option, passed, vars map[string]string) error {
 	if err := interp.Marshallable(o, vars); err != nil {
 		return err
 	}
@@ -241,14 +240,14 @@ func newTaskFromSub(desc *SubTask, cfg *Config) (*Task, error) {
 func copyTask(t *Task) *Task {
 	newTask := *t
 
-	argsCopy := make(option.Args, 0, len(newTask.Args))
+	argsCopy := make(Args, 0, len(newTask.Args))
 	for _, ptr := range newTask.Args {
 		arg := *ptr
 		argsCopy = append(argsCopy, &arg)
 	}
 	newTask.Args = argsCopy
 
-	optionsCopy := make(option.Options, 0, len(newTask.Options))
+	optionsCopy := make(Options, 0, len(newTask.Options))
 	for _, ptr := range newTask.Options {
 		opt := *ptr
 		optionsCopy = append(optionsCopy, &opt)

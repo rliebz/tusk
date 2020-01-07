@@ -9,7 +9,6 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/config"
-	"github.com/rliebz/tusk/config/option"
 )
 
 // copyFlags copies all command flags from one cli.App to another.
@@ -51,7 +50,7 @@ func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *config.Task) error
 	return nil
 }
 
-func addFlag(command *cli.Command, opt *option.Option) error {
+func addFlag(command *cli.Command, opt *config.Option) error {
 	newFlag, err := createCLIFlag(opt)
 	if err != nil {
 		return err
@@ -69,7 +68,7 @@ func addFlag(command *cli.Command, opt *option.Option) error {
 }
 
 // createCLIFlag converts an Option into a cli.Flag.
-func createCLIFlag(opt *option.Option) (cli.Flag, error) {
+func createCLIFlag(opt *config.Option) (cli.Flag, error) {
 	name := opt.Name
 	if opt.Short != "" {
 		name = fmt.Sprintf("%s, %s", name, opt.Short)
