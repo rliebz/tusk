@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/pkg/errors"
-	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
 )
 

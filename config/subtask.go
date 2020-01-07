@@ -1,6 +1,6 @@
 package config
 
-import "github.com/rliebz/tusk/config/marshal"
+import "github.com/rliebz/tusk/marshal"
 
 // SubTask is a description of a sub-task with passed options.
 type SubTask struct {

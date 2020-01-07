@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/tusk/config"
-	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/marshal"
 	"github.com/urfave/cli"
 )
 

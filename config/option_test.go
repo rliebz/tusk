@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
 )
 

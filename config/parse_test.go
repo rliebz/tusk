@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/marshal"
 )
 
 var interpolatetests = []struct {

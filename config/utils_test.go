@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/rliebz/tusk/config/marshal"
+	"github.com/rliebz/tusk/marshal"
 )
 
 // createOption creates a custom option for testing purposes.
