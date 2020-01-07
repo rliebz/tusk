@@ -3,12 +3,12 @@ package appcli
 import (
 	"testing"
 
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 	"github.com/urfave/cli"
 )
 
 func TestCreateCLIFlag_undefined(t *testing.T) {
-	opt := &config.Option{
+	opt := &runner.Option{
 		Type: "wrong",
 	}
 
@@ -21,7 +21,7 @@ func TestCreateCLIFlag_undefined(t *testing.T) {
 func TestAddFlag_no_duplicates(t *testing.T) {
 	command := &cli.Command{}
 
-	opt := &config.Option{
+	opt := &runner.Option{
 		Name:  "foo",
 		Short: "f",
 	}

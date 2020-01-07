@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/marshal"
 	"github.com/urfave/cli"
 )
@@ -102,7 +102,7 @@ func TestCommandComplete(t *testing.T) {
 		name     string
 		command  *cli.Command
 		narg     int
-		taskArgs config.Args
+		taskArgs runner.Args
 		flagsSet []string
 		trailing string
 		want     string
@@ -125,16 +125,16 @@ bar
 --string:a string flag
 --values:a flag with limited allowed values
 `,
-			taskArgs: config.Args{
+			taskArgs: runner.Args{
 				{
 					Name: "first",
-					ValueWithList: config.ValueWithList{
+					ValueWithList: runner.ValueWithList{
 						ValuesAllowed: []string{"foo", "bar"},
 					},
 				},
 				{
 					Name: "second",
-					ValueWithList: config.ValueWithList{
+					ValueWithList: runner.ValueWithList{
 						ValuesAllowed: []string{"baz"},
 					},
 				},
@@ -149,16 +149,16 @@ baz
 --string:a string flag
 --values:a flag with limited allowed values
 `,
-			taskArgs: config.Args{
+			taskArgs: runner.Args{
 				{
 					Name: "first",
-					ValueWithList: config.ValueWithList{
+					ValueWithList: runner.ValueWithList{
 						ValuesAllowed: []string{"foo", "bar"},
 					},
 				},
 				{
 					Name: "second",
-					ValueWithList: config.ValueWithList{
+					ValueWithList: runner.ValueWithList{
 						ValuesAllowed: []string{"baz"},
 					},
 				},
@@ -175,10 +175,10 @@ baz
 --bool:a boolean flag
 --values:a flag with limited allowed values
 `,
-			taskArgs: config.Args{
+			taskArgs: runner.Args{
 				{
 					Name: "foo",
-					ValueWithList: config.ValueWithList{
+					ValueWithList: runner.ValueWithList{
 						ValuesAllowed: []string{"foo", "bar", "baz"},
 					},
 				},
@@ -240,16 +240,16 @@ baz
 				},
 			}
 
-			cfg := &config.Config{
-				Tasks: map[string]*config.Task{
+			cfg := &runner.Config{
+				Tasks: map[string]*runner.Task{
 					cmd.Name: {
 						Args: tt.taskArgs,
-						Options: config.Options{
+						Options: runner.Options{
 							{Name: "bool", Type: "bool"},
 							{Name: "string"},
 							{
 								Name: "values",
-								ValueWithList: config.ValueWithList{
+								ValueWithList: runner.ValueWithList{
 									ValuesAllowed: marshal.StringList{"foo", "bar", "baz"},
 								},
 							},

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
 )
 
@@ -45,7 +45,7 @@ func UninstallCompletion(shell string) error {
 }
 
 func installBashCompletion() error {
-	dir, err := config.DataHome()
+	dir, err := runner.DataHome()
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func appendIfAbsent(path, text string) error {
 }
 
 func uninstallBashCompletion() error {
-	dir, err := config.DataHome()
+	dir, err := runner.DataHome()
 	if err != nil {
 		return err
 	}

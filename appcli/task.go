@@ -6,11 +6,11 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 )
 
 // addTasks adds a series of tasks to a cli.App using a command creator.
-func addTasks(app *cli.App, cfg *config.Config, create commandCreator) error {
+func addTasks(app *cli.App, cfg *runner.Config, create commandCreator) error {
 	for _, t := range cfg.Tasks {
 		if err := addTask(app, cfg, t, create); err != nil {
 			return errors.Wrapf(err, `could not add task "%s"`, t.Name)
@@ -21,7 +21,7 @@ func addTasks(app *cli.App, cfg *config.Config, create commandCreator) error {
 	return nil
 }
 
-func addTask(app *cli.App, cfg *config.Config, t *config.Task, create commandCreator) error {
+func addTask(app *cli.App, cfg *runner.Config, t *runner.Task, create commandCreator) error {
 	if t.Private {
 		return nil
 	}

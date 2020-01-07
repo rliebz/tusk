@@ -1,4 +1,4 @@
-package config
+package runner
 
 import (
 	"github.com/pkg/errors"

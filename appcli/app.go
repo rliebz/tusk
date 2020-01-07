@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 )
 
 // newBaseApp creates a basic cli.App with top-level flags.
@@ -73,14 +73,14 @@ func newSilentApp() *cli.App {
 
 // newMetaApp creates a cli.App containing metadata, which can parse flags.
 func newMetaApp(cfgText []byte) (*cli.App, error) {
-	cfg, err := config.Parse(cfgText)
+	cfg, err := runner.Parse(cfgText)
 	if err != nil {
 		return nil, err
 	}
 
 	app := newSilentApp()
 	app.Metadata = make(map[string]interface{})
-	app.Metadata["tasks"] = make(map[string]*config.Task)
+	app.Metadata["tasks"] = make(map[string]*runner.Task)
 	app.Metadata["argsPassed"] = []string{}
 	app.Metadata["flagsPassed"] = make(map[string]string)
 
@@ -92,7 +92,7 @@ func newMetaApp(cfgText []byte) (*cli.App, error) {
 }
 
 // NewApp creates a cli.App that executes tasks.
-func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
+func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
 	metaApp, err := newMetaApp(meta.CfgText)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func NewApp(args []string, meta *config.Metadata) (*cli.App, error) {
 		return nil, err
 	}
 
-	cfg, err := config.ParseComplete(meta.CfgText, taskName, argsPassed, flagsPassed)
+	cfg, err := runner.ParseComplete(meta.CfgText, taskName, argsPassed, flagsPassed)
 	if err != nil {
 		return nil, err
 	}
@@ -157,10 +157,10 @@ func getPassedValues(app *cli.App) (args []string, flags map[string]string, err 
 }
 
 // GetConfigMetadata returns a metadata object based on global options passed.
-func GetConfigMetadata(args []string) (*config.Metadata, error) {
+func GetConfigMetadata(args []string) (*runner.Metadata, error) {
 	var err error
 	app := newSilentApp()
-	metadata := new(config.Metadata)
+	metadata := new(runner.Metadata)
 
 	app.Action = func(c *cli.Context) error {
 		// To prevent app from exiting, app.Action must return nil on error.

@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
 	"github.com/urfave/cli"
 )
@@ -151,7 +151,7 @@ tasks: { "%s": {} }
 `,
 		name, usage, taskName,
 	))
-	meta := &config.Metadata{CfgText: cfgText}
+	meta := &runner.Metadata{CfgText: cfgText}
 
 	app, err := NewApp(args, meta)
 	if err != nil {
@@ -187,7 +187,7 @@ func TestNewApp_exit_code(t *testing.T) {
 tasks:
   foo:
     run: exit 99`)
-	meta := &config.Metadata{CfgText: cfgText}
+	meta := &runner.Metadata{CfgText: cfgText}
 
 	app, err := NewApp(args, meta)
 	if err != nil {
@@ -221,7 +221,7 @@ tasks:
     run: exit 99
   public:
     run: {task: private}`)
-	meta := &config.Metadata{CfgText: cfgText}
+	meta := &runner.Metadata{CfgText: cfgText}
 
 	app, err := NewApp(args, meta)
 	if err != nil {
@@ -249,7 +249,7 @@ tasks:
 func TestNewApp_fails_bad_config(t *testing.T) {
 	args := []string{"tusk"}
 	cfgText := []byte(`invalid`)
-	meta := &config.Metadata{CfgText: cfgText}
+	meta := &runner.Metadata{CfgText: cfgText}
 	_, err := NewApp(args, meta)
 	if err == nil {
 		t.Fatal("expected error for invalid config text")
@@ -259,7 +259,7 @@ func TestNewApp_fails_bad_config(t *testing.T) {
 func TestNewApp_fails_bad_flag(t *testing.T) {
 	args := []string{"tusk", "--invalid"}
 	cfgText := []byte{}
-	meta := &config.Metadata{CfgText: cfgText}
+	meta := &runner.Metadata{CfgText: cfgText}
 	_, err := NewApp(args, meta)
 	if err == nil {
 		t.Fatal("expected error for invalid flag")

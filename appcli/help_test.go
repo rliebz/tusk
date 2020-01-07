@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 )
 
 var flagPrefixerTests = []struct {
@@ -85,7 +85,7 @@ func TestCreateArgsSection(t *testing.T) {
 		taskName := "someTaskName"
 		t.Run(tt.desc, func(t *testing.T) {
 			cfgText := fmt.Sprintf("tasks: { %s: { args: {%s} } }", taskName, tt.taskCfg)
-			cfg, err := config.Parse([]byte(cfgText))
+			cfg, err := runner.Parse([]byte(cfgText))
 			if err != nil {
 				t.Fatal(err)
 			}

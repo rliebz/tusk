@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
 	"github.com/urfave/cli"
 )
@@ -114,7 +114,7 @@ func prependHyphens(flagName string) string {
 	return "--" + flagName
 }
 
-func createCommandHelp(t *config.Task) string {
+func createCommandHelp(t *runner.Task) string {
 	// nolint: lll
 	return fmt.Sprintf(`{{.HelpName}}{{if .Usage}} - {{.Usage}}{{end}}
 
@@ -133,7 +133,7 @@ Options:
 `, createArgsSection(t))
 }
 
-func createArgsSection(t *config.Task) string {
+func createArgsSection(t *runner.Task) string {
 	argsTpl := `{{if .}}
 
 Arguments:
@@ -159,7 +159,7 @@ Arguments:
 	return argsSection.String()
 }
 
-func getArgPadder(t *config.Task) func(string) string {
+func getArgPadder(t *runner.Task) func(string) string {
 	maxLength := 0
 	for _, arg := range t.Args {
 		if len(arg.Name) > maxLength {

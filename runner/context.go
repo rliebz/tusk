@@ -1,4 +1,4 @@
-package config
+package runner
 
 // RunContext contains contextual information about a run.
 type RunContext struct {

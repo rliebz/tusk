@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 )
 
 // copyFlags copies all command flags from one cli.App to another.
@@ -25,8 +25,8 @@ func copyFlags(target, source *cli.App) {
 }
 
 // addAllFlagsUsed adds the top-level flags to tasks where interpolation is used.
-func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *config.Task) error {
-	dependencies, err := config.FindAllOptions(t, cfg)
+func addAllFlagsUsed(cfg *runner.Config, cmd *cli.Command, t *runner.Task) error {
+	dependencies, err := runner.FindAllOptions(t, cfg)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *config.Task) error
 	return nil
 }
 
-func addFlag(command *cli.Command, opt *config.Option) error {
+func addFlag(command *cli.Command, opt *runner.Option) error {
 	newFlag, err := createCLIFlag(opt)
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func addFlag(command *cli.Command, opt *config.Option) error {
 }
 
 // createCLIFlag converts an Option into a cli.Flag.
-func createCLIFlag(opt *config.Option) (cli.Flag, error) {
+func createCLIFlag(opt *runner.Option) (cli.Flag, error) {
 	name := opt.Name
 	if opt.Short != "" {
 		name = fmt.Sprintf("%s, %s", name, opt.Short)

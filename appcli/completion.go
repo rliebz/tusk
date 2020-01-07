@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rliebz/tusk/config"
+	"github.com/rliebz/tusk/runner"
 	"github.com/urfave/cli"
 )
 
@@ -59,13 +59,13 @@ func defaultComplete(w io.Writer, c context, app *cli.App) {
 // The metadata includes the completion type followed by a list of options.
 // The available completion types are "normal" and "file". Normal will return
 // task-specific flags, while file allows completion engines to use system files.
-func createCommandComplete(w io.Writer, command *cli.Command, cfg *config.Config) func(c *cli.Context) {
+func createCommandComplete(w io.Writer, command *cli.Command, cfg *runner.Config) func(c *cli.Context) {
 	return func(c *cli.Context) {
 		commandComplete(w, c, command, cfg)
 	}
 }
 
-func commandComplete(w io.Writer, c context, command *cli.Command, cfg *config.Config) {
+func commandComplete(w io.Writer, c context, command *cli.Command, cfg *runner.Config) {
 	t := cfg.Tasks[command.Name]
 	trailingArg := os.Args[len(os.Args)-2]
 
@@ -88,8 +88,8 @@ func commandComplete(w io.Writer, c context, command *cli.Command, cfg *config.C
 	}
 }
 
-func printCompletingFlagArg(w io.Writer, t *config.Task, cfg *config.Config, trailingArg string) {
-	options, err := config.FindAllOptions(t, cfg)
+func printCompletingFlagArg(w io.Writer, t *runner.Task, cfg *runner.Config, trailingArg string) {
+	options, err := runner.FindAllOptions(t, cfg)
 	if err != nil {
 		return
 	}
@@ -111,7 +111,7 @@ func printCompletingFlagArg(w io.Writer, t *config.Task, cfg *config.Config, tra
 	fmt.Fprintln(w, "file")
 }
 
-func getOptionFlag(flag string, options []*config.Option) (*config.Option, bool) {
+func getOptionFlag(flag string, options []*runner.Option) (*runner.Option, bool) {
 	flagName := getFlagName(flag)
 	for _, opt := range options {
 		if flagName == opt.Name || flagName == opt.Short {

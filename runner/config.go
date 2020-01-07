@@ -1,4 +1,4 @@
-package config
+package runner
 
 // Config is a struct representing the format for configuration settings.
 type Config struct {
