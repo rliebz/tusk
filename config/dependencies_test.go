@@ -15,8 +15,8 @@ var findalloptionstests = []struct {
 		"no dependencies",
 		[]Option{},
 		[]Option{
-			Create(
-				WithName("foo"),
+			createOption(
+				withOptionName("foo"),
 			),
 		},
 		[]int{},
@@ -25,9 +25,9 @@ var findalloptionstests = []struct {
 	{
 		"fake dependencies",
 		[]Option{
-			Create(
-				WithName("foo"),
-				WithDependency("fake"),
+			createOption(
+				withOptionName("foo"),
+				withOptionDependency("fake"),
 			),
 		},
 		[]Option{},
@@ -37,25 +37,25 @@ var findalloptionstests = []struct {
 	{
 		"multiple dependencies per option",
 		[]Option{
-			Create(
-				WithName("foo"),
-				WithDependency("one"),
-				WithDependency("two"),
-				WithDependency("three"),
+			createOption(
+				withOptionName("foo"),
+				withOptionDependency("one"),
+				withOptionDependency("two"),
+				withOptionDependency("three"),
 			),
 		},
 		[]Option{
-			Create(
-				WithName("one"),
+			createOption(
+				withOptionName("one"),
 			),
-			Create(
-				WithName("two"),
+			createOption(
+				withOptionName("two"),
 			),
-			Create(
-				WithName("three"),
+			createOption(
+				withOptionName("three"),
 			),
-			Create(
-				WithName("wrong"),
+			createOption(
+				withOptionName("wrong"),
 			),
 		},
 		[]int{0},
@@ -64,12 +64,12 @@ var findalloptionstests = []struct {
 	{
 		"only task dependencies",
 		[]Option{
-			Create(
-				WithName("foo"),
+			createOption(
+				withOptionName("foo"),
 			),
-			Create(
-				WithName("bar"),
-				WithDependency("foo"),
+			createOption(
+				withOptionName("bar"),
+				withOptionDependency("foo"),
 			),
 		},
 		[]Option{},
@@ -79,17 +79,17 @@ var findalloptionstests = []struct {
 	{
 		"overridden global dependencies",
 		[]Option{
-			Create(
-				WithName("foo"),
+			createOption(
+				withOptionName("foo"),
 			),
-			Create(
-				WithName("bar"),
-				WithDependency("foo"),
+			createOption(
+				withOptionName("bar"),
+				withOptionDependency("foo"),
 			),
 		},
 		[]Option{
-			Create(
-				WithName("foo"),
+			createOption(
+				withOptionName("foo"),
 			),
 		},
 		[]int{0, 1},
@@ -98,12 +98,12 @@ var findalloptionstests = []struct {
 	{
 		"when dependencies",
 		[]Option{
-			Create(
-				WithName("foo"),
+			createOption(
+				withOptionName("foo"),
 			),
-			Create(
-				WithName("bar"),
-				WithWhenDependency("foo"),
+			createOption(
+				withOptionName("bar"),
+				withOptionWhenDependency("foo"),
 			),
 		},
 		[]Option{},
@@ -113,14 +113,14 @@ var findalloptionstests = []struct {
 	{
 		"task requires global",
 		[]Option{
-			Create(
-				WithName("bar"),
-				WithDependency("foo"),
+			createOption(
+				withOptionName("bar"),
+				withOptionDependency("foo"),
 			),
 		},
 		[]Option{
-			Create(
-				WithName("foo"),
+			createOption(
+				withOptionName("foo"),
 			),
 		},
 		[]int{0},
@@ -129,14 +129,14 @@ var findalloptionstests = []struct {
 	{
 		"global requires task (false positive)",
 		[]Option{
-			Create(
-				WithName("foo"),
+			createOption(
+				withOptionName("foo"),
 			),
 		},
 		[]Option{
-			Create(
-				WithName("bar"),
-				WithDependency("foo"),
+			createOption(
+				withOptionName("bar"),
+				withOptionDependency("foo"),
 			),
 		},
 		[]int{0},
@@ -145,22 +145,22 @@ var findalloptionstests = []struct {
 	{
 		"nested depdendencies",
 		[]Option{
-			Create(
-				WithName("foo"),
-				WithDependency("bar"),
+			createOption(
+				withOptionName("foo"),
+				withOptionDependency("bar"),
 			),
-			Create(
-				WithName("bar"),
-				WithDependency("baz"),
+			createOption(
+				withOptionName("bar"),
+				withOptionDependency("baz"),
 			),
 		},
 		[]Option{
-			Create(
-				WithName("baz"),
-				WithDependency("qux"),
+			createOption(
+				withOptionName("baz"),
+				withOptionDependency("qux"),
 			),
-			Create(
-				WithName("qux"),
+			createOption(
+				withOptionName("qux"),
 			),
 		},
 		[]int{0, 1},
@@ -169,29 +169,29 @@ var findalloptionstests = []struct {
 	{
 		"nested depdendencies with ignored globals",
 		[]Option{
-			Create(
-				WithName("foo"),
-				WithDependency("bar"),
+			createOption(
+				withOptionName("foo"),
+				withOptionDependency("bar"),
 			),
-			Create(
-				WithName("bar"),
-				WithDependency("baz"),
+			createOption(
+				withOptionName("bar"),
+				withOptionDependency("baz"),
 			),
 		},
 		[]Option{
-			Create(
-				WithName("qux"),
+			createOption(
+				withOptionName("qux"),
 			),
-			Create(
-				WithName("skiptwo"),
+			createOption(
+				withOptionName("skiptwo"),
 			),
-			Create(
-				WithName("baz"),
-				WithDependency("qux"),
+			createOption(
+				withOptionName("baz"),
+				withOptionDependency("qux"),
 			),
-			Create(
-				WithName("skipone"),
-				WithDependency("skiptwo"),
+			createOption(
+				withOptionName("skipone"),
+				withOptionDependency("skiptwo"),
 			),
 		},
 		[]int{0, 1},

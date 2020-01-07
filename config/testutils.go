@@ -6,8 +6,8 @@ import (
 	"github.com/rliebz/tusk/config/when"
 )
 
-// Create creates a custom option for testing purposes.
-func Create(operators ...func(o *Option)) Option {
+// createOption creates a custom option for testing purposes.
+func createOption(operators ...func(o *Option)) Option {
 	o := Option{}
 
 	for _, f := range operators {
@@ -17,15 +17,15 @@ func Create(operators ...func(o *Option)) Option {
 	return o
 }
 
-// WithName returns an operator that adds a name to an option.
-func WithName(name string) func(o *Option) {
+// withOptionName returns an operator that adds a name to an option.
+func withOptionName(name string) func(o *Option) {
 	return func(o *Option) {
 		o.Name = name
 	}
 }
 
-// WithDependency returns an operator that adds a dependency to an option.
-func WithDependency(name string) func(o *Option) {
+// withOptionDependency returns an operator that adds a dependency to an option.
+func withOptionDependency(name string) func(o *Option) {
 	return func(o *Option) {
 		o.DefaultValues = append(
 			o.DefaultValues,
@@ -36,8 +36,8 @@ func WithDependency(name string) func(o *Option) {
 	}
 }
 
-// WithWhenDependency returns an operator that adds a when dependency to an option.
-func WithWhenDependency(name string) func(o *Option) {
+// withOptionWhenDependency returns an operator that adds a when dependency to an option.
+func withOptionWhenDependency(name string) func(o *Option) {
 	return func(o *Option) {
 		o.DefaultValues = append(
 			o.DefaultValues,

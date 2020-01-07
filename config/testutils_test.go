@@ -10,7 +10,7 @@ import (
 
 func TestWithName(t *testing.T) {
 	expected := "foo"
-	o := Create(WithName(expected))
+	o := createOption(withOptionName(expected))
 	if expected != o.Name {
 		t.Errorf(
 			`expected name: "%s", actual: "%s"`,
@@ -26,9 +26,9 @@ func TestWithDependency(t *testing.T) {
 	expectedA := fmt.Sprintf("${%s}", a)
 	expectedB := fmt.Sprintf("${%s}", b)
 
-	o := Create(
-		WithDependency(a),
-		WithDependency(b),
+	o := createOption(
+		withOptionDependency(a),
+		withOptionDependency(b),
 	)
 
 	actual, err := yaml.Marshal(o)
@@ -52,9 +52,9 @@ func TestWithWhenDependency(t *testing.T) {
 	foundA := false
 	foundB := false
 
-	o := Create(
-		WithWhenDependency(a),
-		WithWhenDependency(b),
+	o := createOption(
+		withOptionWhenDependency(a),
+		withOptionWhenDependency(b),
 	)
 
 	for _, value := range o.DefaultValues {
