@@ -6,13 +6,12 @@ import (
 	"strings"
 
 	"github.com/rliebz/tusk/config/marshal"
-	"github.com/rliebz/tusk/config/when"
 )
 
 // Value represents a value candidate for an option.
 // When the when condition is true, either the command or value will be used.
 type Value struct {
-	When    when.List
+	When    List
 	Command string
 	Value   string
 }

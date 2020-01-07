@@ -1,4 +1,4 @@
-package when
+package config
 
 import (
 	"testing"
@@ -16,29 +16,29 @@ func TestList_UnmarshalYAML(t *testing.T) {
 		{
 			"single item",
 			"os: linux",
-			List{Create(WithOS("linux"))},
+			List{createWhen(withWhenOS("linux"))},
 		},
 		{
 			"list length 1",
 			"[os: linux]",
-			List{Create(WithOS("linux"))},
+			List{createWhen(withWhenOS("linux"))},
 		},
 		{
 			"single item short",
 			"foo",
-			List{Create(WithEqual("foo", "true"))},
+			List{createWhen(withWhenEqual("foo", "true"))},
 		},
 		{
 			"list implies multiple whens",
 			"[foo, bar]",
-			List{Create(WithEqual("foo", "true")), Create(WithEqual("bar", "true"))},
+			List{createWhen(withWhenEqual("foo", "true")), createWhen(withWhenEqual("bar", "true"))},
 		},
 		{
 			"nested short lists",
 			"[[foo, bar], [baz]]",
 			List{
-				Create(WithEqual("foo", "true"), WithEqual("bar", "true")),
-				Create(WithEqual("baz", "true")),
+				createWhen(withWhenEqual("foo", "true"), withWhenEqual("bar", "true")),
+				createWhen(withWhenEqual("baz", "true")),
 			},
 		},
 	}
@@ -73,23 +73,23 @@ var listDepTests = []struct {
 	{
 		"single item list",
 		List{
-			Create(WithEqual("foo", "true"), WithEqual("bar", "true")),
+			createWhen(withWhenEqual("foo", "true"), withWhenEqual("bar", "true")),
 		},
 		[]string{"foo", "bar"},
 	},
 	{
 		"duplicate across lists",
 		List{
-			Create(WithEqual("foo", "true")),
-			Create(WithEqual("foo", "true")),
+			createWhen(withWhenEqual("foo", "true")),
+			createWhen(withWhenEqual("foo", "true")),
 		},
 		[]string{"foo"},
 	},
 	{
 		"different items per list",
 		List{
-			Create(WithEqual("foo", "true")),
-			Create(WithEqual("bar", "true")),
+			createWhen(withWhenEqual("foo", "true")),
+			createWhen(withWhenEqual("bar", "true")),
 		},
 		[]string{"foo", "bar"},
 	},
@@ -123,27 +123,27 @@ var listValidateTests = []struct {
 }{
 	{
 		"all valid",
-		List{True, True, True},
+		List{whenTrue, whenTrue, whenTrue},
 		nil,
 		false,
 	},
 	{
 		"all invalid",
-		List{False, False, False},
+		List{whenFalse, whenFalse, whenFalse},
 		nil,
 		true,
 	},
 	{
 		"some invalid",
-		List{True, False, True},
+		List{whenTrue, whenFalse, whenTrue},
 		nil,
 		true,
 	},
 	{
 		"passes requirements",
 		List{
-			Create(WithEqual("foo", "true")),
-			Create(WithEqual("bar", "false")),
+			createWhen(withWhenEqual("foo", "true")),
+			createWhen(withWhenEqual("bar", "false")),
 		},
 		map[string]string{"foo": "true", "bar": "false"},
 		false,

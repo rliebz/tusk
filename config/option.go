@@ -7,7 +7,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/rliebz/tusk/config/marshal"
-	"github.com/rliebz/tusk/config/when"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -142,7 +141,7 @@ func (o *Option) getSpecified() (value string, found bool) {
 func (o *Option) getDefaultValue(vars map[string]string) (string, error) {
 	for _, candidate := range o.DefaultValues {
 		if err := candidate.When.Validate(vars); err != nil {
-			if !when.IsFailedCondition(err) {
+			if !IsFailedCondition(err) {
 				return "", err
 			}
 			continue

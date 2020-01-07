@@ -4,13 +4,12 @@ import (
 	"errors"
 
 	"github.com/rliebz/tusk/config/marshal"
-	"github.com/rliebz/tusk/config/when"
 	"github.com/rliebz/tusk/ui"
 )
 
 // Run defines a a single runnable item within a task.
 type Run struct {
-	When           when.List          `yaml:",omitempty"`
+	When           List               `yaml:",omitempty"`
 	Command        CommandList        `yaml:",omitempty"`
 	SubTaskList    SubTaskList        `yaml:"task,omitempty"`
 	SetEnvironment map[string]*string `yaml:"set-environment,omitempty"`
@@ -59,7 +58,7 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (r *Run) shouldRun(vars map[string]string) (bool, error) {
 	if err := r.When.Validate(vars); err != nil {
-		if !when.IsFailedCondition(err) {
+		if !IsFailedCondition(err) {
 			return false, err
 		}
 

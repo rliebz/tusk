@@ -1,4 +1,4 @@
-package when
+package config
 
 import "github.com/rliebz/tusk/config/marshal"
 

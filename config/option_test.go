@@ -6,19 +6,18 @@ import (
 	"testing"
 
 	"github.com/rliebz/tusk/config/marshal"
-	"github.com/rliebz/tusk/config/when"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func TestOption_Dependencies(t *testing.T) {
 	option := &Option{DefaultValues: ValueList{
-		{When: when.List{when.False}, Value: "foo"},
-		{When: when.List{when.Create(
-			when.WithEqual("foo", "foovalue"),
-			when.WithEqual("bar", "barvalue"),
+		{When: List{whenFalse}, Value: "foo"},
+		{When: List{createWhen(
+			withWhenEqual("foo", "foovalue"),
+			withWhenEqual("bar", "barvalue"),
 		)}, Value: "bar"},
-		{When: when.List{when.Create(
-			when.WithNotEqual("baz", "bazvalue"),
+		{When: List{createWhen(
+			withWhenNotEqual("baz", "bazvalue"),
 		)}, Value: "bar"},
 	}}
 
@@ -85,9 +84,9 @@ var valuetests = []struct {
 	{
 		"conditional value",
 		&Option{DefaultValues: ValueList{
-			{When: when.List{when.False}, Value: "foo"},
-			{When: when.List{when.True}, Value: "bar"},
-			{When: when.List{when.False}, Value: "baz"},
+			{When: List{whenFalse}, Value: "foo"},
+			{When: List{whenTrue}, Value: "bar"},
+			{When: List{whenFalse}, Value: "baz"},
 		}},
 		"bar",
 	},
@@ -96,7 +95,7 @@ var valuetests = []struct {
 		&Option{
 			Environment: "OPTION_VAR",
 			DefaultValues: ValueList{
-				{When: when.List{when.True}, Value: "when"},
+				{When: List{whenTrue}, Value: "when"},
 			},
 			Passed: "passed",
 		},
@@ -142,12 +141,12 @@ func TestOption_Evaluate_passes_vars(t *testing.T) {
 	expected := "some value"
 	opt := Option{
 		DefaultValues: ValueList{
-			{When: when.List{when.False}, Value: "wrong"},
+			{When: List{whenFalse}, Value: "wrong"},
 			{
-				When:  when.List{when.Create(when.WithEqual("foo", "foovalue"))},
+				When:  List{createWhen(withWhenEqual("foo", "foovalue"))},
 				Value: expected,
 			},
-			{When: when.List{when.False}, Value: "oops"},
+			{When: List{whenFalse}, Value: "oops"},
 		},
 	}
 

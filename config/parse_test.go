@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/tusk/config/marshal"
-	"github.com/rliebz/tusk/config/when"
 )
 
 var interpolatetests = []struct {
@@ -684,9 +683,9 @@ tasks:
 		map[string]string{},
 		"mytask",
 		RunList{{
-			When: when.List{
-				when.Create(when.WithOS("os1"), when.WithOS("os2")),
-				when.Create(when.WithCommand("echo hello"), when.WithOS("os3")),
+			When: List{
+				createWhen(withWhenOS("os1"), withWhenOS("os2")),
+				createWhen(withWhenCommand("echo hello"), withWhenOS("os3")),
 			},
 			Command: CommandList{{
 				Exec:  "echo goodbye",
@@ -721,7 +720,7 @@ tasks:
 		map[string]string{},
 		"mytask",
 		RunList{{
-			When: when.List{when.When{
+			When: List{When{
 				Equal: map[string]marshal.StringList{
 					"foo": {"true"},
 				},
