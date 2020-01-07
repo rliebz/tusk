@@ -9,7 +9,7 @@ import (
 
 // Run defines a a single runnable item within a task.
 type Run struct {
-	When           List               `yaml:",omitempty"`
+	When           WhenList           `yaml:",omitempty"`
 	Command        CommandList        `yaml:",omitempty"`
 	SubTaskList    SubTaskList        `yaml:"task,omitempty"`
 	SetEnvironment map[string]*string `yaml:"set-environment,omitempty"`

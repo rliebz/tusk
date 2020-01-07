@@ -11,12 +11,12 @@ import (
 
 func TestOption_Dependencies(t *testing.T) {
 	option := &Option{DefaultValues: ValueList{
-		{When: List{whenFalse}, Value: "foo"},
-		{When: List{createWhen(
+		{When: WhenList{whenFalse}, Value: "foo"},
+		{When: WhenList{createWhen(
 			withWhenEqual("foo", "foovalue"),
 			withWhenEqual("bar", "barvalue"),
 		)}, Value: "bar"},
-		{When: List{createWhen(
+		{When: WhenList{createWhen(
 			withWhenNotEqual("baz", "bazvalue"),
 		)}, Value: "bar"},
 	}}
@@ -84,9 +84,9 @@ var valuetests = []struct {
 	{
 		"conditional value",
 		&Option{DefaultValues: ValueList{
-			{When: List{whenFalse}, Value: "foo"},
-			{When: List{whenTrue}, Value: "bar"},
-			{When: List{whenFalse}, Value: "baz"},
+			{When: WhenList{whenFalse}, Value: "foo"},
+			{When: WhenList{whenTrue}, Value: "bar"},
+			{When: WhenList{whenFalse}, Value: "baz"},
 		}},
 		"bar",
 	},
@@ -95,7 +95,7 @@ var valuetests = []struct {
 		&Option{
 			Environment: "OPTION_VAR",
 			DefaultValues: ValueList{
-				{When: List{whenTrue}, Value: "when"},
+				{When: WhenList{whenTrue}, Value: "when"},
 			},
 			Passed: "passed",
 		},
@@ -141,12 +141,12 @@ func TestOption_Evaluate_passes_vars(t *testing.T) {
 	expected := "some value"
 	opt := Option{
 		DefaultValues: ValueList{
-			{When: List{whenFalse}, Value: "wrong"},
+			{When: WhenList{whenFalse}, Value: "wrong"},
 			{
-				When:  List{createWhen(withWhenEqual("foo", "foovalue"))},
+				When:  WhenList{createWhen(withWhenEqual("foo", "foovalue"))},
 				Value: expected,
 			},
-			{When: List{whenFalse}, Value: "oops"},
+			{When: WhenList{whenFalse}, Value: "oops"},
 		},
 	}
 

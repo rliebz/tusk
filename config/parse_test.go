@@ -683,7 +683,7 @@ tasks:
 		map[string]string{},
 		"mytask",
 		RunList{{
-			When: List{
+			When: WhenList{
 				createWhen(withWhenOS("os1"), withWhenOS("os2")),
 				createWhen(withWhenCommand("echo hello"), withWhenOS("os3")),
 			},
@@ -720,7 +720,7 @@ tasks:
 		map[string]string{},
 		"mytask",
 		RunList{{
-			When: List{When{
+			When: WhenList{When{
 				Equal: map[string]marshal.StringList{
 					"foo": {"true"},
 				},

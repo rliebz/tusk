@@ -112,23 +112,23 @@ var shouldtests = []struct {
 	vars     map[string]string
 }{
 	{"no when clause", Run{}, true, nil},
-	{"true when clause", Run{When: List{whenTrue}}, true, nil},
-	{"false when clause", Run{When: List{whenFalse}}, false, nil},
+	{"true when clause", Run{When: WhenList{whenTrue}}, true, nil},
+	{"false when clause", Run{When: WhenList{whenFalse}}, false, nil},
 	{
 		"var matches condition",
-		Run{When: List{createWhen(withWhenEqual("foo", "bar"))}},
+		Run{When: WhenList{createWhen(withWhenEqual("foo", "bar"))}},
 		true,
 		map[string]string{"foo": "bar"},
 	},
 	{
 		"var does not match condition",
-		Run{When: List{createWhen(withWhenEqual("foo", "bar"))}},
+		Run{When: WhenList{createWhen(withWhenEqual("foo", "bar"))}},
 		false,
 		map[string]string{"foo": "baz"},
 	},
 	{
 		"var was not passed",
-		Run{When: List{createWhen(withWhenEqual("foo", "bar"))}},
+		Run{When: WhenList{createWhen(withWhenEqual("foo", "bar"))}},
 		false,
 		nil,
 	},

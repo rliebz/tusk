@@ -11,7 +11,7 @@ import (
 // Value represents a value candidate for an option.
 // When the when condition is true, either the command or value will be used.
 type Value struct {
-	When    List
+	When    WhenList
 	Command string
 	Value   string
 }

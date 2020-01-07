@@ -44,7 +44,7 @@ func withOptionWhenDependency(name string) func(o *Option) {
 	return func(o *Option) {
 		o.DefaultValues = append(
 			o.DefaultValues,
-			Value{When: List{createWhen(withWhenEqual(name, "true"))}},
+			Value{When: WhenList{createWhen(withWhenEqual(name, "true"))}},
 		)
 	}
 }
