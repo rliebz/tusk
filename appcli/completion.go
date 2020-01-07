@@ -8,7 +8,6 @@ import (
 
 	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/config/option"
-	"github.com/rliebz/tusk/config/task"
 	"github.com/urfave/cli"
 )
 
@@ -90,7 +89,7 @@ func commandComplete(w io.Writer, c context, command *cli.Command, cfg *config.C
 	}
 }
 
-func printCompletingFlagArg(w io.Writer, t *task.Task, cfg *config.Config, trailingArg string) {
+func printCompletingFlagArg(w io.Writer, t *config.Task, cfg *config.Config, trailingArg string) {
 	options, err := config.FindAllOptions(t, cfg)
 	if err != nil {
 		return

@@ -7,7 +7,6 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/config"
-	"github.com/rliebz/tusk/config/task"
 )
 
 // addTasks adds a series of tasks to a cli.App using a command creator.
@@ -22,7 +21,7 @@ func addTasks(app *cli.App, cfg *config.Config, create commandCreator) error {
 	return nil
 }
 
-func addTask(app *cli.App, cfg *config.Config, t *task.Task, create commandCreator) error {
+func addTask(app *cli.App, cfg *config.Config, t *config.Task, create commandCreator) error {
 	if t.Private {
 		return nil
 	}

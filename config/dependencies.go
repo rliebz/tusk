@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 
 	"github.com/rliebz/tusk/config/option"
-	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/interp"
 )
 
-// FindAllOptions returns a list of options relevant for a given task.
-func FindAllOptions(t *task.Task, cfg *Config) ([]*option.Option, error) {
+// FindAllOptions returns a list of options relevant for a given
+func FindAllOptions(t *Task, cfg *Config) ([]*option.Option, error) {
 	names, err := getDependencies(t)
 	if err != nil {
 		return nil, err

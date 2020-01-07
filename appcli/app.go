@@ -9,7 +9,6 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/config"
-	"github.com/rliebz/tusk/config/task"
 )
 
 // newBaseApp creates a basic cli.App with top-level flags.
@@ -81,7 +80,7 @@ func newMetaApp(cfgText []byte) (*cli.App, error) {
 
 	app := newSilentApp()
 	app.Metadata = make(map[string]interface{})
-	app.Metadata["tasks"] = make(map[string]*task.Task)
+	app.Metadata["tasks"] = make(map[string]*config.Task)
 	app.Metadata["argsPassed"] = []string{}
 	app.Metadata["flagsPassed"] = make(map[string]string)
 

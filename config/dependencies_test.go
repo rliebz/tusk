@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/rliebz/tusk/config/option"
-	"github.com/rliebz/tusk/config/task"
 )
 
 var findalloptionstests = []struct {
@@ -204,7 +203,7 @@ var findalloptionstests = []struct {
 
 func TestFindAllOptions(t *testing.T) {
 	for _, tt := range findalloptionstests {
-		tsk := task.Task{}
+		tsk := Task{}
 		for i := range tt.taskOptions {
 			tsk.Options = append(tsk.Options, &tt.taskOptions[i])
 		}

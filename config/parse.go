@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/rliebz/tusk/config/option"
-	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/interp"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -50,7 +49,7 @@ func ParseComplete(
 }
 
 func combineArgsAndFlags(
-	t *task.Task, args []string, flags map[string]string,
+	t *Task, args []string, flags map[string]string,
 ) (map[string]string, error) {
 	if len(t.Args) != len(args) {
 		return nil, fmt.Errorf(
@@ -70,7 +69,7 @@ func combineArgsAndFlags(
 	return passed, nil
 }
 
-func passTaskValues(t *task.Task, cfg *Config, passed map[string]string) error {
+func passTaskValues(t *Task, cfg *Config, passed map[string]string) error {
 	vars, err := interpolateGlobalOptions(t, cfg, passed)
 	if err != nil {
 		return err
@@ -84,7 +83,7 @@ func passTaskValues(t *task.Task, cfg *Config, passed map[string]string) error {
 }
 
 func interpolateGlobalOptions(
-	t *task.Task, cfg *Config, passed map[string]string,
+	t *Task, cfg *Config, passed map[string]string,
 ) (map[string]string, error) {
 	globalOptions, err := getRequiredGlobalOptions(t, cfg)
 	if err != nil {
@@ -101,7 +100,7 @@ func interpolateGlobalOptions(
 	return vars, nil
 }
 
-func getRequiredGlobalOptions(t *task.Task, cfg *Config) (option.Options, error) {
+func getRequiredGlobalOptions(t *Task, cfg *Config) (option.Options, error) {
 	required, err := FindAllOptions(t, cfg)
 	if err != nil {
 		return nil, err
@@ -162,7 +161,7 @@ func interpolateOption(o *option.Option, passed, vars map[string]string) error {
 	return nil
 }
 
-func interpolateTask(t *task.Task, passed, vars map[string]string) error {
+func interpolateTask(t *Task, passed, vars map[string]string) error {
 	taskVars := make(map[string]string, len(vars)+len(t.Args)+len(t.Options))
 	for k, v := range vars {
 		taskVars[k] = v
@@ -193,7 +192,7 @@ func interpolateTask(t *task.Task, passed, vars map[string]string) error {
 	return nil
 }
 
-func addSubTasks(t *task.Task, cfg *Config) error {
+func addSubTasks(t *Task, cfg *Config) error {
 	for _, run := range t.AllRunItems() {
 		for _, desc := range run.SubTaskList {
 			sub, err := newTaskFromSub(desc, cfg)
@@ -208,7 +207,7 @@ func addSubTasks(t *task.Task, cfg *Config) error {
 	return nil
 }
 
-func newTaskFromSub(desc *task.SubTask, cfg *Config) (*task.Task, error) {
+func newTaskFromSub(desc *SubTask, cfg *Config) (*Task, error) {
 	st, ok := cfg.Tasks[desc.Name]
 	if !ok {
 		return nil, fmt.Errorf("sub-task %q does not exist", desc.Name)
@@ -239,7 +238,7 @@ func newTaskFromSub(desc *task.SubTask, cfg *Config) (*task.Task, error) {
 }
 
 // copyTask returns a copy of a task, replacing references with new values.
-func copyTask(t *task.Task) *task.Task {
+func copyTask(t *Task) *Task {
 	newTask := *t
 
 	argsCopy := make(option.Args, 0, len(newTask.Args))
@@ -259,9 +258,7 @@ func copyTask(t *task.Task) *task.Task {
 	return &newTask
 }
 
-func getArgValues(
-	subTask *task.Task, argsPassed []string,
-) (map[string]string, error) {
+func getArgValues(subTask *Task, argsPassed []string) (map[string]string, error) {
 	if len(argsPassed) != len(subTask.Args) {
 		return nil, fmt.Errorf(
 			"subtask %q requires %d args but got %d",

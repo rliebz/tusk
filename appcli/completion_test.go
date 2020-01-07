@@ -9,7 +9,6 @@ import (
 	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/config/marshal"
 	"github.com/rliebz/tusk/config/option"
-	"github.com/rliebz/tusk/config/task"
 	"github.com/urfave/cli"
 )
 
@@ -243,7 +242,7 @@ baz
 			}
 
 			cfg := &config.Config{
-				Tasks: map[string]*task.Task{
+				Tasks: map[string]*config.Task{
 					cmd.Name: {
 						Args: tt.taskArgs,
 						Options: option.Options{

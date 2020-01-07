@@ -10,7 +10,6 @@ import (
 
 	"github.com/rliebz/tusk/config"
 	"github.com/rliebz/tusk/config/option"
-	"github.com/rliebz/tusk/config/task"
 )
 
 // copyFlags copies all command flags from one cli.App to another.
@@ -27,7 +26,7 @@ func copyFlags(target, source *cli.App) {
 }
 
 // addAllFlagsUsed adds the top-level flags to tasks where interpolation is used.
-func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *task.Task) error {
+func addAllFlagsUsed(cfg *config.Config, cmd *cli.Command, t *config.Task) error {
 	dependencies, err := config.FindAllOptions(t, cfg)
 	if err != nil {
 		return err

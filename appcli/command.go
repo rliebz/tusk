@@ -6,12 +6,12 @@ import (
 
 	"github.com/urfave/cli"
 
-	"github.com/rliebz/tusk/config/task"
+	"github.com/rliebz/tusk/config"
 )
 
-type commandCreator func(app *cli.App, t *task.Task) (*cli.Command, error)
+type commandCreator func(app *cli.App, t *config.Task) (*cli.Command, error)
 
-func createExecuteCommand(_ *cli.App, t *task.Task) (*cli.Command, error) {
+func createExecuteCommand(_ *cli.App, t *config.Task) (*cli.Command, error) {
 	return createCommand(t, func(c *cli.Context) error {
 		if len(t.Args) != len(c.Args()) {
 			return fmt.Errorf(
@@ -19,11 +19,11 @@ func createExecuteCommand(_ *cli.App, t *task.Task) (*cli.Command, error) {
 				t.Name, len(t.Args), len(c.Args()),
 			)
 		}
-		return t.Execute(task.RunContext{})
+		return t.Execute(config.RunContext{})
 	}), nil
 }
 
-func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error) {
+func createMetadataBuildCommand(app *cli.App, t *config.Task) (*cli.Command, error) {
 	argsPassed, flagsPassed, err := getPassedValues(app)
 	if err != nil {
 		return nil, err
@@ -44,8 +44,8 @@ func createMetadataBuildCommand(app *cli.App, t *task.Task) (*cli.Command, error
 	}), nil
 }
 
-// createCommand creates a cli.Command from a task.Task.
-func createCommand(t *task.Task, actionFunc func(*cli.Context) error) *cli.Command {
+// createCommand creates a cli.Command from a config.config.
+func createCommand(t *config.Task, actionFunc func(*cli.Context) error) *cli.Command {
 	command := &cli.Command{
 		Name:        t.Name,
 		Usage:       strings.TrimSpace(t.Usage),

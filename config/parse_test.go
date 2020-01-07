@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/tusk/config/marshal"
-	"github.com/rliebz/tusk/config/task"
 	"github.com/rliebz/tusk/config/when"
 )
 
@@ -16,7 +15,7 @@ var interpolatetests = []struct {
 	args     []string
 	flags    map[string]string
 	taskName string
-	expected task.RunList
+	expected RunList
 }{
 	{
 		"argument interpolation",
@@ -30,8 +29,8 @@ tasks:
 		[]string{"foovalue"},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -51,8 +50,8 @@ tasks:
 		[]string{"foovalue", "barvalue"},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue barvalue",
 				Print: "echo foovalue barvalue",
 			}},
@@ -74,8 +73,8 @@ tasks:
 		[]string{"foovalue"},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -97,8 +96,8 @@ tasks:
 		[]string{"foovalue"},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue foovalue",
 				Print: "echo foovalue foovalue",
 			}},
@@ -118,8 +117,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo bar",
 				Print: "echo bar",
 			}},
@@ -139,8 +138,8 @@ tasks:
 		[]string{},
 		map[string]string{"foo": "passed"},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo passed",
 				Print: "echo passed",
 			}},
@@ -164,8 +163,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -190,8 +189,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo ${bar}",
 				Print: "echo ${bar}",
 			}},
@@ -213,8 +212,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -236,8 +235,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -260,8 +259,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -284,8 +283,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo newvalue",
 				Print: "echo newvalue",
 			}},
@@ -310,8 +309,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo barvalue",
 				Print: "echo barvalue",
 			}},
@@ -334,8 +333,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -361,8 +360,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -400,8 +399,8 @@ tasks:
 		[]string{},
 		map[string]string{"foo": "passed"},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo passed-1-2",
 				Print: "echo passed-1-2",
 			}},
@@ -453,13 +452,13 @@ tasks:
 		[]string{},
 		map[string]string{"foo": "passed"},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo passed-1-2",
 				Print: "echo passed-1-2",
 			}},
 		}, {
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo onevalue-2 twovalue-2",
 				Print: "echo onevalue-2 twovalue-2",
 			}},
@@ -491,13 +490,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo one two",
 				Print: "echo one two",
 			}},
 		}, {
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo three four",
 				Print: "echo three four",
 			}},
@@ -526,13 +525,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo one",
 				Print: "echo one",
 			}},
 		}, {
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo two",
 				Print: "echo two",
 			}},
@@ -558,8 +557,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -583,13 +582,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo hello",
 				Print: "echo hello",
 			}},
 		}, {
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -617,23 +616,23 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo first",
 				Print: "echo first",
 			}},
 		}, {
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo pre-foovalue",
 				Print: "echo pre-foovalue",
 			}},
 		}, {
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo pre-barvalue",
 				Print: "echo pre-barvalue",
 			}},
 		}, {
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo done",
 				Print: "echo done",
 			}},
@@ -659,8 +658,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -684,12 +683,12 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
+		RunList{{
 			When: when.List{
 				when.Create(when.WithOS("os1"), when.WithOS("os2")),
 				when.Create(when.WithCommand("echo hello"), when.WithOS("os3")),
 			},
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo goodbye",
 				Print: "echo goodbye",
 			}},
@@ -721,13 +720,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
+		RunList{{
 			When: when.List{when.When{
 				Equal: map[string]marshal.StringList{
 					"foo": {"true"},
 				},
 			}},
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo yo",
 				Print: "echo yo",
 			}},
@@ -753,13 +752,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"two",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}, {
-			Command: task.CommandList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -781,8 +780,8 @@ tasks:
 		[]string{"foovalue"},
 		map[string]string{},
 		"mytask",
-		task.RunList{{
-			Command: task.CommandList{{
+		RunList{{
+			Command: CommandList{{
 				Exec:  "echo foovalue",
 				Print: "don't echo foovalue",
 			}},
@@ -817,8 +816,8 @@ given input:
 	}
 }
 
-func flattenRuns(runList task.RunList) task.RunList {
-	var flattened task.RunList
+func flattenRuns(runList RunList) RunList {
+	var flattened RunList
 
 	for _, run := range runList {
 		if len(run.Tasks) == 0 {
