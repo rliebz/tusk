@@ -3,7 +3,7 @@ package runner
 import (
 	"encoding/json"
 
-	"github.com/rliebz/tusk/interp"
+	"github.com/rliebz/tusk/marshal"
 )
 
 // FindAllOptions returns a list of options relevant for a given
@@ -88,7 +88,7 @@ func getDependencies(item dependencyGetter) ([]string, error) {
 		return nil, err
 	}
 
-	names := interp.FindPotentialVariables(marshaled)
+	names := marshal.FindPotentialVariables(marshaled)
 	names = append(names, item.Dependencies()...)
 
 	return names, nil

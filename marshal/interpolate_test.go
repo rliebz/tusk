@@ -1,4 +1,4 @@
-package interp
+package marshal
 
 import (
 	"testing"
@@ -7,31 +7,31 @@ import (
 	"gotest.tools/v3/assert/cmp"
 )
 
-func TestMarshallable_string(t *testing.T) {
+func TestInterpolate_string(t *testing.T) {
 	values := map[string]string{"name": "foo", "other": "bar"}
 
 	input := "My name is ${name}, not ${invalid}"
 	want := "My name is foo, not ${invalid}"
 
-	err := Marshallable(&input, values)
+	err := Interpolate(&input, values)
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(want, input))
 }
 
-func TestMarshallable_slice(t *testing.T) {
+func TestInterpolate_slice(t *testing.T) {
 	values := map[string]string{"name": "foo", "other": "bar"}
 
 	input := []string{"My name", "is ${name}", "not ${invalid}"}
 	want := []string{"My name", "is foo", "not ${invalid}"}
 
-	err := Marshallable(&input, values)
+	err := Interpolate(&input, values)
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.DeepEqual(want, input))
 }
 
-func TestMarshallable_struct(t *testing.T) {
+func TestInterpolate_struct(t *testing.T) {
 	values := map[string]string{"name": "foo", "other": "bar"}
 
 	type s struct {
@@ -42,7 +42,7 @@ func TestMarshallable_struct(t *testing.T) {
 	input := s{"it's ${name}", "not ${invalid}"}
 	want := s{"it's foo", "not ${invalid}"}
 
-	err := Marshallable(&input, values)
+	err := Interpolate(&input, values)
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(want, input))

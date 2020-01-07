@@ -1,4 +1,4 @@
-package interp
+package marshal
 
 import (
 	"bytes"
@@ -10,8 +10,8 @@ import (
 
 var escSeq = []byte("{UNLIKELY_ESCAPE_SEQUENCE}")
 
-// Marshallable interpolates an arbitrary YAML-marshallable interface.
-func Marshallable(i interface{}, values map[string]string) error {
+// Interpolate an arbitrary YAML-marshallable interface.
+func Interpolate(i interface{}, values map[string]string) error {
 	text, err := yaml.Marshal(i)
 	if err != nil {
 		return err

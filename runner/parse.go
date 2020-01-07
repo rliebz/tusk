@@ -3,7 +3,7 @@ package runner
 import (
 	"fmt"
 
-	"github.com/rliebz/tusk/interp"
+	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -120,7 +120,7 @@ func getRequiredGlobalOptions(t *Task, cfg *Config) (Options, error) {
 }
 
 func interpolateArg(a *Arg, passed, vars map[string]string) error {
-	if err := interp.Marshallable(a, vars); err != nil {
+	if err := marshal.Interpolate(a, vars); err != nil {
 		return err
 	}
 
@@ -142,7 +142,7 @@ func interpolateArg(a *Arg, passed, vars map[string]string) error {
 }
 
 func interpolateOption(o *Option, passed, vars map[string]string) error {
-	if err := interp.Marshallable(o, vars); err != nil {
+	if err := marshal.Interpolate(o, vars); err != nil {
 		return err
 	}
 
@@ -178,11 +178,11 @@ func interpolateTask(t *Task, passed, vars map[string]string) error {
 		}
 	}
 
-	if err := interp.Marshallable(&t.RunList, taskVars); err != nil {
+	if err := marshal.Interpolate(&t.RunList, taskVars); err != nil {
 		return err
 	}
 
-	if err := interp.Marshallable(&t.Finally, taskVars); err != nil {
+	if err := marshal.Interpolate(&t.Finally, taskVars); err != nil {
 		return err
 	}
 
