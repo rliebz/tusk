@@ -98,7 +98,8 @@ _tusk_bash_autocomplete() {
     local cur words opts meta
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    words="$( "${COMP_WORDS[@]:0:$COMP_CWORD}" --generate-bash-completion | cut -f1 -d":")"
+    words="$( "${COMP_WORDS[@]:0:$COMP_CWORD}" --generate-bash-completion \
+        | sed 's/\\:/_=_/g' | cut -f1 -d":" | sed 's/_=_/:/g' )"
 
     # Split words into completion type and options
     meta="$( echo "${words}" | head -n1 )"

@@ -127,15 +127,17 @@ func printCommand(w io.Writer, command *cli.Command) {
 		return
 	}
 
+	name := strings.ReplaceAll(command.Name, ":", `\:`)
+
 	if command.Usage == "" {
-		fmt.Fprintln(w, command.Name)
+		fmt.Fprintln(w, name)
 		return
 	}
 
 	fmt.Fprintf(
 		w,
 		"%s:%s\n",
-		command.Name,
+		name,
 		strings.ReplaceAll(command.Usage, "\n", ""),
 	)
 }
@@ -146,11 +148,20 @@ func printFlag(w io.Writer, c context, flag cli.Flag) {
 		if len(value) == 1 || c.IsSet(value) {
 			continue
 		}
+
+		name := strings.ReplaceAll(value, ":", `\:`)
+
+		desc := getDescription(flag)
+		if desc == "" {
+			fmt.Fprintln(w, "--"+name)
+			return
+		}
+
 		fmt.Fprintf(
 			w,
 			"--%s:%s\n",
-			value,
-			strings.ReplaceAll(getDescription(flag), "\n", ""),
+			name,
+			strings.ReplaceAll(desc, "\n", ""),
 		)
 	}
 }

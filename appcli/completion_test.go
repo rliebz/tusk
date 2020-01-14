@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/marshal"
+	"github.com/rliebz/tusk/runner"
 	"github.com/urfave/cli"
 )
 
@@ -264,6 +264,118 @@ baz
 			}
 
 			commandComplete(&buf, c, cmd, cfg)
+
+			if diff := cmp.Diff(tt.want, buf.String()); diff != "" {
+				t.Errorf("completion output differs:\n%v", diff)
+			}
+		})
+	}
+}
+
+func TestPrintCommand(t *testing.T) {
+	tests := []struct {
+		name    string
+		command *cli.Command
+		want    string
+	}{
+		{
+			name: "arg without usage",
+			command: &cli.Command{
+				Name: "my-cmd",
+			},
+			want: "my-cmd\n",
+		},
+		{
+			name: "arg with usage",
+			command: &cli.Command{
+				Name:  "my-cmd",
+				Usage: "My description",
+			},
+			want: "my-cmd:My description\n",
+		},
+		{
+			name: "arg without usage escapes colon",
+			command: &cli.Command{
+				Name: "my:cmd",
+			},
+			want: "my\\:cmd\n",
+		},
+		{
+			name: "arg with usage escapes colon",
+			command: &cli.Command{
+				Name:  "my:cmd",
+				Usage: "My description",
+			},
+			want: "my\\:cmd:My description\n",
+		},
+		{
+			name: "hidden",
+			command: &cli.Command{
+				Name:   "my-cmd",
+				Usage:  "My description",
+				Hidden: true,
+			},
+			want: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var buf bytes.Buffer
+
+			printCommand(&buf, tt.command)
+
+			if diff := cmp.Diff(tt.want, buf.String()); diff != "" {
+				t.Errorf("completion output differs:\n%v", diff)
+			}
+		})
+	}
+}
+
+func TestPrintFlag(t *testing.T) {
+	tests := []struct {
+		name string
+		flag cli.Flag
+		want string
+	}{
+		{
+			name: "flag without usage",
+			flag: &cli.BoolFlag{
+				Name: "my-flag",
+			},
+			want: "--my-flag\n",
+		},
+		{
+			name: "arg with usage",
+			flag: &cli.BoolFlag{
+				Name:  "my-flag",
+				Usage: "My description",
+			},
+			want: "--my-flag:My description\n",
+		},
+		{
+			name: "arg without usage escapes colon",
+			flag: &cli.BoolFlag{
+				Name: "my:flag",
+			},
+			want: "--my\\:flag\n",
+		},
+		{
+			name: "arg with usage escapes colon",
+			flag: &cli.BoolFlag{
+				Name:  "my:flag",
+				Usage: "My description",
+			},
+			want: "--my\\:flag:My description\n",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var buf bytes.Buffer
+			var c mockContext
+
+			printFlag(&buf, c, tt.flag)
 
 			if diff := cmp.Diff(tt.want, buf.String()); diff != "" {
 				t.Errorf("completion output differs:\n%v", diff)
