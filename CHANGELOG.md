@@ -3,6 +3,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased 
 
+## 0.5.1 (2020-01-13)
+### Fixed
+- Completions now correctly escape ":" characters in command and flag names.
+
 ## 0.5.0 (2019-12-05)
 ### Added
 - The `command` clause now accepts a `print` option to override the command
