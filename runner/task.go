@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pkg/errors"
+	"github.com/rliebz/tusk/marshal"
 	"github.com/rliebz/tusk/ui"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // executionState indicates whether a task is "running" or "finally".
@@ -33,17 +36,66 @@ type Task struct {
 
 // UnmarshalYAML unmarshals and assigns names to options.
 func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type taskType Task // Use new type to avoid recursion
-	if err := unmarshal((*taskType)(t)); err != nil {
-		return err
+	var includeTarget Task
+	includeCandidate := marshal.UnmarshalCandidate{
+		Unmarshal: func() error {
+			var def struct {
+				Include string            `yaml:"include"`
+				Else    map[string]string `yaml:",inline"`
+			}
+
+			if err := unmarshal(&def); err != nil {
+				return err
+			}
+
+			if def.Include == "" {
+				// A yaml.TypeError signals to keep trying other candidates.
+				return &yaml.TypeError{Errors: []string{`"include" not specified`}}
+			}
+
+			if len(def.Else) != 0 {
+				return errors.New(`tasks using "include" may not specify other fields`)
+			}
+
+			f, err := os.Open(def.Include)
+			if err != nil {
+				return fmt.Errorf("opening included file %q: %w", def.Include, err)
+			}
+			defer f.Close() // nolint: errcheck
+
+			decoder := yaml.NewDecoder(f)
+			decoder.SetStrict(true)
+
+			if err := decoder.Decode(&includeTarget); err != nil {
+				return fmt.Errorf("decoding included file %q: %w", def.Include, err)
+			}
+
+			return nil
+		},
+		Assign: func() { *t = includeTarget },
 	}
 
+	var taskTarget Task
+	taskCandidate := marshal.UnmarshalCandidate{
+		Unmarshal: func() error {
+			type taskType Task // Use new type to avoid recursion
+			return unmarshal((*taskType)(&taskTarget))
+		},
+		Validate: taskTarget.checkOptArgCollisions,
+		Assign:   func() { *t = taskTarget },
+	}
+
+	return marshal.UnmarshalOneOf(includeCandidate, taskCandidate)
+}
+
+// includedTask is the configuration for reading a task definition from another
+// file.
+func (t *Task) checkOptArgCollisions() error {
 	for _, o := range t.Options {
 		for _, a := range t.Args {
 			if o.Name == a.Name {
 				return fmt.Errorf(
-					"argument and option %q must have unique names for task %q",
-					o.Name, t.Name,
+					"argument and option %q must have unique names within a task", o.Name,
 				)
 			}
 		}
