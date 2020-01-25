@@ -59,7 +59,7 @@ func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 			f, err := os.Open(def.Include)
 			if err != nil {
-				return fmt.Errorf("opening included file %q: %w", def.Include, err)
+				return fmt.Errorf("opening included file: %w", err)
 			}
 			defer f.Close() // nolint: errcheck
 

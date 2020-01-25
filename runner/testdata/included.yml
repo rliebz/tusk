@@ -1,0 +1,3 @@
+usage: A valid example of an included task
+run:
+  - command: echo "We're in!"
