@@ -589,6 +589,35 @@ the same way that a `run` clause would. The exit code is still passed back to
 the command line. However, if both the `run` clause and `finally` clause fail,
 the exit code from the `run` clause takes precedence.
 
+### Include
+
+In some cases it may be desirable to split the task definition into a separate
+file. The `include` clause serves this purpose. At the top-level of a task, a
+task may optionally be specified using just the `include` key, which maps to a
+separate file where there task definition is stored.
+
+For example, `tusk.yml` could be written like this:
+
+```yaml
+tasks:
+  hello:
+    include: .tusk/hello.yml
+```
+
+With a `.tusk/hello.yml` that looks like this:
+
+```yaml
+options:
+  name:
+    usage: The person to greet
+    default: World
+run: echo "Hello, ${name}!"
+```
+
+It is invalid to split the configuration; if the `include` clause is used, no
+other keys can be specified in the `tusk.yml`, and the full task must be
+defined in the included file.
+
 ### CLI Metadata
 
 It is also possible to create a custom CLI tool for use outside of a project's

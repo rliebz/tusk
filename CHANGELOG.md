@@ -2,10 +2,15 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased 
+### Added
+- The `include` clause is now available to include task definitions from other
+  files.
+
 
 ## 0.5.1 (2020-01-13)
 ### Fixed
 - Completions now correctly escape ":" characters in command and flag names.
+
 
 ## 0.5.0 (2019-12-05)
 ### Added
