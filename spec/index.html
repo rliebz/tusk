@@ -257,6 +257,11 @@
     
       
         <li class="toctree-l2">
+          <a class="toctree-l3" href="#include">Include</a>
+        </li>
+    
+      
+        <li class="toctree-l2">
           <a class="toctree-l3" href="#cli-metadata">CLI Metadata</a>
         </li>
     
@@ -828,6 +833,30 @@ clause has the same format as a <code>run</code> clause:</p>
 the same way that a <code>run</code> clause would. The exit code is still passed back to
 the command line. However, if both the <code>run</code> clause and <code>finally</code> clause fail,
 the exit code from the <code>run</code> clause takes precedence.</p>
+<h3 id="include">Include</h3>
+<p>In some cases it may be desirable to split the task definition into a separate
+file. The <code>include</code> clause serves this purpose. At the top-level of a task, a
+task may optionally be specified using just the <code>include</code> key, which maps to a
+separate file where there task definition is stored.</p>
+<p>For example, <code>tusk.yml</code> could be written like this:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">include</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">.tusk/hello.yml</span>
+</pre></div>
+
+
+<p>With a <code>.tusk/hello.yml</code> that looks like this:</p>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">The person to greet</span>
+    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">World</span>
+<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, ${name}!&quot;</span>
+</pre></div>
+
+
+<p>It is invalid to split the configuration; if the <code>include</code> clause is used, no
+other keys can be specified in the <code>tusk.yml</code>, and the full task must be
+defined in the included file.</p>
 <h3 id="cli-metadata">CLI Metadata</h3>
 <p>It is also possible to create a custom CLI tool for use outside of a project's
 directory by using shell aliases:</p>
