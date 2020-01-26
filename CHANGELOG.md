@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased 
+
+
+## 0.5.2 (2020-01-26)
 ### Added
 - The `include` clause is now available to include task definitions from other
   files.
