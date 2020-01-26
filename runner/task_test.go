@@ -3,8 +3,10 @@ package runner
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -14,6 +16,15 @@ import (
 )
 
 func TestTask_UnmarshalYAML(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testdata := func(filename string) string {
+		return filepath.Join(wd, "testdata", filename)
+	}
+
 	tests := []struct {
 		name    string
 		input   string
@@ -39,7 +50,7 @@ args: { three: {}, four: {} }
 		},
 		{
 			name:  "include",
-			input: `{include: ./testdata/included.yml}`,
+			input: fmt.Sprintf(`{include: %q}`, testdata("included.yml")),
 			want: Task{
 				Usage: "A valid example of an included task",
 				RunList: RunList{{Command: CommandList{{
@@ -50,25 +61,23 @@ args: { three: {}, four: {} }
 		},
 		{
 			name:    "include-extra",
-			input:   `{include: ./testdata/included.yml, usage: This is incorrect}`,
+			input:   fmt.Sprintf(`{include: %q, usage: "This is incorrect"}`, testdata("included.yml")),
 			wantErr: `tasks using "include" may not specify other fields`,
 		},
 		{
-			name:  "include invalid",
-			input: `{include: ./testdata/included-invalid.yml}`,
-			wantErr: `decoding included file "./testdata/included-invalid.yml": yaml: unmarshal errors:
-  line 1: field wrong not found in type runner.taskType`,
+			name:    "include invalid",
+			input:   fmt.Sprintf(`{include: %q}`, testdata("included-invalid.yml")),
+			wantErr: "decoding included file",
 		},
 		{
 			name:    "include missing",
-			input:   `{include: ./testdata/not-a-real-file.yml}`,
-			wantErr: `opening included file: open ./testdata/not-a-real-file.yml: no such file or directory`,
+			input:   fmt.Sprintf(`{include: %q}`, testdata("not-a-real-file.yml")),
+			wantErr: "opening included file",
 		},
 		{
-			name:  "invalid",
-			input: "[invalid]",
-			wantErr: `yaml: unmarshal errors:
-  line 1: cannot unmarshal !!seq into runner.taskType`,
+			name:    "invalid",
+			input:   "[invalid]",
+			wantErr: "yaml: unmarshal errors",
 		},
 		{
 			name: "option and arg share name",
@@ -85,7 +94,7 @@ args: { foo: {} }
 			var got Task
 			err := yaml.UnmarshalStrict([]byte(tt.input), &got)
 			if tt.wantErr != "" {
-				assert.Error(t, err, tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 			} else {
 				assert.NilError(t, err)
 			}
