@@ -96,6 +96,6 @@ func createCLIFlag(opt *runner.Option) (cli.Flag, error) {
 			Usage: opt.Usage,
 		}, nil
 	default:
-		return nil, fmt.Errorf(`unsupported flag type "%s"`, opt.Type)
+		return nil, fmt.Errorf("unsupported flag type %q", opt.Type)
 	}
 }

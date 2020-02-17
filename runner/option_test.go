@@ -112,7 +112,7 @@ func TestOption_Evaluate(t *testing.T) {
 		actual, err := tt.input.Evaluate(nil)
 		if err != nil {
 			t.Errorf(
-				`Option.Evaluate() for %s: unexpected err: %s`,
+				"Option.Evaluate() for %s: unexpected err: %q",
 				tt.desc, err,
 			)
 			continue
@@ -120,7 +120,7 @@ func TestOption_Evaluate(t *testing.T) {
 
 		if tt.expected != actual {
 			t.Errorf(
-				`Option.Evaluate() for %s: expected "%s", actual "%s"`,
+				"Option.Evaluate() for %s: expected %q, actual %q",
 				tt.desc, tt.expected, actual,
 			)
 		}
@@ -157,7 +157,7 @@ func TestOption_Evaluate_passes_vars(t *testing.T) {
 
 	if expected != actual {
 		t.Errorf(
-			`Option.Evaluate(): expected "%s", actual "%s"`,
+			"Option.Evaluate(): expected %q, actual %q",
 			expected, actual,
 		)
 	}
@@ -174,7 +174,7 @@ func TestOption_Evaluate_required_with_passed(t *testing.T) {
 
 	if expected != actual {
 		t.Errorf(
-			`Option.Evaluate(): expected "%s", actual "%s"`,
+			"Option.Evaluate(): expected %q, actual %q",
 			expected, actual,
 		)
 	}
@@ -196,7 +196,7 @@ func TestOption_Evaluate_required_with_environment(t *testing.T) {
 
 	if expected != actual {
 		t.Errorf(
-			`Option.Evaluate(): expected "%s", actual "%s"`,
+			"Option.Evaluate(): expected %q, actual %q",
 			expected, actual,
 		)
 	}
@@ -217,7 +217,7 @@ func TestOption_Evaluate_values_none_specified(t *testing.T) {
 
 	if expected != actual {
 		t.Errorf(
-			`Option.Evaluate(): expected "%s", actual "%s"`,
+			"Option.Evaluate(): expected %q, actual %q",
 			expected, actual,
 		)
 	}
@@ -239,7 +239,7 @@ func TestOption_Evaluate_values_with_passed(t *testing.T) {
 
 	if expected != actual {
 		t.Errorf(
-			`Option.Evaluate(): expected "%s", actual "%s"`,
+			"Option.Evaluate(): expected %q, actual %q",
 			expected, actual,
 		)
 	}
@@ -267,7 +267,7 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 
 	if expected != actual {
 		t.Errorf(
-			`Option.Evaluate(): expected "%s", actual "%s"`,
+			"Option.Evaluate(): expected %q, actual %q",
 			expected, actual,
 		)
 	}
@@ -338,7 +338,7 @@ func TestOption_Evaluate_type_defaults(t *testing.T) {
 
 		if tt.expected != actual {
 			t.Errorf(
-				`Option.Evaluate(): expected "%s", actual "%s"`,
+				"Option.Evaluate(): expected %q, actual %q",
 				tt.expected, actual,
 			)
 		}

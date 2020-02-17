@@ -36,7 +36,7 @@ func testPrint(t *testing.T, tt printTestCase) {
 
 	if actual != "" {
 		t.Errorf(
-			`%s with verbosity %v: expected no output, actual: "%s"`,
+			"%s with verbosity %v: expected no output, actual: %q",
 			tt.name,
 			tt.levelNoOutput,
 			actual,
@@ -50,7 +50,7 @@ func testPrint(t *testing.T, tt printTestCase) {
 
 	if tt.expected != actual {
 		t.Errorf(
-			`%s with verbosity %v: expected "%s", actual: "%s"`,
+			"%s with verbosity %v: expected %q, actual: %q",
 			tt.name,
 			tt.levelWithOutput,
 			tt.expected,
@@ -75,7 +75,7 @@ func TestVerbosityLevel_String(t *testing.T) {
 		actual := tt.level.String()
 		if tt.expected != actual {
 			t.Errorf(
-				`level.String(): expected "%s", actual "%s"`,
+				"level.String(): expected %q, actual %q",
 				tt.expected, actual,
 			)
 		}

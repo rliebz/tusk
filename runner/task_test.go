@@ -158,7 +158,7 @@ func TestTask_run_commands(t *testing.T) {
 	}
 
 	if err := task.run(RunContext{}, runSuccess, stateRunning); err != nil {
-		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
+		t.Errorf("task.run([exit 0]): unexpected error: %s", err)
 	}
 
 	runFailure := &Run{
@@ -169,7 +169,7 @@ func TestTask_run_commands(t *testing.T) {
 	}
 
 	if err := task.run(RunContext{}, runFailure, stateRunning); err == nil {
-		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
+		t.Error("task.run([exit 0, exit 1]): expected error, got nil")
 	}
 }
 
@@ -249,14 +249,14 @@ func TestTask_run_environment(t *testing.T) {
 
 	if actual := os.Getenv(toBeSet); toBeSetValue != actual {
 		t.Errorf(
-			`value for %s: expected: "%s", actual: "%s"`,
+			"value for %s: expected: %q, actual: %q",
 			toBeSet, toBeSetValue, actual,
 		)
 	}
 
 	if actual, isSet := os.LookupEnv(toBeUnset); isSet {
 		t.Errorf(
-			`value for %s: expected env var to be unset, actual: %s`,
+			"value for %s: expected env var to be unset, actual: %s",
 			toBeUnset, actual,
 		)
 	}

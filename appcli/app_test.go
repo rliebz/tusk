@@ -147,7 +147,7 @@ func TestNewApp(t *testing.T) {
 	cfgText := []byte(fmt.Sprintf(`
 name: %s
 usage: %s
-tasks: { "%s": {} }
+tasks: { %q: {} }
 `,
 		name, usage, taskName,
 	))

@@ -305,7 +305,7 @@ func validateEquality(
 		}
 
 		if err := validateOneOf(
-			fmt.Sprintf(`option "%s"`, optionName),
+			fmt.Sprintf("option %q", optionName),
 			actual,
 			values,
 			compare,

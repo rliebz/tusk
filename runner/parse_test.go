@@ -792,7 +792,7 @@ func TestParseComplete_interpolates(t *testing.T) {
 	for _, tt := range interpolatetests {
 		context := fmt.Sprintf(`
 executing test case: %s
-for task "%s" with parameters: %s
+for task %q with parameters: %s
 ---
 given input:
 %s
@@ -988,7 +988,7 @@ func TestParseComplete_invalid(t *testing.T) {
 	for _, tt := range invalidinterpolatetests {
 		context := fmt.Sprintf(`
 executing test case: %s
-for task "%s" with parameters: %s
+for task %q with parameters: %s
 ---
 given input:
 %s
@@ -1027,7 +1027,7 @@ tasks:
 
 	if expectedBar != actualBar {
 		t.Errorf(
-			`expected raw value for bar: "%s", actual: "%s"`,
+			`expected raw value for bar: %q, actual: %q`,
 			expectedBar, actualBar,
 		)
 	}
@@ -1037,7 +1037,7 @@ tasks:
 
 	if expectedCommand != actualCommand.Exec {
 		t.Errorf(
-			`expected raw command for mytask: "%s", actual: "%s"`,
+			`expected raw command for mytask: %q, actual: %q`,
 			expectedCommand, actualCommand,
 		)
 	}

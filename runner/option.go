@@ -51,7 +51,7 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	if len(o.Short) > 1 {
 		return fmt.Errorf(
-			`option short name "%s" cannot exceed one character`,
+			"option short name %q cannot exceed one character",
 			o.Short,
 		)
 	}
@@ -63,7 +63,7 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 		if o.Environment != "" {
 			return fmt.Errorf(
-				`environment variable "%s" defined for private option`,
+				"environment variable %q defined for private option",
 				o.Environment,
 			)
 		}
