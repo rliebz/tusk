@@ -1,10 +1,10 @@
 package runner
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
-	"github.com/pkg/errors"
 	"github.com/rliebz/tusk/marshal"
 	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"

@@ -1,9 +1,9 @@
 package appcli
 
 import (
+	"fmt"
 	"sort"
 
-	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/runner"
@@ -13,7 +13,7 @@ import (
 func addTasks(app *cli.App, cfg *runner.Config, create commandCreator) error {
 	for _, t := range cfg.Tasks {
 		if err := addTask(app, cfg, t, create); err != nil {
-			return errors.Wrapf(err, `could not add task "%s"`, t.Name)
+			return fmt.Errorf("could not add task %q: %w", t.Name, err)
 		}
 	}
 
@@ -28,11 +28,11 @@ func addTask(app *cli.App, cfg *runner.Config, t *runner.Task, create commandCre
 
 	command, err := create(app, t)
 	if err != nil {
-		return errors.Wrapf(err, `could not create command "%s"`, t.Name)
+		return fmt.Errorf(`could not create command %q: %w`, t.Name, err)
 	}
 
 	if err := addAllFlagsUsed(cfg, command, t); err != nil {
-		return errors.Wrap(err, "could not add flags")
+		return fmt.Errorf("could not add flags: %w", err)
 	}
 
 	app.Commands = append(app.Commands, *command)

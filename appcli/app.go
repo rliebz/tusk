@@ -1,11 +1,11 @@
 package appcli
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"sort"
 
-	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/runner"

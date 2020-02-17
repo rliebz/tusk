@@ -1,7 +1,8 @@
 package runner
 
 import (
-	"github.com/pkg/errors"
+	"errors"
+
 	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
 )

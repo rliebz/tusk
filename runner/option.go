@@ -1,11 +1,11 @@
 package runner
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/pkg/errors"
 	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -149,7 +149,7 @@ func (o *Option) getDefaultValue(vars map[string]string) (string, error) {
 
 		value, err := candidate.commandValueOrDefault()
 		if err != nil {
-			return "", errors.Wrapf(err, "could not compute value for option: %s", o.Name)
+			return "", fmt.Errorf("could not compute value for option %q: %w", o.Name, err)
 		}
 
 		return value, nil
