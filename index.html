@@ -7,15 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="None">
   
+  
   <link rel="shortcut icon" href="img/favicon.ico">
-  <title>Tusk - tusk</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-  <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+  <title>tusk</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="pygments.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
@@ -26,7 +25,8 @@
   
   <script src="js/jquery-2.1.1.min.js" defer></script>
   <script src="js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
@@ -37,6 +37,7 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href="." class="icon icon-home"> tusk</a>
         <div role="search">
@@ -47,120 +48,42 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="tocbase current">
-    
-    
-      
-
-
-  
-    
-    <li class="navtree toctree-l1 page current">
-      <a class="current" href=".">
-        Tusk
-      </a>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href=".">Tusk</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
     </li>
-    
-      
-
-
-
-  <li class="toctree-l1 current">
-    <ul class="subnav-l1 current">
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#features">Features</a>
-        </li>
-    
-      
-          
-
-  <li class="toctree-l2">
-    <a href="#getting-started">
-      Getting Started
-      <span class="toctree-expand"></span>
-    </a>
-  </li>
-
-
-
-  <li class="toctree-l2">
-    <ul class="subnav-l2 toc-hidden">
-    
-      
-          
-
-  <li class="toctree-l3 current with-children">
-    <a href="#installation">
-      Installation
-      <span class="toctree-expand"></span>
-    </a>
-  </li>
-
-
-
-  <li class="toctree-l3 current">
-    <ul class="subnav-l3 current">
-    
-      
-        <li class="toctree-l4">
-          <a class="toctree-l5" href="#installation-script">Installation Script</a>
-        </li>
-    
-      
-        <li class="toctree-l4">
-          <a class="toctree-l5" href="#homebrew">Homebrew</a>
-        </li>
-    
-      
-        <li class="toctree-l4">
-          <a class="toctree-l5" href="#tab-completion">Tab Completion</a>
-        </li>
-    
+    <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#installation-script">Installation Script</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#homebrew">Homebrew</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#tab-completion">Tab Completion</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a>
+    </li>
     </ul>
-  </li>
-
-      
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#usage">Usage</a>
-        </li>
-    
-    </ul>
-  </li>
-
-      
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#contributing">Contributing</a>
-        </li>
-    
-    </ul>
-  </li>
-
-
-  
-    
-      
-
-
-  <li class="navtree toctree-l1 inactive">
-    <a class="" href="spec/">The Spec</a>
-  </li>
-    
-      
-
-
-  <li class="navtree toctree-l1 inactive">
-    <a class="" href="CONTRIBUTING/">Contributing</a>
-  </li>
-    
-  </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="spec/">The Spec</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING/">Contributing</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -188,6 +111,7 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
@@ -221,55 +145,49 @@ documentation</a>.</p>
 <p>The latest version can be downloaded from the <a href="https://github.com/rliebz/tusk/releases">releases page</a>.</p>
 <h4 id="installation-script">Installation Script</h4>
 <p>To install automatically, or for use in CI, run the following command:</p>
-<div class="codehilite"><pre><span></span>curl -sL https://git.io/tusk <span class="p">|</span> bash -s -- -b /usr/local/bin latest
-</pre></div>
-
+<pre><code class="bash">curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
+</code></pre>
 
 <p>To pin to a specific version, replace <code>latest</code> with the tag for that version.
 This is recommended for automated scripts.</p>
 <p>To install to another directory, change the path passed to <code>-b</code>.</p>
 <h4 id="homebrew">Homebrew</h4>
 <p>On macOS, installation is also available through <a href="https://brew.sh">homebrew</a>:</p>
-<div class="codehilite"><pre><span></span>brew install rliebz/tusk/tusk
-</pre></div>
-
+<pre><code class="bash">brew install rliebz/tusk/tusk
+</code></pre>
 
 <p>With Homebrew, tab completion is installed automatically.</p>
 <h4 id="tab-completion">Tab Completion</h4>
 <p>For bash:</p>
-<div class="codehilite"><pre><span></span>tusk --install-completion bash
-</pre></div>
-
+<pre><code class="bash">tusk --install-completion bash
+</code></pre>
 
 <p>For zsh:</p>
-<div class="codehilite"><pre><span></span>tusk --install-completion zsh
-</pre></div>
-
+<pre><code class="zsh">tusk --install-completion zsh
+</code></pre>
 
 <p>Completions can be uninstalled as well with the <code>--uninstall-completion</code> flag.</p>
 <h3 id="usage">Usage</h3>
 <p>Create a <code>tusk.yml</code> file in the root of a project repository:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">greet</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Say hello to someone</span>
-    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">A person to say &quot;Hello&quot; to</span>
-        <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">World</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, ${name}!&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  greet:
+    usage: Say hello to someone
+    options:
+      name:
+        usage: A person to say &quot;Hello&quot; to
+        default: World
+    run: echo &quot;Hello, ${name}!&quot;
+</code></pre>
 
 <p>As long as there is a <code>tusk.yml</code> file in the working or any parent directory,
 tasks can be run:</p>
-<div class="codehilite"><pre><span></span>$ tusk greet --name friend
+<pre><code class="text">$ tusk greet --name friend
 Running: echo &quot;Hello, friend!&quot;
 Hello, friend!
-</pre></div>
-
+</code></pre>
 
 <p>Help messages are dynamically generated based on the YAML configuration:</p>
-<div class="codehilite"><pre><span></span>$ tusk --help
+<pre><code class="text">$ tusk --help
 tusk - the modern task runner
 
 Usage:
@@ -282,11 +200,10 @@ Global Options:
    -f, --file &lt;file&gt;  Set file to use as the config file
    -h, --help         Show help and exit
    ...
-</pre></div>
-
+</code></pre>
 
 <p>Individual tasks have help messages as well:</p>
-<div class="codehilite"><pre><span></span>$ tusk greet --help
+<pre><code class="text">$ tusk greet --help
 tusk greet - Say hello to someone
 
 Usage:
@@ -294,8 +211,7 @@ Usage:
 
 Options:
    --name &lt;value&gt;  A person to say &quot;Hello&quot; to
-</pre></div>
-
+</code></pre>
 
 <p>Additional information on the configuration spec can be found in the <a href="https://rliebz.github.io/tusk/spec/">project
 documentation</a>.</p>
@@ -324,7 +240,7 @@ can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -334,7 +250,7 @@ can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/rliebz/tusk/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -348,11 +264,16 @@ can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING
     <script>var base_url = '.';</script>
     <script src="js/theme.js" defer></script>
       <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>
 
 <!--
-MkDocs version : 1.0.4
-Build Date UTC : 2020-01-26 05:09:57
+MkDocs version : 1.1
+Build Date UTC : 2020-02-29 10:26:41
 -->

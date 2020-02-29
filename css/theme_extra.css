@@ -1,55 +1,4 @@
 /*
- * Sphinx doesn't have support for section dividers like we do in
- * MkDocs, this styles the section titles in the nav
- *
- * https://github.com/mkdocs/mkdocs/issues/175
- */
-.wy-menu-vertical span {
-    line-height: 18px;
-    padding: 0.4045em 1.618em;
-    display: block;
-    position: relative;
-    font-size: 90%;
-    color: #838383;
-}
-
-/*
- * Long navigations run off the bottom of the screen as the nav
- * area doesn't scroll.
- *
- * https://github.com/mkdocs/mkdocs/pull/202
- *
- * Builds upon pull 202 https://github.com/mkdocs/mkdocs/pull/202
- * to make toc scrollbar end before navigations buttons to not be overlapping.
- */
-.wy-nav-side {
-    height: calc(100% - 45px);
-    overflow-y: auto;
-    min-height: 0;
-}
-
-.rst-versions{
-    border-top: 0;
-    height: 45px;
-}
-
-@media screen and (max-width: 768px) {
-    .wy-nav-side {
-        height: 100%;
-    }
-}
-
-/*
- * readthedocs theme hides nav items when the window height is
- * too small to contain them.
- *
- * https://github.com/mkdocs/mkdocs/issues/#348
- */
-.wy-menu-vertical ul {
-  margin-bottom: 2em;
-}
-
-/*
  * Wrap inline code samples otherwise they shoot of the side and
  * can't be read at all.
  *
@@ -57,7 +6,7 @@
  * https://github.com/mkdocs/mkdocs/issues/233
  * https://github.com/mkdocs/mkdocs/issues/834
  */
-code {
+.rst-content code {
     white-space: pre-wrap;
     word-wrap: break-word;
     padding: 2px 5px;
@@ -71,7 +20,7 @@ code {
  * https://github.com/mkdocs/mkdocs/issues/834
  * https://github.com/mkdocs/mkdocs/issues/233
  */
-pre code {
+.rst-content pre code {
   white-space: pre;
   word-wrap: normal;
   display: block;
@@ -113,7 +62,7 @@ pre .cs, pre .c {
  *
  * https://github.com/mkdocs/mkdocs/issues/319
  */
-.no-highlight {
+.rst-content .no-highlight {
   display: block;
   padding: 0.5em;
   color: #333;
@@ -124,8 +73,11 @@ pre .cs, pre .c {
  * Additions specific to the search functionality provided by MkDocs
  */
 
-.search-results article {
+.search-results {
     margin-top: 23px;
+}
+
+.search-results article {
     border-top: 1px solid #E1E4E5;
     padding-top: 24px;
 }
@@ -141,16 +93,12 @@ form .search-query {
     border-color: #D1D4D5;
 }
 
-.wy-menu-vertical li ul {
-    display: inherit;
-}
-
 /*
  * Improve inline code blocks within admonitions.
  *
  * https://github.com/mkdocs/mkdocs/issues/656
  */
- .admonition code {
+ .rst-content .admonition code {
   color: #404040;
   border: 1px solid #c7c9cb;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -175,133 +123,4 @@ form .search-query {
 td, th {
    border: 1px solid #e1e4e5 !important; /* csslint allow: important */
    border-collapse: collapse;
-}
-
-/*
- * readthedocs-nested overrides
- *
-*/
-
-/* .wy-menu-vertical li ul {
-  display: none
-} */
-
-/* .wy-menu-vertical li.current ul {
-    display: block;
-} */
-
-/*  
- * Pallet 227 - 201 - 175
- * e3e3e3 c9c9c9 bdbdbd
- */
-
-.wy-menu-vertical ul.tocbase ul.current {
-    display: block !important;
-}
-
-.wy-menu-vertical ul.tocbase ul.toc-hidden {
-    display: none !important;
-}
-
-.wy-menu-vertical ul.tocbase li a {
-    position: relative;
-    color: #808080;
-    font-size: 14px;
-    font-weight: 400;
-}
-
-.wy-menu-vertical ul.tocbase li.current.with-children > a {
-    color: #333333;
-    font-weight: bold;
-}
-
-.wy-menu-vertical ul.tocbase span.toctree-expand {
-    position: absolute;
-    top: 6px;
-    margin: 0px;
-    padding: 0px;
-    font-size: 12px !important;
-    font-weight: 400;
-    color: #333333;
-}
-
-.wy-menu-vertical ul.tocbase li.toctree-l2 > a > span.toctree-expand {
-    left: 6px;
-}
-.wy-menu-vertical ul.tocbase li.toctree-l3 > a > span.toctree-expand {
-    left: 16px;
-}
-.wy-menu-vertical ul.tocbase li.toctree-l4 > a > span.toctree-expand {
-    left: 26px;
-}
-.wy-menu-vertical ul.tocbase li.toctree-l5 > a > span.toctree-expand {
-    left: 36px;
-}
-
-.wy-menu-vertical ul.tocbase li.navtree.toctree-l1.inactive > a,
-.wy-menu-vertical ul.tocbase li.navtree.toctree-l2.inactive > a {
-    color: #b3b3b3;
-}
-
-/* Selected top-level heading */
-.wy-menu-vertical .navtree li.toctree-l2.current,
-.wy-menu-vertical .navtree li.toctree-l2.current > a {
-    background: #fcfcfc;
-}
-.wy-menu-vertical .navtree li.toctree-l2.current > a,
-.wy-menu-vertical .navtree li.toctree-l2.current > span {
-    color: #404040 !important;
-}
-
-.wy-menu-vertical .navtree li.toctree-l2.current > a {
-    padding: 6px 0 6px 22px;
-    font-weight: bold;
-}
-
-/* Level 2 heading */
-.wy-menu-vertical ul.navtree.subnav-l1 ul.subnav-l2,
-.wy-menu-vertical ul.navtree.subnav-l1 li.toctree-l2.current li.toctree-l3 > a {
-    background: #e3e3e3;
-}
-
-.wy-menu-vertical ul.subnav-l1 ul.subnav-l2,
-.wy-menu-vertical ul.subnav-l1 li.toctree-l2.current li.toctree-l3 > a {
-    background: #c9c9c9;
-}
-
-.wy-menu-vertical ul.tocbase li.toctree-l2.current li.toctree-l3 > a {
-    padding: 6px 0 6px 32px;
-}
-
-/* Level 3 heading */
-.wy-menu-vertical ul.navtree.subnav-l1 li.toctree-l2.current li.toctree-l3.current > a,
-.wy-menu-vertical ul.navtree.subnav-l1 li.toctree-l3.current li.toctree-l4 > a {
-    background: #c9c9c9;
-}
-.wy-menu-vertical ul.subnav-l1 li.toctree-l2.current li.toctree-l3.current > a,
-.wy-menu-vertical ul.subnav-l1 li.toctree-l3.current li.toctree-l4 > a {
-    background: #bdbdbd;
-}
-.wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a {
-    padding: 6px 0 6px 42px;
-}
-
-/* Level 4 heading */
-.wy-menu-vertical ul.tocbase li.toctree-l3.current li.toctree-l4.current > a,
-.wy-menu-vertical li.toctree-l4.current li.toctree-l5 > a {
-    background: #bdbdbd;
-}
-.wy-menu-vertical li.toctree-l4.current li.toctree-l5 > a {
-    padding: 6px 0 6px 52px;
-}
-
-.wy-menu-vertical ul.navtree.subnav-l1 li.toctree-l2.current li.toctree-l3 > a:hover,
-.wy-menu-vertical ul.subnav-l1 li.toctree-l2.current li.toctree-l3 > a:hover,
-.wy-menu-vertical ul.navtree.subnav-l1 li.toctree-l2.current li.toctree-l3.current > a:hover,
-.wy-menu-vertical ul.tocbase li.toctree-l4 > a:hover,
-.wy-menu-vertical ul.tocbase li.toctree-l4 > a:hover,
-.wy-menu-vertical ul.tocbase li.toctree-l5 > a:hover,
-.wy-menu-vertical ul.tocbase li.toctree-l6 > a:hover,
-.wy-menu-vertical ul.tocbase li.toctree-l7 > a:hover {
-    background: #d6d6d6 !important;
 }

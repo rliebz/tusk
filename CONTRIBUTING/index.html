@@ -7,15 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
+  
   <link rel="shortcut icon" href="../img/favicon.ico">
   <title>Contributing - tusk</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-  <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="../pygments.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
@@ -26,7 +25,8 @@
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
   <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
@@ -37,6 +37,7 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> tusk</a>
         <div role="search">
@@ -47,75 +48,32 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="tocbase current">
-    
-    
-      
-
-
-  <li class="navtree toctree-l1 inactive">
-    <a class="" href="..">Tusk</a>
-  </li>
-    
-      
-
-
-  <li class="navtree toctree-l1 inactive">
-    <a class="" href="../spec/">The Spec</a>
-  </li>
-    
-      
-
-
-  
-    
-    <li class="navtree toctree-l1 page current">
-      <a class="current" href="./">
-        Contributing
-      </a>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Tusk</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../spec/">The Spec</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Contributing</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#opening-issues">Opening Issues</a>
     </li>
-    
-      
-
-
-
-  <li class="toctree-l1 current">
-    <ul class="subnav-l1 current">
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#opening-issues">Opening Issues</a>
-        </li>
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#opening-pull-requests">Opening Pull Requests</a>
-        </li>
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#setting-up-a-development-environment">Setting Up a Development Environment</a>
-        </li>
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#making-changes">Making Changes</a>
-        </li>
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#running-tests">Running Tests</a>
-        </li>
-    
+    <li class="toctree-l2"><a class="reference internal" href="#opening-pull-requests">Opening Pull Requests</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setting-up-a-development-environment">Setting Up a Development Environment</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#making-changes">Making Changes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running-tests">Running Tests</a>
+    </li>
     </ul>
-  </li>
-
-
-  
-    
-  </ul>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -143,6 +101,7 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
@@ -176,35 +135,30 @@ should be added in <a href="https://github.com/rliebz/tusk/blob/master/docs/spec
 <p>Tusk uses go modules for dependency management, so make sure to clone the
 project outside of the <code>GOPATH</code>. If that doesn't mean anything to you, you're
 probably fine.</p>
-<div class="codehilite"><pre><span></span>git clone https://github.com/rliebz/tusk.git
-</pre></div>
-
+<pre><code class="bash">git clone https://github.com/rliebz/tusk.git
+</code></pre>
 
 <p>If it is not already on your path, you probably also want to have the <code>GOPATH</code>
 binary directory available for projects installed by <code>go get</code> and <code>go install</code>.
 To do so, add the following to your <code>.bash_profile</code> or <code>.zshrc</code>:</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="k">$(</span>go env GOPATH<span class="k">)</span><span class="s2">/bin&quot;</span>
-</pre></div>
-
+<pre><code class="bash">export PATH=&quot;$PATH:$(go env GOPATH)/bin&quot;
+</code></pre>
 
 <p>To install Tusk:</p>
-<div class="codehilite"><pre><span></span>go install
-</pre></div>
-
+<pre><code class="bash">go install
+</code></pre>
 
 <p>If you have already installed tusk from another source, make sure you test
 against the development version installed locally. If you do not get <code>dev</code> as
 the version, you may need to move your Go binary path earlier in your <code>PATH</code>:</p>
-<div class="codehilite"><pre><span></span>$ tusk --version
+<pre><code class="bash">$ tusk --version
 dev
-</pre></div>
-
+</code></pre>
 
 <p>Once <code>tusk</code> is on your path, make sure to run the <code>bootstrap</code> command to
 install all other dependencies:</p>
-<div class="codehilite"><pre><span></span>tusk bootstrap
-</pre></div>
-
+<pre><code class="bash">tusk bootstrap
+</code></pre>
 
 <h2 id="making-changes">Making Changes</h2>
 <p>If you have not yet done so, make sure you fork the repository so you can push
@@ -214,29 +168,26 @@ branch. Pull requests should generally target the <code>master</code> branch, an
 will be cut separately.</p>
 <h2 id="running-tests">Running Tests</h2>
 <p>To run the unit tests:</p>
-<div class="codehilite"><pre><span></span>tusk <span class="nb">test</span>
-</pre></div>
-
+<pre><code class="bash">tusk test
+</code></pre>
 
 <p>To run the full test suite, along with the linter:</p>
-<div class="codehilite"><pre><span></span>tusk <span class="nb">test</span> -a
-</pre></div>
-
+<pre><code class="bash">tusk test -a
+</code></pre>
 
 <p>If the linter fails, execution will stop short and not actually run the
 unit test suite. If there is a linter error that is a false-positive, or the
 violation is necessary for your contribution, you can disable a specific linter
 for that line:</p>
-<div class="codehilite"><pre><span></span>cmd := exec.Command(&quot;sh&quot;, &quot;-c&quot;, command) // nolint: gosec
-</pre></div>
-
+<pre><code class="golang">cmd := exec.Command(&quot;sh&quot;, &quot;-c&quot;, command) // nolint: gosec
+</code></pre>
 
 <p>For a slightly higher-fidelity test suite, you can <a href="https://circleci.com/docs/2.0/local-cli/">configure the <code>circleci</code>
 command line tool</a> along with docker to run your tests locally in
 containers the same way they would be run against a pull request.</p>
 <p>With docker running locally:</p>
-<div class="codehilite"><pre><span></span>tusk circleci
-</pre></div>
+<pre><code class="bash">tusk circleci
+</code></pre>
               
             </div>
           </div>
@@ -257,7 +208,7 @@ containers the same way they would be run against a pull request.</p>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -267,7 +218,7 @@ containers the same way they would be run against a pull request.</p>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/rliebz/tusk/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -281,6 +232,11 @@ containers the same way they would be run against a pull request.</p>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
       <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>

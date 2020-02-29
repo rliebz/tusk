@@ -7,15 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
+  
   <link rel="shortcut icon" href="../img/favicon.ico">
   <title>The Spec - tusk</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-  <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="../pygments.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
@@ -26,7 +25,8 @@
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
   <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
@@ -37,6 +37,7 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> tusk</a>
         <div role="search">
@@ -47,245 +48,80 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="tocbase current">
-    
-    
-      
-
-
-  <li class="navtree toctree-l1 inactive">
-    <a class="" href="..">Tusk</a>
-  </li>
-    
-      
-
-
-  
-    
-    <li class="navtree toctree-l1 page current">
-      <a class="current" href="./">
-        The Spec
-      </a>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Tusk</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">The Spec</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#tasks">Tasks</a>
     </li>
-    
-      
-
-
-
-  <li class="toctree-l1 current">
-    <ul class="subnav-l1 current">
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#tasks">Tasks</a>
-        </li>
-    
-      
-          
-
-  <li class="toctree-l2">
-    <a href="#run">
-      Run
-      <span class="toctree-expand"></span>
-    </a>
-  </li>
-
-
-
-  <li class="toctree-l2">
-    <ul class="subnav-l2 toc-hidden">
-    
-      
-          
-
-  <li class="toctree-l3 current with-children">
-    <a href="#command">
-      Command
-      <span class="toctree-expand"></span>
-    </a>
-  </li>
-
-
-
-  <li class="toctree-l3 current">
-    <ul class="subnav-l3 current">
-    
-      
-        <li class="toctree-l4">
-          <a class="toctree-l5" href="#exec">Exec</a>
-        </li>
-    
-      
-        <li class="toctree-l4">
-          <a class="toctree-l5" href="#print">Print</a>
-        </li>
-    
-      
-        <li class="toctree-l4">
-          <a class="toctree-l5" href="#dir">Dir</a>
-        </li>
-    
+    <li class="toctree-l2"><a class="reference internal" href="#run">Run</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#command">Command</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#exec">Exec</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#print">Print</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#dir">Dir</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#set-environment">Set Environment</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sub-tasks">Sub-Tasks</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#when">When</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#short-form">Short Form</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#when-anyall-logic">When Any/All Logic</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#args">Args</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#arg-values">Arg Values</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#options">Options</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#option-types">Option Types</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#option-defaults">Option Defaults</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#option-values">Option Values</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#required-options">Required Options</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#private-options">Private Options</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#shared-options">Shared Options</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#finally">Finally</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#include">Include</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cli-metadata">CLI Metadata</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#interpolation">Interpolation</a>
+    </li>
     </ul>
-  </li>
-
-      
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#set-environment">Set Environment</a>
-        </li>
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#sub-tasks">Sub-Tasks</a>
-        </li>
-    
-    </ul>
-  </li>
-
-      
-    
-      
-          
-
-  <li class="toctree-l2">
-    <a href="#when">
-      When
-      <span class="toctree-expand"></span>
-    </a>
-  </li>
-
-
-
-  <li class="toctree-l2">
-    <ul class="subnav-l2 toc-hidden">
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#short-form">Short Form</a>
-        </li>
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#when-anyall-logic">When Any/All Logic</a>
-        </li>
-    
-    </ul>
-  </li>
-
-      
-    
-      
-          
-
-  <li class="toctree-l2">
-    <a href="#args">
-      Args
-      <span class="toctree-expand"></span>
-    </a>
-  </li>
-
-
-
-  <li class="toctree-l2">
-    <ul class="subnav-l2 toc-hidden">
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#arg-values">Arg Values</a>
-        </li>
-    
-    </ul>
-  </li>
-
-      
-    
-      
-          
-
-  <li class="toctree-l2">
-    <a href="#options">
-      Options
-      <span class="toctree-expand"></span>
-    </a>
-  </li>
-
-
-
-  <li class="toctree-l2">
-    <ul class="subnav-l2 toc-hidden">
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#option-types">Option Types</a>
-        </li>
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#option-defaults">Option Defaults</a>
-        </li>
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#option-values">Option Values</a>
-        </li>
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#required-options">Required Options</a>
-        </li>
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#private-options">Private Options</a>
-        </li>
-    
-      
-        <li class="toctree-l3">
-          <a class="toctree-l4" href="#shared-options">Shared Options</a>
-        </li>
-    
-    </ul>
-  </li>
-
-      
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#finally">Finally</a>
-        </li>
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#include">Include</a>
-        </li>
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#cli-metadata">CLI Metadata</a>
-        </li>
-    
-      
-        <li class="toctree-l2">
-          <a class="toctree-l3" href="#interpolation">Interpolation</a>
-        </li>
-    
-    </ul>
-  </li>
-
-
-  
-    
-      
-
-
-  <li class="navtree toctree-l1 inactive">
-    <a class="" href="../CONTRIBUTING/">Contributing</a>
-  </li>
-    
-  </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -313,6 +149,7 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
@@ -323,34 +160,31 @@
 <p>The core of every <code>tusk.yml</code> file is a list of tasks. Tasks are declared at the
 top level of the <code>tusk.yml</code> file and include a list of tasks.</p>
 <p>For the following tasks:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, world!&quot;</span>
-  <span class="l l-Scalar l-Scalar-Plain">goodbye</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Goodbye, world!&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    run: echo &quot;Hello, world!&quot;
+  goodbye:
+    run: echo &quot;Goodbye, world!&quot;
+</code></pre>
 
 <p>The commands can be run with no additional configuration:</p>
-<div class="codehilite"><pre><span></span>$ tusk hello
+<pre><code class="text">$ tusk hello
 Running: echo &quot;Hello, world!&quot;
 Hello, world!
-</pre></div>
-
+</code></pre>
 
 <p>Tasks can be documented with a one-line <code>usage</code> string and a slightly longer
 <code>description</code>. This information will be displayed in help messages:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Say hello to the world</span>
-    <span class="l l-Scalar l-Scalar-Plain">description</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">|</span>
-      <span class="no">This command will echo &quot;Hello, world!&quot; to the user. There&#39;s no</span>
-      <span class="no">surprises here.</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, world!&quot;</span>
-  <span class="l l-Scalar l-Scalar-Plain">goodbye</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Goodbye, world!&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    usage: Say hello to the world
+    description: |
+      This command will echo &quot;Hello, world!&quot; to the user. There's no
+      surprises here.
+    run: echo &quot;Hello, world!&quot;
+  goodbye:
+    run: echo &quot;Goodbye, world!&quot;
+</code></pre>
 
 <h3 id="run">Run</h3>
 <p>The behavior of a task is defined in its <code>run</code> clause. A <code>run</code> clause can be
@@ -359,20 +193,18 @@ used for commands, sub-tasks, or setting environment variables. Although each
 to handle complex scenarios.</p>
 <p>In its simplest form, <code>run</code> can be given a string or list of strings to be
 executed serially as shell commands:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    run: echo &quot;Hello!&quot;
+</code></pre>
 
 <p>This is a shorthand syntax for the following:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">exec</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    run:
+      - command:
+          exec: echo &quot;Hello!&quot;
+</code></pre>
 
 <p>The <code>run</code> clause tasks a list of <code>run</code> items, which allow executing shell
 commands with <code>command</code>, setting or unsetting environment variables with
@@ -382,22 +214,21 @@ execution with <code>when</code>.</p>
 <p>The <code>command</code> clause is the most common thing to do during a <code>run</code>, so for
 convenience, passing a string or single item will be correctly interpreted.
 Here are several examples of equivalent <code>run</code> clauses:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+<pre><code class="yaml">run: echo &quot;Hello!&quot;
 
-<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+run:
+  - echo &quot;Hello!&quot;
 
-<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+run:
+  command: echo &quot;Hello!&quot;
 
-<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
+run:
+  - command: echo &quot;Hello!&quot;
 
-<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">exec</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello!&quot;</span>
-</pre></div>
-
+run:
+  - command:
+      exec: echo &quot;Hello!&quot;
+</code></pre>
 
 <h5 id="exec">Exec</h5>
 <p>The <code>exec</code> clause contains the actual shell command to be performed.</p>
@@ -410,120 +241,112 @@ separate run commmands, although it is possible to run the <code>set-environment
 clause or use a multi-line shell command.</p>
 <p>For multi-line shell commands, to preserve the exit-on-error behavior, it is
 recommend to run <code>set -e</code> at the top of the script, much like any shell script.</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">|</span>
-      <span class="no">set -e</span>
-      <span class="no">errcho() {</span>
-        <span class="no">&gt;&amp;2 echo &quot;$@&quot;</span>
-      <span class="no">}</span>
-      <span class="no">errcho &quot;Hello, world!&quot;</span>
-      <span class="no">errcho &quot;Goodbye, world!&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    run: |
+      set -e
+      errcho() {
+        &gt;&amp;2 echo &quot;$@&quot;
+      }
+      errcho &quot;Hello, world!&quot;
+      errcho &quot;Goodbye, world!&quot;
+</code></pre>
 
 <h5 id="print">Print</h5>
 <p>Sometimes it may not be desirable to print the exact command run, for example,
 if it's overly verbose or contains secrets. In that case, the <code>command</code> clause
 can be passed a <code>print</code> string to use as an alternative:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">exec</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;SECRET_VALUE&quot;</span>
-        <span class="l l-Scalar l-Scalar-Plain">print</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;*****&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    run:
+      command:
+        exec: echo &quot;SECRET_VALUE&quot;
+        print: echo &quot;*****&quot;
+</code></pre>
 
 <h5 id="dir">Dir</h5>
 <p>The <code>dir</code> clause sets the working directory for a specific command:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">exec</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello from $PWD!&quot;</span>
-        <span class="l l-Scalar l-Scalar-Plain">dir</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./subdir</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    run:
+      command:
+        exec: echo &quot;Hello from $PWD!&quot;
+        dir: ./subdir
+</code></pre>
 
 <h4 id="set-environment">Set Environment</h4>
 <p>To set or unset environment variables, simply define a map of environment
 variable names to their desired values:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">proxy-url</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">http://proxy.example.com</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">set-environment</span><span class="p p-Indicator">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">http_proxy</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${proxy-url}</span>
-          <span class="l l-Scalar l-Scalar-Plain">https_proxy</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${proxy-url}</span>
-          <span class="l l-Scalar l-Scalar-Plain">no_proxy</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">~</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">curl http://example.com</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    options:
+      proxy-url:
+        default: http://proxy.example.com
+    run:
+      - set-environment:
+          http_proxy: ${proxy-url}
+          https_proxy: ${proxy-url}
+          no_proxy: ~
+      - command: curl http://example.com
+</code></pre>
 
 <p>Passing <code>~</code> or <code>null</code> to an environment variable will explicitly unset it,
 while passing an empty string will set it to an empty string.</p>
 <p>Environment variables once modified will persist until Tusk exits.</p>
 <h4 id="sub-tasks">Sub-Tasks</h4>
 <p>Run can also execute previously-defined tasks:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">one</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Inside one&quot;</span>
-  <span class="l l-Scalar l-Scalar-Plain">two</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">task</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">one</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Inside two&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  one:
+    run: echo &quot;Inside one&quot;
+  two:
+    run:
+      - task: one
+      - command: echo &quot;Inside two&quot;
+</code></pre>
 
 <p>For any arg or option that a sub-task defines, the parent task can pass a
 value, which is treated the same way as passing by command-line would be. Args
 are passed in as a list, while options are a map from flag name to value.</p>
 <p>To pass values, use the long definition of a sub-task:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">greet</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">args</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">The person to greet</span>
-    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">greeting</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Hello</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;${greeting}, ${person}!&quot;</span>
-  <span class="l l-Scalar l-Scalar-Plain">greet-myself</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">task</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">greet</span>
-        <span class="l l-Scalar l-Scalar-Plain">args</span><span class="p p-Indicator">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">me</span>
-        <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">greeting</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Howdy</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  greet:
+    args:
+      name:
+        usage: The person to greet
+    options:
+      greeting:
+        default: Hello
+    run: echo &quot;${greeting}, ${person}!&quot;
+  greet-myself:
+    run:
+      task:
+        name: greet
+        args:
+          - me
+        options:
+          greeting: Howdy
+</code></pre>
 
 <p>In cases where a sub-task may not be useful on its own, define it as private to
 prevent it from being invoked directly from the command-line. For example:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">configure-environment</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">private</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">set-environment</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">APP_ENV</span><span class="p p-Indicator">:</span> <span class="nv">dev</span><span class="p p-Indicator">}</span>
-  <span class="l l-Scalar l-Scalar-Plain">serve</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">task</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">configure-environment</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">python main.py</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  configure-environment:
+    private: true
+    run:
+      set-environment: {APP_ENV: dev}
+  serve:
+    run:
+      - task: configure-environment
+      - command: python main.py
+</code></pre>
 
 <h3 id="when">When</h3>
 <p>For conditional execution, <code>when</code> clauses are available.</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">os</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">linux</span>
-  <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;This is a linux machine&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">run:
+  when:
+    os: linux
+  command: echo &quot;This is a linux machine&quot;
+</code></pre>
 
 <p>In a <code>run</code> clause, any item with a true <code>when</code> clause will execute. There are
 five different checks supported:</p>
@@ -545,110 +368,102 @@ five different checks supported:</p>
 <p>The <code>when</code> clause supports any number of different checks as a list, where each
 check must pass individually for the clause to evaluate to true. Here is a more
 complicated example of how <code>when</code> can be used:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">echo</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">cat</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Cat a file</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">os</span><span class="p p-Indicator">:</span>
-            <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linux</span>
-            <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">darwin</span>
-        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;This is a unix machine&quot;</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">exists</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">my_file.txt</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">cat</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">command -v cat</span>
-        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">cat my_file.txt</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  echo:
+    options:
+      cat:
+        usage: Cat a file
+    run:
+      - when:
+          os:
+            - linux
+            - darwin
+        command: echo &quot;This is a unix machine&quot;
+      - when:
+          - exists: my_file.txt
+          - equal: {cat: true}
+          - command: command -v cat
+        command: cat my_file.txt
+</code></pre>
 
 <h4 id="short-form">Short Form</h4>
 <p>Because it's common to check if a boolean flag is set to true, <code>when</code> clauses
 also accept strings as shorthand. Consider the following example, which checks
 to see if some option <code>foo</code> has been set to <code>true</code>:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">foo</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
-</pre></div>
-
+<pre><code class="yaml">when:
+  equal: {foo: true}
+</code></pre>
 
 <p>This can be expressed more succinctly as the following:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">foo</span>
-</pre></div>
-
+<pre><code class="yaml">when: foo
+</code></pre>
 
 <h4 id="when-anyall-logic">When Any/All Logic</h4>
 <p>A <code>when</code> clause takes a list of items, where each item can have multiple checks.
 Each <code>when</code> item will pass if <em>any</em> of the checks pass, while the whole clause
 will only pass if <em>all</em> of the items pass. For example:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">exists</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-          <span class="c1"># There is a single `when` item with two checks</span>
-          <span class="l l-Scalar l-Scalar-Plain">exists</span><span class="p p-Indicator">:</span>
-            <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">file_one.txt</span>
-            <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">file_two.txt</span>
-        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;At least one file exists&quot;</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-          <span class="c1"># There are two separate `when` items with one check each</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">exists</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">file_one.txt</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">exists</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">file_two.txt</span>
-        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Both files exist&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  exists:
+    run:
+      - when:
+          # There is a single `when` item with two checks
+          exists:
+            - file_one.txt
+            - file_two.txt
+        command: echo &quot;At least one file exists&quot;
+      - when:
+          # There are two separate `when` items with one check each
+          - exists: file_one.txt
+          - exists: file_two.txt
+        command: echo &quot;Both files exist&quot;
+</code></pre>
 
 <p>These properties can be combined for more complicated logic:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">echo</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">verbose</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">bool</span>
-      <span class="l l-Scalar l-Scalar-Plain">ignore-os</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">bool</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-          <span class="c1"># (OS is linux OR darwin OR ignore OS is true) AND (verbose is true)</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">os</span><span class="p p-Indicator">:</span>
-              <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linux</span>
-              <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">darwin</span>
-            <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">ignore-os</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">verbose</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
-        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;This is a unix machine&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  echo:
+    options:
+      verbose:
+        type: bool
+      ignore-os:
+        type: bool
+    run:
+      - when:
+          # (OS is linux OR darwin OR ignore OS is true) AND (verbose is true)
+          - os:
+              - linux
+              - darwin
+            equal: {ignore-os: true}
+          - equal: {verbose: true}
+        command: echo &quot;This is a unix machine&quot;
+</code></pre>
 
 <h3 id="args">Args</h3>
 <p>Tasks may have args that are passed directly as inputs. Any arg that is defined
 is required for the task to execute.</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">greet</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">args</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">The person to greet</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, ${name}!&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  greet:
+    args:
+      name:
+        usage: The person to greet
+    run: echo &quot;Hello, ${name}!&quot;
+</code></pre>
 
 <p>The task can be invoked as such:</p>
-<div class="codehilite"><pre><span></span>$ tusk greet friend
+<pre><code class="text">$ tusk greet friend
 Hello, friend!
-</pre></div>
-
+</code></pre>
 
 <h4 id="arg-values">Arg Values</h4>
 <p>Args can specify which values are considered valid:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">greet</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">args</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">values</span><span class="p p-Indicator">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">Abby</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">Bobby</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">Carl</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  greet:
+    args:
+      name:
+        values:
+          - Abby
+          - Bobby
+          - Carl
+</code></pre>
 
 <p>Any value passed by command-line must be one of the listed values, or the
 command will fail to execute.</p>
@@ -656,17 +471,16 @@ command will fail to execute.</p>
 <p>Tasks may have options that are passed as GNU-style flags. The following
 configuration will provide <code>-n, --name</code> flags to the CLI and help documentation,
 which will then be interpolated:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">greet</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">The person to greet</span>
-        <span class="l l-Scalar l-Scalar-Plain">short</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">n</span>
-        <span class="l l-Scalar l-Scalar-Plain">environment</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">GREET_NAME</span>
-        <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">World</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, ${name}!&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  greet:
+    options:
+      name:
+        usage: The person to greet
+        short: n
+        environment: GREET_NAME
+        default: World
+    run: echo &quot;Hello, ${name}!&quot;
+</code></pre>
 
 <p>The above configuration will evaluate the value of <code>name</code> in order of highest
 priority:</p>
@@ -683,86 +497,78 @@ the zero-value of that type as the default if not set. Options without types
 specified are considered strings.</p>
 <p>For boolean values, the flag should be passed by command line without any
 arugments. In the following example:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">greet</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">loud</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">bool</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">loud</span><span class="p p-Indicator">:</span> <span class="nv">true</span><span class="p p-Indicator">}</span>
-        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;HELLO!&quot;</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">equal</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span><span class="nv">loud</span><span class="p p-Indicator">:</span> <span class="nv">false</span><span class="p p-Indicator">}</span>
-        <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello.&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  greet:
+    options:
+      loud:
+        type: bool
+    run:
+      - when:
+          equal: {loud: true}
+        command: echo &quot;HELLO!&quot;
+      - when:
+          equal: {loud: false}
+        command: echo &quot;Hello.&quot;
+</code></pre>
 
 <p>The flag should be passed as such:</p>
-<div class="codehilite"><pre><span></span>tusk greet --loud
-</pre></div>
-
+<pre><code class="bash">tusk greet --loud
+</code></pre>
 
 <p>This means that for an option that is true by default, the only way to disable
 it is with the following syntax:</p>
-<div class="codehilite"><pre><span></span>tusk greet --loud<span class="o">=</span><span class="nb">false</span>
-</pre></div>
-
+<pre><code class="bash">tusk greet --loud=false
+</code></pre>
 
 <p>Of course, options can always be defined in the reverse manner to avoid this
 issue:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">no-loud</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">bool</span>
-</pre></div>
-
+<pre><code class="yaml">options:
+  no-loud:
+    type: bool
+</code></pre>
 
 <h4 id="option-defaults">Option Defaults</h4>
 <p>Much like <code>run</code> clauses accept a shorthand form, passing a string to <code>default</code>
 is shorthand. The following options are exactly equivalent:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">short</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">foo</span>
-  <span class="l l-Scalar l-Scalar-Plain">long</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">value</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">foo</span>
-</pre></div>
-
+<pre><code class="yaml">options:
+  short:
+    default: foo
+  long:
+    default:
+      - value: foo
+</code></pre>
 
 <p>A <code>default</code> clause can also register the <code>stdout</code> of a command as its value:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">os</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">uname -s</span>
-</pre></div>
-
+<pre><code class="yaml">options:
+  os:
+    default:
+      command: uname -s
+</code></pre>
 
 <p>A <code>default</code> clause also accepts a list of possible values with a corresponding
 <code>when</code> clause. The first <code>when</code> that evaluates to true will be used as the
 default value, with an omitted <code>when</code> always considered true.</p>
 <p>In this example, linux users will have the name <code>Linux User</code>, while the default
 for all other OSes is <code>User</code>:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">when</span><span class="p p-Indicator">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">os</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">linux</span>
-        <span class="l l-Scalar l-Scalar-Plain">value</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Linux User</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">value</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">User</span>
-</pre></div>
-
+<pre><code class="yaml">options:
+  name:
+    default:
+      - when:
+          os: linux
+        value: Linux User
+      - value: User
+</code></pre>
 
 <h4 id="option-values">Option Values</h4>
 <p>Like args, an option can specify which values are considered valid:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">number</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">zero</span>
-    <span class="l l-Scalar l-Scalar-Plain">values</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">one</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">two</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">three</span>
-</pre></div>
-
+<pre><code class="yaml">options:
+  number:
+    default: zero
+    values:
+      - one
+      - two
+      - three
+</code></pre>
 
 <p>Any value passed by command-line flags or environment variables must be one of
 the listed values. Default values, including commands, are excluded from this
@@ -770,41 +576,38 @@ requirement.</p>
 <h4 id="required-options">Required Options</h4>
 <p>Options may be required if there is no sane default value. For a required flag,
 the task will not execute unless the flag is passed:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">file</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">required</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-</pre></div>
-
+<pre><code class="yaml">options:
+  file:
+    required: true
+</code></pre>
 
 <p>A required option cannot be private or have any default values.</p>
 <h4 id="private-options">Private Options</h4>
 <p>Sometimes it may be desirable to have a variable that cannot be directly
 modified through command-line flags. In this case, use the <code>private</code> option:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">user</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">private</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">command</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">whoami</span>
-</pre></div>
-
+<pre><code class="yaml">options:
+  user:
+    private: true
+    default:
+      command: whoami
+</code></pre>
 
 <p>A private option will not accept environment variables or command line flags,
 and it will not appear in the help documentation.</p>
 <h4 id="shared-options">Shared Options</h4>
 <p>Options may also be defined at the root of the config file to be shared between
 tasks:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">The person to greet</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">World</span>
+<pre><code class="yaml">options:
+  name:
+    usage: The person to greet
+    default: World
 
-<span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, ${name}!&quot;</span>
-  <span class="l l-Scalar l-Scalar-Plain">goodbye</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Goodbye, ${name}!&quot;</span>
-</pre></div>
-
+tasks:
+  hello:
+    run: echo &quot;Hello, ${name}!&quot;
+  goodbye:
+    run: echo &quot;Goodbye, ${name}!&quot;
+</code></pre>
 
 <p>Any shared variables referenced by a task will be exposed by command-line when
 invoking that task. Shared variables referenced by a sub-task will be evaluated
@@ -816,18 +619,17 @@ including sub-tasks.</p>
 <p>The <code>finally</code> clause is run after a task's <code>run</code> logic has completed, whether or
 not that task was successful. This can be useful for clean-up logic. A <code>finally</code>
 clause has the same format as a <code>run</code> clause:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello&quot;</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">exit 1</span>          <span class="c1"># `run` clause stops here</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Oops!&quot;</span>    <span class="c1"># Never prints</span>
-    <span class="l l-Scalar l-Scalar-Plain">finally</span><span class="p p-Indicator">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Goodbye&quot;</span>  <span class="c1"># Always prints</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">task</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">cleanup</span>
-  <span class="c1"># ...</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    run:
+      - echo &quot;Hello&quot;
+      - exit 1          # `run` clause stops here
+      - echo &quot;Oops!&quot;    # Never prints
+    finally:
+      - echo &quot;Goodbye&quot;  # Always prints
+      - task: cleanup
+  # ...
+</code></pre>
 
 <p>If the <code>finally</code> clause runs an unsuccessful command, it will terminate early
 the same way that a <code>run</code> clause would. The exit code is still passed back to
@@ -839,20 +641,18 @@ file. The <code>include</code> clause serves this purpose. At the top-level of a
 task may optionally be specified using just the <code>include</code> key, which maps to a
 separate file where there task definition is stored.</p>
 <p>For example, <code>tusk.yml</code> could be written like this:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">hello</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">include</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">.tusk/hello.yml</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  hello:
+    include: .tusk/hello.yml
+</code></pre>
 
 <p>With a <code>.tusk/hello.yml</code> that looks like this:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">The person to greet</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">World</span>
-<span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello, ${name}!&quot;</span>
-</pre></div>
-
+<pre><code class="yaml">options:
+  name:
+    usage: The person to greet
+    default: World
+run: echo &quot;Hello, ${name}!&quot;
+</code></pre>
 
 <p>It is invalid to split the configuration; if the <code>include</code> clause is used, no
 other keys can be specified in the <code>tusk.yml</code>, and the full task must be
@@ -860,30 +660,27 @@ defined in the included file.</p>
 <h3 id="cli-metadata">CLI Metadata</h3>
 <p>It is also possible to create a custom CLI tool for use outside of a project's
 directory by using shell aliases:</p>
-<div class="codehilite"><pre><span></span><span class="nb">alias</span> <span class="nv">mycli</span><span class="o">=</span><span class="s2">&quot;tusk -f /path/to/tusk.yml&quot;</span>
-</pre></div>
-
+<pre><code class="bash">alias mycli=&quot;tusk -f /path/to/tusk.yml&quot;
+</code></pre>
 
 <p>In that case, it may be useful to override the tool name and usage text that
 are provided as part of the help documentation:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">mycli</span>
-<span class="l l-Scalar l-Scalar-Plain">usage</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">A custom aliased command-line application</span>
+<pre><code class="yaml">name: mycli
+usage: A custom aliased command-line application
 
-<span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
-</pre></div>
-
+tasks:
+  ...
+</code></pre>
 
 <p>The example above will produce the following help documentation:</p>
-<div class="codehilite"><pre><span></span>mycli - A custom aliased command-line application
+<pre><code class="text">mycli - A custom aliased command-line application
 
 Usage:
   mycli [global options] &lt;task&gt; [task options]
 
 Tasks:
   ...
-</pre></div>
-
+</code></pre>
 
 <h3 id="interpolation">Interpolation</h3>
 <p>The interpolation syntax for a variable <code>foo</code> is <code>${foo}</code>, meaning any instances
@@ -902,30 +699,28 @@ other hand, will only be evaluated once per execution.</p>
    specific interpolations for parent tasks, using the cached shared options.</li>
 </ol>
 <p>This means that options can reference other options or args:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">options</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">World</span>
-  <span class="l l-Scalar l-Scalar-Plain">greeting</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">default</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Hello, ${name}</span>
+<pre><code class="yaml">options:
+  name:
+    default: World
+  greeting:
+    default: Hello, ${name}
 
-<span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">greet</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">echo &quot;${greeting}&quot;</span>
-</pre></div>
-
+tasks:
+  greet:
+    run: echo &quot;${greeting}&quot;
+</code></pre>
 
 <p>Because interpolation is not always desirable, as in the case of environment
 variables, <code>$$</code> will escape to <code>$</code> and ignore interpolation. It is also
 possible to use alternative syntax such as <code>$foo</code> to avoid interpolation as
 well. The following two tasks will both use environment variables and not
 attempt interpolation:</p>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">one</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Hello, $${USER}</span>
-  <span class="l l-Scalar l-Scalar-Plain">two</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Hello, $USER</span>
-</pre></div>
-
+<pre><code class="yaml">tasks:
+  one:
+    run: Hello, $${USER}
+  two:
+    run: Hello, $USER
+</code></pre>
 
 <p>Interpolation works by substituting the value in the <code>yaml</code> config file, then
 parsing the file after interpolation. This means that variable values with
@@ -954,7 +749,7 @@ using quotes when appropriate.</p>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -964,7 +759,7 @@ using quotes when appropriate.</p>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/rliebz/tusk/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -980,6 +775,11 @@ using quotes when appropriate.</p>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
       <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>
