@@ -1,13 +1,11 @@
 site_name: tusk
-theme: rtd-dropdown
 repo_url: https://github.com/rliebz/tusk
+
+theme:
+  name: readthedocs
+  hljs_languages: [yaml]
 
 nav:
   - Tusk: index.md
   - The Spec: spec.md
   - Contributing: CONTRIBUTING.md
-
-markdown_extensions:
-  - codehilite
-
-extra_css: [pygments.css]
