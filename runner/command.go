@@ -52,12 +52,12 @@ func (c *Command) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 // execCommand executes a shell command.
-func (c *Command) exec() error {
+func (c *Command) exec(ctx Context) error {
 	shell := getShell()
 	cmd := execCommand(shell, "-c", c.Exec)
 	cmd.Dir = c.Dir
 	cmd.Stdin = os.Stdin
-	if ui.Verbosity > ui.VerbosityLevelSilent {
+	if ctx.Logger.Verbosity > ui.VerbosityLevelSilent {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 	}

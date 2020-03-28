@@ -136,7 +136,7 @@ var shouldtests = []struct {
 
 func TestRun_shouldRun(t *testing.T) {
 	for _, tt := range shouldtests {
-		actual, err := tt.input.shouldRun(tt.vars)
+		actual, err := tt.input.shouldRun(Context{}, tt.vars)
 		if err != nil {
 			t.Errorf(
 				"task.shouldRun() for %s: unexpected error: %s",

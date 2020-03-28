@@ -2,22 +2,25 @@ package ui
 
 import (
 	"bytes"
-	"log"
-	"os"
+	"io"
 	"testing"
+
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
-func resetUIState() {
-	LoggerStdout.SetOutput(os.Stdout)
-	LoggerStderr.SetOutput(os.Stderr)
-	Verbosity = VerbosityLevelNormal
-	deprecations = nil
+func withStdout(l *Logger, out io.Writer) {
+	l.Stdout = out
+}
+
+func withStderr(l *Logger, err io.Writer) {
+	l.Stderr = err
 }
 
 type printTestCase struct {
 	name            string
-	logger          *log.Logger
-	printFunc       func()
+	setOutput       func(l *Logger, out io.Writer)
+	printFunc       func(l *Logger)
 	levelNoOutput   VerbosityLevel
 	levelWithOutput VerbosityLevel
 	expected        string
@@ -25,13 +28,18 @@ type printTestCase struct {
 
 func testPrint(t *testing.T, tt printTestCase) {
 	t.Helper()
-	defer resetUIState()
 
+	empty := new(bytes.Buffer)
 	buf := new(bytes.Buffer)
-	tt.logger.SetOutput(buf)
 
-	Verbosity = tt.levelNoOutput
-	tt.printFunc()
+	logger := New()
+	logger.Stderr = empty
+	logger.Stdout = empty
+	tt.setOutput(logger, buf)
+
+	logger.Verbosity = tt.levelNoOutput
+
+	tt.printFunc(logger)
 	actual := buf.String()
 
 	if actual != "" {
@@ -44,8 +52,9 @@ func testPrint(t *testing.T, tt printTestCase) {
 	}
 
 	buf.Reset()
-	Verbosity = tt.levelWithOutput
-	tt.printFunc()
+
+	logger.Verbosity = tt.levelWithOutput
+	tt.printFunc(logger)
 	actual = buf.String()
 
 	if tt.expected != actual {
@@ -57,6 +66,8 @@ func testPrint(t *testing.T, tt printTestCase) {
 			actual,
 		)
 	}
+
+	assert.Check(t, cmp.Equal("", empty.String()), "fake")
 }
 
 var verbosityStringTests = []struct {

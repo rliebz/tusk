@@ -9,28 +9,28 @@ import (
 var commandTests = []printTestCase{
 	{
 		`PrintCommand("echo hello", "foo", "bar")`,
-		LoggerStderr,
-		func() { PrintCommand("echo hello", "foo", "bar") },
+		withStderr,
+		func(l *Logger) { l.PrintCommand("echo hello", "foo", "bar") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
 		"foo > bar $ echo hello\n",
 	},
 	{
 		`PrintCommandWithParenthetical("echo hello", "paren", "foo", "bar")`,
-		LoggerStderr,
-		func() { PrintCommandWithParenthetical("echo hello", "paren", "foo", "bar") },
+		withStderr,
+		func(l *Logger) { l.PrintCommandWithParenthetical("echo hello", "paren", "foo", "bar") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
 		"foo > bar (paren) $ echo hello\n",
 	},
 	{
 		`PrintEnvironment()`,
-		LoggerStderr,
-		func() {
+		withStderr,
+		func(l *Logger) {
 			a := "one"
 			c := "three"
 
-			PrintEnvironment(map[string]*string{
+			l.PrintEnvironment(map[string]*string{
 				"A": &a,
 				"B": nil,
 				"C": &c,
@@ -47,16 +47,16 @@ var commandTests = []printTestCase{
 	},
 	{
 		`PrintEnvironment(nil)`,
-		LoggerStderr,
-		func() { PrintEnvironment(nil) },
+		withStderr,
+		func(l *Logger) { l.PrintEnvironment(nil) },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
 		"",
 	},
 	{
 		`PrintSkipped("echo hello", "oops")`,
-		LoggerStderr,
-		func() { PrintSkipped("echo hello", "oops") },
+		withStderr,
+		func(l *Logger) { l.PrintSkipped("echo hello", "oops") },
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
 		fmt.Sprintf(
@@ -69,32 +69,32 @@ var commandTests = []printTestCase{
 	},
 	{
 		`PrintTask("foo")`,
-		LoggerStderr,
-		func() { PrintTask("foo") },
+		withStderr,
+		func(l *Logger) { l.PrintTask("foo") },
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
 		"Task Started: foo\n",
 	},
 	{
 		`PrintTaskFinally("foo")`,
-		LoggerStderr,
-		func() { PrintTaskFinally("foo") },
+		withStderr,
+		func(l *Logger) { l.PrintTaskFinally("foo") },
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
 		"Task Finally: foo\n",
 	},
 	{
 		`PrintTaskCompleted("foo")`,
-		LoggerStderr,
-		func() { PrintTaskCompleted("foo") },
+		withStderr,
+		func(l *Logger) { l.PrintTaskCompleted("foo") },
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
 		"Task Completed: foo\n",
 	},
 	{
 		`PrintCommandError(errors.New("oops"))`,
-		LoggerStderr,
-		func() { PrintCommandError(errors.New("oops")) },
+		withStderr,
+		func(l *Logger) { l.PrintCommandError(errors.New("oops")) },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
 		fmt.Sprintf("%s\n", "oops"),

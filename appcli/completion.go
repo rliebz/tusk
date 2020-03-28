@@ -10,8 +10,13 @@ import (
 	"github.com/urfave/cli"
 )
 
-// CompletionFlag is the flag passed when performing shell completions.
-var CompletionFlag = "--" + cli.BashCompletionFlag.GetName()
+// completionFlag is the flag passed when performing shell completions.
+var completionFlag = "--" + cli.BashCompletionFlag.GetName()
+
+// IsCompleting returns whether tab-completion is currently occurring.
+func IsCompleting(args []string) bool {
+	return args[len(args)-1] == completionFlag
+}
 
 // context represents the subset of *cli.Context required for flag completion.
 type context interface {
@@ -173,7 +178,7 @@ func getDescription(flag cli.Flag) string {
 func removeCompletionArg(args []string) []string {
 	var output []string
 	for _, arg := range args {
-		if arg != CompletionFlag {
+		if arg != completionFlag {
 			output = append(output, arg)
 		}
 	}

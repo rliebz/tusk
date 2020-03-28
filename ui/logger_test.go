@@ -8,26 +8,24 @@ import (
 var outputTests = []printTestCase{
 	{
 		`Println("foo", "bar")`,
-		LoggerStdout,
-		func() { Println("foo", "bar") },
+		withStdout,
+		func(l *Logger) { l.Println("foo", "bar") },
 		VerbosityLevelSilent,
 		VerbosityLevelQuiet,
-		"foobar\n",
+		"foo bar\n",
 	},
 	{
 		`Debug("foo")`,
-		LoggerStderr,
-		func() { Debug("foo") },
+		withStderr,
+		func(l *Logger) { l.Debug("foo") },
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
 		fmt.Sprintf(logFormat, tag(debugString, cyan), "foo"),
 	},
 	{
 		`Debug("foo", "bar", "baz")`,
-		LoggerStderr,
-		func() {
-			Debug("foo", "bar", "baz")
-		},
+		withStderr,
+		func(l *Logger) { l.Debug("foo", "bar", "baz") },
 		VerbosityLevelNormal,
 		VerbosityLevelVerbose,
 		fmt.Sprintf(
@@ -39,42 +37,42 @@ var outputTests = []printTestCase{
 	},
 	{
 		`Info("foo")`,
-		LoggerStderr,
-		func() { Info("foo") },
+		withStderr,
+		func(l *Logger) { l.Info("foo") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
 		fmt.Sprintf(logFormat, tag(infoString, blue), "foo"),
 	},
 	{
 		`Warn("foo")`,
-		LoggerStderr,
-		func() { Warn("foo") },
+		withStderr,
+		func(l *Logger) { l.Warn("foo") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
 		fmt.Sprintf(logFormat, tag(warningString, yellow), "foo"),
 	},
 	{
 		`Error("foo")`,
-		LoggerStderr,
-		func() { Error("foo") },
+		withStderr,
+		func(l *Logger) { l.Error("foo") },
 		VerbosityLevelSilent,
 		VerbosityLevelQuiet,
 		fmt.Sprintf(logFormat, tag(errorString, red), "foo"),
 	},
 	{
 		`Deprecate("foo") once`,
-		LoggerStderr,
-		func() { Deprecate("foo") },
+		withStderr,
+		func(l *Logger) { l.Deprecate("foo") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
 		fmt.Sprintf(logFormat, tag(deprecatedString, yellow), "foo\n"),
 	},
 	{
 		`Deprecate("foo") twice`,
-		LoggerStderr,
-		func() {
-			Deprecate("foo")
-			Deprecate("foo")
+		withStderr,
+		func(l *Logger) {
+			l.Deprecate("foo")
+			l.Deprecate("foo")
 		},
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
@@ -82,8 +80,8 @@ var outputTests = []printTestCase{
 	},
 	{
 		`Deprecate("foo", "bar")`,
-		LoggerStderr,
-		func() { Deprecate("foo", "bar") },
+		withStderr,
+		func(l *Logger) { l.Deprecate("foo", "bar") },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
 		fmt.Sprintf(

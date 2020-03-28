@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/rliebz/tusk/runner"
+	"github.com/rliebz/tusk/ui"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 	"gotest.tools/v3/env"
@@ -15,12 +17,20 @@ import (
 )
 
 func TestInstallCompletionUnsupported(t *testing.T) {
-	err := InstallCompletion("fake")
+	err := InstallCompletion(
+		&runner.Metadata{
+			InstallCompletion: "fake",
+		},
+	)
 	assert.ErrorContains(t, err, `tab completion for "fake" is not supported`)
 }
 
 func TestUninstallCompletionUnsupported(t *testing.T) {
-	err := UninstallCompletion("fake")
+	err := UninstallCompletion(
+		&runner.Metadata{
+			UninstallCompletion: "fake",
+		},
+	)
 	assert.ErrorContains(t, err, `tab completion for "fake" is not supported`)
 }
 
@@ -37,7 +47,7 @@ func TestInstallBashCompletion(t *testing.T) {
 		"XDG_DATA_HOME": datadir.Path(),
 	})()
 
-	err := installBashCompletion()
+	err := installBashCompletion(ui.Noop())
 	assert.NilError(t, err)
 
 	completionFile := filepath.Join(datadir.Path(), "tusk-completion.bash")
@@ -227,7 +237,7 @@ func TestInstallZshCompletion(t *testing.T) {
 	dir := fs.NewDir(t, "project-dir")
 	defer dir.Remove()
 
-	err := installZshCompletion(dir.Path())
+	err := installZshCompletion(ui.Noop(), dir.Path())
 	assert.NilError(t, err)
 
 	contents, err := ioutil.ReadFile(filepath.Join(dir.Path(), "_tusk"))

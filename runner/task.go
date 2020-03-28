@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/rliebz/tusk/marshal"
-	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -125,14 +124,14 @@ func (t *Task) Dependencies() []string {
 }
 
 // Execute runs the Run scripts in the task.
-func (t *Task) Execute(ctx RunContext) (err error) {
+func (t *Task) Execute(ctx Context) (err error) {
 	if !t.Private {
 		ctx.PushTask(t)
 	}
 
-	ui.PrintTask(t.Name)
+	ctx.Logger.PrintTask(t.Name)
 
-	defer ui.PrintTaskCompleted(t.Name)
+	defer ctx.Logger.PrintTaskCompleted(t.Name)
 	defer t.runFinally(ctx, &err)
 
 	for _, r := range t.RunList {
@@ -144,12 +143,12 @@ func (t *Task) Execute(ctx RunContext) (err error) {
 	return err
 }
 
-func (t *Task) runFinally(ctx RunContext, err *error) {
+func (t *Task) runFinally(ctx Context, err *error) {
 	if len(t.Finally) == 0 {
 		return
 	}
 
-	ui.PrintTaskFinally(t.Name)
+	ctx.Logger.PrintTaskFinally(t.Name)
 
 	for _, r := range t.Finally {
 		if rerr := t.run(ctx, r, stateFinally); rerr != nil {
@@ -163,19 +162,19 @@ func (t *Task) runFinally(ctx RunContext, err *error) {
 }
 
 // run executes a Run struct.
-func (t *Task) run(ctx RunContext, r *Run, s executionState) error {
-	if ok, err := r.shouldRun(t.Vars); !ok || err != nil {
+func (t *Task) run(ctx Context, r *Run, s executionState) error {
+	if ok, err := r.shouldRun(ctx, t.Vars); !ok || err != nil {
 		return err
 	}
 
 	runFuncs := []func() error{
 		func() error { return t.runCommands(ctx, r, s) },
 		func() error { return t.runSubTasks(ctx, r) },
-		func() error { return t.runEnvironment(r) },
+		func() error { return t.runEnvironment(ctx, r) },
 	}
 
-	for i := range runFuncs {
-		if err := runFuncs[i](); err != nil {
+	for _, f := range runFuncs {
+		if err := f(); err != nil {
 			return err
 		}
 	}
@@ -183,17 +182,17 @@ func (t *Task) run(ctx RunContext, r *Run, s executionState) error {
 	return nil
 }
 
-func (t *Task) runCommands(ctx RunContext, r *Run, s executionState) error {
+func (t *Task) runCommands(ctx Context, r *Run, s executionState) error {
 	for _, command := range r.Command {
 		switch s {
 		case stateFinally:
-			ui.PrintCommandWithParenthetical(command.Print, "finally", ctx.Tasks()...)
+			ctx.Logger.PrintCommandWithParenthetical(command.Print, "finally", ctx.Tasks()...)
 		default:
-			ui.PrintCommand(command.Print, ctx.Tasks()...)
+			ctx.Logger.PrintCommand(command.Print, ctx.Tasks()...)
 		}
 
-		if err := command.exec(); err != nil {
-			ui.PrintCommandError(err)
+		if err := command.exec(ctx); err != nil {
+			ctx.Logger.PrintCommandError(err)
 			return err
 		}
 	}
@@ -201,7 +200,7 @@ func (t *Task) runCommands(ctx RunContext, r *Run, s executionState) error {
 	return nil
 }
 
-func (t *Task) runSubTasks(ctx RunContext, r *Run) error {
+func (t *Task) runSubTasks(ctx Context, r *Run) error {
 	for i := range r.Tasks {
 		if err := r.Tasks[i].Execute(ctx); err != nil {
 			return err
@@ -211,8 +210,8 @@ func (t *Task) runSubTasks(ctx RunContext, r *Run) error {
 	return nil
 }
 
-func (t *Task) runEnvironment(r *Run) error {
-	ui.PrintEnvironment(r.SetEnvironment)
+func (t *Task) runEnvironment(ctx Context, r *Run) error {
+	ctx.Logger.PrintEnvironment(r.SetEnvironment)
 	for key, value := range r.SetEnvironment {
 		if value == nil {
 			if err := os.Unsetenv(key); err != nil {

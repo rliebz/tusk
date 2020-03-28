@@ -187,7 +187,10 @@ func TestNewApp_exit_code(t *testing.T) {
 tasks:
   foo:
     run: exit 99`)
-	meta := &runner.Metadata{CfgText: cfgText}
+	meta := &runner.Metadata{
+		CfgText: cfgText,
+		Logger:  ui.Noop(),
+	}
 
 	app, err := NewApp(args, meta)
 	if err != nil {
@@ -221,7 +224,10 @@ tasks:
     run: exit 99
   public:
     run: {task: private}`)
-	meta := &runner.Metadata{CfgText: cfgText}
+	meta := &runner.Metadata{
+		CfgText: cfgText,
+		Logger:  ui.Noop(),
+	}
 
 	app, err := NewApp(args, meta)
 	if err != nil {
@@ -298,12 +304,12 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 		)
 	}
 
-	if metadata.Verbosity != ui.VerbosityLevelNormal {
+	if metadata.Logger.Verbosity != ui.VerbosityLevelNormal {
 		t.Errorf(
 			"GetConfigMetadata(%s): expected: %s, actual: %s",
 			args,
 			ui.VerbosityLevelNormal,
-			metadata.Verbosity,
+			metadata.Logger.Verbosity,
 		)
 	}
 }
@@ -428,12 +434,12 @@ func TestGetConfigMetadata_verbosity(t *testing.T) {
 			continue
 		}
 
-		if metadata.Verbosity != tt.expected {
+		if metadata.Logger.Verbosity != tt.expected {
 			t.Errorf(
 				"GetConfigMetadata(%s): expected %s, actual: %s",
 				tt.args,
 				tt.expected,
-				metadata.Verbosity,
+				metadata.Logger.Verbosity,
 			)
 		}
 	}

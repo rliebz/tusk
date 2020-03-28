@@ -9,9 +9,9 @@ import (
 	"github.com/rliebz/tusk/runner"
 )
 
-type commandCreator func(app *cli.App, t *runner.Task) (*cli.Command, error)
+type commandCreator func(app *cli.App, meta *runner.Metadata, t *runner.Task) (*cli.Command, error)
 
-func createExecuteCommand(_ *cli.App, t *runner.Task) (*cli.Command, error) {
+func createExecuteCommand(_ *cli.App, meta *runner.Metadata, t *runner.Task) (*cli.Command, error) {
 	return createCommand(t, func(c *cli.Context) error {
 		if len(t.Args) != len(c.Args()) {
 			return fmt.Errorf(
@@ -19,11 +19,13 @@ func createExecuteCommand(_ *cli.App, t *runner.Task) (*cli.Command, error) {
 				t.Name, len(t.Args), len(c.Args()),
 			)
 		}
-		return t.Execute(runner.RunContext{})
+		return t.Execute(runner.Context{
+			Logger: meta.Logger,
+		})
 	}), nil
 }
 
-func createMetadataBuildCommand(app *cli.App, t *runner.Task) (*cli.Command, error) {
+func createMetadataBuildCommand(app *cli.App, _ *runner.Metadata, t *runner.Task) (*cli.Command, error) {
 	argsPassed, flagsPassed, err := getPassedValues(app)
 	if err != nil {
 		return nil, err

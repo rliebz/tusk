@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -140,7 +141,7 @@ func TestCommand_exec(t *testing.T) {
 	}
 	defer func() { execCommand = exec.Command }()
 
-	if err := command.exec(); err != nil {
+	if err := command.exec(Context{Logger: ui.Noop()}); err != nil {
 		t.Fatal(err)
 	}
 }

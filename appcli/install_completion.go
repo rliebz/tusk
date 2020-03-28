@@ -21,19 +21,21 @@ const (
 var bashRCFiles = []string{".bashrc", ".bash_profile", ".profile"}
 
 // InstallCompletion installs command line tab completion for a given shell.
-func InstallCompletion(shell string) error {
+func InstallCompletion(meta *runner.Metadata) error {
+	shell := meta.InstallCompletion
 	switch shell {
 	case "bash":
-		return installBashCompletion()
+		return installBashCompletion(meta.Logger)
 	case "zsh":
-		return installZshCompletion(zshInstallDir)
+		return installZshCompletion(meta.Logger, zshInstallDir)
 	default:
 		return fmt.Errorf("tab completion for %q is not supported", shell)
 	}
 }
 
 // UninstallCompletion uninstalls command line tab completion for a given shell.
-func UninstallCompletion(shell string) error {
+func UninstallCompletion(meta *runner.Metadata) error {
+	shell := meta.UninstallCompletion
 	switch shell {
 	case "bash":
 		return uninstallBashCompletion()
@@ -44,13 +46,13 @@ func UninstallCompletion(shell string) error {
 	}
 }
 
-func installBashCompletion() error {
+func installBashCompletion(logger *ui.Logger) error {
 	dir, err := runner.DataHome()
 	if err != nil {
 		return err
 	}
 
-	err = installFileInDir(dir, bashCompletionFile, []byte(rawBashCompletion))
+	err = installFileInDir(logger, dir, bashCompletionFile, []byte(rawBashCompletion))
 	if err != nil {
 		return err
 	}
@@ -182,11 +184,11 @@ func removeLineInFile(path string, re *regexp.Regexp) error {
 	return os.Rename(wf.Name(), path)
 }
 
-func installZshCompletion(dir string) error {
-	return installFileInDir(dir, zshCompletionFile, []byte(rawZshCompletion))
+func installZshCompletion(logger *ui.Logger, dir string) error {
+	return installFileInDir(logger, dir, zshCompletionFile, []byte(rawZshCompletion))
 }
 
-func installFileInDir(dir, file string, content []byte) error {
+func installFileInDir(logger *ui.Logger, dir, file string, content []byte) error {
 	// nolint: gosec
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
@@ -197,8 +199,8 @@ func installFileInDir(dir, file string, content []byte) error {
 		return err
 	}
 
-	ui.Info("Tab completion successfully installed", target)
-	ui.Info("You may need to restart your shell for completion to take effect")
+	logger.Info("Tab completion successfully installed", target)
+	logger.Info("You may need to restart your shell for completion to take effect")
 	return nil
 }
 

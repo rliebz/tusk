@@ -10,9 +10,9 @@ import (
 )
 
 // addTasks adds a series of tasks to a cli.App using a command creator.
-func addTasks(app *cli.App, cfg *runner.Config, create commandCreator) error {
+func addTasks(app *cli.App, meta *runner.Metadata, cfg *runner.Config, create commandCreator) error {
 	for _, t := range cfg.Tasks {
-		if err := addTask(app, cfg, t, create); err != nil {
+		if err := addTask(app, meta, cfg, t, create); err != nil {
 			return fmt.Errorf("could not add task %q: %w", t.Name, err)
 		}
 	}
@@ -21,12 +21,18 @@ func addTasks(app *cli.App, cfg *runner.Config, create commandCreator) error {
 	return nil
 }
 
-func addTask(app *cli.App, cfg *runner.Config, t *runner.Task, create commandCreator) error {
+func addTask(
+	app *cli.App,
+	meta *runner.Metadata,
+	cfg *runner.Config,
+	t *runner.Task,
+	create commandCreator,
+) error {
 	if t.Private {
 		return nil
 	}
 
-	command, err := create(app, t)
+	command, err := create(app, meta, t)
 	if err != nil {
 		return fmt.Errorf(`could not create command %q: %w`, t.Name, err)
 	}

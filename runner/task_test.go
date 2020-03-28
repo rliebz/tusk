@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -142,7 +141,7 @@ func TestTaskExecute_errors_returned(t *testing.T) {
 				Finally: RunList{&finally},
 			}
 
-			actual := task.Execute(RunContext{})
+			actual := task.Execute(Context{Logger: ui.Noop()})
 			if actual.Error() != tt.expected.Error() {
 				t.Errorf("want error %s, got %s", tt.expected, actual)
 			}
@@ -157,7 +156,7 @@ func TestTask_run_commands(t *testing.T) {
 		Command: CommandList{{Exec: "exit 0"}},
 	}
 
-	if err := task.run(RunContext{}, runSuccess, stateRunning); err != nil {
+	if err := task.run(Context{Logger: ui.Noop()}, runSuccess, stateRunning); err != nil {
 		t.Errorf("task.run([exit 0]): unexpected error: %s", err)
 	}
 
@@ -168,7 +167,7 @@ func TestTask_run_commands(t *testing.T) {
 		},
 	}
 
-	if err := task.run(RunContext{}, runFailure, stateRunning); err == nil {
+	if err := task.run(Context{Logger: ui.Noop()}, runFailure, stateRunning); err == nil {
 		t.Error("task.run([exit 0, exit 1]): expected error, got nil")
 	}
 }
@@ -194,13 +193,13 @@ func TestTask_run_sub_tasks(t *testing.T) {
 
 	task := Task{}
 
-	if err := task.run(RunContext{}, r, stateRunning); err != nil {
+	if err := task.run(Context{Logger: ui.Noop()}, r, stateRunning); err != nil {
 		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
 	}
 
 	r.Tasks = append(r.Tasks, taskFailure)
 
-	if err := task.run(RunContext{}, r, stateRunning); err == nil {
+	if err := task.run(Context{Logger: ui.Noop()}, r, stateRunning); err == nil {
 		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
 	}
 }
@@ -243,7 +242,7 @@ func TestTask_run_environment(t *testing.T) {
 		},
 	}
 
-	if err := task.run(RunContext{}, r, stateRunning); err != nil {
+	if err := task.run(Context{Logger: ui.Noop()}, r, stateRunning); err != nil {
 		t.Errorf("task.run(): unexpected error: %s", err)
 	}
 
@@ -270,7 +269,7 @@ func TestTask_run_finally(t *testing.T) {
 	}
 
 	var err error
-	if task.runFinally(RunContext{}, &err); err != nil {
+	if task.runFinally(Context{Logger: ui.Noop()}, &err); err != nil {
 		t.Errorf("task.runFinally(): unexpected error: %s", err)
 	}
 }
@@ -283,30 +282,26 @@ func TestTask_run_finally_error(t *testing.T) {
 	}
 
 	var err error
-	if task.runFinally(RunContext{}, &err); err == nil {
+	if task.runFinally(Context{Logger: ui.Noop()}, &err); err == nil {
 		t.Error("task.runFinally(): want error for exit status 1, got nil")
 	}
 }
 
 func TestTask_run_finally_ui(t *testing.T) {
-	defer func(level ui.VerbosityLevel) {
-		ui.LoggerStderr.SetOutput(os.Stderr)
-		ui.Verbosity = level
-	}(ui.Verbosity)
-
-	ui.LoggerStderr = log.New(os.Stderr, "", 0)
-	ui.Verbosity = ui.VerbosityLevelVerbose
 	taskName := "foo"
 	command := "exit 0"
 
 	bufExpected := new(bytes.Buffer)
-	ui.LoggerStderr.SetOutput(bufExpected)
-	ui.PrintTaskFinally(taskName)
-	ui.PrintCommandWithParenthetical(command, "finally", taskName)
+	logger := ui.New()
+	logger.Verbosity = ui.VerbosityLevelVerbose
+	logger.Stderr = bufExpected
+
+	logger.PrintTaskFinally(taskName)
+	logger.PrintCommandWithParenthetical(command, "finally", taskName)
 	expected := bufExpected.String()
 
 	bufActual := new(bytes.Buffer)
-	ui.LoggerStderr.SetOutput(bufActual)
+	logger.Stderr = bufActual
 
 	task := Task{
 		Name: taskName,
@@ -315,7 +310,9 @@ func TestTask_run_finally_ui(t *testing.T) {
 		},
 	}
 
-	ctx := RunContext{}
+	ctx := Context{
+		Logger: logger,
+	}
 	ctx.PushTask(&task)
 
 	var err error
@@ -334,26 +331,22 @@ func TestTask_run_finally_ui(t *testing.T) {
 }
 
 func TestTask_run_finally_ui_fails(t *testing.T) {
-	defer func(l *log.Logger, ll ui.VerbosityLevel) {
-		ui.LoggerStderr = l
-		ui.Verbosity = ll
-	}(ui.LoggerStderr, ui.Verbosity)
-
-	ui.LoggerStderr = log.New(os.Stderr, "", 0)
-	ui.Verbosity = ui.VerbosityLevelVerbose
 	taskName := "foo"
 	command := "exit 1"
 	errExpected := errors.New("exit status 1")
 
 	bufExpected := new(bytes.Buffer)
-	ui.LoggerStderr.SetOutput(bufExpected)
-	ui.PrintTaskFinally(taskName)
-	ui.PrintCommandWithParenthetical(command, "finally", taskName)
-	ui.PrintCommandError(errExpected)
+	logger := ui.New()
+	logger.Verbosity = ui.VerbosityLevelVerbose
+	logger.Stderr = bufExpected
+
+	logger.PrintTaskFinally(taskName)
+	logger.PrintCommandWithParenthetical(command, "finally", taskName)
+	logger.PrintCommandError(errExpected)
 	expected := bufExpected.String()
 
 	bufActual := new(bytes.Buffer)
-	ui.LoggerStderr.SetOutput(bufActual)
+	logger.Stderr = bufActual
 
 	task := Task{
 		Name: taskName,
@@ -362,7 +355,9 @@ func TestTask_run_finally_ui_fails(t *testing.T) {
 		},
 	}
 
-	ctx := RunContext{}
+	ctx := Context{
+		Logger: logger,
+	}
 	ctx.PushTask(&task)
 
 	var err error

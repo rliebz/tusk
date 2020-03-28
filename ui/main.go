@@ -2,8 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"log"
-	"os"
 
 	"github.com/fatih/color"
 )
@@ -40,40 +38,21 @@ func (v VerbosityLevel) String() string {
 }
 
 var (
-	// Verbosity allows the verbosity of output to be set.
-	Verbosity = VerbosityLevelNormal
-
-	// LoggerStdout is a logger that prints to stdout.
-	LoggerStdout = log.New(os.Stdout, "", 0)
-
-	// LoggerStderr is a logger that prints to stderr.
-	LoggerStderr = log.New(os.Stderr, "", 0)
-
-	bold   = conditionalColor(color.Bold)
-	blue   = conditionalColor(color.FgBlue)
-	cyan   = conditionalColor(color.FgCyan)
-	green  = conditionalColor(color.FgGreen)
-	red    = conditionalColor(color.FgRed)
-	yellow = conditionalColor(color.FgYellow)
+	bold   = newFormatter(color.Bold)
+	blue   = newFormatter(color.FgBlue)
+	cyan   = newFormatter(color.FgCyan)
+	green  = newFormatter(color.FgGreen)
+	red    = newFormatter(color.FgRed)
+	yellow = newFormatter(color.FgYellow)
 )
 
-func println(l *log.Logger, v ...interface{}) {
-	if Verbosity == VerbosityLevelSilent {
-		return
-	}
-
-	l.Println(v...)
-}
-
-func printf(l *log.Logger, format string, v ...interface{}) {
-	if Verbosity == VerbosityLevelSilent {
-		return
-	}
-
-	l.Printf(format, v...)
-}
-
 type formatter func(a ...interface{}) string
+
+func newFormatter(value ...color.Attribute) formatter {
+	return func(a ...interface{}) string {
+		return color.New(value...).SprintFunc()(a...)
+	}
+}
 
 func tag(name string, f formatter) string {
 	if color.NoColor {
@@ -81,14 +60,4 @@ func tag(name string, f formatter) string {
 	}
 
 	return f(name)
-}
-
-func conditionalColor(value ...color.Attribute) formatter {
-	return func(a ...interface{}) string {
-		if Verbosity <= VerbosityLevelQuiet {
-			return color.New().SprintFunc()(a...)
-		}
-
-		return color.New(value...).SprintFunc()(a...)
-	}
 }

@@ -6,7 +6,7 @@ import (
 )
 
 func TestContext_Tasks(t *testing.T) {
-	ctx := RunContext{}
+	ctx := Context{}
 
 	if len(ctx.Tasks()) != 0 {
 		t.Fatalf("want 0 tasks, got %d", len(ctx.Tasks()))

@@ -7,7 +7,16 @@ import (
 	"github.com/rliebz/tusk/ui"
 )
 
+// NewMetadata creates a metadata struct with a default logger.
+func NewMetadata() *Metadata {
+	return &Metadata{
+		Logger: ui.New(),
+	}
+}
+
 // Metadata contains global configuration settings.
+//
+// Metadata should be instantiated using NewMetadata.
 type Metadata struct {
 	CfgText             []byte
 	Directory           string
@@ -15,7 +24,7 @@ type Metadata struct {
 	UninstallCompletion string
 	PrintHelp           bool
 	PrintVersion        bool
-	Verbosity           ui.VerbosityLevel
+	Logger              *ui.Logger
 }
 
 // Set sets the metadata based on options.
@@ -46,7 +55,10 @@ func (m *Metadata) Set(o OptGetter) error {
 	m.Directory = filepath.Dir(fullPath)
 	m.PrintHelp = o.Bool("help")
 	m.PrintVersion = o.Bool("version")
-	m.Verbosity = getVerbosity(o)
+	if m.Logger == nil {
+		m.Logger = ui.New()
+	}
+	m.Logger.Verbosity = getVerbosity(o)
 	return nil
 }
 

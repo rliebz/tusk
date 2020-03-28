@@ -7,18 +7,21 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/rliebz/tusk/ui"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 )
 
 func TestRun_printVersion(t *testing.T) {
-	stdout, _, cleanup := setupTestSandbox(t)
-	defer cleanup()
+	registerCleanup(t)
+	stdout := new(bytes.Buffer)
 
 	args := []string{"tusk", "--version"}
-	status, err := run(args)
-	assert.NilError(t, err)
+	status := run(
+		config{
+			args:   args,
+			stdout: stdout,
+		},
+	)
 
 	want := "dev\n"
 	got := stdout.String()
@@ -27,12 +30,16 @@ func TestRun_printVersion(t *testing.T) {
 }
 
 func TestRun_printHelp(t *testing.T) {
-	stdout, _, cleanup := setupTestSandbox(t)
-	defer cleanup()
+	registerCleanup(t)
+	stdout := new(bytes.Buffer)
 
 	args := []string{"tusk", "--help"}
-	status, err := run(args)
-	assert.NilError(t, err)
+	status := run(
+		config{
+			args:   args,
+			stdout: stdout,
+		},
+	)
 
 	executable := filepath.Base(os.Args[0])
 
@@ -65,87 +72,77 @@ Global Options:
 	}
 
 	want := buf.String()
-	got := stdout.String()
-	assert.Check(t, cmp.Equal(want, got))
+	assert.Check(t, cmp.Equal(want, stdout.String()))
 	assert.Check(t, status == 0)
 }
 
 func TestRun_exitCodeZero(t *testing.T) {
-	_, stderr, cleanup := setupTestSandbox(t)
-	defer cleanup()
+	registerCleanup(t)
+	stderr := new(bytes.Buffer)
 
 	args := []string{"tusk", "-f", "./testdata/tusk.yml", "exit", "0"}
-	status, err := run(args)
-	assert.NilError(t, err)
-
-	want := `exit $ exit 0
-`
-
-	got := stderr.String()
-
-	assert.Check(t, cmp.Equal(want, got))
+	status := run(
+		config{
+			args:   args,
+			stderr: stderr,
+		},
+	)
 	assert.Check(t, cmp.Equal(status, 0))
+
+	want := "exit $ exit 0\n"
+	assert.Check(t, cmp.Equal(want, stderr.String()))
 }
 
 func TestRun_exitCodeNonZero(t *testing.T) {
-	_, stderr, cleanup := setupTestSandbox(t)
-	defer cleanup()
+	registerCleanup(t)
+	stderr := new(bytes.Buffer)
 
 	args := []string{"tusk", "-f", "./testdata/tusk.yml", "exit", "5"}
-	status, err := run(args)
-	assert.NilError(t, err)
+	status := run(
+		config{
+			args:   args,
+			stderr: stderr,
+		},
+	)
+	assert.Check(t, cmp.Equal(status, 5))
 
 	want := `exit $ exit 5
 exit status 5
 `
 
-	got := stderr.String()
-
-	assert.Check(t, cmp.Equal(want, got))
-	assert.Check(t, cmp.Equal(status, 5))
+	assert.Check(t, cmp.Equal(want, stderr.String()))
 }
 
 func TestRun_incorrectUsage(t *testing.T) {
-	_, _, cleanup := setupTestSandbox(t)
-	defer cleanup()
+	registerCleanup(t)
+	stderr := new(bytes.Buffer)
 
 	args := []string{"tusk", "-f", "./testdata/tusk.yml", "fake-command"}
-	status, err := run(args)
-	assert.Error(t, err, "No help topic for 'fake-command'")
-
+	status := run(
+		config{
+			args:   args,
+			stderr: stderr,
+		},
+	)
 	assert.Check(t, cmp.Equal(status, 1))
+
+	want := "Error: No help topic for 'fake-command'\n"
+	assert.Equal(t, want, stderr.String())
 }
 
-func TestRun_badTuskYml(t *testing.T) {
-	_, _, cleanup := setupTestSandbox(t)
-	defer cleanup()
-
-	args := []string{"tusk", "-f", "./testdata/bad.yml"}
-	status, err := run(args)
-	assert.ErrorContains(t, err, "field key not found")
-
-	assert.Check(t, cmp.Equal(status, 1))
-}
-
-func setupTestSandbox(t *testing.T) (stdout, stderr *bytes.Buffer, cleanup func()) {
+// registerCleanup is needed because main calls os.Chdir.
+//
+// Ideally, we never actually call os.Chdir, and instead set each command's
+// working directory and resolve relative file paths manually.
+func registerCleanup(t *testing.T) {
 	wd, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	cleanup = func() {
-		ui.LoggerStdout.SetOutput(os.Stdout)
-		ui.LoggerStderr.SetOutput(os.Stderr)
+	t.Cleanup(func() {
 		if err := os.Chdir(wd); err != nil {
 			t.Error(err)
 		}
-	}
-
-	stdout = &bytes.Buffer{}
-	stderr = &bytes.Buffer{}
-
-	ui.LoggerStdout.SetOutput(stdout)
-	ui.LoggerStderr.SetOutput(stderr)
-
-	return stdout, stderr, cleanup
+	})
 }

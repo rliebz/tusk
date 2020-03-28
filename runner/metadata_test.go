@@ -44,6 +44,14 @@ func TestMetadata_Set(t *testing.T) {
 	cfgFile := fs.NewFile(t, "", fs.WithContent(cfgFileContents))
 	defer cfgFile.Remove()
 
+	normal := ui.New()
+	silent := ui.New()
+	silent.Verbosity = ui.VerbosityLevelSilent
+	quiet := ui.New()
+	quiet.Verbosity = ui.VerbosityLevelQuiet
+	verbose := ui.New()
+	verbose.Verbosity = ui.VerbosityLevelVerbose
+
 	tests := []struct {
 		name    string
 		bools   map[string]bool
@@ -57,7 +65,7 @@ func TestMetadata_Set(t *testing.T) {
 			nil,
 			Metadata{
 				Directory: ".",
-				Verbosity: ui.VerbosityLevelNormal,
+				Logger:    normal,
 			},
 			"",
 		},
@@ -70,7 +78,7 @@ func TestMetadata_Set(t *testing.T) {
 			Metadata{
 				CfgText:   []byte(cfgFileContents),
 				Directory: filepath.Dir(cfgFile.Path()),
-				Verbosity: ui.VerbosityLevelNormal,
+				Logger:    normal,
 			},
 			"",
 		},
@@ -81,7 +89,7 @@ func TestMetadata_Set(t *testing.T) {
 			Metadata{
 				CfgText:   []byte(dirFullContents),
 				Directory: dirFull.Path(),
-				Verbosity: ui.VerbosityLevelNormal,
+				Logger:    normal,
 			},
 			dirFull.Path(),
 		},
@@ -94,7 +102,7 @@ func TestMetadata_Set(t *testing.T) {
 			Metadata{
 				CfgText:   []byte(cfgFileContents),
 				Directory: filepath.Dir(cfgFile.Path()),
-				Verbosity: ui.VerbosityLevelNormal,
+				Logger:    normal,
 			},
 			dirFull.Path(),
 		},
@@ -107,7 +115,7 @@ func TestMetadata_Set(t *testing.T) {
 			Metadata{
 				Directory:         ".",
 				InstallCompletion: "zsh",
-				Verbosity:         ui.VerbosityLevelNormal,
+				Logger:            normal,
 			},
 			"",
 		},
@@ -120,7 +128,7 @@ func TestMetadata_Set(t *testing.T) {
 			Metadata{
 				Directory:           ".",
 				UninstallCompletion: "zsh",
-				Verbosity:           ui.VerbosityLevelNormal,
+				Logger:              normal,
 			},
 			"",
 		},
@@ -133,7 +141,7 @@ func TestMetadata_Set(t *testing.T) {
 			Metadata{
 				Directory: ".",
 				PrintHelp: true,
-				Verbosity: ui.VerbosityLevelNormal,
+				Logger:    normal,
 			},
 			"",
 		},
@@ -146,7 +154,7 @@ func TestMetadata_Set(t *testing.T) {
 			Metadata{
 				Directory:    ".",
 				PrintVersion: true,
-				Verbosity:    ui.VerbosityLevelNormal,
+				Logger:       normal,
 			},
 			"",
 		},
@@ -158,7 +166,7 @@ func TestMetadata_Set(t *testing.T) {
 			nil,
 			Metadata{
 				Directory: ".",
-				Verbosity: ui.VerbosityLevelSilent,
+				Logger:    silent,
 			},
 			"",
 		},
@@ -170,7 +178,7 @@ func TestMetadata_Set(t *testing.T) {
 			nil,
 			Metadata{
 				Directory: ".",
-				Verbosity: ui.VerbosityLevelQuiet,
+				Logger:    quiet,
 			},
 			"",
 		},
@@ -182,7 +190,7 @@ func TestMetadata_Set(t *testing.T) {
 			nil,
 			Metadata{
 				Directory: ".",
-				Verbosity: ui.VerbosityLevelVerbose,
+				Logger:    verbose,
 			},
 			"",
 		},
@@ -196,7 +204,7 @@ func TestMetadata_Set(t *testing.T) {
 			nil,
 			Metadata{
 				Directory: ".",
-				Verbosity: ui.VerbosityLevelSilent,
+				Logger:    silent,
 			},
 			"",
 		},
@@ -237,9 +245,13 @@ func TestMetadata_Set(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if diff := cmp.Diff(tt.meta, meta); diff != "" {
+			if diff := cmp.Diff(tt.meta, meta, compareLoggers); diff != "" {
 				t.Errorf("metadata differs:\n%s", diff)
 			}
 		})
 	}
 }
+
+var compareLoggers = cmp.Comparer(func(a, b *ui.Logger) bool {
+	return a.Stderr == b.Stderr && a.Stdout == b.Stdout && a.Verbosity == b.Verbosity
+})

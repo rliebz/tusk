@@ -84,7 +84,7 @@ func newMetaApp(cfgText []byte) (*cli.App, error) {
 	app.Metadata["argsPassed"] = []string{}
 	app.Metadata["flagsPassed"] = make(map[string]string)
 
-	if err := addTasks(app, cfg, createMetadataBuildCommand); err != nil {
+	if err := addTasks(app, nil, cfg, createMetadataBuildCommand); err != nil {
 		return nil, err
 	}
 
@@ -127,7 +127,7 @@ func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
 		app.Usage = cfg.Usage
 	}
 
-	if err := addTasks(app, cfg, createExecuteCommand); err != nil {
+	if err := addTasks(app, meta, cfg, createExecuteCommand); err != nil {
 		return nil, err
 	}
 
@@ -160,7 +160,7 @@ func getPassedValues(app *cli.App) (args []string, flags map[string]string, err 
 func GetConfigMetadata(args []string) (*runner.Metadata, error) {
 	var err error
 	app := newSilentApp()
-	metadata := new(runner.Metadata)
+	metadata := runner.NewMetadata()
 
 	app.Action = func(c *cli.Context) error {
 		// To prevent app from exiting, app.Action must return nil on error.

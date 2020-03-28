@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/rliebz/tusk/marshal"
-	"github.com/rliebz/tusk/ui"
 )
 
 // Run defines a a single runnable item within a task.
@@ -56,18 +55,18 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return marshal.UnmarshalOneOf(commandCandidate, runCandidate)
 }
 
-func (r *Run) shouldRun(vars map[string]string) (bool, error) {
+func (r *Run) shouldRun(ctx Context, vars map[string]string) (bool, error) {
 	if err := r.When.Validate(vars); err != nil {
 		if !IsFailedCondition(err) {
 			return false, err
 		}
 
 		for _, command := range r.Command {
-			ui.PrintSkipped(command.Print, err.Error())
+			ctx.Logger.PrintSkipped(command.Print, err.Error())
 		}
 
 		for _, subTask := range r.SubTaskList {
-			ui.PrintSkipped("task: "+subTask.Name, err.Error())
+			ctx.Logger.PrintSkipped("task: "+subTask.Name, err.Error())
 		}
 
 		return false, nil

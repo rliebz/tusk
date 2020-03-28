@@ -1,17 +1,21 @@
 package runner
 
-// RunContext contains contextual information about a run.
-type RunContext struct {
+import "github.com/rliebz/tusk/ui"
+
+// Context contains contextual information about a run.
+type Context struct {
+	Logger *ui.Logger
+
 	taskStack []*Task
 }
 
 // PushTask adds a sub-task to the task stack.
-func (r *RunContext) PushTask(t *Task) {
+func (r *Context) PushTask(t *Task) {
 	r.taskStack = append(r.taskStack, t)
 }
 
 // Tasks returns the list of tasks in the stack, in order.
-func (r *RunContext) Tasks() []string {
+func (r *Context) Tasks() []string {
 	output := make([]string, len(r.taskStack))
 	for i, t := range r.taskStack {
 		output[i] = t.Name
