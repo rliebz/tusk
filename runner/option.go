@@ -88,12 +88,12 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 //   3. The first item in the default value list with a valid when clause
 //
 // Values may also be cached to avoid re-running commands.
-func (o *Option) Evaluate(vars map[string]string) (string, error) {
+func (o *Option) Evaluate(ctx Context, vars map[string]string) (string, error) {
 	if o == nil {
 		return "", nil
 	}
 
-	value, err := o.getValue(vars)
+	value, err := o.getValue(ctx, vars)
 	if err != nil {
 		return "", err
 	}
@@ -103,7 +103,7 @@ func (o *Option) Evaluate(vars map[string]string) (string, error) {
 	return value, nil
 }
 
-func (o *Option) getValue(vars map[string]string) (string, error) {
+func (o *Option) getValue(ctx Context, vars map[string]string) (string, error) {
 	if o.isCacheSet {
 		return o.cacheValue, nil
 	}
@@ -122,7 +122,7 @@ func (o *Option) getValue(vars map[string]string) (string, error) {
 		return "", fmt.Errorf("no value passed for required option: %s", o.Name)
 	}
 
-	return o.getDefaultValue(vars)
+	return o.getDefaultValue(ctx, vars)
 }
 
 func (o *Option) getSpecified() (value string, found bool) {
@@ -138,16 +138,16 @@ func (o *Option) getSpecified() (value string, found bool) {
 	return "", false
 }
 
-func (o *Option) getDefaultValue(vars map[string]string) (string, error) {
+func (o *Option) getDefaultValue(ctx Context, vars map[string]string) (string, error) {
 	for _, candidate := range o.DefaultValues {
-		if err := candidate.When.Validate(vars); err != nil {
+		if err := candidate.When.Validate(ctx, vars); err != nil {
 			if !IsFailedCondition(err) {
 				return "", err
 			}
 			continue
 		}
 
-		value, err := candidate.commandValueOrDefault()
+		value, err := candidate.commandValueOrDefault(ctx)
 		if err != nil {
 			return "", fmt.Errorf("could not compute value for option %q: %w", o.Name, err)
 		}

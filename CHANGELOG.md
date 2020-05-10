@@ -2,6 +2,21 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased 
+### Added
+- The interpreter used for running commands can now be configured using the
+  top-level `interpreter` clause in the YAML configuration.
+
+### Changed
+- The interpreter now allows for specifying an arbitrary command and series of
+  arguments, so interpreters like `node` or `ruby` that happen to use a flag
+  other than `-c` may be specified.
+- The interpreter settings now also apply to commands run as part of `when` and
+  `option` clauses.
+
+### Removed
+- **BREAKING**: To avoid inadvertantly picking up unrelated shell settings, the
+  environment variable `SHELL` is no longer considered an override for the
+  command interpreter.
 
 
 ## 0.5.2 (2020-01-26)

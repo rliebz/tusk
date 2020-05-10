@@ -4,7 +4,12 @@ import "github.com/rliebz/tusk/ui"
 
 // Context contains contextual information about a run.
 type Context struct {
+	// Logger is responsible for logging actions as they occur. It is required to
+	// be defined for a Context.
 	Logger *ui.Logger
+
+	// Interpreter specifies how a command is meant to be executed.
+	Interpreter []string
 
 	taskStack []*Task
 }

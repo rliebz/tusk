@@ -17,6 +17,26 @@ var interpolatetests = []struct {
 	expected RunList
 }{
 	{
+		"interpreter",
+		`
+interpreter: node
+
+tasks:
+  mytask:
+    run: console.log('Hello')
+`,
+		[]string{},
+		map[string]string{},
+		"mytask",
+		RunList{{
+			Command: CommandList{{
+				Exec:  "console.log('Hello')",
+				Print: "console.log('Hello')",
+			}},
+		}},
+	},
+
+	{
 		"argument interpolation",
 		`
 tasks:
@@ -801,7 +821,11 @@ given input:
 			tt.testCase, tt.taskName, tt.flags, tt.input,
 		)
 
-		cfg, err := ParseComplete([]byte(tt.input), tt.taskName, tt.args, tt.flags)
+		meta := &Metadata{
+			CfgText: []byte(tt.input),
+		}
+
+		cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
 		if err != nil {
 			t.Errorf(context+"unexpected error parsing text: %s", err)
 			continue
@@ -997,7 +1021,11 @@ given input:
 			tt.testCase, tt.taskName, tt.flags, tt.input,
 		)
 
-		_, err := ParseComplete([]byte(tt.input), tt.taskName, tt.args, tt.flags)
+		meta := &Metadata{
+			CfgText: []byte(tt.input),
+		}
+
+		_, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
 		if err == nil {
 			t.Errorf(context+"expected error for test case: %s", tt.testCase)
 			continue
@@ -1017,7 +1045,11 @@ tasks:
     run: echo ${bar}
 `)
 
-	cfg, err := ParseComplete(cfgText, "", []string{}, map[string]string{})
+	meta := &Metadata{
+		CfgText: cfgText,
+	}
+
+	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
 	if err != nil {
 		t.Fatalf("unexpected error parsing text: %s", err)
 	}

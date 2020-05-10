@@ -3,6 +3,7 @@ package runner
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -34,15 +35,12 @@ func (m mockOptGetter) Bool(v string) bool {
 
 func TestMetadata_Set(t *testing.T) {
 	dirEmpty := fs.NewDir(t, "empty-dir")
-	defer dirEmpty.Remove()
 
-	dirFullContents := `yaml config found in dir`
+	dirFullContents := `value: yaml config found in dir`
 	dirFull := fs.NewDir(t, "full-dir", fs.WithFile("tusk.yml", dirFullContents))
-	defer dirFull.Remove()
 
-	cfgFileContents := `yaml config passed from --file`
+	cfgFileContents := `value: yaml config passed from --file`
 	cfgFile := fs.NewFile(t, "", fs.WithContent(cfgFileContents))
-	defer cfgFile.Remove()
 
 	normal := ui.New()
 	silent := ui.New()
@@ -212,6 +210,8 @@ func TestMetadata_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			stashEnv(t)
+
 			cwd, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
@@ -252,6 +252,75 @@ func TestMetadata_Set(t *testing.T) {
 	}
 }
 
+func TestMetadata_Set_interpreter(t *testing.T) {
+	tests := []struct {
+		name    string
+		config  string
+		want    []string
+		wantErr string
+	}{
+		{
+			name: "defaults",
+		},
+		{
+			name:   "executable",
+			config: `interpreter: bash`,
+			want:   []string{"bash"},
+		},
+		{
+			name:   "executable with arg",
+			config: `interpreter: /usr/bin/env node -e`,
+			want:   []string{"/usr/bin/env", "node", "-e"},
+		},
+		{
+			name:   "invalid yaml",
+			config: "🥔",
+			wantErr: `yaml: unmarshal errors:
+  line 1: cannot unmarshal !!str ` + "`🥔`" + ` into struct { Interpreter string "yaml:\"interpreter\"" }`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfgFile := fs.NewFile(t, "", fs.WithContent(tt.config))
+			opts := mockOptGetter{
+				strings: map[string]string{"file": cfgFile.Path()},
+			}
+
+			var meta Metadata
+			err := meta.Set(opts)
+
+			var gotErr string
+			if err != nil {
+				gotErr = err.Error()
+			}
+
+			if diff := cmp.Diff(tt.wantErr, gotErr); diff != "" {
+				t.Fatalf("error differs (-want +got):\n%v", diff)
+			}
+
+			if diff := cmp.Diff(tt.want, meta.Interpreter); diff != "" {
+				t.Errorf("interpreter differs (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 var compareLoggers = cmp.Comparer(func(a, b *ui.Logger) bool {
 	return a.Stderr == b.Stderr && a.Stdout == b.Stdout && a.Verbosity == b.Verbosity
 })
+
+func stashEnv(t *testing.T) {
+	t.Helper()
+
+	environ := os.Environ()
+
+	t.Cleanup(func() {
+		for _, val := range environ {
+			parts := strings.Split(val, "=")
+			os.Setenv(parts[0], parts[1]) // nolint: errcheck
+		}
+	})
+
+	os.Clearenv()
+}

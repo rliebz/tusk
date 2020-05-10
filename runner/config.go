@@ -4,6 +4,12 @@ package runner
 type Config struct {
 	Name  string `yaml:"name"`
 	Usage string `yaml:"usage"`
+	// The Interpreter field must be read before the config struct can be parsed
+	// completely from YAML. To do so, the config text parses it elsewhere in the
+	// code base independently from this struct.
+	//
+	// It is included here only so that strict unmarshaling does not fail.
+	Interpreter string `yaml:"interpreter"`
 
 	Tasks   map[string]*Task `yaml:"tasks"`
 	Options Options          `yaml:"options,omitempty"`

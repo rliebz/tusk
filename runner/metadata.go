@@ -3,8 +3,10 @@ package runner
 import (
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	"github.com/rliebz/tusk/ui"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // NewMetadata creates a metadata struct with a default logger.
@@ -19,6 +21,7 @@ func NewMetadata() *Metadata {
 // Metadata should be instantiated using NewMetadata.
 type Metadata struct {
 	CfgText             []byte
+	Interpreter         []string
 	Directory           string
 	InstallCompletion   string
 	UninstallCompletion string
@@ -50,6 +53,12 @@ func (m *Metadata) Set(o OptGetter) error {
 		}
 	}
 
+	interpreter, err := getInterpreter(m.CfgText)
+	if err != nil {
+		return err
+	}
+
+	m.Interpreter = interpreter
 	m.InstallCompletion = o.String("install-completion")
 	m.UninstallCompletion = o.String("uninstall-completion")
 	m.Directory = filepath.Dir(fullPath)
@@ -60,6 +69,25 @@ func (m *Metadata) Set(o OptGetter) error {
 	}
 	m.Logger.Verbosity = getVerbosity(o)
 	return nil
+}
+
+// getInterpreter attempts to determine the interpreter from reading the env
+// var and the config file, in that order. If no interpreter is specified, "sh"
+// is used.
+func getInterpreter(cfgText []byte) ([]string, error) {
+	var cfg struct {
+		Interpreter string `yaml:"interpreter"`
+	}
+
+	if err := yaml.Unmarshal(cfgText, &cfg); err != nil {
+		return nil, err
+	}
+
+	if cfg.Interpreter == "" {
+		return nil, nil
+	}
+
+	return strings.Fields(cfg.Interpreter), nil
 }
 
 // OptGetter pulls various options based on a name.
