@@ -113,7 +113,7 @@ func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
 		return nil, err
 	}
 
-	cfg, err := runner.ParseComplete(meta.CfgText, taskName, argsPassed, flagsPassed)
+	cfg, err := runner.ParseComplete(meta, taskName, argsPassed, flagsPassed)
 	if err != nil {
 		return nil, err
 	}

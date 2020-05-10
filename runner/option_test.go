@@ -109,7 +109,7 @@ func TestOption_Evaluate(t *testing.T) {
 	}
 
 	for _, tt := range valuetests {
-		actual, err := tt.input.Evaluate(nil)
+		actual, err := tt.input.Evaluate(Context{}, nil)
 		if err != nil {
 			t.Errorf(
 				"Option.Evaluate() for %s: unexpected err: %q",
@@ -130,7 +130,7 @@ func TestOption_Evaluate(t *testing.T) {
 func TestOption_Evaluate_required_nothing_passed(t *testing.T) {
 	option := Option{Required: true}
 
-	if _, err := option.Evaluate(nil); err == nil {
+	if _, err := option.Evaluate(Context{}, nil); err == nil {
 		t.Fatal(
 			"Option.Evaluate() for required option: expected err, actual nil",
 		)
@@ -150,7 +150,7 @@ func TestOption_Evaluate_passes_vars(t *testing.T) {
 		},
 	}
 
-	actual, err := opt.Evaluate(map[string]string{"foo": "foovalue"})
+	actual, err := opt.Evaluate(Context{}, map[string]string{"foo": "foovalue"})
 	if err != nil {
 		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
 	}
@@ -167,7 +167,7 @@ func TestOption_Evaluate_required_with_passed(t *testing.T) {
 	expected := "foo"
 	option := Option{Required: true, Passed: expected}
 
-	actual, err := option.Evaluate(nil)
+	actual, err := option.Evaluate(Context{}, nil)
 	if err != nil {
 		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
 	}
@@ -189,7 +189,7 @@ func TestOption_Evaluate_required_with_environment(t *testing.T) {
 		t.Fatalf("unexpected err setting environment variable: %s", err)
 	}
 
-	actual, err := option.Evaluate(nil)
+	actual, err := option.Evaluate(Context{}, nil)
 	if err != nil {
 		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
 	}
@@ -210,7 +210,7 @@ func TestOption_Evaluate_values_none_specified(t *testing.T) {
 		},
 	}
 
-	actual, err := option.Evaluate(nil)
+	actual, err := option.Evaluate(Context{}, nil)
 	if err != nil {
 		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
 	}
@@ -232,7 +232,7 @@ func TestOption_Evaluate_values_with_passed(t *testing.T) {
 		},
 	}
 
-	actual, err := option.Evaluate(nil)
+	actual, err := option.Evaluate(Context{}, nil)
 	if err != nil {
 		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
 	}
@@ -260,7 +260,7 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 		t.Fatalf("unexpected err setting environment variable: %s", err)
 	}
 
-	actual, err := option.Evaluate(nil)
+	actual, err := option.Evaluate(Context{}, nil)
 	if err != nil {
 		t.Fatalf("Option.Evaluate(): unexpected error: %s", err)
 	}
@@ -282,7 +282,7 @@ func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
 		},
 	}
 
-	_, err := option.Evaluate(nil)
+	_, err := option.Evaluate(Context{}, nil)
 	if err == nil {
 		t.Fatalf(
 			"Option.Evaluate(): expected error for invalid passed value, got nil",
@@ -305,7 +305,7 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 		t.Fatalf("unexpected err setting environment variable: %s", err)
 	}
 
-	_, err := option.Evaluate(nil)
+	_, err := option.Evaluate(Context{}, nil)
 	if err == nil {
 		t.Fatalf(
 			"Option.Evaluate(): expected error for invalid environment value, got nil",
@@ -330,7 +330,7 @@ var evaluteTypeDefaultTests = []struct {
 func TestOption_Evaluate_type_defaults(t *testing.T) {
 	for _, tt := range evaluteTypeDefaultTests {
 		opt := Option{Type: tt.typeName}
-		actual, err := opt.Evaluate(nil)
+		actual, err := opt.Evaluate(Context{}, nil)
 		if err != nil {
 			t.Errorf("Option.Evaluate(): unexpected error: %s", err)
 			continue

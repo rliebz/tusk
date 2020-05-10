@@ -69,22 +69,80 @@ func TestCommand_UnmarshalYAML(t *testing.T) {
 	}
 }
 
+func TestCommand_exec(t *testing.T) {
+	tests := []struct {
+		name        string
+		interpreter []string
+		command     string
+		want        []string
+	}{
+		{
+			name:    "defaults",
+			command: `echo "Hello world!"`,
+			want:    []string{"sh", "-c", `echo "Hello world!"`},
+		},
+		{
+			name:        "interpreter",
+			interpreter: []string{"/usr/bin/env", "node", "-e"},
+			command:     `console.log("Hello world!")`,
+			want:        []string{"/usr/bin/env", "node", "-e", `console.log("Hello world!")`},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			wd, err := os.Getwd()
+			if err != nil {
+				t.Fatal(err)
+			}
+			wantDir := filepath.Dir(wd)
+
+			command := Command{
+				Exec: tt.command,
+				Dir:  "..",
+			}
+
+			defer func() { execCommand = exec.Command }()
+			execCommand = func(name string, arg ...string) *exec.Cmd {
+				cs := []string{"-test.run=TestCommand_exec_helper", "--", name}
+				cs = append(cs, arg...)
+				cmd := exec.Command(os.Args[0], cs...) // nolint: gosec
+				cmd.Env = []string{
+					"TUSK_TEST_EXEC_COMMAND=1",
+					"TUSK_TEST_COMMAND_ARGS=" + strings.Join(tt.want, ","),
+					"TUSK_TEST_COMMAND_DIR=" + wantDir,
+				}
+				return cmd
+			}
+
+			ctx := Context{
+				Logger:      ui.New(),
+				Interpreter: tt.interpreter,
+			}
+
+			if err := command.exec(ctx); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
 // TestCommand_exec_helper is a helper test that is called when mocking exec.
 //
 // The following environment variables can configure this function:
 //
-// - TUSK_WANT_TEST_COMMAND: Set to "1" to run this function.
+// - TUSK_TEST_EXEC_COMMAND: Set to "1" to run this function.
 // - TUSK_TEST_COMMAND_ARGS: Set to a comma-separated list of expected command
 //   arguments.
 // - TUSK_TEST_COMMAND_DIR: Set to the expected directory
 func TestCommand_exec_helper(*testing.T) {
-	if os.Getenv("TUSK_WANT_TEST_COMMAND") != "1" {
+	if os.Getenv("TUSK_TEST_EXEC_COMMAND") != "1" {
 		return
 	}
 	defer os.Exit(0)
 
 	fail := func(msg interface{}) {
-		fmt.Fprintln(os.Stderr, msg)
+		fmt.Fprintln(os.Stdout, msg)
 		os.Exit(1)
 	}
 
@@ -110,39 +168,6 @@ func TestCommand_exec_helper(*testing.T) {
 	wantDir := os.Getenv("TUSK_TEST_COMMAND_DIR")
 	if wantDir != "" && dir != wantDir {
 		fail(fmt.Sprintf("want working dir %s, got %s", wantDir, dir))
-	}
-}
-
-func TestCommand_exec(t *testing.T) {
-	wantCommand := "echo hello world"
-	wantArgs := strings.Join([]string{getShell(), "-c", wantCommand}, ",")
-
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	wantDir := filepath.Dir(wd)
-
-	command := Command{
-		Exec: wantCommand,
-		Dir:  "..",
-	}
-
-	execCommand = func(name string, arg ...string) *exec.Cmd {
-		cs := []string{"-test.run=TestCommand_exec_helper", "--", name}
-		cs = append(cs, arg...)
-		cmd := exec.Command(os.Args[0], cs...) // nolint: gosec
-		cmd.Env = []string{
-			"TUSK_WANT_TEST_COMMAND=1",
-			"TUSK_TEST_COMMAND_ARGS=" + wantArgs,
-			"TUSK_TEST_COMMAND_DIR=" + wantDir,
-		}
-		return cmd
-	}
-	defer func() { execCommand = exec.Command }()
-
-	if err := command.exec(Context{Logger: ui.Noop()}); err != nil {
-		t.Fatal(err)
 	}
 }
 
@@ -201,31 +226,5 @@ func TestCommandList_UnmarshalYAML(t *testing.T) {
 				t.Errorf("mismatched values:\n%s", diff)
 			}
 		})
-	}
-}
-
-func TestGetShell(t *testing.T) {
-	originalShell := os.Getenv(shellEnvVar)
-	defer func() {
-		if err := os.Setenv(shellEnvVar, originalShell); err != nil {
-			t.Errorf("Failed to reset SHELL environment variable: %v", err)
-		}
-	}()
-
-	customShell := "/my/custom/sh"
-	if err := os.Setenv(shellEnvVar, customShell); err != nil {
-		t.Fatalf("Failed to set environment variable: %v", err)
-	}
-
-	if actual := getShell(); actual != customShell {
-		t.Errorf("getShell(): expected %v, actual %v", customShell, actual)
-	}
-
-	if err := os.Unsetenv(shellEnvVar); err != nil {
-		t.Fatalf("Failed to unset environment variable: %v", err)
-	}
-
-	if actual := getShell(); actual != defaultShell {
-		t.Errorf("getShell(): expected %v, actual %v", defaultShell, actual)
 	}
 }

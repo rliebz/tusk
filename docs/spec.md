@@ -92,6 +92,9 @@ run:
       exec: echo "Hello!"
 ```
 
+While the interpreter cannot be set for an individual command, it is possible
+to set them globally using [the interpreter clause](#interpreter).
+
 ##### Exec
 
 The `exec` clause contains the actual shell command to be performed.
@@ -99,14 +102,13 @@ The `exec` clause contains the actual shell command to be performed.
 If any of the run commands execute with a non-zero exit code, Tusk will
 immediately exit with the same exit code without executing any other commands.
 
-Commands are executed using the `$SHELL` environment variable, defaulting to
-`sh`. Each command in a `run` clause gets its own sub-shell, so things like
-declaring functions and environment variables will not be available across
-separate run commmands, although it is possible to run the `set-environment`
-clause or use a multi-line shell command.
+Each command in a `run` clause gets its own sub-shell, so things like declaring
+functions and environment variables will not be available across separate run
+commmands, although it is possible to run the `set-environment` clause or use a
+multi-line shell command.
 
-For multi-line shell commands, to preserve the exit-on-error behavior, it is
-recommend to run `set -e` at the top of the script, much like any shell script.
+When using POSIX interpreters with multi-line scripts, it is recommend to run
+`set -e` at the top of the script, to preserve the exit-on-error behavior.
 
 ```yaml
 tasks:
@@ -617,6 +619,30 @@ run: echo "Hello, ${name}!"
 It is invalid to split the configuration; if the `include` clause is used, no
 other keys can be specified in the `tusk.yml`, and the full task must be
 defined in the included file.
+
+### Interpreter
+
+By default, any command run will default to using `sh -c` as its interpreter.
+This can optionally be configured using the `interpreter` clause.
+
+The interpreter is specified as an executable, which can either be an absolute
+path or available on the user's PATH, followed by a series of optional
+arguments:
+
+```yaml
+interpreter: node -e
+
+tasks:
+  hello:
+    run: console.log("Hello!")
+```
+
+The commands specified in individual tasks will be passed as the final
+argument. The above example is effectively equivalent to the following:
+
+```sh
+node -e 'console.log("Hello!")'
+```
 
 ### CLI Metadata
 

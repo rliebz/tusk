@@ -8,19 +8,21 @@ import (
 	"github.com/rliebz/tusk/ui"
 )
 
-const (
-	shellEnvVar  = "SHELL"
-	defaultShell = "sh"
-)
+var defaultInterpreter = []string{"sh", "-c"}
 
 // execCommand allows overwriting during tests.
 var execCommand = exec.Command
 
 // Command is a command passed to the shell.
 type Command struct {
-	Exec  string `yaml:"exec"`
+	// Exec is the script to execute.
+	Exec string `yaml:"exec"`
+
+	// Print is the text that will be printed when the command is executed.
 	Print string `yaml:"print"`
-	Dir   string `yaml:"dir"`
+
+	// Dir is the directory of the command.
+	Dir string `yaml:"dir"`
 }
 
 // UnmarshalYAML allows strings to be interpreted as Do actions.
@@ -51,10 +53,26 @@ func (c *Command) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return marshal.UnmarshalOneOf(doCandidate, commandCandidate)
 }
 
+// newCmd creates an exec.Cmd that uses the interpreter and the script passed.
+func newCmd(ctx Context, script string) *exec.Cmd {
+	interpreter := defaultInterpreter
+	if len(ctx.Interpreter) > 0 {
+		interpreter = ctx.Interpreter
+	}
+
+	path := interpreter[0]
+	args := []string{script}
+	if len(interpreter) > 1 {
+		args = append(interpreter[1:], args...)
+	}
+
+	return execCommand(path, args...)
+}
+
 // execCommand executes a shell command.
 func (c *Command) exec(ctx Context) error {
-	shell := getShell()
-	cmd := execCommand(shell, "-c", c.Exec)
+	cmd := newCmd(ctx, c.Exec)
+
 	cmd.Dir = c.Dir
 	cmd.Stdin = os.Stdin
 	if ctx.Logger.Verbosity > ui.VerbosityLevelSilent {
@@ -83,13 +101,4 @@ func (cl *CommandList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)
-}
-
-// getShell returns the value of the `SHELL` environment variable, or `sh`.
-func getShell() string {
-	if shell := os.Getenv(shellEnvVar); shell != "" {
-		return shell
-	}
-
-	return defaultShell
 }

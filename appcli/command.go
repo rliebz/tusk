@@ -20,7 +20,8 @@ func createExecuteCommand(_ *cli.App, meta *runner.Metadata, t *runner.Task) (*c
 			)
 		}
 		return t.Execute(runner.Context{
-			Logger: meta.Logger,
+			Logger:      meta.Logger,
+			Interpreter: meta.Interpreter,
 		})
 	}), nil
 }

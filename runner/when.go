@@ -3,7 +3,6 @@ package runner
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"runtime"
 	"strings"
 
@@ -106,7 +105,7 @@ func (w *When) Dependencies() []string {
 }
 
 // Validate returns an error if any when clauses fail.
-func (w *When) Validate(vars map[string]string) error {
+func (w *When) Validate(ctx Context, vars map[string]string) error {
 	if w == nil {
 		return nil
 	}
@@ -118,7 +117,7 @@ func (w *When) Validate(vars map[string]string) error {
 		w.validateEnv(),
 		w.validateExists(),
 		w.validateNotExists(),
-		w.validateCommand(),
+		w.validateCommand(ctx),
 	)
 }
 
@@ -138,13 +137,13 @@ func validateAny(errs ...error) error {
 	return errOutput
 }
 
-func (w *When) validateCommand() error {
+func (w *When) validateCommand(ctx Context) error {
 	if len(w.Command) == 0 {
 		return newUnspecifiedError("command")
 	}
 
 	for _, command := range w.Command {
-		if err := testCommand(command); err == nil {
+		if err := testCommand(ctx, command); err == nil {
 			return nil
 		}
 	}
@@ -288,8 +287,9 @@ func normalizeOS(name string) string {
 	return lower
 }
 
-func testCommand(command string) error {
-	_, err := exec.Command("sh", "-c", command).Output() // nolint: gosec
+func testCommand(ctx Context, command string) error {
+	cmd := newCmd(ctx, command)
+	_, err := cmd.Output()
 	return err
 }
 
@@ -338,13 +338,13 @@ func (l *WhenList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 // Validate returns an error if any when clauses fail.
-func (l *WhenList) Validate(vars map[string]string) error {
+func (l *WhenList) Validate(ctx Context, vars map[string]string) error {
 	if l == nil {
 		return nil
 	}
 
 	for _, w := range *l {
-		if err := w.Validate(vars); err != nil {
+		if err := w.Validate(ctx, vars); err != nil {
 			return err
 		}
 	}

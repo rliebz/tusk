@@ -20,12 +20,12 @@ func Parse(text []byte) (*Config, error) {
 
 // ParseComplete parses the file completely with interpolation.
 func ParseComplete(
-	cfgText []byte,
+	meta *Metadata,
 	taskName string,
 	args []string,
 	flags map[string]string,
 ) (*Config, error) {
-	cfg, err := Parse(cfgText)
+	cfg, err := Parse(meta.CfgText)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,11 @@ func ParseComplete(
 		return nil, err
 	}
 
-	if err := passTaskValues(t, cfg, passed); err != nil {
+	ctx := Context{
+		Interpreter: meta.Interpreter,
+	}
+
+	if err := passTaskValues(ctx, t, cfg, passed); err != nil {
 		return nil, err
 	}
 
@@ -68,21 +72,29 @@ func combineArgsAndFlags(
 	return passed, nil
 }
 
-func passTaskValues(t *Task, cfg *Config, passed map[string]string) error {
-	vars, err := interpolateGlobalOptions(t, cfg, passed)
+func passTaskValues(
+	ctx Context,
+	t *Task,
+	cfg *Config,
+	passed map[string]string,
+) error {
+	vars, err := interpolateGlobalOptions(ctx, t, cfg, passed)
 	if err != nil {
 		return err
 	}
 
-	if err := interpolateTask(t, passed, vars); err != nil {
+	if err := interpolateTask(ctx, t, passed, vars); err != nil {
 		return err
 	}
 
-	return addSubTasks(t, cfg)
+	return addSubTasks(ctx, t, cfg)
 }
 
 func interpolateGlobalOptions(
-	t *Task, cfg *Config, passed map[string]string,
+	ctx Context,
+	t *Task,
+	cfg *Config,
+	passed map[string]string,
 ) (map[string]string, error) {
 	globalOptions, err := getRequiredGlobalOptions(t, cfg)
 	if err != nil {
@@ -91,7 +103,7 @@ func interpolateGlobalOptions(
 
 	vars := make(map[string]string, len(globalOptions))
 	for _, o := range globalOptions {
-		if err := interpolateOption(o, passed, vars); err != nil {
+		if err := interpolateOption(ctx, o, passed, vars); err != nil {
 			return nil, err
 		}
 	}
@@ -141,7 +153,7 @@ func interpolateArg(a *Arg, passed, vars map[string]string) error {
 	return nil
 }
 
-func interpolateOption(o *Option, passed, vars map[string]string) error {
+func interpolateOption(ctx Context, o *Option, passed, vars map[string]string) error {
 	if err := marshal.Interpolate(o, vars); err != nil {
 		return err
 	}
@@ -150,7 +162,7 @@ func interpolateOption(o *Option, passed, vars map[string]string) error {
 		o.Passed = valuePassed
 	}
 
-	value, err := o.Evaluate(vars)
+	value, err := o.Evaluate(ctx, vars)
 	if err != nil {
 		return err
 	}
@@ -160,7 +172,7 @@ func interpolateOption(o *Option, passed, vars map[string]string) error {
 	return nil
 }
 
-func interpolateTask(t *Task, passed, vars map[string]string) error {
+func interpolateTask(ctx Context, t *Task, passed, vars map[string]string) error {
 	taskVars := make(map[string]string, len(vars)+len(t.Args)+len(t.Options))
 	for k, v := range vars {
 		taskVars[k] = v
@@ -173,7 +185,7 @@ func interpolateTask(t *Task, passed, vars map[string]string) error {
 	}
 
 	for _, o := range t.Options {
-		if err := interpolateOption(o, passed, taskVars); err != nil {
+		if err := interpolateOption(ctx, o, passed, taskVars); err != nil {
 			return err
 		}
 	}
@@ -191,10 +203,10 @@ func interpolateTask(t *Task, passed, vars map[string]string) error {
 	return nil
 }
 
-func addSubTasks(t *Task, cfg *Config) error {
+func addSubTasks(ctx Context, t *Task, cfg *Config) error {
 	for _, run := range t.AllRunItems() {
 		for _, desc := range run.SubTaskList {
-			sub, err := newTaskFromSub(desc, cfg)
+			sub, err := newTaskFromSub(ctx, desc, cfg)
 			if err != nil {
 				return err
 			}
@@ -206,7 +218,7 @@ func addSubTasks(t *Task, cfg *Config) error {
 	return nil
 }
 
-func newTaskFromSub(desc *SubTask, cfg *Config) (*Task, error) {
+func newTaskFromSub(ctx Context, desc *SubTask, cfg *Config) (*Task, error) {
 	st, ok := cfg.Tasks[desc.Name]
 	if !ok {
 		return nil, fmt.Errorf("sub-task %q does not exist", desc.Name)
@@ -229,7 +241,7 @@ func newTaskFromSub(desc *SubTask, cfg *Config) (*Task, error) {
 		values[optName] = opt
 	}
 
-	if err := passTaskValues(subTask, cfg, values); err != nil {
+	if err := passTaskValues(ctx, subTask, cfg, values); err != nil {
 		return nil, err
 	}
 

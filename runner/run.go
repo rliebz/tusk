@@ -56,7 +56,7 @@ func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 func (r *Run) shouldRun(ctx Context, vars map[string]string) (bool, error) {
-	if err := r.When.Validate(vars); err != nil {
+	if err := r.When.Validate(ctx, vars); err != nil {
 		if !IsFailedCondition(err) {
 			return false, err
 		}

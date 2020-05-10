@@ -354,7 +354,7 @@ var whenValidateTests = []struct {
 
 func TestWhen_Validate(t *testing.T) {
 	for _, tt := range whenValidateTests {
-		err := tt.when.Validate(tt.options)
+		err := tt.when.Validate(Context{}, tt.options)
 		didErr := err != nil
 		if tt.shouldErr != didErr {
 			t.Errorf(
@@ -534,7 +534,7 @@ var listValidateTests = []struct {
 
 func TestList_Validate(t *testing.T) {
 	for _, tt := range listValidateTests {
-		err := tt.list.Validate(tt.options)
+		err := tt.list.Validate(Context{}, tt.options)
 		didErr := err != nil
 		if tt.shouldErr != didErr {
 			t.Errorf(
@@ -547,7 +547,7 @@ func TestList_Validate(t *testing.T) {
 
 func TestList_Validate_nil(t *testing.T) {
 	var l *WhenList
-	if err := l.Validate(map[string]string{}); err != nil {
+	if err := l.Validate(Context{}, map[string]string{}); err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
 }

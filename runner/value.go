@@ -2,7 +2,6 @@ package runner
 
 import (
 	"fmt"
-	"os/exec"
 	"strings"
 
 	"github.com/rliebz/tusk/marshal"
@@ -17,9 +16,11 @@ type Value struct {
 }
 
 // commandValueOrDefault validates a content definition, then gets the value.
-func (v *Value) commandValueOrDefault() (string, error) {
+func (v *Value) commandValueOrDefault(ctx Context) (string, error) {
 	if v.Command != "" {
-		out, err := exec.Command("sh", "-c", v.Command).Output() // nolint: gosec
+		cmd := newCmd(ctx, v.Command)
+
+		out, err := cmd.Output()
 		if err != nil {
 			return "", err
 		}
