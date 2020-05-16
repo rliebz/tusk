@@ -109,6 +109,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#include">Include</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#interpreter">Interpreter</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#cli-metadata">CLI Metadata</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#interpolation">Interpolation</a>
@@ -230,17 +232,18 @@ run:
       exec: echo &quot;Hello!&quot;
 </code></pre>
 
+<p>While the interpreter cannot be set for an individual command, it is possible
+to set them globally using <a href="#interpreter">the interpreter clause</a>.</p>
 <h5 id="exec">Exec</h5>
 <p>The <code>exec</code> clause contains the actual shell command to be performed.</p>
 <p>If any of the run commands execute with a non-zero exit code, Tusk will
 immediately exit with the same exit code without executing any other commands.</p>
-<p>Commands are executed using the <code>$SHELL</code> environment variable, defaulting to
-<code>sh</code>. Each command in a <code>run</code> clause gets its own sub-shell, so things like
-declaring functions and environment variables will not be available across
-separate run commmands, although it is possible to run the <code>set-environment</code>
-clause or use a multi-line shell command.</p>
-<p>For multi-line shell commands, to preserve the exit-on-error behavior, it is
-recommend to run <code>set -e</code> at the top of the script, much like any shell script.</p>
+<p>Each command in a <code>run</code> clause gets its own sub-shell, so things like declaring
+functions and environment variables will not be available across separate run
+commmands, although it is possible to run the <code>set-environment</code> clause or use a
+multi-line shell command.</p>
+<p>When using POSIX interpreters with multi-line scripts, it is recommend to run
+<code>set -e</code> at the top of the script, to preserve the exit-on-error behavior.</p>
 <pre><code class="yaml">tasks:
   hello:
     run: |
@@ -657,6 +660,24 @@ run: echo &quot;Hello, ${name}!&quot;
 <p>It is invalid to split the configuration; if the <code>include</code> clause is used, no
 other keys can be specified in the <code>tusk.yml</code>, and the full task must be
 defined in the included file.</p>
+<h3 id="interpreter">Interpreter</h3>
+<p>By default, any command run will default to using <code>sh -c</code> as its interpreter.
+This can optionally be configured using the <code>interpreter</code> clause.</p>
+<p>The interpreter is specified as an executable, which can either be an absolute
+path or available on the user's PATH, followed by a series of optional
+arguments:</p>
+<pre><code class="yaml">interpreter: node -e
+
+tasks:
+  hello:
+    run: console.log(&quot;Hello!&quot;)
+</code></pre>
+
+<p>The commands specified in individual tasks will be passed as the final
+argument. The above example is effectively equivalent to the following:</p>
+<pre><code class="sh">node -e 'console.log(&quot;Hello!&quot;)'
+</code></pre>
+
 <h3 id="cli-metadata">CLI Metadata</h3>
 <p>It is also possible to create a custom CLI tool for use outside of a project's
 directory by using shell aliases:</p>
