@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased 
+
+
+## 0.6.0 (2020-05-16)
 ### Added
 - The interpreter used for running commands can now be configured using the
   top-level `interpreter` clause in the YAML configuration.
