@@ -50,34 +50,28 @@ func TestSearchForFile(t *testing.T) {
 	inheritedDir := mkDir(t, topDir, "baz", "empty")
 
 	testcases := []struct {
-		wd    string
-		path  string
-		found bool
+		wd   string
+		path string
 	}{
 		{
-			wd:    emptyDir,
-			path:  "",
-			found: false,
+			wd:   emptyDir,
+			path: "",
 		},
 		{
-			wd:    topDir,
-			path:  topConfig,
-			found: true,
+			wd:   topDir,
+			path: topConfig,
 		},
 		{
-			wd:    yamlDir,
-			path:  yamlConfig,
-			found: true,
+			wd:   yamlDir,
+			path: yamlConfig,
 		},
 		{
-			wd:    nestedDir,
-			path:  nestedConfig,
-			found: true,
+			wd:   nestedDir,
+			path: nestedConfig,
 		},
 		{
-			wd:    inheritedDir,
-			path:  topConfig,
-			found: true,
+			wd:   inheritedDir,
+			path: topConfig,
 		},
 	}
 
@@ -86,7 +80,7 @@ func TestSearchForFile(t *testing.T) {
 			t.Fatalf("failed to change directory: %v", err)
 		}
 
-		fullPath, found, err := searchForFile()
+		fullPath, err := searchForFile()
 		if err != nil {
 			t.Errorf("unexpected error: %v", err)
 			continue
@@ -96,13 +90,6 @@ func TestSearchForFile(t *testing.T) {
 			t.Errorf(
 				"SearchForFile(): expected path: %s, actual: %s",
 				tt.path, fullPath,
-			)
-		}
-
-		if tt.found != found {
-			t.Errorf(
-				"SearchForFile(): expected found: %v, actual: %v",
-				tt.found, found,
 			)
 		}
 	}

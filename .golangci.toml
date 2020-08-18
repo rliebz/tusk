@@ -8,6 +8,8 @@ exclude = [
   'G104: Errors unhandled',
   # gosec: Allow file inclusions
   'G304: Potential file inclusion via variable',
+  # gosec: Duplicate of errcheck
+  'G307: Deferring unsafe method',
 ]
 exclude-use-default = false
 
@@ -22,9 +24,7 @@ exclude-use-default = false
 
 [linters]
 enable = [
-  "bodyclose",
   "golint",
-  "stylecheck",
   "gosec",
   "interfacer",
   "unconvert",
@@ -32,16 +32,20 @@ enable = [
   "goconst",
   "gocyclo",
   "gocognit",
+  "asciicheck",
   "gofmt",
   "goimports",
-  "lll",
   "misspell",
+  "lll",
   "unparam",
   "nakedret",
   "prealloc",
   "gocritic",
   "gochecknoinits",
   "whitespace",
+  "nestif",
+  "exportloopref",
+  "nolintlint",
 ]
 
 [linters-settings]

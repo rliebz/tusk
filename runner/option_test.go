@@ -410,7 +410,6 @@ func TestOption_UnmarshalYAML_invalid_definitions(t *testing.T) {
 	}
 }
 
-// nolint: dupl
 func TestGetOptionsWithOrder(t *testing.T) {
 	name := "foo"
 	env := "fooenv"

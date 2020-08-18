@@ -195,6 +195,8 @@ func installFileInDir(logger *ui.Logger, dir, file string, content []byte) error
 	}
 
 	target := filepath.Join(dir, file)
+
+	// nolint: gosec
 	if err := ioutil.WriteFile(target, content, 0644); err != nil {
 		return err
 	}

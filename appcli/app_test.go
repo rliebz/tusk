@@ -1,6 +1,7 @@
 package appcli
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -358,7 +359,7 @@ func TestGetConfigMetadata_fileNoExist(t *testing.T) {
 	args := []string{"tusk", "--file", "fakefile.yml"}
 
 	_, err := GetConfigMetadata(args)
-	if !os.IsNotExist(err) {
+	if !errors.Is(err, os.ErrNotExist) {
 		t.Errorf(
 			"GetConfigMetadata(%s): unexpected err: os.IsNotExist, actual: %s",
 			args, err,

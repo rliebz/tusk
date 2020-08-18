@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -32,24 +33,21 @@ type Metadata struct {
 
 // Set sets the metadata based on options.
 func (m *Metadata) Set(o OptGetter) error {
-	var err error
-
 	fullPath := o.String("file")
-	if fullPath != "" {
-		if m.CfgText, err = ioutil.ReadFile(fullPath); err != nil {
-			return err
-		}
-	} else {
-		var found bool
-		fullPath, found, err = searchForFile()
+
+	if fullPath == "" {
+		var err error
+		fullPath, err = searchForFile()
 		if err != nil {
 			return err
 		}
+	}
 
-		if found {
-			if m.CfgText, err = ioutil.ReadFile(fullPath); err != nil {
-				return err
-			}
+	if fullPath != "" {
+		var err error
+		m.CfgText, err = ioutil.ReadFile(fullPath)
+		if err != nil {
+			return fmt.Errorf("reading config file %q: %w", fullPath, err)
 		}
 	}
 

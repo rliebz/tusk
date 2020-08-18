@@ -6,7 +6,7 @@ import (
 	"github.com/rliebz/tusk/marshal"
 )
 
-// FindAllOptions returns a list of options relevant for a given
+// FindAllOptions returns a list of options relevant for a given config.
 func FindAllOptions(t *Task, cfg *Config) ([]*Option, error) {
 	names, err := getDependencies(t)
 	if err != nil {
