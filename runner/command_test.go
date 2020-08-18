@@ -106,7 +106,7 @@ func TestCommand_exec(t *testing.T) {
 			execCommand = func(name string, arg ...string) *exec.Cmd {
 				cs := []string{"-test.run=TestCommand_exec_helper", "--", name}
 				cs = append(cs, arg...)
-				cmd := exec.Command(os.Args[0], cs...) // nolint: gosec
+				cmd := exec.Command(os.Args[0], cs...)
 				cmd.Env = []string{
 					"TUSK_TEST_EXEC_COMMAND=1",
 					"TUSK_TEST_COMMAND_ARGS=" + strings.Join(tt.want, ","),

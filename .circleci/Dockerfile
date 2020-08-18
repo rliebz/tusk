@@ -1,4 +1,4 @@
-FROM golang:1.14
+FROM golang:1.15
 
 WORKDIR /tusk
 
@@ -8,7 +8,7 @@ RUN set -e; \
     python3-pip \
     rpm; \
   wget -qO- 'https://install.goreleaser.com/github.com/golangci/golangci-lint.sh' \
-    | sh -s -- -b $GOPATH/bin v1.23.7; \
+    | sh -s -- -b $GOPATH/bin v1.30.0; \
   go get github.com/jstemmer/go-junit-report; \
   wget -qO- 'https://github.com/goreleaser/goreleaser/releases/download/v0.117.2/goreleaser_Linux_x86_64.tar.gz' \
     | tar xvzf - -C /usr/local/bin goreleaser; \
