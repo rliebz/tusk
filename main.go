@@ -65,14 +65,19 @@ func run(cfg config) int {
 }
 
 func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
+	printHelp := false
+
 	switch {
+	case appcli.IsCompleting(args):
+	case meta.PrintHelp:
+		printHelp = true
+	case meta.PrintVersion:
+		meta.Logger.Println(version)
+		return 0, nil
 	case meta.InstallCompletion != "":
 		return 0, appcli.InstallCompletion(meta)
 	case meta.UninstallCompletion != "":
 		return 0, appcli.UninstallCompletion(meta)
-	case meta.PrintVersion && !meta.PrintHelp:
-		meta.Logger.Println(version)
-		return 0, nil
 	}
 
 	// TODO: Use runner.Context to avoid doing this
@@ -85,7 +90,7 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 		return 1, err
 	}
 
-	if meta.PrintHelp {
+	if printHelp {
 		appcli.ShowAppHelp(meta.Logger, app)
 		return 0, nil
 	}

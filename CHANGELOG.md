@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased 
+### Fixed
+- Fixed an issue where certain behavior might unintentionally run during
+  tab completions.
 
 ## 0.6.1 (2020-08-17)
 ### Added
