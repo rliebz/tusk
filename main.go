@@ -16,22 +16,12 @@ import (
 var version = "dev"
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			err := fmt.Errorf("recovered from panic: %v", r)
-			unexpectedError(os.Args, err)
-		}
-	}()
-
-	status := run(config{args: os.Args})
+	status := run(config{
+		args:   os.Args,
+		stdout: os.Stdout,
+		stderr: os.Stderr,
+	})
 	os.Exit(status)
-}
-
-func unexpectedError(args []string, err error) {
-	if !appcli.IsCompleting(args) {
-		ui.New().Error(err)
-	}
-	os.Exit(1)
 }
 
 type config struct {
@@ -40,20 +30,32 @@ type config struct {
 	stderr io.Writer
 }
 
-func run(cfg config) int {
+func run(cfg config) (status int) {
+	defer func() {
+		if r := recover(); r != nil {
+			if !appcli.IsCompleting(cfg.args) {
+				err := fmt.Errorf("recovered from panic: %v", r)
+				ui.New().Error(err)
+			}
+
+			if status == 0 {
+				status = 1
+			}
+		}
+	}()
+
 	meta, err := appcli.GetConfigMetadata(cfg.args)
 	if err != nil {
-		unexpectedError(os.Args, err)
+		if !appcli.IsCompleting(cfg.args) {
+			ui.New().Error(err)
+		}
+		return 1
 	}
 
-	if cfg.stdout != nil {
-		meta.Logger.Stdout = cfg.stdout
-	}
-	if cfg.stderr != nil {
-		meta.Logger.Stderr = cfg.stderr
-	}
+	meta.Logger.Stdout = cfg.stdout
+	meta.Logger.Stderr = cfg.stderr
 
-	status, err := runMeta(meta, cfg.args)
+	status, err = runMeta(meta, cfg.args)
 	if err != nil {
 		meta.Logger.Error(err)
 		if status == 0 {
