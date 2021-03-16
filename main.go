@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/signal"
 	"syscall"
 
 	"github.com/rliebz/tusk/appcli"
@@ -16,6 +17,13 @@ import (
 var version = "dev"
 
 func main() {
+	signalChannel := make(chan os.Signal)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-signalChannel
+		fmt.Println("...exiting!")
+	}()
+
 	status := run(config{
 		args:   os.Args,
 		stdout: os.Stdout,
