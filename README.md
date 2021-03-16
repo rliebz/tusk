@@ -49,7 +49,7 @@ To install to another directory, change the path passed to `-b`.
 On macOS, installation is also available through [homebrew][homebrew]:
 
 ```bash
-brew install rliebz/tusk/tusk
+brew install zoonect-oss/tusk/tusk
 ```
 
 With Homebrew, tab completion is installed automatically.
@@ -145,3 +145,11 @@ can be found in [CONTRIBUTING.md][contributing].
 [releases]: https://github.com/rliebz/tusk/releases
 [spec]: https://rliebz.github.io/tusk/spec/
 [tusk.yml]: https://github.com/rliebz/tusk/blob/master/tusk.yml
+
+## Releasing
+
+```bash
+brew install goreleaser
+brew install circleci
+circleci local execute --job release -e GITHUB_TOKEN=$VALID_GITHUB_TOKEN
+```
