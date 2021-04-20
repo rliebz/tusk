@@ -14,6 +14,7 @@ import (
 
 const (
 	bashCompletionFile = "tusk-completion.bash"
+	fishCompletionFile = "tusk.fish"
 	zshCompletionFile  = "_tusk"
 	zshInstallDir      = "/usr/local/share/zsh/site-functions"
 )
@@ -26,6 +27,8 @@ func InstallCompletion(meta *runner.Metadata) error {
 	switch shell {
 	case "bash":
 		return installBashCompletion(meta.Logger)
+	case "fish":
+		return installFishCompletion(meta.Logger)
 	case "zsh":
 		return installZshCompletion(meta.Logger, zshInstallDir)
 	default:
@@ -39,6 +42,8 @@ func UninstallCompletion(meta *runner.Metadata) error {
 	switch shell {
 	case "bash":
 		return uninstallBashCompletion()
+	case "fish":
+		return uninstallFishCompletion()
 	case "zsh":
 		return uninstallZshCompletion(zshInstallDir)
 	default:
@@ -182,6 +187,39 @@ func removeLineInFile(path string, re *regexp.Regexp) error {
 	rf.Close() // nolint: errcheck
 	wf.Close() // nolint: errcheck
 	return os.Rename(wf.Name(), path)
+}
+
+func installFishCompletion(logger *ui.Logger) error {
+	dir, err := getFishCompletionsDir()
+	if err != nil {
+		return err
+	}
+
+	return installFileInDir(logger, dir, fishCompletionFile, []byte(rawFishCompletion))
+}
+
+func uninstallFishCompletion() error {
+	dir, err := getFishCompletionsDir()
+	if err != nil {
+		return err
+	}
+
+	return uninstallFileFromDir(dir, fishCompletionFile)
+}
+
+// getFishCompletionsDir gets the directory to place completions in, adhering
+// to the XDG base directory.
+func getFishCompletionsDir() (string, error) {
+	if xdgHome := os.Getenv("XDG_CONFIG_HOME"); xdgHome != "" {
+		return filepath.Join(xdgHome, "fish", "completions"), nil
+	}
+
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(homedir, ".config", "fish", "completions"), nil
 }
 
 func installZshCompletion(logger *ui.Logger, dir string) error {

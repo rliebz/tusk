@@ -10,6 +10,7 @@ const folderName = "tusk"
 // DataHome returns the XDG data home. It may or may not already exist.
 func DataHome() (string, error) {
 	if xdgHome := os.Getenv("XDG_DATA_HOME"); xdgHome != "" {
+		// TODO: This should be filepath.Join(xdgHome, folderName)
 		return xdgHome, nil
 	}
 
