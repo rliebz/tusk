@@ -6,7 +6,7 @@ branches:
 
 environment:
   GOPATH: c:\gopath
-  GO_VERSION: 1.14
+  GO_VERSION: 1.16.3
 
 install:
   # Install specific Go version
