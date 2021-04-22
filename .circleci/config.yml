@@ -1,112 +1,97 @@
 defaults:
   # Common
-  job_defaults: &job_defaults
-    working_directory: /tusk
-    docker:
-      - image: tuskcli/ci:0.2.8
+  test_defaults: &test_defaults
     environment: &environment_defaults
       TEST_RESULTS: /tmp/test-results
-  job_dry_run: &job_dry_run
-    <<: *job_defaults
-    environment:
-      <<: *environment_defaults
-      RELEASE_FLAGS: --snapshot
-      MKDOCS_COMMAND: build
   mktestdir: &mktestdir
     name: Create the test directory
     command: mkdir -p $TEST_RESULTS
-  install_tusk: &install_tusk
-    name: Install the application
-    command: |
-      go install
   store_artifacts: &store_artifacts
     path: /tmp/test-results
     destination: raw-test-output
   store_test_results: &store_test_results
     path: /tmp/test-results
 
-  lint: &lint
-    name: Run golangci-lint
-    command: tusk --quiet lint | tee $TEST_RESULTS/golangci-lint.out
-
-  test: &test
-    name: Run go test
-    command: |
-      trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-      tusk --quiet test --verbose | tee $TEST_RESULTS/go-test.out
-
-  release: &release
-    name: Run goreleaser
-    command: |
-      tusk --quiet release ${RELEASE_FLAGS}
-
-  publish_docs: &publish_docs
-    name: Run mkdocs
-    command: |
-      mkdocs ${MKDOCS_COMMAND:-gh-deploy}
-
 version: 2
 jobs:
-  local:
-    <<: *job_dry_run
-    steps:
-      - checkout
-      - run: *mktestdir
-      - run: *install_tusk
-      - run: *lint
-      - run: *test
-      # Local release is dry-run only
-      - run: *release
-      - run: *publish_docs
-
   lint:
-    <<: *job_defaults
+    <<: *test_defaults
+    docker:
+      - image: golangci/golangci-lint:v1.39-alpine
     steps:
       - checkout
       - run: *mktestdir
-      - run: *install_tusk
-      - run: *lint
+      - run:
+          name: Run golangci-lint
+          command: golangci-lint run | tee $TEST_RESULTS/golangci-lint.out
       - store_artifacts: *store_artifacts
       - store_test_results: *store_test_results
 
   test:
-    <<: *job_defaults
+    <<: *test_defaults
+    docker:
+      - image: circleci/golang:1.16.3
     steps:
       - checkout
       - run: *mktestdir
-      - run: *install_tusk
-      - run: *test
+      - run:
+          name: Run go test
+          command: |
+            PACKAGE_NAMES=$(go list ./... | circleci tests split --split-by=timings --timings-type=classname)
+            gotestsum --junitfile ${TEST_RESULTS}/gotestsum-report.xml -- $PACKAGE_NAMES
       - store_artifacts: *store_artifacts
       - store_test_results: *store_test_results
 
   release_dry_run:
-    <<: *job_dry_run
+    docker:
+      - image: goreleaser/goreleaser:v0.117.2
     steps:
       - checkout
-      - run: *install_tusk
-      - deploy: *release
+      - deploy:
+          name: Dry run goreleaser
+          command: |
+            header='^## [0-9]+\.[0-9]+\.[0-9]+'
+            awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
+                goreleaser --rm-dist --release-notes /dev/stdin --snapshot
 
   release:
-    <<: *job_defaults
+    docker:
+      - image: goreleaser/goreleaser:v0.117.2
     steps:
       - checkout
-      - run: *install_tusk
-      - deploy: *release
+      - deploy:
+          name: Run goreleaser
+          command: |
+            header='^## [0-9]+\.[0-9]+\.[0-9]+'
+            awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
+                goreleaser --rm-dist --release-notes /dev/stdin
 
   publish_docs_dry_run:
-    <<: *job_dry_run
+    docker:
+      - image: python:3.9-slim
     steps:
       - checkout
-      - deploy: *publish_docs
+      - run:
+          name: Install mkdocs
+          command: pip3 install mkdocs==1.1.2
+      - deploy:
+          name: Run mkdocs build
+          command: mkdocs build
 
   publish_docs:
-    <<: *job_defaults
+    docker:
+      - image: python:3.9-slim
     steps:
       - add_ssh_keys:
           fingerprints:
             - "33:53:3f:55:d6:d4:21:9c:88:29:5b:c6:c3:ee:b3:af"
       - checkout
-      - deploy: *publish_docs
+      - run:
+          name: Install mkdocs
+          command: pip3 install mkdocs==1.1.2
+      - deploy:
+          name: Run mkdocs deploy
+          command: mkdocs gh-deploy
 
 workflows:
   version: 2
