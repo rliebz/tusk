@@ -31,9 +31,9 @@ archives:
       - CHANGELOG.md
       - LICENSE
       - README.md
-      - appcli/completion/tusk-completion.bash
-      - appcli/completion/tusk.fish
-      - appcli/completion/_tusk
+      - completion/tusk-completion.bash
+      - completion/tusk.fish
+      - completion/_tusk
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
 checksum:
@@ -51,9 +51,9 @@ brews:
     install: |
       bin.install "tusk"
 
-      bash_completion.install "appcli/completion/tusk-completion.bash"
-      fish_completion.install "appcli/completion/tusk.fish"
-      zsh_completion.install "appcli/completion/_tusk"
+      bash_completion.install "completion/tusk-completion.bash"
+      fish_completion.install "completion/tusk.fish"
+      zsh_completion.install "completion/_tusk"
     test: |
       system "#{bin}/tusk --version"
 nfpms:

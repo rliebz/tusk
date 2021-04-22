@@ -8,20 +8,9 @@ import (
 	"path/filepath"
 	"regexp"
 
-	_ "embed"
-
 	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
 )
-
-//go:embed completion/tusk-completion.bash
-var rawBashCompletion string
-
-//go:embed completion/tusk.fish
-var rawFishCompletion string
-
-//go:embed completion/_tusk
-var rawZshCompletion string
 
 const (
 	bashCompletionFile = "tusk-completion.bash"
