@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased 
+### Added
+- Added fish completions.
+
 ### Fixed
 - Fixed an issue where certain behavior might unintentionally run during
   tab completions.
