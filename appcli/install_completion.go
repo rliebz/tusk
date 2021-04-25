@@ -64,7 +64,7 @@ func UninstallCompletion(meta *runner.Metadata) error {
 }
 
 func installBashCompletion(logger *ui.Logger) error {
-	dir, err := runner.DataHome()
+	dir, err := getDataDir()
 	if err != nil {
 		return err
 	}
@@ -140,7 +140,7 @@ func appendIfAbsent(path, text string) error {
 }
 
 func uninstallBashCompletion() error {
-	dir, err := runner.DataHome()
+	dir, err := getDataDir()
 	if err != nil {
 		return err
 	}
@@ -217,6 +217,19 @@ func uninstallFishCompletion() error {
 	}
 
 	return uninstallFileFromDir(dir, fishCompletionFile)
+}
+
+func getDataDir() (string, error) {
+	if xdgHome := os.Getenv("XDG_DATA_HOME"); xdgHome != "" {
+		return filepath.Join(xdgHome, "tusk"), nil
+	}
+
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(homedir, ".local", "share", "tusk"), nil
 }
 
 // getFishCompletionsDir gets the directory to place completions in, adhering
