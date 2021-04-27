@@ -2,12 +2,17 @@
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased 
+
+## 0.6.2 (2021-04-26)
 ### Added
 - Added fish completions.
 
 ### Fixed
 - Fixed an issue where certain behavior might unintentionally run during
   tab completions.
+- Fixed an issue where XDG_DATA_HOME was respected incorrectly when installing
+  bash completions.
+
 
 ## 0.6.1 (2020-08-17)
 ### Added
