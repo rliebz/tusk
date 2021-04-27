@@ -87,6 +87,9 @@ jobs:
             - "33:53:3f:55:d6:d4:21:9c:88:29:5b:c6:c3:ee:b3:af"
       - checkout
       - run:
+          name: Install git
+          command: apt update && apt install -y git
+      - run:
           name: Install mkdocs
           command: pip3 install mkdocs==1.1.2
       - deploy:
