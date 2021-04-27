@@ -62,13 +62,11 @@ For bash:
 tusk --install-completion bash
 ```
 
-<!-- TODO: Uncomment when released
 For fish:
 
 ```fish
 tusk --install-completion fish
 ```
--->
 
 For zsh:
 
