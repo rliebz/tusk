@@ -1070,7 +1070,36 @@ tasks:
 	if expectedCommand != actualCommand.Exec {
 		t.Errorf(
 			`expected raw command for mytask: %q, actual: %q`,
-			expectedCommand, actualCommand,
+			expectedCommand, actualCommand.Exec,
+		)
+	}
+}
+
+func TestParseComplete_quiet(t *testing.T) {
+	cfgText := []byte(`
+tasks:
+  mytask:
+    run:
+      - exec: echo hello
+        quiet: yes
+`)
+
+	meta := &Metadata{
+		CfgText: cfgText,
+	}
+
+	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
+	if err != nil {
+		t.Fatalf("unexpected error parsing text: %s", err)
+	}
+
+	expectedQuiet := true
+	actualCommand := cfg.Tasks["mytask"].RunList[0].Command[0]
+
+	if expectedQuiet != actualCommand.Quiet {
+		t.Errorf(
+			`expected 'quiet' for mytask: %v, actual: %v`,
+			expectedQuiet, actualCommand.Quiet,
 		)
 	}
 }

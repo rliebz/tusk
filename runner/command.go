@@ -21,6 +21,10 @@ type Command struct {
 	// Print is the text that will be printed when the command is executed.
 	Print string `yaml:"print"`
 
+	// Quiet means that no text/hint will be printed before execution. Command
+	// output is still printed, similar to '--quiet' flag.
+	Quiet bool `yaml:"quiet,omitempty"`
+
 	// Dir is the directory of the command.
 	Dir string `yaml:"dir"`
 }
