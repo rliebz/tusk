@@ -241,6 +241,10 @@ func newTaskFromSub(ctx Context, desc *SubTask, cfg *Config) (*Task, error) {
 		values[optName] = opt
 	}
 
+	if desc.Quiet {
+		subTask.Quiet = true
+	}
+
 	if err := passTaskValues(ctx, subTask, cfg, values); err != nil {
 		return nil, err
 	}

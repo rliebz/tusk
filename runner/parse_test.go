@@ -1078,10 +1078,21 @@ tasks:
 func TestParseComplete_quiet(t *testing.T) {
 	cfgText := []byte(`
 tasks:
-  mytask:
+  cmd1:
     run:
       - exec: echo hello
         quiet: yes
+  cmd2:
+    quiet: yes
+    run:
+      - echo quiet
+  cmd3:
+    run:
+      - task:
+          name: sub
+          quiet: yes
+  sub:
+    run: echo sub
 `)
 
 	meta := &Metadata{
@@ -1093,13 +1104,30 @@ tasks:
 		t.Fatalf("unexpected error parsing text: %s", err)
 	}
 
-	expectedQuiet := true
-	actualCommand := cfg.Tasks["mytask"].RunList[0].Command[0]
+	var expectedQuiet = []struct {
+		testCase string
+		actual   bool
+	}{
+		{
+			"cmd1: quiet set on command",
+			cfg.Tasks["cmd1"].RunList[0].Command[0].Quiet,
+		},
+		{
+			"cmd2: quiet set on task",
+			cfg.Tasks["cmd2"].Quiet,
+		},
+		{
+			"cmd3: quiet set on subtask",
+			cfg.Tasks["cmd3"].RunList[0].SubTaskList[0].Quiet,
+		},
+	}
 
-	if expectedQuiet != actualCommand.Quiet {
-		t.Errorf(
-			`expected 'quiet' for mytask: %v, actual: %v`,
-			expectedQuiet, actualCommand.Quiet,
-		)
+	for _, tc := range expectedQuiet {
+		if !tc.actual {
+			t.Errorf(
+				`expected quiet in %s, actual: %v`,
+				tc.testCase, tc.actual,
+			)
+		}
 	}
 }
