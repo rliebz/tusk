@@ -184,11 +184,13 @@ func (t *Task) run(ctx Context, r *Run, s executionState) error {
 
 func (t *Task) runCommands(ctx Context, r *Run, s executionState) error {
 	for _, command := range r.Command {
-		switch s {
-		case stateFinally:
-			ctx.Logger.PrintCommandWithParenthetical(command.Print, "finally", ctx.Tasks()...)
-		default:
-			ctx.Logger.PrintCommand(command.Print, ctx.Tasks()...)
+		if !command.Quiet {
+			switch s {
+			case stateFinally:
+				ctx.Logger.PrintCommandWithParenthetical(command.Print, "finally", ctx.Tasks()...)
+			default:
+				ctx.Logger.PrintCommand(command.Print, ctx.Tasks()...)
+			}
 		}
 
 		if err := command.exec(ctx); err != nil {
