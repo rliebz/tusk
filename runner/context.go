@@ -19,11 +19,14 @@ func (r *Context) PushTask(t *Task) {
 	r.taskStack = append(r.taskStack, t)
 }
 
-// Tasks returns the list of tasks in the stack, in order.
+// Tasks returns the list of task names in the stack, in order. Private ones are
+// filtered out.
 func (r *Context) Tasks() []string {
-	output := make([]string, len(r.taskStack))
-	for i, t := range r.taskStack {
-		output[i] = t.Name
+	output := make([]string, 0, len(r.taskStack))
+	for _, t := range r.taskStack {
+		if !t.Private {
+			output = append(output, t.Name)
+		}
 	}
 	return output
 }
