@@ -7,7 +7,6 @@ type SubTask struct {
 	Name    string
 	Args    marshal.StringList
 	Options map[string]string
-	Quiet   bool
 }
 
 // UnmarshalYAML allows unmarshaling a string to represent the subtask name.

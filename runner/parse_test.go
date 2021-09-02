@@ -1078,21 +1078,14 @@ tasks:
 func TestParseComplete_quiet(t *testing.T) {
 	cfgText := []byte(`
 tasks:
-  cmd1:
+  quietCmd:
     run:
       - exec: echo hello
         quiet: yes
-  cmd2:
+  quietTask:
     quiet: yes
     run:
       - echo quiet
-  cmd3:
-    run:
-      - task:
-          name: sub
-          quiet: yes
-  sub:
-    run: echo sub
 `)
 
 	meta := &Metadata{
@@ -1109,16 +1102,12 @@ tasks:
 		actual   bool
 	}{
 		{
-			"cmd1: quiet set on command",
-			cfg.Tasks["cmd1"].RunList[0].Command[0].Quiet,
+			"quiet set on command",
+			cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet,
 		},
 		{
-			"cmd2: quiet set on task",
-			cfg.Tasks["cmd2"].Quiet,
-		},
-		{
-			"cmd3: quiet set on subtask",
-			cfg.Tasks["cmd3"].RunList[0].SubTaskList[0].Quiet,
+			"quiet set on task",
+			cfg.Tasks["quietTask"].Quiet,
 		},
 	}
 

@@ -151,21 +151,26 @@ tasks:
         quiet: true
 ```
 
-This property is also inherited from parent tasks in the stack, so in both of
-thses cases the command from the `info` task is not printed either:
+This property can also be set for an entire task and is inherited from parent
+tasks in the stack, so in both of these cases the executed commands are not
+printed either:
 
 ```yaml
 tasks:
-  quietParent:
+
+  quietParentTask:
     quiet: true
     run:
-      task: info
-  quietSubtask:
+      task: child
+  child:
+    run: echo "I will be quiet .."
+
+  quietChildTask:
     run:
       task:
         name: info
-        quiet: true
   info:
+    quiet: true
     run: echo "Purely informative step ..."
 ```
 
