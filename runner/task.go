@@ -126,10 +126,7 @@ func (t *Task) Dependencies() []string {
 
 // Execute runs the Run scripts in the task.
 func (t *Task) Execute(ctx Context) (err error) {
-	if !t.Private {
-		ctx.PushTask(t)
-	}
-
+	ctx.PushTask(t)
 	ctx.Logger.PrintTask(t.Name)
 
 	defer ctx.Logger.PrintTaskCompleted(t.Name)
