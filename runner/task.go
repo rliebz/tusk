@@ -198,9 +198,9 @@ func (t *Task) runCommands(ctx Context, r *Run, s executionState) error {
 		if !shouldBeQuiet(command, ctx) {
 			switch s {
 			case stateFinally:
-				ctx.Logger.PrintCommandWithParenthetical(command.Print, "finally", ctx.Tasks()...)
+				ctx.Logger.PrintCommandWithParenthetical(command.Print, "finally", ctx.TaskNames()...)
 			default:
-				ctx.Logger.PrintCommand(command.Print, ctx.Tasks()...)
+				ctx.Logger.PrintCommand(command.Print, ctx.TaskNames()...)
 			}
 		}
 
