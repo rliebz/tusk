@@ -8,12 +8,25 @@ import (
 	"path/filepath"
 	"regexp"
 
+	// Embed completion scripts.
+	_ "embed"
+
 	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
 )
 
+//go:embed completion/tusk-completion.bash
+var rawBashCompletion string
+
+//go:embed completion/tusk.fish
+var rawFishCompletion string
+
+//go:embed completion/_tusk
+var rawZshCompletion string
+
 const (
 	bashCompletionFile = "tusk-completion.bash"
+	fishCompletionFile = "tusk.fish"
 	zshCompletionFile  = "_tusk"
 	zshInstallDir      = "/usr/local/share/zsh/site-functions"
 )
@@ -26,6 +39,8 @@ func InstallCompletion(meta *runner.Metadata) error {
 	switch shell {
 	case "bash":
 		return installBashCompletion(meta.Logger)
+	case "fish":
+		return installFishCompletion(meta.Logger)
 	case "zsh":
 		return installZshCompletion(meta.Logger, zshInstallDir)
 	default:
@@ -39,6 +54,8 @@ func UninstallCompletion(meta *runner.Metadata) error {
 	switch shell {
 	case "bash":
 		return uninstallBashCompletion()
+	case "fish":
+		return uninstallFishCompletion()
 	case "zsh":
 		return uninstallZshCompletion(zshInstallDir)
 	default:
@@ -47,7 +64,7 @@ func UninstallCompletion(meta *runner.Metadata) error {
 }
 
 func installBashCompletion(logger *ui.Logger) error {
-	dir, err := runner.DataHome()
+	dir, err := getDataDir()
 	if err != nil {
 		return err
 	}
@@ -123,7 +140,7 @@ func appendIfAbsent(path, text string) error {
 }
 
 func uninstallBashCompletion() error {
-	dir, err := runner.DataHome()
+	dir, err := getDataDir()
 	if err != nil {
 		return err
 	}
@@ -182,6 +199,52 @@ func removeLineInFile(path string, re *regexp.Regexp) error {
 	rf.Close() // nolint: errcheck
 	wf.Close() // nolint: errcheck
 	return os.Rename(wf.Name(), path)
+}
+
+func installFishCompletion(logger *ui.Logger) error {
+	dir, err := getFishCompletionsDir()
+	if err != nil {
+		return err
+	}
+
+	return installFileInDir(logger, dir, fishCompletionFile, []byte(rawFishCompletion))
+}
+
+func uninstallFishCompletion() error {
+	dir, err := getFishCompletionsDir()
+	if err != nil {
+		return err
+	}
+
+	return uninstallFileFromDir(dir, fishCompletionFile)
+}
+
+func getDataDir() (string, error) {
+	if xdgHome := os.Getenv("XDG_DATA_HOME"); xdgHome != "" {
+		return filepath.Join(xdgHome, "tusk"), nil
+	}
+
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(homedir, ".local", "share", "tusk"), nil
+}
+
+// getFishCompletionsDir gets the directory to place completions in, adhering
+// to the XDG base directory.
+func getFishCompletionsDir() (string, error) {
+	if xdgHome := os.Getenv("XDG_CONFIG_HOME"); xdgHome != "" {
+		return filepath.Join(xdgHome, "fish", "completions"), nil
+	}
+
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(homedir, ".config", "fish", "completions"), nil
 }
 
 func installZshCompletion(logger *ui.Logger, dir string) error {

@@ -104,15 +104,4 @@ for that line:
 cmd := exec.Command("sh", "-c", command) // nolint: gosec
 ```
 
-For a slightly higher-fidelity test suite, you can [configure the `circleci`
-command line tool][circleci-cli] along with docker to run your tests locally in
-containers the same way they would be run against a pull request.
-
-With docker running locally:
-
-```bash
-tusk circleci
-```
-
-[circleci-cli]: https://circleci.com/docs/2.0/local-cli/
 [spec.md]: https://github.com/rliebz/tusk/blob/master/docs/spec.md

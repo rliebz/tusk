@@ -5,32 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"gotest.tools/v3/assert"
-	"gotest.tools/v3/env"
 )
-
-func TestDataHome_xdg(t *testing.T) {
-	want := "/foo/bar/baz"
-	defer env.Patch(t, "XDG_DATA_HOME", want)()
-
-	got, err := DataHome()
-	assert.NilError(t, err)
-
-	assert.Equal(t, want, got)
-}
-
-func TestDataHome_default(t *testing.T) {
-	home, err := os.UserHomeDir()
-	assert.NilError(t, err)
-
-	want := filepath.Join(home, ".local", "share", "tusk")
-
-	got, err := DataHome()
-	assert.NilError(t, err)
-
-	assert.Equal(t, want, got)
-}
 
 func TestSearchForFile(t *testing.T) {
 	tmpdir, cleanup := useTempDir(t)

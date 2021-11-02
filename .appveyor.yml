@@ -5,14 +5,17 @@ branches:
     - master
 
 environment:
+  GOROOT: c:\Program Files\Go
   GOPATH: c:\gopath
-  GO_VERSION: 1.14
+  GO_VERSION: 1.16.3
 
 install:
   # Install specific Go version
   - rmdir c:\go /s /q
   - appveyor DownloadFile https://storage.googleapis.com/golang/go%GO_VERSION%.windows-amd64.msi
   - msiexec /i go%GO_VERSION%.windows-amd64.msi /q
+  # Add reference to Go installation
+  - set PATH=c:\Program Files\Go\bin;%PATH%
   # Add GOPATH to reference installed binary
   - set PATH=%GOPATH%\bin;%PATH%
   # Add MinGW for gcc

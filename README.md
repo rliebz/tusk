@@ -62,6 +62,12 @@ For bash:
 tusk --install-completion bash
 ```
 
+For fish:
+
+```fish
+tusk --install-completion fish
+```
+
 For zsh:
 
 ```zsh

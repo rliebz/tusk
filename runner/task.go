@@ -27,6 +27,7 @@ type Task struct {
 	Usage       string  `yaml:",omitempty"`
 	Description string  `yaml:",omitempty"`
 	Private     bool
+	Quiet       bool
 
 	// Computed members not specified in yaml file
 	Name string            `yaml:"-"`
@@ -125,10 +126,7 @@ func (t *Task) Dependencies() []string {
 
 // Execute runs the Run scripts in the task.
 func (t *Task) Execute(ctx Context) (err error) {
-	if !t.Private {
-		ctx.PushTask(t)
-	}
-
+	ctx.PushTask(t)
 	ctx.Logger.PrintTask(t.Name)
 
 	defer ctx.Logger.PrintTaskCompleted(t.Name)
@@ -182,13 +180,28 @@ func (t *Task) run(ctx Context, r *Run, s executionState) error {
 	return nil
 }
 
+// check if the command or any of the tasks in the stack are quiet
+func shouldBeQuiet(cmd Command, ctx Context) bool {
+	if cmd.Quiet {
+		return true
+	}
+	for _, t := range ctx.taskStack {
+		if t.Quiet {
+			return true
+		}
+	}
+	return false
+}
+
 func (t *Task) runCommands(ctx Context, r *Run, s executionState) error {
 	for _, command := range r.Command {
-		switch s {
-		case stateFinally:
-			ctx.Logger.PrintCommandWithParenthetical(command.Print, "finally", ctx.Tasks()...)
-		default:
-			ctx.Logger.PrintCommand(command.Print, ctx.Tasks()...)
+		if !shouldBeQuiet(command, ctx) {
+			switch s {
+			case stateFinally:
+				ctx.Logger.PrintCommandWithParenthetical(command.Print, "finally", ctx.Tasks()...)
+			default:
+				ctx.Logger.PrintCommand(command.Print, ctx.Tasks()...)
+			}
 		}
 
 		if err := command.exec(ctx); err != nil {

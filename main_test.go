@@ -50,7 +50,6 @@ Usage:
 
 Tasks:
    bootstrap  Set up app dependencies for first time use
-   circleci   Run the circleci build locally
    lint       Run static analysis
    release    Release the latest version with goreleaser
    test       Run the tests

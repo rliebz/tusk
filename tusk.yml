@@ -14,17 +14,14 @@ tasks:
         default: https://install.goreleaser.com/github.com/golangci/golangci-lint.sh
       golangci-version:
         private: true
-        default: 1.30.0
+        default: 1.39.0
     run:
       - when:
           command: golangci-lint --version | grep -qv ${golangci-version}
         command: curl -fLSs ${golangci-url} | bash -s -- -b ${bin-dir} v${golangci-version}
       - when:
           command: "! command -v goimports"
-        command: GO111MODULE=off go get golang.org/x/tools/cmd/goimports
-      - when:
-          command: '! command -v circleci'
-        command: curl -fLSs https://circle.ci/cli | DESTDIR=${bin-dir} bash
+        command: go install golang.org/x/tools/cmd/goimports@latest
 
   lint:
     usage: Run static analysis
@@ -82,19 +79,6 @@ tasks:
     run:
       - go mod tidy
       - goimports -w .
-
-  circleci:
-    usage: Run the circleci build locally
-    description: |
-      Alternative to `tusk test --all`.
-
-      Run the local build using the CircleCI command-line tool. This will spin
-      up a docker container locally and run linters and tests in an environment
-      that more closely resembles the pipeline run on CircleCI, but is not
-      easily configurable.
-
-      Requires docker to be running locally.
-    run: circleci local execute --job local
 
   release:
     usage: Release the latest version with goreleaser

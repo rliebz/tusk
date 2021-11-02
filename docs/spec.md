@@ -137,6 +137,43 @@ tasks:
         print: echo "*****"
 ```
 
+##### Quiet
+
+Sometimes you may not want to print the command-to-be-run at all. Comparable to
+the global `-q`/`--quiet` commandline flag but permanently configured per
+command.
+
+```yaml
+tasks:
+  hello:
+    run:
+      - exec: echo "Purely informative step ..."
+        quiet: true
+```
+
+This property can also be set for an entire task and is inherited from parent
+tasks in the stack, so in both of these cases the executed commands are not
+printed either:
+
+```yaml
+tasks:
+
+  quietParentTask:
+    quiet: true
+    run:
+      task: child
+  child:
+    run: echo "I will be quiet .."
+
+  quietChildTask:
+    run:
+      task:
+        name: info
+  info:
+    quiet: true
+    run: echo "Purely informative step ..."
+```
+
 ##### Dir
 
 The `dir` clause sets the working directory for a specific command:

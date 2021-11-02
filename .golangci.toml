@@ -26,7 +26,6 @@ exclude-use-default = false
 enable = [
   "golint",
   "gosec",
-  "interfacer",
   "unconvert",
   "dupl",
   "goconst",

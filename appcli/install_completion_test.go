@@ -38,7 +38,7 @@ func TestInstallBashCompletion(t *testing.T) {
 	homedir := fs.NewDir(t, "home")
 	defer homedir.Remove()
 
-	datadir := fs.NewDir(t, "data")
+	datadir := fs.NewDir(t, "data", fs.WithDir("tusk"))
 	defer datadir.Remove()
 
 	defer env.PatchAll(t, map[string]string{
@@ -50,7 +50,7 @@ func TestInstallBashCompletion(t *testing.T) {
 	err := installBashCompletion(ui.Noop())
 	assert.NilError(t, err)
 
-	completionFile := filepath.Join(datadir.Path(), "tusk-completion.bash")
+	completionFile := filepath.Join(datadir.Path(), "tusk", "tusk-completion.bash")
 	contents, err := ioutil.ReadFile(completionFile)
 	assert.NilError(t, err)
 
@@ -182,10 +182,16 @@ func TestAppendIfAbsent_no_file(t *testing.T) {
 }
 
 func TestUninstallBashCompletion(t *testing.T) {
-	datadir := fs.NewDir(t, "data", fs.WithFile("tusk-completion.bash", rawBashCompletion))
+	datadir := fs.NewDir(
+		t,
+		"data",
+		fs.WithDir("tusk",
+			fs.WithFile("tusk-completion.bash", rawBashCompletion),
+		),
+	)
 	defer datadir.Remove()
 
-	rcfile := filepath.Join(datadir.Path(), "tusk-completion.bash")
+	rcfile := filepath.Join(datadir.Path(), "tusk", "tusk-completion.bash")
 
 	contents := fmt.Sprintf("# Preamble\nsource %q", filepath.ToSlash(rcfile))
 	homedir := fs.NewDir(t, "home", fs.WithFile(".bashrc", contents))
@@ -231,6 +237,101 @@ match`
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(want, string(got)))
+}
+
+func TestInstallFishCompletion(t *testing.T) {
+	cfgdir := fs.NewDir(t, "data")
+	defer cfgdir.Remove()
+
+	defer env.PatchAll(t, map[string]string{
+		"XDG_CONFIG_HOME": cfgdir.Path(),
+	})()
+
+	err := installFishCompletion(ui.Noop())
+	assert.NilError(t, err)
+
+	completionFile := filepath.Join(cfgdir.Path(), "fish", "completions", "tusk.fish")
+	contents, err := ioutil.ReadFile(completionFile)
+	assert.NilError(t, err)
+
+	assert.Check(t, cmp.Equal(string(contents), rawFishCompletion))
+}
+
+func TestUninstallFishCompletion(t *testing.T) {
+	cfgdir := fs.NewDir(
+		t,
+		"data",
+		fs.WithDir(
+			"fish",
+			fs.WithDir(
+				"completions",
+				fs.WithFile("tusk.fish", rawFishCompletion),
+			),
+		),
+	)
+	defer cfgdir.Remove()
+
+	completionFile := filepath.Join(cfgdir.Path(), "fish", "completions", "tusk.fish")
+	_, err := os.Stat(completionFile)
+	assert.NilError(t, err)
+
+	defer env.PatchAll(t, map[string]string{
+		"XDG_CONFIG_HOME": cfgdir.Path(),
+	})()
+
+	err = uninstallFishCompletion()
+	assert.NilError(t, err)
+
+	_, err = os.Stat(completionFile)
+	assert.Check(t, os.IsNotExist(err))
+}
+
+func TestGetDataDir_xdg(t *testing.T) {
+	xdgDataHome := "/foo/bar/baz"
+	defer env.Patch(t, "XDG_DATA_HOME", xdgDataHome)()
+
+	want := filepath.Join(xdgDataHome, "tusk")
+
+	got, err := getDataDir()
+	assert.NilError(t, err)
+
+	assert.Equal(t, want, got)
+}
+
+func TestGetDataDir_default(t *testing.T) {
+	home, err := os.UserHomeDir()
+	assert.NilError(t, err)
+
+	want := filepath.Join(home, ".local", "share", "tusk")
+
+	got, err := getDataDir()
+	assert.NilError(t, err)
+
+	assert.Equal(t, want, got)
+}
+
+func TestGetFishCompletionsDir_xdg(t *testing.T) {
+	cfgHome := "/foo/bar/baz"
+	defer env.Patch(t, "XDG_CONFIG_HOME", cfgHome)()
+
+	want := filepath.Join(cfgHome, "fish", "completions")
+
+	got, err := getFishCompletionsDir()
+	assert.NilError(t, err)
+
+	assert.Equal(t, want, got)
+}
+
+func TestGetFishCompletionsDir_default(t *testing.T) {
+	home, err := os.UserHomeDir()
+	assert.NilError(t, err)
+
+	want := filepath.Join(home, ".config", "fish", "completions")
+
+	got, err := getFishCompletionsDir()
+	assert.NilError(t, err)
+
+	assert.Equal(t, want, got)
 }
 
 func TestInstallZshCompletion(t *testing.T) {
