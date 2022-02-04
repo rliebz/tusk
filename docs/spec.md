@@ -139,39 +139,38 @@ tasks:
 
 ##### Quiet
 
-Sometimes you may not want to print the command-to-be-run at all. Comparable to
-the global `-q`/`--quiet` commandline flag but permanently configured per
-command.
+Sometimes you may not want to print the command-to-be-run at all. In that case,
+the `quiet` clause can be used. This is comparable to the global `-q`/`--quiet`
+command-line flag in that it silence's Tusk's logging without silencing the
+command output:
 
 ```yaml
 tasks:
   hello:
     run:
-      - exec: echo "Purely informative step ..."
+      command:
+        exec: curl http://example.com
         quiet: true
 ```
 
-This property can also be set for an entire task and is inherited from parent
-tasks in the stack, so in both of these cases the executed commands are not
-printed either:
+This property can also be set for an entire task and is inherited by any
+sub-task. In both of these cases the executed commands are not printed:
 
 ```yaml
 tasks:
-
-  quietParentTask:
+  quiet-parent:
     quiet: true
     run:
-      task: child
-  child:
-    run: echo "I will be quiet .."
+      task: normal-child
+  normal-child:
+    run: curl http://example.com
 
-  quietChildTask:
+  normal-parent:
     run:
-      task:
-        name: info
-  info:
+      task: quiet-child
+  quiet-child:
     quiet: true
-    run: echo "Purely informative step ..."
+    run: curl http://example.com
 ```
 
 ##### Dir
