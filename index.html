@@ -145,31 +145,30 @@ documentation</a>.</p>
 <p>The latest version can be downloaded from the <a href="https://github.com/rliebz/tusk/releases">releases page</a>.</p>
 <h4 id="installation-script">Installation Script</h4>
 <p>To install automatically, or for use in CI, run the following command:</p>
-<pre><code class="bash">curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
+<pre><code class="language-bash">curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
 </code></pre>
-
 <p>To pin to a specific version, replace <code>latest</code> with the tag for that version.
 This is recommended for automated scripts.</p>
 <p>To install to another directory, change the path passed to <code>-b</code>.</p>
 <h4 id="homebrew">Homebrew</h4>
 <p>On macOS, installation is also available through <a href="https://brew.sh">homebrew</a>:</p>
-<pre><code class="bash">brew install rliebz/tusk/tusk
+<pre><code class="language-bash">brew install rliebz/tusk/tusk
 </code></pre>
-
 <p>With Homebrew, tab completion is installed automatically.</p>
 <h4 id="tab-completion">Tab Completion</h4>
 <p>For bash:</p>
-<pre><code class="bash">tusk --install-completion bash
+<pre><code class="language-bash">tusk --install-completion bash
 </code></pre>
-
+<p>For fish:</p>
+<pre><code class="language-fish">tusk --install-completion fish
+</code></pre>
 <p>For zsh:</p>
-<pre><code class="zsh">tusk --install-completion zsh
+<pre><code class="language-zsh">tusk --install-completion zsh
 </code></pre>
-
 <p>Completions can be uninstalled as well with the <code>--uninstall-completion</code> flag.</p>
 <h3 id="usage">Usage</h3>
 <p>Create a <code>tusk.yml</code> file in the root of a project repository:</p>
-<pre><code class="yaml">tasks:
+<pre><code class="language-yaml">tasks:
   greet:
     usage: Say hello to someone
     options:
@@ -178,16 +177,14 @@ This is recommended for automated scripts.</p>
         default: World
     run: echo &quot;Hello, ${name}!&quot;
 </code></pre>
-
 <p>As long as there is a <code>tusk.yml</code> file in the working or any parent directory,
 tasks can be run:</p>
-<pre><code class="text">$ tusk greet --name friend
+<pre><code class="language-text">$ tusk greet --name friend
 Running: echo &quot;Hello, friend!&quot;
 Hello, friend!
 </code></pre>
-
 <p>Help messages are dynamically generated based on the YAML configuration:</p>
-<pre><code class="text">$ tusk --help
+<pre><code class="language-text">$ tusk --help
 tusk - the modern task runner
 
 Usage:
@@ -201,9 +198,8 @@ Global Options:
    -h, --help         Show help and exit
    ...
 </code></pre>
-
 <p>Individual tasks have help messages as well:</p>
-<pre><code class="text">$ tusk greet --help
+<pre><code class="language-text">$ tusk greet --help
 tusk greet - Say hello to someone
 
 Usage:
@@ -212,7 +208,6 @@ Usage:
 Options:
    --name &lt;value&gt;  A person to say &quot;Hello&quot; to
 </code></pre>
-
 <p>Additional information on the configuration spec can be found in the <a href="https://rliebz.github.io/tusk/spec/">project
 documentation</a>.</p>
 <p>For more detailed examples, check out the project's own <a href="https://github.com/rliebz/tusk/blob/master/tusk.yml"><code>tusk.yml</code></a>
@@ -274,6 +269,6 @@ can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING
 </html>
 
 <!--
-MkDocs version : 1.1
-Build Date UTC : 2020-08-18 02:19:57
+MkDocs version : 1.1.2
+Build Date UTC : 2022-02-17 02:41:32.274277+00:00
 -->
