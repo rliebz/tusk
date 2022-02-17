@@ -3,6 +3,11 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased 
 
+## 0.6.3 (2022-02-16)
+### Added
+- The `quiet`  clause is now available for commands and tasks to quiet
+  additional logging.
+
 ## 0.6.2 (2021-04-26)
 ### Added
 - Added fish completions.
