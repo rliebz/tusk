@@ -14,6 +14,8 @@ import (
 	"github.com/urfave/cli"
 )
 
+var version string
+
 func main() {
 	status := run(config{
 		args:   os.Args,
@@ -100,9 +102,11 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 }
 
 func printVersion(meta *runner.Metadata) {
-	version := "unknown"
-	if info, ok := debug.ReadBuildInfo(); ok {
-		version = info.Main.Version
+	if version == "" {
+		version = "(devel)"
+		if info, ok := debug.ReadBuildInfo(); ok {
+			version = info.Main.Version
+		}
 	}
 
 	meta.Logger.Println(version)
