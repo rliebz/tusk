@@ -7,7 +7,7 @@ branches:
 environment:
   GOROOT: c:\Program Files\Go
   GOPATH: c:\gopath
-  GO_VERSION: 1.16.3
+  GO_VERSION: 1.18.4
 
 install:
   # Install specific Go version

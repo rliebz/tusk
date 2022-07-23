@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"runtime/debug"
 	"syscall"
 
 	"github.com/rliebz/tusk/appcli"
@@ -12,8 +13,6 @@ import (
 	"github.com/rliebz/tusk/ui"
 	"github.com/urfave/cli"
 )
-
-var version = "dev"
 
 func main() {
 	status := run(config{
@@ -74,7 +73,7 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 	case meta.PrintHelp:
 		printHelp = true
 	case meta.PrintVersion:
-		meta.Logger.Println(version)
+		printVersion(meta)
 		return 0, nil
 	case meta.InstallCompletion != "":
 		return 0, appcli.InstallCompletion(meta)
@@ -98,6 +97,15 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 	}
 
 	return runApp(app, meta, args)
+}
+
+func printVersion(meta *runner.Metadata) {
+	version := "unknown"
+	if info, ok := debug.ReadBuildInfo(); ok {
+		version = info.Main.Version
+	}
+
+	meta.Logger.Println(version)
 }
 
 func runApp(app *cli.App, meta *runner.Metadata, args []string) (int, error) {

@@ -24,7 +24,7 @@ exclude-use-default = false
 
 [linters]
 enable = [
-  "golint",
+  "revive",
   "gosec",
   "unconvert",
   "dupl",
@@ -46,6 +46,9 @@ enable = [
   "exportloopref",
   "nolintlint",
 ]
+disable = [
+  "structcheck",
+]
 
 [linters-settings]
 
@@ -62,7 +65,7 @@ enable = [
   [linters-settings.gofmt]
   simplify = true
 
-  [linters-settings.golint]
+  [linters-settings.revive]
   min-confidence = 0.0
 
   [linters-settings.govet]
