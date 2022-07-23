@@ -17,7 +17,7 @@ jobs:
   lint:
     <<: *test_defaults
     docker:
-      - image: golangci/golangci-lint:v1.39-alpine
+      - image: golangci/golangci-lint:v1.47.2-alpine
     steps:
       - checkout
       - run: *mktestdir
@@ -30,7 +30,7 @@ jobs:
   test:
     <<: *test_defaults
     docker:
-      - image: circleci/golang:1.16.3
+      - image: cimg/go:1.18.4
     steps:
       - checkout
       - run: *mktestdir
@@ -73,7 +73,7 @@ jobs:
       - checkout
       - run:
           name: Install mkdocs
-          command: pip3 install mkdocs==1.1.2
+          command: pip3 install mkdocs==1.3.1
       - deploy:
           name: Run mkdocs build
           command: mkdocs build
@@ -91,7 +91,7 @@ jobs:
           command: apt update && apt install -y git
       - run:
           name: Install mkdocs
-          command: pip3 install mkdocs==1.1.2
+          command: pip3 install mkdocs==1.3.1
       - deploy:
           name: Run mkdocs deploy
           command: mkdocs gh-deploy

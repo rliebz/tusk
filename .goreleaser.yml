@@ -6,7 +6,7 @@ before:
 builds:
   - main: .
     binary: tusk
-    ldflags: -s -w -X main.version={{.Version}}
+    ldflags: -s -w
     env:
       - CGO_ENABLED=0
     goos:

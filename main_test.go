@@ -23,7 +23,7 @@ func TestRun_printVersion(t *testing.T) {
 		},
 	)
 
-	want := "dev\n"
+	want := "(devel)\n"
 	got := stdout.String()
 	assert.Check(t, cmp.Equal(want, got))
 	assert.Check(t, status == 0)
