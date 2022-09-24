@@ -2,7 +2,7 @@ package runner
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -45,7 +45,7 @@ func (m *Metadata) Set(o OptGetter) error {
 
 	if fullPath != "" {
 		var err error
-		m.CfgText, err = ioutil.ReadFile(fullPath)
+		m.CfgText, err = os.ReadFile(fullPath)
 		if err != nil {
 			return fmt.Errorf("reading config file %q: %w", fullPath, err)
 		}

@@ -61,7 +61,7 @@ func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			if err != nil {
 				return fmt.Errorf("opening included file: %w", err)
 			}
-			defer f.Close() // nolint: errcheck
+			defer f.Close() //nolint: errcheck
 
 			decoder := yaml.NewDecoder(f)
 			decoder.SetStrict(true)

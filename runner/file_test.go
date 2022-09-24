@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -73,7 +72,7 @@ func TestSearchForFile(t *testing.T) {
 func useTempDir(t *testing.T) (dirname string, cleanup func()) {
 	t.Helper()
 
-	tmpdir, err := ioutil.TempDir("", "tusk-test")
+	tmpdir, err := os.MkdirTemp("", "tusk-test")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
@@ -108,7 +107,7 @@ func mkDir(t *testing.T, elem ...string) string {
 	t.Helper()
 
 	fullPath := filepath.Join(elem...)
-	if err := os.MkdirAll(fullPath, 0750); err != nil {
+	if err := os.MkdirAll(fullPath, 0o750); err != nil {
 		t.Fatalf("failed to make directory: %v", err)
 	}
 
@@ -119,7 +118,7 @@ func mkConfigFile(t *testing.T, dir, fileName string) string {
 	t.Helper()
 
 	fullPath := filepath.Join(dir, fileName)
-	if err := ioutil.WriteFile(fullPath, []byte{}, 0644); err != nil {
+	if err := os.WriteFile(fullPath, []byte{}, 0o644); err != nil {
 		t.Fatalf("failed to create file: %v", err)
 	}
 

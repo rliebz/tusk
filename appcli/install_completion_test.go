@@ -2,7 +2,6 @@ package appcli
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -51,13 +50,13 @@ func TestInstallBashCompletion(t *testing.T) {
 	assert.NilError(t, err)
 
 	completionFile := filepath.Join(datadir.Path(), "tusk", "tusk-completion.bash")
-	contents, err := ioutil.ReadFile(completionFile)
+	contents, err := os.ReadFile(completionFile)
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(string(contents), rawBashCompletion))
 
 	rcfile := filepath.Join(homedir.Path(), ".bashrc")
-	rcContents, err := ioutil.ReadFile(rcfile)
+	rcContents, err := os.ReadFile(rcfile)
 	assert.NilError(t, err)
 
 	command := fmt.Sprintf("source %q", filepath.ToSlash(completionFile))
@@ -129,7 +128,7 @@ func TestAppendIfAbsent_trailing_newlines(t *testing.T) {
 	assert.NilError(t, err)
 
 	want := existing + text + "\n"
-	got, err := ioutil.ReadFile(f.Path())
+	got, err := os.ReadFile(f.Path())
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(want, string(got)))
@@ -145,7 +144,7 @@ func TestAppendIfAbsent_no_trailing_newline(t *testing.T) {
 	assert.NilError(t, err)
 
 	want := existing + "\n" + text + "\n"
-	got, err := ioutil.ReadFile(f.Path())
+	got, err := os.ReadFile(f.Path())
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(want, string(got)))
@@ -159,7 +158,7 @@ func TestAppendIfAbsent_exists(t *testing.T) {
 	err := appendIfAbsent(f.Path(), text)
 	assert.NilError(t, err)
 
-	got, err := ioutil.ReadFile(f.Path())
+	got, err := os.ReadFile(f.Path())
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(text, string(got)))
@@ -175,7 +174,7 @@ func TestAppendIfAbsent_no_file(t *testing.T) {
 	err := appendIfAbsent(f.Path(), text)
 	assert.NilError(t, err)
 
-	got, err := ioutil.ReadFile(f.Path())
+	got, err := os.ReadFile(f.Path())
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(text+"\n", string(got)))
@@ -209,7 +208,7 @@ func TestUninstallBashCompletion(t *testing.T) {
 	_, err = os.Stat(rcfile)
 	assert.Check(t, os.IsNotExist(err))
 
-	got, err := ioutil.ReadFile(filepath.Join(homedir.Path(), ".bashrc"))
+	got, err := os.ReadFile(filepath.Join(homedir.Path(), ".bashrc"))
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal("# Preamble\n", string(got)))
@@ -233,7 +232,7 @@ match`
 	err := removeLineInFile(file.Path(), regexp.MustCompile("match"))
 	assert.NilError(t, err)
 
-	got, err := ioutil.ReadFile(file.Path())
+	got, err := os.ReadFile(file.Path())
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(want, string(got)))
@@ -251,7 +250,7 @@ func TestInstallFishCompletion(t *testing.T) {
 	assert.NilError(t, err)
 
 	completionFile := filepath.Join(cfgdir.Path(), "fish", "completions", "tusk.fish")
-	contents, err := ioutil.ReadFile(completionFile)
+	contents, err := os.ReadFile(completionFile)
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(string(contents), rawFishCompletion))
@@ -341,7 +340,7 @@ func TestInstallZshCompletion(t *testing.T) {
 	err := installZshCompletion(ui.Noop(), dir.Path())
 	assert.NilError(t, err)
 
-	contents, err := ioutil.ReadFile(filepath.Join(dir.Path(), "_tusk"))
+	contents, err := os.ReadFile(filepath.Join(dir.Path(), "_tusk"))
 	assert.NilError(t, err)
 
 	assert.Check(t, cmp.Equal(string(contents), rawZshCompletion))

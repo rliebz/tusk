@@ -2,7 +2,7 @@ package appcli
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"os"
 	"sort"
 
@@ -63,8 +63,8 @@ func newBaseApp() *cli.App {
 // newSilentApp creates a cli.App that will never print to stderr / stdout.
 func newSilentApp() *cli.App {
 	app := newBaseApp()
-	app.Writer = ioutil.Discard
-	app.ErrWriter = ioutil.Discard
+	app.Writer = io.Discard
+	app.ErrWriter = io.Discard
 	app.CommandNotFound = func(c *cli.Context, command string) {}
 	return app
 }

@@ -3,7 +3,6 @@ package appcli
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -336,10 +335,10 @@ func TestGetConfigMetadata_file(t *testing.T) {
 		)
 	}
 
-	cfgText, err := ioutil.ReadFile(cfgPath)
+	cfgText, err := os.ReadFile(cfgPath)
 	if err != nil {
 		t.Fatalf(
-			"ioutil.ReadFile(%s): unexpected err: %s",
+			"os.ReadFile(%s): unexpected err: %s",
 			cfgPath, err,
 		)
 	}

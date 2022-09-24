@@ -83,9 +83,9 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 // Evaluate determines an option's value.
 //
 // The order of priority is:
-//   1. Command-line option passed
-//   2. Environment variable set
-//   3. The first item in the default value list with a valid when clause
+//  1. Command-line option passed
+//  2. Environment variable set
+//  3. The first item in the default value list with a valid when clause
 //
 // Values may also be cached to avoid re-running commands.
 func (o *Option) Evaluate(ctx Context, vars map[string]string) (string, error) {

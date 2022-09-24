@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -44,8 +43,8 @@ func New() *Logger {
 // Noop returns a logger that does not print anything.
 func Noop() *Logger {
 	return &Logger{
-		Stdout:    ioutil.Discard,
-		Stderr:    ioutil.Discard,
+		Stdout:    io.Discard,
+		Stderr:    io.Discard,
 		Verbosity: VerbosityLevelSilent,
 	}
 }

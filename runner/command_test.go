@@ -131,10 +131,10 @@ func TestCommand_exec(t *testing.T) {
 //
 // The following environment variables can configure this function:
 //
-// - TUSK_TEST_EXEC_COMMAND: Set to "1" to run this function.
-// - TUSK_TEST_COMMAND_ARGS: Set to a comma-separated list of expected command
-//   arguments.
-// - TUSK_TEST_COMMAND_DIR: Set to the expected directory
+//   - TUSK_TEST_EXEC_COMMAND: Set to "1" to run this function.
+//   - TUSK_TEST_COMMAND_ARGS: Set to a comma-separated list of expected command
+//     arguments.
+//   - TUSK_TEST_COMMAND_DIR: Set to the expected directory
 func TestCommand_exec_helper(*testing.T) {
 	if os.Getenv("TUSK_TEST_EXEC_COMMAND") != "1" {
 		return

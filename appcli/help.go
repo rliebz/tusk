@@ -13,8 +13,7 @@ import (
 )
 
 // init sets the help templates for urfave/cli.
-// nolint: lll, gochecknoinits
-func init() {
+func init() { //nolint: gochecknoinits
 	// These are both used, so both must be overridden
 	cli.HelpPrinterCustom = wrapPrinter(cli.HelpPrinterCustom)
 	cli.HelpPrinter = func(w io.Writer, templ string, data interface{}) {
@@ -23,6 +22,7 @@ func init() {
 
 	cli.FlagNamePrefixer = flagPrefixer
 
+	//nolint:lll
 	cli.AppHelpTemplate = `{{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
 
 Usage:
@@ -115,7 +115,7 @@ func prependHyphens(flagName string) string {
 }
 
 func createCommandHelp(t *runner.Task) string {
-	// nolint: lll
+	//nolint: lll
 	return fmt.Sprintf(`{{.HelpName}}{{if .Usage}} - {{.Usage}}{{end}}
 
 Usage:

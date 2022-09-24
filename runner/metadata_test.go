@@ -225,7 +225,7 @@ func TestMetadata_Set(t *testing.T) {
 			if err = os.Chdir(tt.wd); err != nil {
 				t.Fatal(err)
 			}
-			defer os.Chdir(cwd) // nolint: errcheck
+			defer os.Chdir(cwd) //nolint: errcheck
 
 			opts := mockOptGetter{
 				bools:   tt.bools,
@@ -318,7 +318,7 @@ func stashEnv(t *testing.T) {
 	t.Cleanup(func() {
 		for _, val := range environ {
 			parts := strings.Split(val, "=")
-			os.Setenv(parts[0], parts[1]) // nolint: errcheck
+			os.Setenv(parts[0], parts[1]) //nolint: errcheck
 		}
 	})
 
