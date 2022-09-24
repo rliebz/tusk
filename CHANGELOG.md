@@ -1,7 +1,9 @@
 # Changelog
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased 
+## Unreleased
+### Fixed
+- Improved handling of colons in bash completion.
 
 ## 0.6.3 (2022-02-16)
 ### Added
@@ -225,7 +227,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Add completion for option values.
 
 ### Fixed
-- Fix issue where global flags with hyphens are sometimes skipped during 
+- Fix issue where global flags with hyphens are sometimes skipped during
   interpolation.
 - Fix various issues with Zsh tab completions.
 
