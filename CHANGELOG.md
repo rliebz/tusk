@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ## Unreleased
 
 ## 0.6.4 (2022-09-27)
+### Added
+- Installation with `go install` is now officially supported.
+
 ### Fixed
 - Improved handling of colons in bash completion.
 

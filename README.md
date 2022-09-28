@@ -29,20 +29,13 @@ documentation][documentation].
 
 ### Installation
 
-The latest version can be downloaded from the [releases page][releases].
+#### Go
 
-#### Installation Script
-
-To install automatically, or for use in CI, run the following command:
+With Go 1.18+ installed:
 
 ```bash
-curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
+go install github.com/rliebz/tusk@latest
 ```
-
-To pin to a specific version, replace `latest` with the tag for that version.
-This is recommended for automated scripts.
-
-To install to another directory, change the path passed to `-b`.
 
 #### Homebrew
 
@@ -54,7 +47,21 @@ brew install rliebz/tusk/tusk
 
 With Homebrew, tab completion is installed automatically.
 
-#### Tab Completion
+#### Compiled Releases
+
+The latest version can be downloaded from the [releases page][releases].
+
+To install automatically:
+
+```bash
+curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
+```
+
+To pin to a specific version, replace `latest` with the tag for that version.
+
+To install to another directory, change the path passed to `-b`.
+
+### Installing Tab Completion
 
 For bash:
 
@@ -74,7 +81,7 @@ For zsh:
 tusk --install-completion zsh
 ```
 
-Completions can be uninstalled as well with the `--uninstall-completion` flag.
+Completions can be uninstalled with the `--uninstall-completion` flag.
 
 ### Usage
 
