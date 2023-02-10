@@ -49,11 +49,10 @@ Usage:
    {{.}} [global options] <task> [task options]
 
 Tasks:
-   bootstrap  Set up app dependencies for first time use
-   lint       Run static analysis
-   release    Release the latest version with goreleaser
-   test       Run the tests
-   tidy       Clean up and format the repo
+   lint     Run static analysis
+   release  Release the latest version with goreleaser
+   test     Run the tests
+   tidy     Clean up and format the repo
 
 Global Options:
    -f, --file <file>                   Set file to use as the config file
