@@ -1,28 +1,5 @@
 ---
 tasks:
-  bootstrap:
-    usage: Set up app dependencies for first time use
-    description: |
-      Install all dependencies for building, formatting, and testing the
-      application.
-    options:
-      bin-dir:
-        usage: The location for binary files. Defaults to /usr/local/bin
-        default: /usr/local/bin
-      golangci-url:
-        private: true
-        default: https://install.goreleaser.com/github.com/golangci/golangci-lint.sh
-      golangci-version:
-        private: true
-        default: 1.47.2
-    run:
-      - when:
-          command: golangci-lint --version | grep -qv ${golangci-version}
-        command: curl -fLSs ${golangci-url} | bash -s -- -b ${bin-dir} v${golangci-version}
-      - when:
-          command: "! command -v goimports"
-        command: go install golang.org/x/tools/cmd/goimports@latest
-
   lint:
     usage: Run static analysis
     description: |
@@ -37,7 +14,7 @@ tasks:
         default:
           when: fast
           value: --fast
-    run: golangci-lint run ${opts} ./...
+    run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.1 run ${opts} ./...
 
   test:
     usage: Run the tests
@@ -78,7 +55,7 @@ tasks:
     usage: Clean up and format the repo
     run:
       - go mod tidy
-      - goimports -w .
+      - go run golang.org/x/tools/cmd/goimports@latest -w .
 
   release:
     usage: Release the latest version with goreleaser

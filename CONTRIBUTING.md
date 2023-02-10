@@ -57,19 +57,13 @@ go install
 ```
 
 If you have already installed tusk from another source, make sure you test
-against the development version installed locally. If you do not get `dev` as
-the version, you may need to move your Go binary path earlier in your `PATH`:
+against the development version installed locally. If you do not get `(devel)`
+as the version, you may need to move your Go binary path earlier in your
+`PATH`:
 
 ```bash
 $ tusk --version
-dev
-```
-
-Once `tusk` is on your path, make sure to run the `bootstrap` command to
-install all other dependencies:
-
-```bash
-tusk bootstrap
+(devel)
 ```
 
 ## Making Changes
