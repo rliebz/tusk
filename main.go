@@ -103,7 +103,6 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 
 func printVersion(meta *runner.Metadata) {
 	if version == "" {
-		version = "(devel)"
 		if info, ok := debug.ReadBuildInfo(); ok {
 			version = info.Main.Version
 		}
