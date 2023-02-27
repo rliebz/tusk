@@ -20,6 +20,7 @@ type Option struct {
 	Usage    string
 	Private  bool
 	Required bool
+	Rewrite  string
 
 	// Used to determine value
 	Environment   string
@@ -55,6 +56,10 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return err
 	}
 
+	return o.validate()
+}
+
+func (o *Option) validate() error {
 	if len(o.Short) > 1 {
 		return fmt.Errorf(
 			"option short name %q cannot exceed one character",
@@ -81,6 +86,10 @@ func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	if o.Required && len(o.DefaultValues) > 0 {
 		return errors.New("default value defined for required option")
+	}
+
+	if o.Rewrite != "" && !o.isBoolean() {
+		return errors.New("rewrite may only be performed on boolean values")
 	}
 
 	return nil

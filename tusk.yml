@@ -9,12 +9,8 @@ tasks:
         usage: Only run fast linters
         type: bool
         short: f
-      opts:
-        private: true
-        default:
-          when: fast
-          value: --fast
-    run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.1 run ${opts} ./...
+        rewrite: --fast
+    run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.1 run ${fast} ./...
 
   test:
     usage: Run the tests
@@ -29,27 +25,19 @@ tasks:
       fast:
         usage: Only run fast tests
         type: bool
+        rewrite: -short
       verbose:
         usage: Run the tests in verbose mode
         short: v
         type: bool
-      verbose-string:
-        private: true
-        default:
-          when: verbose
-          value: -v
-      short-string:
-        private: true
-        default:
-          when: fast
-          value: -short
+        rewrite: -v
     run:
       - when: all
         task:
           name: lint
           options:
             fast: ${fast}
-      - command: go test -cover -race ${verbose-string} ${short-string} ./...
+      - command: go test -cover -race ${fast} ${verbose} ./...
 
   tidy:
     usage: Clean up and format the repo
@@ -63,12 +51,8 @@ tasks:
       snapshot:
         usage: Release without publishing or validation
         type: bool
-      snapshot-flags:
-        private: true
-        default:
-          when: snapshot
-          value: --snapshot
+        rewrite: --snapshot
     run: |
       header='^## [0-9]+\.[0-9]+\.[0-9]+'
       awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
-          goreleaser --rm-dist --release-notes /dev/stdin ${snapshot-flags}
+          goreleaser --rm-dist --release-notes /dev/stdin ${snapshot}

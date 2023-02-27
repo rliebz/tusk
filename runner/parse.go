@@ -167,6 +167,15 @@ func interpolateOption(ctx Context, o *Option, passed, vars map[string]string) e
 		return err
 	}
 
+	if o.isBoolean() && o.Rewrite != "" {
+		switch value {
+		case "true":
+			value = o.Rewrite
+		case "false":
+			value = ""
+		}
+	}
+
 	vars[o.Name] = value
 
 	return nil

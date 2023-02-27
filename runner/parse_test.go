@@ -805,6 +805,30 @@ tasks:
 			}},
 		}},
 	},
+
+	{
+		"rewrite",
+		`
+tasks:
+  mytask:
+    options:
+      foo:
+        type: bool
+        rewrite: newvalue
+    run: echo ${foo}
+`,
+		[]string{},
+		map[string]string{
+			"foo": "true",
+		},
+		"mytask",
+		RunList{{
+			Command: CommandList{{
+				Exec:  "echo newvalue",
+				Print: "echo newvalue",
+			}},
+		}},
+	},
 }
 
 func TestParseComplete_interpolates(t *testing.T) {
@@ -859,17 +883,17 @@ var invalidinterpolatetests = []struct {
 	args     []string
 	flags    map[string]string
 	taskName string
+	wantErr  string
 }{
 	{
-		"invalid yaml",
-		`}{`,
-		[]string{},
-		map[string]string{},
-		"mytask",
+		name:     "invalid yaml",
+		input:    `}{`,
+		taskName: "mytask",
+		wantErr:  `yaml: did not find expected node content`,
 	},
 	{
-		"not passing required arg to subtask",
-		`
+		name: "not passing required arg to subtask",
+		input: `
 tasks:
   one:
     args:
@@ -880,13 +904,12 @@ tasks:
       task:
         name: one
 `,
-		[]string{},
-		map[string]string{},
-		"two",
+		taskName: "two",
+		wantErr:  `subtask "one" requires 1 args but got 0`,
 	},
 	{
-		"passing non-arg to subtask",
-		`
+		name: "passing non-arg to subtask",
+		input: `
 tasks:
   one:
     run: echo hello
@@ -896,13 +919,12 @@ tasks:
         name: one
         args: foo
 `,
-		[]string{},
-		map[string]string{},
-		"two",
+		taskName: "two",
+		wantErr:  `subtask "one" requires 0 args but got 1`,
 	},
 	{
-		"not passing required option to subtask",
-		`
+		name: "not passing required option to subtask",
+		input: `
 tasks:
   one:
     options:
@@ -913,13 +935,12 @@ tasks:
       task:
         name: one
 `,
-		[]string{},
-		map[string]string{},
-		"two",
+		taskName: "two",
+		wantErr:  `no value passed for required option: foo`,
 	},
 	{
-		"passing non-option to subtask",
-		`
+		name: "passing non-option to subtask",
+		input: `
 tasks:
   one:
     run: echo hello
@@ -929,13 +950,12 @@ tasks:
         name: one
         options: {wrong: foo}
 `,
-		[]string{},
-		map[string]string{},
-		"two",
+		taskName: "two",
+		wantErr:  `option "wrong" cannot be passed to task "one"`,
 	},
 	{
-		"passing global-option to subtask",
-		`
+		name: "passing global-option to subtask",
+		input: `
 options:
   foo:
     default: foovalue
@@ -948,25 +968,23 @@ tasks:
         name: one
         options: {foo: replacement}
 `,
-		[]string{},
-		map[string]string{},
-		"two",
+		taskName: "two",
+		wantErr:  `option "foo" cannot be passed to task "one"`,
 	},
 	{
-		"sub-task does not exist",
-		`
+		name: "sub-task does not exist",
+		input: `
 tasks:
   mytask:
     run:
       task: fake
 `,
-		[]string{},
-		map[string]string{},
-		"mytask",
+		taskName: "mytask",
+		wantErr:  `sub-task "fake" does not exist`,
 	},
 	{
-		"argument and option share name",
-		`
+		name: "argument and option share name",
+		input: `
 tasks:
   mytask:
     args:
@@ -975,39 +993,81 @@ tasks:
       foo: {}
     run: echo oops
 `,
-		[]string{},
-		map[string]string{"foo": "foovalue"},
-		"mytask",
+		flags:    map[string]string{"foo": "foovalue"},
+		taskName: "mytask",
+		wantErr:  `argument and option "foo" must have unique names within a task`,
 	},
 	{
-		"argument not passed",
-		`
+		name: "argument not passed",
+		input: `
 tasks:
   mytask:
     args:
       foo: {}
     run: echo oops
 `,
-		[]string{},
-		map[string]string{},
-		"mytask",
+		taskName: "mytask",
+		wantErr:  `task "mytask" requires exactly 1 args, got 0`,
 	},
 	{
-		"extra argument passed",
-		`
+		name: "extra argument passed",
+		input: `
 tasks:
   mytask:
     run: echo oops
 `,
-		[]string{"foo"},
-		map[string]string{},
-		"mytask",
+		args:     []string{"foo"},
+		taskName: "mytask",
+		wantErr:  `task "mytask" requires exactly 0 args, got 1`,
+	},
+
+	{
+		name: "non-boolean rewrite",
+		input: `
+tasks:
+  mytask:
+    options:
+      foo:
+        type: string
+        rewrite: newvalue
+    run: echo ${bar}
+`,
+		flags: map[string]string{
+			"foo": "true",
+		},
+		taskName: "mytask",
+		wantErr:  "rewrite may only be performed on boolean values",
+	},
+
+	{
+		name: "chained rewrite",
+		input: `
+tasks:
+  mytask:
+    options:
+      foo:
+        type: bool
+        rewrite: newvalue
+      bar:
+        default:
+          when:
+            equal: {foo: newvalue}
+        rewrite: barvalue
+    run: echo ${bar}
+`,
+		flags: map[string]string{
+			"foo": "true",
+		},
+		taskName: "mytask",
+		wantErr:  "rewrite may only be performed on boolean values",
 	},
 }
 
 func TestParseComplete_invalid(t *testing.T) {
 	for _, tt := range invalidinterpolatetests {
 		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
 			t.Logf(`
 executing test case: %s
 for task %q with parameters: %s
@@ -1024,9 +1084,8 @@ given input:
 			}
 
 			_, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
-			if err == nil {
-				t.Fatal("want error, got nil")
-			}
+			g.Must(ghost.Error(err))
+			g.Should(ghost.Equal(tt.wantErr, err.Error()))
 		})
 	}
 }
