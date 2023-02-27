@@ -1,20 +1,20 @@
 package runner
 
 import (
-	"fmt"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/tusk/marshal"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
 var interpolatetests = []struct {
-	testCase string
+	name     string
 	input    string
 	args     []string
 	flags    map[string]string
 	taskName string
-	expected RunList
+	want     RunList
 }{
 	{
 		"interpreter",
@@ -810,7 +810,8 @@ tasks:
 
 func TestParseComplete_interpolates(t *testing.T) {
 	for _, tt := range interpolatetests {
-		context := fmt.Sprintf(`
+		t.Run(tt.name, func(t *testing.T) {
+			t.Logf(`
 executing test case: %s
 for task %q with parameters: %s
 ---
@@ -818,24 +819,19 @@ given input:
 %s
 ---
 `,
-			tt.testCase, tt.taskName, tt.flags, tt.input,
-		)
+				tt.name, tt.taskName, tt.flags, tt.input,
+			)
 
-		meta := &Metadata{
-			CfgText: []byte(tt.input),
-		}
+			meta := &Metadata{
+				CfgText: []byte(tt.input),
+			}
 
-		cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
-		if err != nil {
-			t.Errorf(context+"unexpected error parsing text: %s", err)
-			continue
-		}
+			cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
+			assert.NilError(t, err)
 
-		actual := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
-
-		if !cmp.Equal(tt.expected, actual) {
-			t.Errorf("%stask mismatch:\n%s", context, cmp.Diff(tt.expected, actual))
-		}
+			got := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
+			assert.Check(t, cmp.DeepEqual(tt.want, got))
+		})
 	}
 }
 
@@ -857,7 +853,7 @@ func flattenRuns(runList RunList) RunList {
 }
 
 var invalidinterpolatetests = []struct {
-	testCase string
+	name     string
 	input    string
 	args     []string
 	flags    map[string]string
@@ -1010,7 +1006,8 @@ tasks:
 
 func TestParseComplete_invalid(t *testing.T) {
 	for _, tt := range invalidinterpolatetests {
-		context := fmt.Sprintf(`
+		t.Run(tt.name, func(t *testing.T) {
+			t.Logf(`
 executing test case: %s
 for task %q with parameters: %s
 ---
@@ -1018,18 +1015,18 @@ given input:
 %s
 ---
 `,
-			tt.testCase, tt.taskName, tt.flags, tt.input,
-		)
+				tt.name, tt.taskName, tt.flags, tt.input,
+			)
 
-		meta := &Metadata{
-			CfgText: []byte(tt.input),
-		}
+			meta := &Metadata{
+				CfgText: []byte(tt.input),
+			}
 
-		_, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
-		if err == nil {
-			t.Errorf(context+"expected error for test case: %s", tt.testCase)
-			continue
-		}
+			_, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
+			if err == nil {
+				t.Fatal("want error, got nil")
+			}
+		})
 	}
 }
 
@@ -1050,29 +1047,15 @@ tasks:
 	}
 
 	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
-	if err != nil {
-		t.Fatalf("unexpected error parsing text: %s", err)
-	}
+	assert.NilError(t, err)
 
-	expectedBar := "${foo}"
-	actualBar := cfg.Options[1].DefaultValues[0].Value
+	wantBar := "${foo}"
+	gotBar := cfg.Options[1].DefaultValues[0].Value
+	assert.Check(t, cmp.Equal(wantBar, gotBar))
 
-	if expectedBar != actualBar {
-		t.Errorf(
-			`expected raw value for bar: %q, actual: %q`,
-			expectedBar, actualBar,
-		)
-	}
-
-	expectedCommand := "echo ${bar}"
-	actualCommand := cfg.Tasks["mytask"].RunList[0].Command[0]
-
-	if expectedCommand != actualCommand.Exec {
-		t.Errorf(
-			`expected raw command for mytask: %q, actual: %q`,
-			expectedCommand, actualCommand.Exec,
-		)
-	}
+	wantCommand := "echo ${bar}"
+	gotCommand := cfg.Tasks["mytask"].RunList[0].Command[0].Exec
+	assert.Check(t, cmp.Equal(wantCommand, gotCommand))
 }
 
 func TestParseComplete_quiet(t *testing.T) {
@@ -1093,30 +1076,8 @@ tasks:
 	}
 
 	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
-	if err != nil {
-		t.Fatalf("unexpected error parsing text: %s", err)
-	}
+	assert.NilError(t, err)
 
-	var expectedQuiet = []struct {
-		testCase string
-		actual   bool
-	}{
-		{
-			"quiet set on command",
-			cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet,
-		},
-		{
-			"quiet set on task",
-			cfg.Tasks["quietTask"].Quiet,
-		},
-	}
-
-	for _, tc := range expectedQuiet {
-		if !tc.actual {
-			t.Errorf(
-				`expected quiet in %s, actual: %v`,
-				tc.testCase, tc.actual,
-			)
-		}
-	}
+	assert.Check(t, cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet)
+	assert.Check(t, cfg.Tasks["quietTask"].Quiet)
 }
