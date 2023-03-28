@@ -7,11 +7,12 @@ import (
 	"testing"
 	"text/template"
 
-	"gotest.tools/v3/assert"
-	"gotest.tools/v3/assert/cmp"
+	"github.com/rliebz/ghost"
 )
 
 func TestRun_printVersion(t *testing.T) {
+	g := ghost.New(t)
+
 	registerCleanup(t)
 	stdout := new(bytes.Buffer)
 
@@ -24,12 +25,13 @@ func TestRun_printVersion(t *testing.T) {
 	)
 
 	want := "(devel)\n"
-	got := stdout.String()
-	assert.Check(t, cmp.Equal(want, got))
-	assert.Check(t, status == 0)
+	g.Should(ghost.Equal(want, stdout.String()))
+	g.Should(ghost.Equal(0, status))
 }
 
 func TestRun_printHelp(t *testing.T) {
+	g := ghost.New(t)
+
 	registerCleanup(t)
 	stdout := new(bytes.Buffer)
 
@@ -67,16 +69,17 @@ Global Options:
 
 	tpl := template.Must(template.New("help").Parse(message))
 	var buf bytes.Buffer
-	if err := tpl.Execute(&buf, executable); err != nil {
-		t.Fatal(err)
-	}
+	err := tpl.Execute(&buf, executable)
+	g.NoErr(err)
 
 	want := buf.String()
-	assert.Check(t, cmp.Equal(want, stdout.String()))
-	assert.Check(t, status == 0)
+	g.Should(ghost.Equal(want, stdout.String()))
+	g.Should(ghost.Equal(0, status))
 }
 
 func TestRun_exitCodeZero(t *testing.T) {
+	g := ghost.New(t)
+
 	registerCleanup(t)
 	stderr := new(bytes.Buffer)
 
@@ -87,13 +90,15 @@ func TestRun_exitCodeZero(t *testing.T) {
 			stderr: stderr,
 		},
 	)
-	assert.Check(t, cmp.Equal(status, 0))
 
 	want := "exit $ exit 0\n"
-	assert.Check(t, cmp.Equal(want, stderr.String()))
+	g.Should(ghost.Equal(want, stderr.String()))
+	g.Should(ghost.Equal(0, status))
 }
 
 func TestRun_exitCodeNonZero(t *testing.T) {
+	g := ghost.New(t)
+
 	registerCleanup(t)
 	stderr := new(bytes.Buffer)
 
@@ -104,16 +109,18 @@ func TestRun_exitCodeNonZero(t *testing.T) {
 			stderr: stderr,
 		},
 	)
-	assert.Check(t, cmp.Equal(status, 5))
 
 	want := `exit $ exit 5
 exit status 5
 `
 
-	assert.Check(t, cmp.Equal(want, stderr.String()))
+	g.Should(ghost.Equal(want, stderr.String()))
+	g.Should(ghost.Equal(5, status))
 }
 
 func TestRun_incorrectUsage(t *testing.T) {
+	g := ghost.New(t)
+
 	registerCleanup(t)
 	stderr := new(bytes.Buffer)
 
@@ -124,10 +131,10 @@ func TestRun_incorrectUsage(t *testing.T) {
 			stderr: stderr,
 		},
 	)
-	assert.Check(t, cmp.Equal(status, 1))
 
 	want := "Error: No help topic for 'fake-command'\n"
-	assert.Equal(t, want, stderr.String())
+	g.Should(ghost.Equal(want, stderr.String()))
+	g.Should(ghost.Equal(1, status))
 }
 
 // registerCleanup is needed because main calls os.Chdir.
@@ -135,14 +142,15 @@ func TestRun_incorrectUsage(t *testing.T) {
 // Ideally, we never actually call os.Chdir, and instead set each command's
 // working directory and resolve relative file paths manually.
 func registerCleanup(t *testing.T) {
+	t.Helper()
+
+	g := ghost.New(t)
+
 	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
+	g.NoErr(err)
 
 	t.Cleanup(func() {
-		if err := os.Chdir(wd); err != nil {
-			t.Error(err)
-		}
+		err := os.Chdir(wd)
+		g.NoErr(err)
 	})
 }

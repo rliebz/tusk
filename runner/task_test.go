@@ -8,17 +8,16 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/rliebz/ghost"
 	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
-	"gotest.tools/v3/assert"
 )
 
 func TestTask_UnmarshalYAML(t *testing.T) {
+	g := ghost.New(t)
+
 	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
+	g.NoErr(err)
 
 	testdata := func(filename string) string {
 		return filepath.Join(wd, "testdata", filename)
@@ -90,17 +89,17 @@ args: { foo: {} }
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
 			var got Task
 			err := yaml.UnmarshalStrict([]byte(tt.input), &got)
 			if tt.wantErr != "" {
-				assert.ErrorContains(t, err, tt.wantErr)
-			} else {
-				assert.NilError(t, err)
+				g.Should(ghost.ErrorContaining(err, tt.wantErr))
+				return
 			}
+			g.NoErr(err)
 
-			if diff := cmp.Diff(tt.want, got, cmp.AllowUnexported(Option{})); diff != "" {
-				t.Errorf("parsed task differs from expected:\n%s", diff)
-			}
+			g.Should(ghost.DeepEqual(tt.want, got))
 		})
 	}
 }

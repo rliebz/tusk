@@ -94,6 +94,8 @@ var outputTests = []printTestCase{
 
 func TestPrintFunctions(t *testing.T) {
 	for _, tt := range outputTests {
-		testPrint(t, tt)
+		t.Run(tt.name, func(t *testing.T) {
+			testPrint(t, tt)
+		})
 	}
 }

@@ -3,9 +3,8 @@ package runner
 import (
 	"testing"
 
+	"github.com/rliebz/ghost"
 	"github.com/rliebz/tusk/marshal"
-	"gotest.tools/v3/assert"
-	"gotest.tools/v3/assert/cmp"
 )
 
 var interpolatetests = []struct {
@@ -811,6 +810,8 @@ tasks:
 func TestParseComplete_interpolates(t *testing.T) {
 	for _, tt := range interpolatetests {
 		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
 			t.Logf(`
 executing test case: %s
 for task %q with parameters: %s
@@ -827,10 +828,10 @@ given input:
 			}
 
 			cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
-			assert.NilError(t, err)
+			g.NoErr(err)
 
 			got := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
-			assert.Check(t, cmp.DeepEqual(tt.want, got))
+			g.Should(ghost.DeepEqual(tt.want, got))
 		})
 	}
 }
@@ -1031,6 +1032,8 @@ given input:
 }
 
 func TestParseComplete_no_task(t *testing.T) {
+	g := ghost.New(t)
+
 	cfgText := []byte(`
 options:
   foo:
@@ -1047,18 +1050,20 @@ tasks:
 	}
 
 	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
-	assert.NilError(t, err)
+	g.NoErr(err)
 
 	wantBar := "${foo}"
 	gotBar := cfg.Options[1].DefaultValues[0].Value
-	assert.Check(t, cmp.Equal(wantBar, gotBar))
+	g.Should(ghost.Equal(wantBar, gotBar))
 
 	wantCommand := "echo ${bar}"
 	gotCommand := cfg.Tasks["mytask"].RunList[0].Command[0].Exec
-	assert.Check(t, cmp.Equal(wantCommand, gotCommand))
+	g.Should(ghost.Equal(wantCommand, gotCommand))
 }
 
 func TestParseComplete_quiet(t *testing.T) {
+	g := ghost.New(t)
+
 	cfgText := []byte(`
 tasks:
   quietCmd:
@@ -1076,8 +1081,8 @@ tasks:
 	}
 
 	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
-	assert.NilError(t, err)
+	g.NoErr(err)
 
-	assert.Check(t, cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet)
-	assert.Check(t, cfg.Tasks["quietTask"].Quiet)
+	g.Should(ghost.BeTrue(cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet))
+	g.Should(ghost.BeTrue(cfg.Tasks["quietTask"].Quiet))
 }

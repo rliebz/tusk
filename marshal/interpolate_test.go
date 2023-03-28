@@ -3,35 +3,40 @@ package marshal
 import (
 	"testing"
 
-	"gotest.tools/v3/assert"
-	"gotest.tools/v3/assert/cmp"
+	"github.com/rliebz/ghost"
 )
 
 func TestInterpolate_string(t *testing.T) {
+	g := ghost.New(t)
+
 	values := map[string]string{"name": "foo", "other": "bar"}
 
 	input := "My name is ${name}, not ${invalid}"
 	want := "My name is foo, not ${invalid}"
 
 	err := Interpolate(&input, values)
-	assert.NilError(t, err)
+	g.NoErr(err)
 
-	assert.Check(t, cmp.Equal(want, input))
+	g.Should(ghost.Equal(want, input))
 }
 
 func TestInterpolate_slice(t *testing.T) {
+	g := ghost.New(t)
+
 	values := map[string]string{"name": "foo", "other": "bar"}
 
 	input := []string{"My name", "is ${name}", "not ${invalid}"}
 	want := []string{"My name", "is foo", "not ${invalid}"}
 
 	err := Interpolate(&input, values)
-	assert.NilError(t, err)
+	g.NoErr(err)
 
-	assert.Check(t, cmp.DeepEqual(want, input))
+	g.Should(ghost.DeepEqual(want, input))
 }
 
 func TestInterpolate_struct(t *testing.T) {
+	g := ghost.New(t)
+
 	values := map[string]string{"name": "foo", "other": "bar"}
 
 	type s struct {
@@ -43,9 +48,9 @@ func TestInterpolate_struct(t *testing.T) {
 	want := s{"it's foo", "not ${invalid}"}
 
 	err := Interpolate(&input, values)
-	assert.NilError(t, err)
+	g.NoErr(err)
 
-	assert.Check(t, cmp.Equal(want, input))
+	g.Should(ghost.Equal(want, input))
 }
 
 func TestEscape(t *testing.T) {
@@ -60,12 +65,12 @@ func TestEscape(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
+			g := ghost.New(t)
+
 			escaped := escape([]byte(tt.input))
 			got := string(escaped)
 
-			if tt.want != got {
-				t.Errorf("want %q, got %q", tt.want, got)
-			}
+			g.Should(ghost.Equal(tt.want, got))
 		})
 	}
 }
@@ -90,10 +95,12 @@ func TestMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
-			actual, err := mapInterpolate([]byte(tt.input), vars)
-			assert.NilError(t, err)
+			g := ghost.New(t)
 
-			assert.Check(t, cmp.Equal(tt.want, string(actual)))
+			got, err := mapInterpolate([]byte(tt.input), vars)
+			g.NoErr(err)
+
+			g.Should(ghost.Equal(tt.want, string(got)))
 		})
 	}
 }
@@ -117,8 +124,10 @@ func TestFindPotentialVariables(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
+			g := ghost.New(t)
+
 			got := FindPotentialVariables([]byte(tt.input))
-			assert.Check(t, cmp.DeepEqual(tt.want, got))
+			g.Should(ghost.DeepEqual(tt.want, got))
 		})
 	}
 }

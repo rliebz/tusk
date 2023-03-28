@@ -103,6 +103,8 @@ var commandTests = []printTestCase{
 
 func TestCommandPrintFunctions(t *testing.T) {
 	for _, tt := range commandTests {
-		testPrint(t, tt)
+		t.Run(tt.name, func(t *testing.T) {
+			testPrint(t, tt)
+		})
 	}
 }

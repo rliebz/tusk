@@ -5,8 +5,7 @@ import (
 	"io"
 	"testing"
 
-	"gotest.tools/v3/assert"
-	"gotest.tools/v3/assert/cmp"
+	"github.com/rliebz/ghost"
 )
 
 func withStdout(l *Logger, out io.Writer) {
@@ -27,7 +26,7 @@ type printTestCase struct {
 }
 
 func testPrint(t *testing.T, tt printTestCase) {
-	t.Helper()
+	g := ghost.New(t)
 
 	empty := new(bytes.Buffer)
 	buf := new(bytes.Buffer)
@@ -37,58 +36,44 @@ func testPrint(t *testing.T, tt printTestCase) {
 	logger.Stdout = empty
 	tt.setOutput(logger, buf)
 
-	logger.Verbosity = tt.levelNoOutput
+	t.Run(tt.levelNoOutput.String(), func(t *testing.T) {
+		g := ghost.New(t)
 
-	tt.printFunc(logger)
-	actual := buf.String()
-
-	if actual != "" {
-		t.Errorf(
-			"%s with verbosity %v: expected no output, actual: %q",
-			tt.name,
-			tt.levelNoOutput,
-			actual,
-		)
-	}
+		logger.Verbosity = tt.levelNoOutput
+		tt.printFunc(logger)
+		g.Should(ghost.BeZero(buf.String()))
+	})
 
 	buf.Reset()
 
-	logger.Verbosity = tt.levelWithOutput
-	tt.printFunc(logger)
-	actual = buf.String()
+	t.Run(tt.levelWithOutput.String(), func(t *testing.T) {
+		g := ghost.New(t)
 
-	if tt.expected != actual {
-		t.Errorf(
-			"%s with verbosity %v: expected %q, actual: %q",
-			tt.name,
-			tt.levelWithOutput,
-			tt.expected,
-			actual,
-		)
-	}
+		logger.Verbosity = tt.levelWithOutput
+		tt.printFunc(logger)
+		g.Should(ghost.Equal(tt.expected, buf.String()))
+	})
 
-	assert.Check(t, cmp.Equal("", empty.String()), "fake")
-}
-
-var verbosityStringTests = []struct {
-	level    VerbosityLevel
-	expected string
-}{
-	{VerbosityLevelSilent, "Silent"},
-	{VerbosityLevelQuiet, "Quiet"},
-	{VerbosityLevelNormal, "Normal"},
-	{VerbosityLevelVerbose, "Verbose"},
-	{VerbosityLevel(99), "Unknown"},
+	g.Should(ghost.BeZero(empty.String()))
 }
 
 func TestVerbosityLevel_String(t *testing.T) {
-	for _, tt := range verbosityStringTests {
-		actual := tt.level.String()
-		if tt.expected != actual {
-			t.Errorf(
-				"level.String(): expected %q, actual %q",
-				tt.expected, actual,
-			)
-		}
+	tests := []struct {
+		level VerbosityLevel
+		want  string
+	}{
+		{VerbosityLevelSilent, "Silent"},
+		{VerbosityLevelQuiet, "Quiet"},
+		{VerbosityLevelNormal, "Normal"},
+		{VerbosityLevelVerbose, "Verbose"},
+		{VerbosityLevel(99), "Unknown"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.level.String(), func(t *testing.T) {
+			g := ghost.New(t)
+
+			g.Should(ghost.Equal(tt.want, tt.level.String()))
+		})
 	}
 }

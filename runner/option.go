@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 
 	"github.com/rliebz/tusk/marshal"
@@ -29,6 +30,11 @@ type Option struct {
 	Passed     string `yaml:"-"`
 	cacheValue string `yaml:"-"`
 	isCacheSet bool   `yaml:"-"`
+}
+
+// Equal provides a method of checking option equality for testing purposes only.
+func (o *Option) Equal(other *Option) bool {
+	return reflect.DeepEqual(o, other)
 }
 
 // Dependencies returns a list of options that are required explicitly.
