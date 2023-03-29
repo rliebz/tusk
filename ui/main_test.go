@@ -29,11 +29,13 @@ func testPrint(t *testing.T, tt printTestCase) {
 	g := ghost.New(t)
 
 	empty := new(bytes.Buffer)
-	buf := new(bytes.Buffer)
+	defer g.Should(ghost.BeZero(empty.String()))
 
 	logger := New()
 	logger.Stderr = empty
 	logger.Stdout = empty
+
+	buf := new(bytes.Buffer)
 	tt.setOutput(logger, buf)
 
 	t.Run(tt.levelNoOutput.String(), func(t *testing.T) {
@@ -53,8 +55,6 @@ func testPrint(t *testing.T, tt printTestCase) {
 		tt.printFunc(logger)
 		g.Should(ghost.Equal(tt.expected, buf.String()))
 	})
-
-	g.Should(ghost.BeZero(empty.String()))
 }
 
 func TestVerbosityLevel_String(t *testing.T) {
