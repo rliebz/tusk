@@ -29,7 +29,9 @@ func testPrint(t *testing.T, tt printTestCase) {
 	g := ghost.New(t)
 
 	empty := new(bytes.Buffer)
-	defer g.Should(ghost.BeZero(empty.String()))
+	t.Cleanup(func() {
+		g.Should(ghost.BeZero(empty.String()))
+	})
 
 	logger := New()
 	logger.Stderr = empty
