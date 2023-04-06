@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../tusk.schema.yaml
 ---
 tasks:
   bootstrap:
@@ -63,7 +64,7 @@ tasks:
             - test -z "$RACK_ENV"
         command:
           # Only things for a development environment will run here
-          - true
+          - echo "development"
 
   test:
     usage: Run test suite for application

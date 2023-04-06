@@ -1,0 +1,474 @@
+# yaml-language-server: $schema=http://json-schema.org/draft-07/schema#
+---
+$schema: "http://json-schema.org/draft-07/schema#"
+$id: "https://github.com/rliebz/tusk/blob/main/tusk.schema.json"
+title: JSON schema for tusk configuration files
+
+type: object
+additionalProperties: false
+properties:
+  name:
+    title: name
+    type: string
+    description: >
+      The alias name to display in help text when using shell aliases to create
+      a custom named CLI application.
+    default: tusk
+  usage:
+    title: usage
+    type: string
+    description: >
+      The usage text to display in help text when using shell aliases to create
+      a custom named CLI application.
+    default: the modern task runner
+  interpreter:
+    title: interpreter
+    type: string
+    default: sh -c
+    description: >
+      The interpreter to use for commands.
+
+      The interpreter is specified as an executable, which can either be an
+      absolute path or available on the user's PATH, followed by a series of
+      optional arguments.
+
+      The commands specified in individual tasks will be passed as the final
+      argument.
+    examples:
+      - node -e
+      - python3 -c
+  options:
+    title: shared options
+    description: >
+      Shared options available to all tasks.
+
+      Any shared variables referenced by a task will be exposed by command-line
+      when invoking that task. Shared variables referenced by a sub-task will
+      be evaluated as needed, but not exposed by command-line.
+
+      Tasks that define an argument or option with the same name as a shared
+      task will overwrite the value of the shared option for the length of that
+      task, not including sub-tasks.
+    $ref: "#/$defs/optionsClause"
+  tasks:
+    title: tasks
+    $ref: "#/$defs/tasksClause"
+
+$defs:
+  argClause:
+    description: A command-line argument definition for the task.
+    type: object
+    additionalProperties: false
+    properties:
+      type:
+        title: type
+        $ref: "#/$defs/type"
+      usage:
+        title: usage
+        description: A one-line summary of the argument.
+        type: string
+      values:
+        title: values
+        description: A predefined set of acceptable values to provide for the argument.
+        type: array
+        items:
+          $ref: "#/$defs/value"
+
+  argsClause:
+    description: The set of command-line arguments that must be provided to the task.
+    type: object
+    additionalProperties:
+      $ref: "#/$defs/argClause"
+
+  commandClause:
+    description: The command or commands to execute using the global interpreter.
+    oneOf:
+      - $ref: "#/$defs/commandItem"
+      - type: array
+        items:
+          $ref: "#/$defs/commandItem"
+
+  commandItem:
+    description: The command to execute using the global interpreter.
+    oneOf:
+      - type: string
+      - type: object
+        additionalProperties: false
+        required:
+          - exec
+        properties:
+          exec:
+            title: exec
+            description: The command to execute using the global interpreter.
+            type: string
+          dir:
+            title: dir
+            type: string
+          print:
+            title: print
+            description: The text that will be printed when the command is executed.
+            type: string
+          quiet:
+            title: quiet
+            description: >
+              Whether to silence the text/hint before execution.
+
+              Command output will still be printed.
+            type: boolean
+            default: false
+
+  defaultClause:
+    title: default
+    description: >
+      The default value to use if the value is not otherwise set.
+
+      If multiple values are provided, the first `when` that evaluates to true
+      will be used as the default value, with an omitted `when` always
+      considered true.
+    oneOf:
+      - $ref: "#/$defs/defaultItem"
+      - type: array
+        items:
+          $ref: "#/$defs/defaultItem"
+
+  defaultItem:
+    description: >
+      A default value to use if the value is not otherwise set.
+
+      If a `when` clause is provided, the value will be used if and only if
+      the condition evaluates to true.
+    oneOf:
+      - $ref: "#/$defs/value"
+      - type: object
+        additionalProperties: false
+        properties:
+          command:
+            title: command
+            description: >
+              A command to run via the global interpreter.
+
+              The value of stdout will be used as the value.
+            type: string
+          value:
+            title: value
+            $ref: "#/$defs/value"
+          when:
+            title: when
+            $ref: "#/$defs/whenClause"
+        oneOf:
+          - required: [command]
+          - required: [value]
+
+  type:
+    description: >
+      The type of the value.
+    enum:
+      - int
+      - integer
+      - float
+      - float64
+      - double
+      - bool
+      - boolean
+      - string
+
+  option:
+    description: >
+      A command-line option for the task.
+
+      Options may be set by CLI flag, environment variable, or a configured
+      default value, in that order.
+    type: object
+    additionalProperties: false
+    properties:
+      default:
+        title: default
+        $ref: "#/$defs/defaultClause"
+      environment:
+        title: environment
+        description: An environment variable that can be used to set the value.
+        type: string
+      private:
+        title: private
+        description: Whether the option is configurable by CLI or environment variable.
+        type: boolean
+        default: false
+      required:
+        title: required
+        type: boolean
+        default: false
+      rewrite:
+        title: rewrite
+        description: The text to use for interpolation for boolean values.
+        type: string
+      short:
+        title: short
+        description: >
+          The one-letter option name.
+
+          Short flags can be passed using a single hyphen (e.g., -a) or
+          combined with other short flags (e.g., -abc).
+        type: string
+        minLength: 1
+        maxLength: 1
+      type:
+        title: type
+        $ref: "#/$defs/type"
+      usage:
+        title: usage
+        description: A one-line summary of the option.
+        type: string
+      values:
+        title: values
+        description: A predefined set of acceptable values to provide for the option.
+        type: array
+        items:
+          $ref: "#/$defs/value"
+    allOf:
+      - not: { required: [private, environment] }
+      - not: { required: [private, required] }
+      - not: { required: [private, short] }
+      - not: { required: [private, values] }
+      - not: { required: [required, default] }
+
+  optionsClause:
+    description: The set of command-line options that may be provided to the task.
+    type: object
+    additionalProperties:
+      $ref: "#/$defs/option"
+
+  runClause:
+    description: The behavior of the task.
+    oneOf:
+      - $ref: "#/$defs/runItem"
+      - type: array
+        items:
+          $ref: "#/$defs/runItem"
+
+  runItem:
+    oneOf:
+      - type: string
+      - type: object
+        additionalProperties: false
+        properties:
+          command:
+            title: run command
+            $ref: "#/$defs/commandClause"
+          set-environment:
+            title: run set environment
+            $ref: "#/$defs/setEnvironmentClause"
+          task:
+            title: run sub-task
+            $ref: "#/$defs/subTaskClause"
+          when:
+            title: run when
+            $ref: "#/$defs/whenClause"
+        oneOf:
+          - required: [command]
+          - required: [set-environment]
+          - required: [task]
+
+  setEnvironmentClause:
+    description: The environment variables to either set or unset.
+    type: object
+    additionalProperties:
+      type:
+        - string
+        - "null"
+
+  stringOrArray:
+    oneOf:
+      - type: string
+      - type: array
+        items:
+          type: string
+
+  subTaskClause:
+    description: A sub-task to run as a part of the outer task definition.
+    oneOf:
+      - type: string
+      - type: object
+        additionalProperties: false
+        required:
+          - name
+        properties:
+          name:
+            title: sub-task name
+            description: The name of the sub-task to run.
+            type: string
+          args:
+            title: sub-task args
+            description: The argument values to pass to the sub-task.
+            type: array
+            items:
+              type: string
+          options:
+            title: sub-task options
+            description: The option values to pass to the sub-task.
+            type: object
+            additionalProperties:
+              type: string
+
+  taskClause:
+    description: The task definition.
+    oneOf:
+      - $ref: "#/$defs/taskInclude"
+      - $ref: "#/$defs/taskItem"
+
+  taskInclude:
+    type: object
+    additionalProperties: false
+    required:
+      - include
+    properties:
+      include:
+        title: task include
+        description: >
+          The relative file path to the yaml task definition.
+        type: string
+
+  taskItem:
+    type: object
+    additionalProperties: false
+    required:
+      - run
+    properties:
+      run:
+        title: task run
+        $ref: "#/$defs/runClause"
+      args:
+        title: task args
+        $ref: "#/$defs/argsClause"
+      description:
+        title: task description
+        description: >
+          The full description of the task. This may be a multi-line value.
+        type: string
+      finally:
+        title: task finally
+        description: >
+          Logic to execute after a task's run logic has completed, whether or
+          not that task was successful.
+        $ref: "#/$defs/runClause"
+      options:
+        title: task options
+        $ref: "#/$defs/optionsClause"
+      private:
+        title: task private
+        description: Whether the task can be ran directly.
+        type: boolean
+        default: false
+      quiet:
+        title: task quiet
+        description: Whether to silence the text/hint before execution.
+
+          Command output will still be printed.
+        type: boolean
+        default: false
+      usage:
+        title: task usage
+        description: A one-line summary of the task.
+        type: string
+
+  tasksClause:
+    description: The list of defined tasks available.
+    type: object
+    additionalProperties:
+      $ref: "#/$defs/taskClause"
+
+  whenClause:
+    description: >
+      A condition that controls whether its outer clause runs or not.
+
+      Each individual item in the list of when clauses must pass for the check
+      to be considered successful.
+    oneOf:
+      - $ref: "#/$defs/whenItem"
+      - type: array
+        items:
+          $ref: "#/$defs/whenItem"
+
+  whenItem:
+    oneOf:
+      - $ref: "#/$defs/value"
+      - type: object
+        additionalProperties: false
+        properties:
+          command:
+            title: when command
+            description: >
+              A command to run via the global interpreter.
+
+              The when clause will be considered a success if any of the
+              commands exit with a status code of 0.
+            $ref: "#/$defs/stringOrArray"
+          equal:
+            title: when equal
+            description: >
+              A set of arg or option values to check.
+
+              The when clause will be considered a success if any arg or option
+              matches any of the provided values.
+            type: object
+            additionalProperties:
+              $ref: "#/$defs/valueList"
+          environment:
+            title: when environment
+            description: >
+              A set of environment variable values to check.
+
+              The when clause will be considered a success if any environment
+              variable matches any of the provided values.
+            type: object
+            additionalProperties:
+              $ref: "#/$defs/stringOrArray"
+          exists:
+            title: when exists
+            description: >
+              A set of files to check for existence.
+
+              The when clause will be considered a success if any of the files
+              exist.
+            $ref: "#/$defs/stringOrArray"
+          not-equal:
+            title: when not equal
+            description: >
+              A set of arg or option values to check negatively.
+
+              The when clause will be considered a success if any of the arg
+              or option values do not match any of the provided values.
+            type: object
+            additionalProperties:
+              $ref: "#/$defs/valueList"
+          not-exists:
+            title: when not exists
+            description: >
+              A set of files to check for non-existence.
+
+              The when clause will be considered a success if any of the files
+              do not exist.
+            $ref: "#/$defs/stringOrArray"
+          os:
+            title: when os
+            description: >
+              A set of operating systems to check against.
+
+              The when clause will be considered a success if the current OS
+              matches any of the provided operating systems.
+            $ref: "#/$defs/stringOrArray"
+        minProperties: 1
+
+  valueList:
+    description: A set of possible values for an arg or option.
+    oneOf:
+      - $ref: "#/$defs/value"
+      - type: array
+        items:
+          $ref: "#/$defs/value"
+
+  value:
+    description: The value of an arg or option.
+    oneOf:
+      - type: number
+      - type: boolean
+      - type: string

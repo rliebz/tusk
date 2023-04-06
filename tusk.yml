@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=tusk.schema.yaml
 ---
 tasks:
   lint:
@@ -48,6 +49,10 @@ tasks:
     run:
       - go mod tidy
       - go run golang.org/x/tools/cmd/goimports@latest -w .
+
+  generate:
+    usage: Generate tusk.schema.json from tusk.schema.yaml
+    run: go run ./schemagen
 
   release:
     usage: Release the latest version with goreleaser

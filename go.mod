@@ -6,8 +6,10 @@ require (
 	github.com/fatih/color v1.14.1
 	github.com/google/go-cmp v0.5.9
 	github.com/rliebz/ghost v0.0.0-20240103162335-1a409e8b6621
+	github.com/santhosh-tekuri/jsonschema/v5 v5.2.0
 	github.com/urfave/cli v1.22.12
 	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools/v3 v3.0.2
 )
 

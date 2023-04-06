@@ -50,10 +50,11 @@ Usage:
    {{.}} [global options] <task> [task options]
 
 Tasks:
-   lint     Run static analysis
-   release  Release the latest version with goreleaser
-   test     Run the tests
-   tidy     Clean up and format the repo
+   generate  Generate tusk.schema.json from tusk.schema.yaml
+   lint      Run static analysis
+   release   Release the latest version with goreleaser
+   test      Run the tests
+   tidy      Clean up and format the repo
 
 Global Options:
    -f, --file <file>                   Set file to use as the config file
