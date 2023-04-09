@@ -4,98 +4,96 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/rliebz/ghost"
 	"github.com/rliebz/tusk/runner"
 )
 
-var flagPrefixerTests = []struct {
-	flags       string
-	placeholder string
-	expected    string
-}{
-	{"a", "", "-a"},
-	{"a", "foo", "-a <foo>"},
-	{"aa", "", "    --aa"},
-	{"aa", "foo", "    --aa <foo>"},
-	{"a, aa", "", "-a, --aa"},
-	{"aa, a", "", "-a, --aa"},
-	{"a, aa", "foo", "-a, --aa <foo>"},
-}
-
 func TestFlagPrefixer(t *testing.T) {
-	for _, tt := range flagPrefixerTests {
-		actual := flagPrefixer(tt.flags, tt.placeholder)
-		if tt.expected != actual {
-			t.Errorf(
-				"flagPrefixer(%q, %q): expected %q, got %q",
-				tt.flags, tt.placeholder, tt.expected, actual,
-			)
-		}
+	tests := []struct {
+		name        string
+		flags       string
+		placeholder string
+		want        string
+	}{
+		{"short", "a", "", "-a"},
+		{"short placeholder", "a", "foo", "-a <foo>"},
+		{"long", "aa", "", "    --aa"},
+		{"long placeholder", "aa", "foo", "    --aa <foo>"},
+		{"short first", "a, aa", "", "-a, --aa"},
+		{"long first", "aa, a", "", "-a, --aa"},
+		{"short first placeholder", "a, aa", "foo", "-a, --aa <foo>"},
+		{"long first placeholder", "aa, a", "foo", "-a, --aa <foo>"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
+			got := flagPrefixer(tt.flags, tt.placeholder)
+			g.Should(ghost.Equal(tt.want, got))
+		})
 	}
 }
 
-var argsSectionTests = []struct {
-	desc     string
-	taskCfg  string
-	expected string
-}{
-	{
-		"no args",
-		"",
-		"",
-	},
-	{
-		"one args",
-		"foo: {usage: 'some usage'}",
-		`
+func TestCreateArgsSection(t *testing.T) {
+	tests := []struct {
+		name    string
+		taskCfg string
+		want    string
+	}{
+		{
+			"no args",
+			"",
+			"",
+		},
+		{
+			"one args",
+			"foo: {usage: 'some usage'}",
+			`
 
 Arguments:
    foo  some usage`,
-	},
-	{
-		"args without usage",
-		"foo: {}, bar: {}",
-		`
+		},
+		{
+			"args without usage",
+			"foo: {}, bar: {}",
+			`
 
 Arguments:
    foo
    bar`,
-	},
-	{
-		"args with usage",
-		"foo: {usage: 'some usage'}, bar: {usage: 'other usage'}",
-		`
+		},
+		{
+			"args with usage",
+			"foo: {usage: 'some usage'}, bar: {usage: 'other usage'}",
+			`
 
 Arguments:
    foo  some usage
    bar  other usage`,
-	},
-	{
-		"variable length arguments",
-		"a: {usage: 'some usage'}, aaaaa: {usage: 'other usage'}",
-		`
+		},
+		{
+			"variable length arguments",
+			"a: {usage: 'some usage'}, aaaaa: {usage: 'other usage'}",
+			`
 
 Arguments:
    a      some usage
    aaaaa  other usage`,
-	},
-}
+		},
+	}
 
-func TestCreateArgsSection(t *testing.T) {
-	for _, tt := range argsSectionTests {
+	for _, tt := range tests {
 		taskName := "someTaskName"
-		t.Run(tt.desc, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
 			cfgText := fmt.Sprintf("tasks: { %s: { args: {%s} } }", taskName, tt.taskCfg)
 			cfg, err := runner.Parse([]byte(cfgText))
-			if err != nil {
-				t.Fatal(err)
-			}
+			g.NoErr(err)
 
-			actual := createArgsSection(cfg.Tasks[taskName])
-			if tt.expected != actual {
-				t.Errorf(
-					"want %q, got %q", tt.expected, actual,
-				)
-			}
+			got := createArgsSection(cfg.Tasks[taskName])
+			g.Should(ghost.Equal(tt.want, got))
 		})
 	}
 }

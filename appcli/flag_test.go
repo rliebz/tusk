@@ -3,6 +3,7 @@ package appcli
 import (
 	"testing"
 
+	"github.com/rliebz/ghost"
 	"github.com/rliebz/tusk/runner"
 	"github.com/urfave/cli"
 )
@@ -19,6 +20,8 @@ func TestCreateCLIFlag_undefined(t *testing.T) {
 }
 
 func TestAddFlag_no_duplicates(t *testing.T) {
+	g := ghost.New(t)
+
 	command := &cli.Command{}
 
 	opt := &runner.Option{
@@ -26,18 +29,11 @@ func TestAddFlag_no_duplicates(t *testing.T) {
 		Short: "f",
 	}
 
-	if err := addFlag(command, opt); err != nil {
-		t.Fatalf(`addFlag(): unexpected err: %s`, err)
-	}
+	err := addFlag(command, opt)
+	g.NoErr(err)
 
-	if err := addFlag(command, opt); err != nil {
-		t.Fatalf(`addFlag(): unexpected err: %s`, err)
-	}
+	err = addFlag(command, opt)
+	g.NoErr(err)
 
-	if len(command.Flags) != 1 {
-		t.Errorf(
-			`addFlag() twice with same flag: expected %d flags, actual %d`,
-			2, len(command.Flags),
-		)
-	}
+	g.Should(ghost.Equal(1, len(command.Flags)))
 }
