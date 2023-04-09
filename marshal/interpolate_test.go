@@ -15,7 +15,7 @@ func TestInterpolate_string(t *testing.T) {
 	want := "My name is foo, not ${invalid}"
 
 	err := Interpolate(&input, values)
-	g.NoErr(err)
+	g.NoError(err)
 
 	g.Should(ghost.Equal(want, input))
 }
@@ -29,7 +29,7 @@ func TestInterpolate_slice(t *testing.T) {
 	want := []string{"My name", "is foo", "not ${invalid}"}
 
 	err := Interpolate(&input, values)
-	g.NoErr(err)
+	g.NoError(err)
 
 	g.Should(ghost.DeepEqual(want, input))
 }
@@ -48,7 +48,7 @@ func TestInterpolate_struct(t *testing.T) {
 	want := s{"it's foo", "not ${invalid}"}
 
 	err := Interpolate(&input, values)
-	g.NoErr(err)
+	g.NoError(err)
 
 	g.Should(ghost.Equal(want, input))
 }
@@ -98,7 +98,7 @@ func TestMap(t *testing.T) {
 			g := ghost.New(t)
 
 			got, err := mapInterpolate([]byte(tt.input), vars)
-			g.NoErr(err)
+			g.NoError(err)
 
 			g.Should(ghost.Equal(tt.want, string(got)))
 		})

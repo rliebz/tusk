@@ -90,7 +90,7 @@ Arguments:
 
 			cfgText := fmt.Sprintf("tasks: { %s: { args: {%s} } }", taskName, tt.taskCfg)
 			cfg, err := runner.Parse([]byte(cfgText))
-			g.NoErr(err)
+			g.NoError(err)
 
 			got := createArgsSection(cfg.Tasks[taskName])
 			g.Should(ghost.Equal(tt.want, got))

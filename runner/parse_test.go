@@ -852,7 +852,7 @@ given input:
 			}
 
 			cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
-			g.NoErr(err)
+			g.NoError(err)
 
 			got := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
 			g.Should(ghost.DeepEqual(tt.want, got))
@@ -1109,7 +1109,7 @@ tasks:
 	}
 
 	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
-	g.NoErr(err)
+	g.NoError(err)
 
 	wantBar := "${foo}"
 	gotBar := cfg.Options[1].DefaultValues[0].Value
@@ -1140,7 +1140,7 @@ tasks:
 	}
 
 	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
-	g.NoErr(err)
+	g.NoError(err)
 
 	g.Should(ghost.BeTrue(cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet))
 	g.Should(ghost.BeTrue(cfg.Tasks["quietTask"].Quiet))

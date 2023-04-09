@@ -17,7 +17,7 @@ func TestTask_UnmarshalYAML(t *testing.T) {
 	g := ghost.New(t)
 
 	wd, err := os.Getwd()
-	g.NoErr(err)
+	g.NoError(err)
 
 	testdata := func(filename string) string {
 		return filepath.Join(wd, "testdata", filename)
@@ -97,7 +97,7 @@ args: { foo: {} }
 				g.Should(ghost.ErrorContaining(err, tt.wantErr))
 				return
 			}
-			g.NoErr(err)
+			g.NoError(err)
 
 			g.Should(ghost.DeepEqual(tt.want, got))
 		})

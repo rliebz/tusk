@@ -30,10 +30,10 @@ func TestAddFlag_no_duplicates(t *testing.T) {
 	}
 
 	err := addFlag(command, opt)
-	g.NoErr(err)
+	g.NoError(err)
 
 	err = addFlag(command, opt)
-	g.NoErr(err)
+	g.NoError(err)
 
 	g.Should(ghost.Equal(1, len(command.Flags)))
 }

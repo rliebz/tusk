@@ -70,7 +70,7 @@ Global Options:
 	tpl := template.Must(template.New("help").Parse(message))
 	var buf bytes.Buffer
 	err := tpl.Execute(&buf, executable)
-	g.NoErr(err)
+	g.NoError(err)
 
 	want := buf.String()
 	g.Should(ghost.Equal(want, stdout.String()))
@@ -147,10 +147,10 @@ func registerCleanup(t *testing.T) {
 	g := ghost.New(t)
 
 	wd, err := os.Getwd()
-	g.NoErr(err)
+	g.NoError(err)
 
 	t.Cleanup(func() {
 		err := os.Chdir(wd)
-		g.NoErr(err)
+		g.NoError(err)
 	})
 }
