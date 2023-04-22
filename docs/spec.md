@@ -258,7 +258,7 @@ tasks:
   configure-environment:
     private: true
     run:
-      set-environment: {APP_ENV: dev}
+      set-environment: { APP_ENV: dev }
   serve:
     run:
       - task: configure-environment
@@ -311,7 +311,7 @@ tasks:
         command: echo "This is a unix machine"
       - when:
           - exists: my_file.txt
-          - equal: {cat: true}
+          - equal: { cat: true }
           - command: command -v cat
         command: cat my_file.txt
 ```
@@ -324,7 +324,7 @@ to see if some option `foo` has been set to `true`:
 
 ```yaml
 when:
-  equal: {foo: true}
+  equal: { foo: true }
 ```
 
 This can be expressed more succinctly as the following:
@@ -372,8 +372,8 @@ tasks:
           - os:
               - linux
               - darwin
-            equal: {ignore-os: true}
-          - equal: {verbose: true}
+            equal: { ignore-os: true }
+          - equal: { verbose: true }
         command: echo "This is a unix machine"
 ```
 
@@ -461,10 +461,10 @@ tasks:
         type: bool
     run:
       - when:
-          equal: {loud: true}
+          equal: { loud: true }
         command: echo "HELLO!"
       - when:
-          equal: {loud: false}
+          equal: { loud: false }
         command: echo "Hello."
 ```
 
@@ -609,6 +609,7 @@ The `finally` clause is run after a task's `run` logic has completed, whether or
 not that task was successful. This can be useful for clean-up logic. A `finally`
 clause has the same format as a `run` clause:
 
+<!-- prettier-ignore-start -->
 ```yaml
 tasks:
   hello:
@@ -621,6 +622,7 @@ tasks:
       - task: cleanup
   # ...
 ```
+<!-- prettier-ignore-end -->
 
 If the `finally` clause runs an unsuccessful command, it will terminate early
 the same way that a `run` clause would. The exit code is still passed back to
@@ -697,7 +699,7 @@ name: mycli
 usage: A custom aliased command-line application
 
 tasks:
-  ...
+  # ...
 ```
 
 The example above will produce the following help documentation:

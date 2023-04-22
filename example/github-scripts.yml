@@ -38,13 +38,13 @@ tasks:
         type: string
     run:
       - when:
-          equal: {env: production}
+          equal: { env: production }
         command: heroku run rails console --app heroku-app-name-staging
       - when:
-          equal: {env: staging}
+          equal: { env: staging }
         command: heroku run rails console --app heroku-app-name-staging
       - when:
-          equal: {env: local}
+          equal: { env: local }
         command:
           - script/update
           - bin/rails console
@@ -80,15 +80,15 @@ tasks:
           command: test "$RAILS_ENV" = "test" || test "$RACK_ENV" = "test"
     run:
       - when:
-          equal: {is-test-env: true}
+          equal: { is-test-env: true }
         task: setup
       - when:
-          equal: {is-test-env: false}
+          equal: { is-test-env: false }
         set-environment:
           RAILS_ENV: test
           RACK_ENV: test
       - when:
-          equal: {is-test-env: false}
+          equal: { is-test-env: false }
         task: update
       - command: bin/rake test ${file}
 

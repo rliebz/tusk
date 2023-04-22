@@ -22,7 +22,7 @@ builds:
       - goos: darwin
         goarch: 386
 archives:
-  - name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+  - name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format: tar.gz
     format_overrides:
       - goos: windows
@@ -37,7 +37,7 @@ archives:
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
 checksum:
-  name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
 release:
   github:
     owner: rliebz

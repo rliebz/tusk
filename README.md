@@ -14,15 +14,15 @@ documentation][documentation].
 
 ## Features
 
-- __Customizable__: Specify your own tasks and options with support for
+- **Customizable**: Specify your own tasks and options with support for
   command-line flags, environment variables, conditional logic, and more.
-- __Explorable__: All the help you need to get started is available straight
+- **Explorable**: All the help you need to get started is available straight
   from the command line. Help documentation is generated dynamically, and
   support for Bash and Zsh tab completion is available.
-- __Accessible__: Built for usability with a simple YAML configuration,
+- **Accessible**: Built for usability with a simple YAML configuration,
   familiar syntax for passing options, Bash-like variable interpolation, and a
   colorful terminal output.
-- __Zero Dependencies__: All you need is a single binary file to get started on
+- **Zero Dependencies**: All you need is a single binary file to get started on
   Linux, macOS, or Windows.
 
 ## Getting Started
