@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/rliebz/tusk/marshal"
-	"golang.org/x/exp/slices"
 )
 
 // Passable is a list of allowable values for an option or argument.
@@ -26,7 +25,7 @@ type Passable struct {
 // The value should be the actual value passed. The kind should be the kind of
 // passable, such as "option" or "argument".
 func (p *Passable) validatePassed(kind string, value string) error {
-	if len(p.ValuesAllowed) != 0 && !slices.Contains(p.ValuesAllowed, value) {
+	if len(p.ValuesAllowed) != 0 && !contains(p.ValuesAllowed, value) {
 		return fmt.Errorf(
 			`value %q for %s %q must be one of %v`,
 			value, kind, p.Name, p.ValuesAllowed,
@@ -41,6 +40,16 @@ func (p *Passable) validatePassed(kind string, value string) error {
 	}
 
 	return nil
+}
+
+// TODO: Remove when slices package is added to stdlib
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
 }
 
 func (p *Passable) hasValidType(value string) bool {

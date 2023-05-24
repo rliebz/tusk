@@ -7,7 +7,6 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/rliebz/ghost v0.0.0-20230409114550-eb7cf09376c5
 	github.com/urfave/cli v1.22.12
-	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	gopkg.in/yaml.v2 v2.4.0
 	gotest.tools/v3 v3.0.2
 )
