@@ -10,7 +10,9 @@ import (
 
 func TestCreateCLIFlag_undefined(t *testing.T) {
 	opt := &runner.Option{
-		Type: "wrong",
+		Passable: runner.Passable{
+			Type: "wrong",
+		},
 	}
 
 	flag, err := createCLIFlag(opt)
@@ -25,7 +27,9 @@ func TestAddFlag_no_duplicates(t *testing.T) {
 	command := &cli.Command{}
 
 	opt := &runner.Option{
-		Name:  "foo",
+		Passable: runner.Passable{
+			Name: "foo",
+		},
 		Short: "f",
 	}
 

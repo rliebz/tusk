@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"strings"
 
 	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
@@ -13,11 +12,9 @@ import (
 
 // Option represents an abstract command line option.
 type Option struct {
-	ValueWithList `yaml:",inline"`
+	Passable `yaml:",inline"`
 
 	Short    string
-	Type     string
-	Usage    string
 	Private  bool
 	Required bool
 	Rewrite  string
@@ -27,8 +24,6 @@ type Option struct {
 	DefaultValues ValueList `yaml:"default"`
 
 	// Computed members not specified in yaml file
-	Name       string `yaml:"-"`
-	Passed     string `yaml:"-"`
 	cacheValue string `yaml:"-"`
 	isCacheSet bool   `yaml:"-"`
 }
@@ -95,6 +90,10 @@ func (o *Option) validate() error {
 	return nil
 }
 
+func (o *Option) validatePassed(value string) error {
+	return o.Passable.validatePassed("option", value)
+}
+
 // Evaluate determines an option's value.
 //
 // The order of priority is:
@@ -125,7 +124,7 @@ func (o *Option) getValue(ctx Context, vars map[string]string) (string, error) {
 
 	if !o.Private {
 		if value, found := o.getSpecified(); found {
-			if err := o.validateSpecified(value, "option "+o.Name); err != nil {
+			if err := o.validatePassed(value); err != nil {
 				return "", err
 			}
 
@@ -184,24 +183,6 @@ func (o *Option) getDefaultValue(ctx Context, vars map[string]string) (string, e
 func (o *Option) cache(value string) {
 	o.isCacheSet = true
 	o.cacheValue = value
-}
-
-func (o *Option) isNumeric() bool {
-	switch strings.ToLower(o.Type) {
-	case "int", "integer", "float", "float64", "double":
-		return true
-	default:
-		return false
-	}
-}
-
-func (o *Option) isBoolean() bool {
-	switch strings.ToLower(o.Type) {
-	case "bool", "boolean":
-		return true
-	default:
-		return false
-	}
 }
 
 // Options represents an ordered set of options as specified in the config.

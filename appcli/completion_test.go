@@ -127,14 +127,14 @@ bar
 `,
 			taskArgs: runner.Args{
 				{
-					Name: "first",
-					ValueWithList: runner.ValueWithList{
+					Passable: runner.Passable{
+						Name:          "first",
 						ValuesAllowed: []string{"foo", "bar"},
 					},
 				},
 				{
-					Name: "second",
-					ValueWithList: runner.ValueWithList{
+					Passable: runner.Passable{
+						Name:          "second",
 						ValuesAllowed: []string{"baz"},
 					},
 				},
@@ -151,14 +151,14 @@ baz
 `,
 			taskArgs: runner.Args{
 				{
-					Name: "first",
-					ValueWithList: runner.ValueWithList{
+					Passable: runner.Passable{
+						Name:          "first",
 						ValuesAllowed: []string{"foo", "bar"},
 					},
 				},
 				{
-					Name: "second",
-					ValueWithList: runner.ValueWithList{
+					Passable: runner.Passable{
+						Name:          "second",
 						ValuesAllowed: []string{"baz"},
 					},
 				},
@@ -177,8 +177,8 @@ baz
 `,
 			taskArgs: runner.Args{
 				{
-					Name: "foo",
-					ValueWithList: runner.ValueWithList{
+					Passable: runner.Passable{
+						Name:          "foo",
 						ValuesAllowed: []string{"foo", "bar", "baz"},
 					},
 				},
@@ -245,11 +245,20 @@ baz
 					cmd.Name: {
 						Args: tt.taskArgs,
 						Options: runner.Options{
-							{Name: "bool", Type: "bool"},
-							{Name: "string"},
 							{
-								Name: "values",
-								ValueWithList: runner.ValueWithList{
+								Passable: runner.Passable{
+									Name: "bool",
+									Type: "bool",
+								},
+							},
+							{
+								Passable: runner.Passable{
+									Name: "string",
+								},
+							},
+							{
+								Passable: runner.Passable{
+									Name:          "values",
 									ValuesAllowed: marshal.StringList{"foo", "bar", "baz"},
 								},
 							},

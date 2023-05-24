@@ -9,13 +9,7 @@ import (
 
 // Arg represents a command-line argument.
 type Arg struct {
-	ValueWithList `yaml:",inline"`
-
-	Usage string
-
-	// Computed members not specified in yaml file
-	Name   string `yaml:"-"`
-	Passed string `yaml:"-"`
+	Passable `yaml:",inline"`
 }
 
 // Evaluate determines an argument's value.
@@ -24,7 +18,7 @@ func (a *Arg) Evaluate() (string, error) {
 		return "", errors.New("nil argument evaluated")
 	}
 
-	if err := a.validateSpecified(a.Passed, "argument "+a.Name); err != nil {
+	if err := a.validatePassed(a.Passed); err != nil {
 		return "", err
 	}
 
@@ -60,6 +54,10 @@ func (a *Args) Lookup(name string) (*Arg, bool) {
 	}
 
 	return nil, false
+}
+
+func (a *Arg) validatePassed(value string) error {
+	return a.Passable.validatePassed("argument", value)
 }
 
 // getArgsWithOrder returns both the arg map and the ordered names.

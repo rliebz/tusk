@@ -9,7 +9,11 @@ import (
 
 func TestEvaluate(t *testing.T) {
 	expected := "foo"
-	arg := Arg{Passed: expected}
+	arg := Arg{
+		Passable: Passable{
+			Passed: expected,
+		},
+	}
 
 	actual, err := arg.Evaluate()
 	if err != nil {
@@ -24,8 +28,8 @@ func TestEvaluate(t *testing.T) {
 func TestEvaluate_specified(t *testing.T) {
 	expected := "foo"
 	arg := Arg{
-		Passed: expected,
-		ValueWithList: ValueWithList{
+		Passable: Passable{
+			Passed:        expected,
 			ValuesAllowed: marshal.StringList{"wrong", expected, "other"},
 		},
 	}
@@ -43,8 +47,8 @@ func TestEvaluate_specified(t *testing.T) {
 func TestEvaluate_unspecified(t *testing.T) {
 	passed := "foo"
 	arg := Arg{
-		Passed: passed,
-		ValueWithList: ValueWithList{
+		Passable: Passable{
+			Passed:        passed,
 			ValuesAllowed: marshal.StringList{"wrong", "other"},
 		},
 	}
@@ -65,8 +69,16 @@ func TestGetArgsWithOrder(t *testing.T) {
 	name := "foo"
 	usage := "use me"
 	ms := yaml.MapSlice{
-		{Key: name, Value: &Arg{Usage: usage}},
-		{Key: "bar", Value: &Arg{Usage: "other usage"}},
+		{Key: name, Value: &Arg{
+			Passable: Passable{
+				Usage: usage,
+			},
+		}},
+		{Key: "bar", Value: &Arg{
+			Passable: Passable{
+				Usage: "other usage",
+			},
+		}},
 	}
 
 	args, err := getArgsWithOrder(ms)

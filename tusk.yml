@@ -3,7 +3,7 @@ tasks:
   lint:
     usage: Run static analysis
     description: |
-      Runs golangci-lint using the configuration specified in .golangci.toml
+      Run golangci-lint using the project configuration.
     options:
       fast:
         usage: Only run fast linters
@@ -21,11 +21,15 @@ tasks:
         usage: Run all tests and linters
         short: a
         type: bool
-        default: false
       fast:
         usage: Only run fast tests
         type: bool
-        rewrite: -short
+        short: f
+      fast-flag:
+        private: true
+        default:
+          when: fast
+          value: -short
       verbose:
         usage: Run the tests in verbose mode
         short: v
@@ -37,7 +41,7 @@ tasks:
           name: lint
           options:
             fast: ${fast}
-      - command: go test -cover -race ${fast} ${verbose} ./...
+      - command: go test -cover -race ${fast-flag} ${verbose} ./...
 
   tidy:
     usage: Clean up and format the repo

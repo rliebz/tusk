@@ -240,14 +240,20 @@ func newTaskFromSub(ctx Context, desc *SubTask, cfg *Config) (*Task, error) {
 		return nil, err
 	}
 
-	for optName, opt := range desc.Options {
-		if _, isValidOption := subTask.Options.Lookup(optName); !isValidOption {
+	for optName, optValue := range desc.Options {
+		opt, ok := subTask.Options.Lookup(optName)
+		if !ok {
 			return nil, fmt.Errorf(
 				"option %q cannot be passed to task %q",
 				optName, subTask.Name,
 			)
 		}
-		values[optName] = opt
+
+		if err := opt.validatePassed(optValue); err != nil {
+			return nil, err
+		}
+
+		values[optName] = optValue
 	}
 
 	if err := passTaskValues(ctx, subTask, cfg, values); err != nil {
@@ -288,7 +294,12 @@ func getArgValues(subTask *Task, argsPassed []string) (map[string]string, error)
 
 	values := make(map[string]string)
 	for i, arg := range subTask.Args {
-		values[arg.Name] = argsPassed[i]
+		argValue := argsPassed[i]
+		if err := arg.validatePassed(argValue); err != nil {
+			return nil, err
+		}
+
+		values[arg.Name] = argValue
 	}
 
 	return values, nil

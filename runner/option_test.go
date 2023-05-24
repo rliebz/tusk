@@ -78,7 +78,7 @@ var valuetests = []struct {
 	},
 	{
 		"passed variable only",
-		&Option{Passed: "passed"},
+		&Option{Passable: Passable{Passed: "passed"}},
 		"passed",
 	},
 	{
@@ -97,7 +97,9 @@ var valuetests = []struct {
 			DefaultValues: ValueList{
 				{When: WhenList{whenTrue}, Value: "when"},
 			},
-			Passed: "passed",
+			Passable: Passable{
+				Passed: "passed",
+			},
 		},
 		"passed",
 	},
@@ -165,7 +167,12 @@ func TestOption_Evaluate_passes_vars(t *testing.T) {
 
 func TestOption_Evaluate_required_with_passed(t *testing.T) {
 	expected := "foo"
-	option := Option{Required: true, Passed: expected}
+	option := Option{
+		Required: true,
+		Passable: Passable{
+			Passed: expected,
+		},
+	}
 
 	actual, err := option.Evaluate(Context{}, nil)
 	if err != nil {
@@ -205,7 +212,7 @@ func TestOption_Evaluate_required_with_environment(t *testing.T) {
 func TestOption_Evaluate_values_none_specified(t *testing.T) {
 	expected := ""
 	option := Option{
-		ValueWithList: ValueWithList{
+		Passable: Passable{
 			ValuesAllowed: marshal.StringList{"red", "herring"},
 		},
 	}
@@ -226,8 +233,8 @@ func TestOption_Evaluate_values_none_specified(t *testing.T) {
 func TestOption_Evaluate_values_with_passed(t *testing.T) {
 	expected := "foo"
 	option := Option{
-		Passed: expected,
-		ValueWithList: ValueWithList{
+		Passable: Passable{
+			Passed:        expected,
 			ValuesAllowed: marshal.StringList{"red", expected, "herring"},
 		},
 	}
@@ -251,7 +258,7 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 
 	option := Option{
 		Environment: envVar,
-		ValueWithList: ValueWithList{
+		Passable: Passable{
 			ValuesAllowed: marshal.StringList{"red", expected, "herring"},
 		},
 	}
@@ -276,8 +283,8 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
 	expected := "foo"
 	option := Option{
-		Passed: expected,
-		ValueWithList: ValueWithList{
+		Passable: Passable{
+			Passed:        expected,
 			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
 		},
 	}
@@ -296,7 +303,7 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 
 	option := Option{
 		Environment: envVar,
-		ValueWithList: ValueWithList{
+		Passable: Passable{
 			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
 		},
 	}
@@ -329,7 +336,11 @@ var evaluteTypeDefaultTests = []struct {
 
 func TestOption_Evaluate_type_defaults(t *testing.T) {
 	for _, tt := range evaluteTypeDefaultTests {
-		opt := Option{Type: tt.typeName}
+		opt := Option{
+			Passable: Passable{
+				Type: tt.typeName,
+			},
+		}
 		actual, err := opt.Evaluate(Context{}, nil)
 		if err != nil {
 			t.Errorf("Option.Evaluate(): unexpected error: %s", err)
@@ -348,11 +359,11 @@ func TestOption_Evaluate_type_defaults(t *testing.T) {
 func TestOption_UnmarshalYAML(t *testing.T) {
 	s := []byte(`{usage: foo, values: [foo, bar]}`)
 	expected := Option{
-		Usage: "foo",
-		ValueWithList: ValueWithList{
+		Passable: Passable{
+			Name:          "",
+			Usage:         "foo",
 			ValuesAllowed: []string{"foo", "bar"},
 		},
-		Name: "",
 	}
 	actual := Option{}
 

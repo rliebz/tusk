@@ -398,6 +398,22 @@ $ tusk greet friend
 Hello, friend!
 ```
 
+#### Arg Types
+
+Args can be of the types `string`, `integer`, `float`, or `boolean`. Args
+without types specified are considered strings.
+
+```yaml
+tasks:
+  add:
+    args:
+      a:
+        type: int
+      b:
+        type: int
+    run: echo $((${a} + ${b}))
+```
+
 #### Arg Values
 
 Args can specify which values are considered valid:

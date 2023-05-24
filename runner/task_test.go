@@ -37,12 +37,28 @@ args: { three: {}, four: {} }
 `,
 			want: Task{
 				Options: Options{
-					{Name: "one"},
-					{Name: "two"},
+					{
+						Passable: Passable{
+							Name: "one",
+						},
+					},
+					{
+						Passable: Passable{
+							Name: "two",
+						},
+					},
 				},
 				Args: Args{
-					{Name: "three"},
-					{Name: "four"},
+					{
+						Passable: Passable{
+							Name: "three",
+						},
+					},
+					{
+						Passable: Passable{
+							Name: "four",
+						},
+					},
 				},
 			},
 		},

@@ -6,7 +6,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Added
 
+- Arguments may now specify a `type`, which works the same way as options.
 - Boolean options may now be rewritten into strings using `rewrite`.
+
+### Fixed
+
+- Arguments and options are now properly validated when passed to sub-tasks.
 
 ## 0.6.4 (2022-09-27)
 

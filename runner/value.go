@@ -79,25 +79,3 @@ func (vl *ValueList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)
 }
-
-// ValueWithList is a list of allowable values for an option or argument.
-type ValueWithList struct {
-	ValuesAllowed marshal.StringList `yaml:"values"`
-}
-
-func (v *ValueWithList) validateSpecified(value, descriptor string) error {
-	if len(v.ValuesAllowed) == 0 {
-		return nil
-	}
-
-	for _, expected := range v.ValuesAllowed {
-		if value == expected {
-			return nil
-		}
-	}
-
-	return fmt.Errorf(
-		`value %q for %s must be one of %v`,
-		value, descriptor, v.ValuesAllowed,
-	)
-}

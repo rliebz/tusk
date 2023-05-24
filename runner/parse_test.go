@@ -908,6 +908,24 @@ tasks:
 		wantErr:  `subtask "one" requires 1 args but got 0`,
 	},
 	{
+		name: "not passing correct arg type to subtask",
+		input: `
+tasks:
+  one:
+    args:
+      foo:
+        type: int
+    run: echo hello
+  two:
+    run:
+      task:
+        name: one
+        args: somevalue
+`,
+		taskName: "two",
+		wantErr:  `value "somevalue" for argument "foo" is not of type "int"`,
+	},
+	{
 		name: "passing non-arg to subtask",
 		input: `
 tasks:
@@ -937,6 +955,23 @@ tasks:
 `,
 		taskName: "two",
 		wantErr:  `no value passed for required option: foo`,
+	},
+	{
+		name: "not passing correct option type to subtask",
+		input: `
+tasks:
+  one:
+    options:
+      foo: {type: float}
+    run: echo hello
+  two:
+    run:
+      task:
+        name: one
+        options: {foo: somevalue}
+`,
+		taskName: "two",
+		wantErr:  `value "somevalue" for option "foo" is not of type "float"`,
 	},
 	{
 		name: "passing non-option to subtask",
