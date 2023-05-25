@@ -3,6 +3,7 @@ package runner
 import (
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/rliebz/tusk/marshal"
 	"github.com/rliebz/tusk/ui"
@@ -70,14 +71,16 @@ func newCmd(ctx Context, script string) *exec.Cmd {
 		args = append(interpreter[1:], args...)
 	}
 
-	return execCommand(path, args...)
+	cmd := execCommand(path, args...)
+	cmd.Dir = ctx.Dir
+	return cmd
 }
 
 // execCommand executes a shell command.
 func (c *Command) exec(ctx Context) error {
 	cmd := newCmd(ctx, c.Exec)
 
-	cmd.Dir = c.Dir
+	cmd.Dir = filepath.Join(cmd.Dir, c.Dir)
 	cmd.Stdin = os.Stdin
 	if ctx.Logger.Verbosity > ui.VerbosityLevelSilent {
 		cmd.Stdout = os.Stdout

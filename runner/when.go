@@ -3,6 +3,7 @@ package runner
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -115,8 +116,8 @@ func (w *When) Validate(ctx Context, vars map[string]string) error {
 		w.validateEqual(vars),
 		w.validateNotEqual(vars),
 		w.validateEnv(),
-		w.validateExists(),
-		w.validateNotExists(),
+		w.validateExists(ctx),
+		w.validateNotExists(ctx),
 		w.validateCommand(ctx),
 	)
 }
@@ -151,13 +152,13 @@ func (w *When) validateCommand(ctx Context) error {
 	return newCondFailErrorf("no commands exited successfully")
 }
 
-func (w *When) validateExists() error {
+func (w *When) validateExists(ctx Context) error {
 	if len(w.Exists) == 0 {
 		return newUnspecifiedError("exists")
 	}
 
 	for _, f := range w.Exists {
-		if _, err := os.Stat(f); err != nil {
+		if _, err := os.Stat(filepath.Join(ctx.Dir, f)); err != nil {
 			if !os.IsNotExist(err) {
 				return err
 			}
@@ -167,16 +168,16 @@ func (w *When) validateExists() error {
 		return nil
 	}
 
-	return newCondFailErrorf("no required file existed: %s", w.Exists)
+	return newCondFailErrorf("no required file exists: %s", w.Exists)
 }
 
-func (w *When) validateNotExists() error {
+func (w *When) validateNotExists(ctx Context) error {
 	if len(w.NotExists) == 0 {
 		return newUnspecifiedError("not-exists")
 	}
 
 	for _, f := range w.NotExists {
-		if _, err := os.Stat(f); err != nil {
+		if _, err := os.Stat(filepath.Join(ctx.Dir, f)); err != nil {
 			if os.IsNotExist(err) {
 				return nil
 			}

@@ -4,6 +4,10 @@ import "github.com/rliebz/tusk/ui"
 
 // Context contains contextual information about a run.
 type Context struct {
+	// Dir is the directory that defines the config file, which is the relative
+	// directory for all command execution.
+	Dir string
+
 	// Logger is responsible for logging actions as they occur. It is required to
 	// be defined for a Context.
 	Logger *ui.Logger

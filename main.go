@@ -83,11 +83,6 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 		return 0, appcli.UninstallCompletion(meta)
 	}
 
-	// TODO: Use runner.Context to avoid doing this
-	if err = os.Chdir(meta.Directory); err != nil {
-		return 1, err
-	}
-
 	app, err := appcli.NewApp(args, meta)
 	if err != nil {
 		return 1, err

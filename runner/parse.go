@@ -41,6 +41,7 @@ func ParseComplete(
 	}
 
 	ctx := Context{
+		Dir:         meta.Directory,
 		Interpreter: meta.Interpreter,
 	}
 

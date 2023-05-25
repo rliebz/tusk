@@ -13,7 +13,6 @@ import (
 func TestRun_printVersion(t *testing.T) {
 	g := ghost.New(t)
 
-	registerCleanup(t)
 	stdout := new(bytes.Buffer)
 
 	args := []string{"tusk", "--version"}
@@ -32,7 +31,6 @@ func TestRun_printVersion(t *testing.T) {
 func TestRun_printHelp(t *testing.T) {
 	g := ghost.New(t)
 
-	registerCleanup(t)
 	stdout := new(bytes.Buffer)
 
 	args := []string{"tusk", "--help"}
@@ -80,7 +78,6 @@ Global Options:
 func TestRun_exitCodeZero(t *testing.T) {
 	g := ghost.New(t)
 
-	registerCleanup(t)
 	stderr := new(bytes.Buffer)
 
 	args := []string{"tusk", "-f", "./testdata/tusk.yml", "exit", "0"}
@@ -99,7 +96,6 @@ func TestRun_exitCodeZero(t *testing.T) {
 func TestRun_exitCodeNonZero(t *testing.T) {
 	g := ghost.New(t)
 
-	registerCleanup(t)
 	stderr := new(bytes.Buffer)
 
 	args := []string{"tusk", "-f", "./testdata/tusk.yml", "exit", "5"}
@@ -121,7 +117,6 @@ exit status 5
 func TestRun_incorrectUsage(t *testing.T) {
 	g := ghost.New(t)
 
-	registerCleanup(t)
 	stderr := new(bytes.Buffer)
 
 	args := []string{"tusk", "-f", "./testdata/tusk.yml", "fake-command"}
@@ -135,22 +130,4 @@ func TestRun_incorrectUsage(t *testing.T) {
 	want := "Error: No help topic for 'fake-command'\n"
 	g.Should(ghost.Equal(want, stderr.String()))
 	g.Should(ghost.Equal(1, status))
-}
-
-// registerCleanup is needed because main calls os.Chdir.
-//
-// Ideally, we never actually call os.Chdir, and instead set each command's
-// working directory and resolve relative file paths manually.
-func registerCleanup(t *testing.T) {
-	t.Helper()
-
-	g := ghost.New(t)
-
-	wd, err := os.Getwd()
-	g.NoError(err)
-
-	t.Cleanup(func() {
-		err := os.Chdir(wd)
-		g.NoError(err)
-	})
 }
