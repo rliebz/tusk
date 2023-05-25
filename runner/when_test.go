@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/rliebz/ghost"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -362,6 +363,44 @@ func TestWhen_Validate(t *testing.T) {
 				tt.when, tt.shouldErr, err,
 			)
 		}
+	}
+
+	// TODO: Combine this table with above tests
+	tests := []struct {
+		name    string
+		context Context
+		when    When
+	}{
+		{
+			name:    "directory exists",
+			context: Context{Dir: "testdata"},
+			when: createWhen(
+				withWhenExists("exists.txt"), // file in testdata
+			),
+		},
+		{
+			name:    "directory not exists",
+			context: Context{Dir: "testdata"},
+			when: createWhen(
+				withWhenNotExists("when_test.go"), // file in working dir, not in testdata
+			),
+		},
+		{
+			name:    "directory command",
+			context: Context{Dir: "testdata"},
+			when: createWhen(
+				withWhenCommand(`test "$(basename "$(pwd)")" = "testdata"`),
+			),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
+			err := tt.when.Validate(tt.context, nil)
+			g.NoError(err)
+		})
 	}
 }
 

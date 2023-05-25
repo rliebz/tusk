@@ -2,7 +2,7 @@ version: "{build}"
 
 branches:
   only:
-    - master
+    - main
 
 environment:
   GOROOT: c:\Program Files\Go
