@@ -1,8 +1,8 @@
 # Tusk
 
 [![GitHub release](https://img.shields.io/github/release/rliebz/tusk.svg)][releases]
-[![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk/master.svg)][circle]
-[![AppVeyor](https://img.shields.io/appveyor/ci/RobertLiebowitz/tusk/master.svg?label=windows)][appveyor]
+[![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk/main.svg)][circle]
+[![AppVeyor](https://img.shields.io/appveyor/ci/RobertLiebowitz/tusk/main.svg?label=windows)][appveyor]
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Gitter](https://img.shields.io/gitter/room/tusk-cli/tusk.svg)][gitter]
 
@@ -150,11 +150,11 @@ Set-up instructions for a development environment and contribution guidelines
 can be found in [CONTRIBUTING.md][contributing].
 
 [appveyor]: https://ci.appveyor.com/project/RobertLiebowitz/tusk
-[circle]: https://circleci.com/gh/rliebz/tusk/tree/master
-[contributing]: https://github.com/rliebz/tusk/blob/master/CONTRIBUTING.md
+[circle]: https://circleci.com/gh/rliebz/tusk/tree/main
+[contributing]: https://github.com/rliebz/tusk/blob/main/CONTRIBUTING.md
 [documentation]: https://rliebz.github.io/tusk/
 [gitter]: https://gitter.im/tusk-cli/tusk
 [homebrew]: https://brew.sh
 [releases]: https://github.com/rliebz/tusk/releases
 [spec]: https://rliebz.github.io/tusk/spec/
-[tusk.yml]: https://github.com/rliebz/tusk/blob/master/tusk.yml
+[tusk.yml]: https://github.com/rliebz/tusk/blob/main/tusk.yml

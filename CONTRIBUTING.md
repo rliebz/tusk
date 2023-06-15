@@ -71,8 +71,8 @@ $ tusk --version
 If you have not yet done so, make sure you fork the repository so you can push
 your changes back to your own fork on GitHub.
 
-When starting work on a new feature, create a new branch based off the `master`
-branch. Pull requests should generally target the `master` branch, and releases
+When starting work on a new feature, create a new branch based off the `main`
+branch. Pull requests should generally target the `main` branch, and releases
 will be cut separately.
 
 ## Running Tests
@@ -98,4 +98,4 @@ for that line:
 cmd := exec.Command("sh", "-c", command) // nolint: gosec
 ```
 
-[spec.md]: https://github.com/rliebz/tusk/blob/master/docs/spec.md
+[spec.md]: https://github.com/rliebz/tusk/blob/main/docs/spec.md
