@@ -9,6 +9,8 @@ import (
 )
 
 func TestCreateCLIFlag_undefined(t *testing.T) {
+	g := ghost.New(t)
+
 	opt := &runner.Option{
 		Passable: runner.Passable{
 			Type: "wrong",
@@ -16,9 +18,9 @@ func TestCreateCLIFlag_undefined(t *testing.T) {
 	}
 
 	flag, err := createCLIFlag(opt)
-	if err == nil {
-		t.Fatalf("flag was wrongly created: %#v", flag)
-	}
+	g.Should(ghost.ErrorEqual(err, `unsupported flag type "wrong"`))
+
+	g.Should(ghost.BeNil(flag))
 }
 
 func TestAddFlag_no_duplicates(t *testing.T) {

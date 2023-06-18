@@ -26,11 +26,6 @@ type Logger struct {
 	deprecations []string
 }
 
-// Config is the configuration for a logger.
-type Config struct {
-	VerbosityLevel
-}
-
 // New returns a new logger with the default settings.
 func New() *Logger {
 	return &Logger{
@@ -38,6 +33,11 @@ func New() *Logger {
 		Stderr:    os.Stderr,
 		Verbosity: VerbosityLevelNormal,
 	}
+}
+
+// Equal compares two loggers for testing purposes.
+func (l *Logger) Equal(other *Logger) bool {
+	return l.Stdout == other.Stdout && l.Stderr == other.Stderr && l.Verbosity == other.Verbosity
 }
 
 // Noop returns a logger that does not print anything.

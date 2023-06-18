@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/rliebz/ghost"
 	"github.com/rliebz/tusk/ui"
 	"gotest.tools/v3/fs"
 )
@@ -210,44 +210,41 @@ func TestMetadata_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
 			stashEnv(t)
 
 			cwd, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
+			g.NoError(err)
 
 			// default to no config for irrelevant tests
 			if tt.wd == "" {
 				tt.wd = dirEmpty.Path()
 			}
 
-			if err = os.Chdir(tt.wd); err != nil {
-				t.Fatal(err)
-			}
-			defer os.Chdir(cwd) //nolint: errcheck
+			err = os.Chdir(tt.wd)
+			g.NoError(err)
+			t.Cleanup(func() {
+				os.Chdir(cwd) //nolint: errcheck
+			})
 
 			opts := mockOptGetter{
 				bools:   tt.bools,
 				strings: tt.strings,
 			}
-			var meta Metadata
 
-			if err = meta.Set(opts); err != nil {
-				t.Fatal(err)
-			}
+			var meta Metadata
+			err = meta.Set(opts)
+			g.NoError(err)
 
 			// evaluate symlinks to avoid noise
-			if meta.Directory, err = filepath.EvalSymlinks(meta.Directory); err != nil {
-				t.Fatal(err)
-			}
-			if tt.meta.Directory, err = filepath.EvalSymlinks(tt.meta.Directory); err != nil {
-				t.Fatal(err)
-			}
+			meta.Directory, err = filepath.EvalSymlinks(meta.Directory)
+			g.NoError(err)
 
-			if diff := cmp.Diff(tt.meta, meta, compareLoggers); diff != "" {
-				t.Errorf("metadata differs:\n%s", diff)
-			}
+			tt.meta.Directory, err = filepath.EvalSymlinks(tt.meta.Directory)
+			g.NoError(err)
+
+			g.Should(ghost.DeepEqual(tt.meta, meta))
 		})
 	}
 }
@@ -282,6 +279,8 @@ func TestMetadata_Set_interpreter(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
 			cfgFile := fs.NewFile(t, "", fs.WithContent(tt.config))
 			opts := mockOptGetter{
 				strings: map[string]string{"file": cfgFile.Path()},
@@ -289,26 +288,16 @@ func TestMetadata_Set_interpreter(t *testing.T) {
 
 			var meta Metadata
 			err := meta.Set(opts)
-
-			var gotErr string
-			if err != nil {
-				gotErr = err.Error()
+			if tt.wantErr != "" {
+				g.Should(ghost.ErrorEqual(err, tt.wantErr))
+				return
 			}
+			g.NoError(err)
 
-			if diff := cmp.Diff(tt.wantErr, gotErr); diff != "" {
-				t.Fatalf("error differs (-want +got):\n%v", diff)
-			}
-
-			if diff := cmp.Diff(tt.want, meta.Interpreter); diff != "" {
-				t.Errorf("interpreter differs (-want +got):\n%s", diff)
-			}
+			g.Should(ghost.DeepEqual(tt.want, meta.Interpreter))
 		})
 	}
 }
-
-var compareLoggers = cmp.Comparer(func(a, b *ui.Logger) bool {
-	return a.Stderr == b.Stderr && a.Stdout == b.Stdout && a.Verbosity == b.Verbosity
-})
 
 func stashEnv(t *testing.T) {
 	t.Helper()
