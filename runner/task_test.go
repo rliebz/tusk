@@ -121,34 +121,36 @@ args: { foo: {} }
 }
 
 var executeTests = []struct {
-	desc     string
-	run      string
-	finally  string
-	expected error
+	desc    string
+	run     string
+	finally string
+	wantErr string
 }{
 	{
 		"run error only",
 		"exit 1",
 		"exit 0",
-		errors.New("exit status 1"),
+		"exit status 1",
 	},
 	{
 		"finally error only",
 		"exit 0",
 		"exit 1",
-		errors.New("exit status 1"),
+		"exit status 1",
 	},
 	{
 		"run and finally error",
 		"exit 1",
 		"exit 2",
-		errors.New("exit status 1"),
+		"exit status 1",
 	},
 }
 
 func TestTaskExecute_errors_returned(t *testing.T) {
 	for _, tt := range executeTests {
 		t.Run(tt.desc, func(t *testing.T) {
+			g := ghost.New(t)
+
 			run := Run{Command: CommandList{{Exec: tt.run}}}
 			finally := Run{Command: CommandList{{Exec: tt.finally}}}
 			task := Task{
@@ -156,24 +158,23 @@ func TestTaskExecute_errors_returned(t *testing.T) {
 				Finally: RunList{&finally},
 			}
 
-			actual := task.Execute(Context{Logger: ui.Noop()})
-			if actual.Error() != tt.expected.Error() {
-				t.Errorf("want error %s, got %s", tt.expected, actual)
-			}
+			err := task.Execute(Context{Logger: ui.Noop()})
+			g.Should(ghost.ErrorEqual(err, tt.wantErr))
 		})
 	}
 }
 
 func TestTask_run_commands(t *testing.T) {
+	g := ghost.New(t)
+
 	var task Task
 
 	runSuccess := &Run{
 		Command: CommandList{{Exec: "exit 0"}},
 	}
 
-	if err := task.run(Context{Logger: ui.Noop()}, runSuccess, stateRunning); err != nil {
-		t.Errorf("task.run([exit 0]): unexpected error: %s", err)
-	}
+	err := task.run(Context{Logger: ui.Noop()}, runSuccess, stateRunning)
+	g.NoError(err)
 
 	runFailure := &Run{
 		Command: CommandList{
@@ -182,12 +183,13 @@ func TestTask_run_commands(t *testing.T) {
 		},
 	}
 
-	if err := task.run(Context{Logger: ui.Noop()}, runFailure, stateRunning); err == nil {
-		t.Error("task.run([exit 0, exit 1]): expected error, got nil")
-	}
+	err = task.run(Context{Logger: ui.Noop()}, runFailure, stateRunning)
+	g.Should(ghost.ErrorEqual(err, "exit status 1"))
 }
 
 func TestTask_run_sub_tasks(t *testing.T) {
+	g := ghost.New(t)
+
 	taskSuccess := Task{
 		Name: "success",
 		RunList: RunList{
@@ -208,45 +210,26 @@ func TestTask_run_sub_tasks(t *testing.T) {
 
 	task := Task{}
 
-	if err := task.run(Context{Logger: ui.Noop()}, r, stateRunning); err != nil {
-		t.Errorf(`task.run([exit 0]): unexpected error: %s`, err)
-	}
+	err := task.run(Context{Logger: ui.Noop()}, r, stateRunning)
+	g.NoError(err)
 
 	r.Tasks = append(r.Tasks, taskFailure)
 
-	if err := task.run(Context{Logger: ui.Noop()}, r, stateRunning); err == nil {
-		t.Error(`task.run([exit 0, exit 1]): expected error, got nil`)
-	}
+	err = task.run(Context{Logger: ui.Noop()}, r, stateRunning)
+	g.Should(ghost.ErrorEqual(err, "exit status 1"))
 }
 
 func TestTask_run_environment(t *testing.T) {
+	g := ghost.New(t)
+
 	toBeUnset := "TO_BE_UNSET"
 	toBeUnsetValue := "unsetvalue"
 
 	toBeSet := "TO_BE_SET"
 	toBeSetValue := "setvalue"
 
-	if err := os.Setenv(toBeUnset, toBeUnsetValue); err != nil {
-		t.Fatalf(
-			"os.Setenv(%s, %s): unexpected error: %v",
-			toBeUnset, toBeUnsetValue, err,
-		)
-	}
-
-	defer func() {
-		if err := os.Unsetenv(toBeSet); err != nil {
-			t.Errorf(
-				"os.Unsetenv(%s): unexpected error: %v",
-				toBeSet, err,
-			)
-		}
-		if err := os.Unsetenv(toBeUnset); err != nil {
-			t.Errorf(
-				"os.Unsetenv(%s): unexpected error: %v",
-				toBeUnset, err,
-			)
-		}
-	}()
+	t.Setenv(toBeSet, "")
+	t.Setenv(toBeUnset, toBeUnsetValue)
 
 	var task Task
 
@@ -257,26 +240,19 @@ func TestTask_run_environment(t *testing.T) {
 		},
 	}
 
-	if err := task.run(Context{Logger: ui.Noop()}, r, stateRunning); err != nil {
-		t.Errorf("task.run(): unexpected error: %s", err)
-	}
+	err := task.run(Context{Logger: ui.Noop()}, r, stateRunning)
+	g.NoError(err)
 
-	if actual := os.Getenv(toBeSet); toBeSetValue != actual {
-		t.Errorf(
-			"value for %s: expected: %q, actual: %q",
-			toBeSet, toBeSetValue, actual,
-		)
-	}
+	g.Should(ghost.Equal(toBeSetValue, os.Getenv(toBeSet)))
 
-	if actual, isSet := os.LookupEnv(toBeUnset); isSet {
-		t.Errorf(
-			"value for %s: expected env var to be unset, actual: %s",
-			toBeUnset, actual,
-		)
-	}
+	got, ok := os.LookupEnv(toBeUnset)
+	g.Should(ghost.Equal("", got))
+	g.ShouldNot(ghost.BeTrue(ok))
 }
 
 func TestTask_run_finally(t *testing.T) {
+	g := ghost.New(t)
+
 	task := Task{
 		Finally: RunList{
 			&Run{Command: CommandList{{Exec: "exit 0"}}},
@@ -284,12 +260,13 @@ func TestTask_run_finally(t *testing.T) {
 	}
 
 	var err error
-	if task.runFinally(Context{Logger: ui.Noop()}, &err); err != nil {
-		t.Errorf("task.runFinally(): unexpected error: %s", err)
-	}
+	task.runFinally(Context{Logger: ui.Noop()}, &err)
+	g.NoError(err)
 }
 
 func TestTask_run_finally_error(t *testing.T) {
+	g := ghost.New(t)
+
 	task := Task{
 		Finally: RunList{
 			&Run{Command: CommandList{{Exec: "exit 1"}}},
@@ -297,26 +274,26 @@ func TestTask_run_finally_error(t *testing.T) {
 	}
 
 	var err error
-	if task.runFinally(Context{Logger: ui.Noop()}, &err); err == nil {
-		t.Error("task.runFinally(): want error for exit status 1, got nil")
-	}
+	task.runFinally(Context{Logger: ui.Noop()}, &err)
+	g.Should(ghost.ErrorEqual(err, "exit status 1"))
 }
 
 func TestTask_run_finally_ui(t *testing.T) {
+	g := ghost.New(t)
+
 	taskName := "foo"
 	command := "exit 0"
 
-	bufExpected := new(bytes.Buffer)
+	want := new(bytes.Buffer)
 	logger := ui.New()
 	logger.Verbosity = ui.VerbosityLevelVerbose
-	logger.Stderr = bufExpected
+	logger.Stderr = want
 
 	logger.PrintTaskFinally(taskName)
 	logger.PrintCommandWithParenthetical(command, "finally", taskName)
-	expected := bufExpected.String()
 
-	bufActual := new(bytes.Buffer)
-	logger.Stderr = bufActual
+	got := new(bytes.Buffer)
+	logger.Stderr = got
 
 	task := Task{
 		Name: taskName,
@@ -331,37 +308,30 @@ func TestTask_run_finally_ui(t *testing.T) {
 	ctx.PushTask(&task)
 
 	var err error
-	if task.runFinally(ctx, &err); err != nil {
-		t.Fatalf("task.runFinally(): unexpected error: %s", err)
-	}
+	task.runFinally(ctx, &err)
+	g.NoError(err)
 
-	actual := bufActual.String()
-
-	if expected != actual {
-		t.Fatalf(
-			"task.runFinally(): want to print %q, got %q",
-			expected, actual,
-		)
-	}
+	g.Should(ghost.Equal(want.String(), got.String()))
 }
 
 func TestTask_run_finally_ui_fails(t *testing.T) {
+	g := ghost.New(t)
+
 	taskName := "foo"
 	command := "exit 1"
-	errExpected := errors.New("exit status 1")
+	wantErr := errors.New("exit status 1")
 
-	bufExpected := new(bytes.Buffer)
+	want := new(bytes.Buffer)
 	logger := ui.New()
 	logger.Verbosity = ui.VerbosityLevelVerbose
-	logger.Stderr = bufExpected
+	logger.Stderr = want
 
 	logger.PrintTaskFinally(taskName)
 	logger.PrintCommandWithParenthetical(command, "finally", taskName)
-	logger.PrintCommandError(errExpected)
-	expected := bufExpected.String()
+	logger.PrintCommandError(wantErr)
 
-	bufActual := new(bytes.Buffer)
-	logger.Stderr = bufActual
+	got := new(bytes.Buffer)
+	logger.Stderr = got
 
 	task := Task{
 		Name: taskName,
@@ -376,16 +346,8 @@ func TestTask_run_finally_ui_fails(t *testing.T) {
 	ctx.PushTask(&task)
 
 	var err error
-	if task.runFinally(ctx, &err); err == nil {
-		t.Error("task.runFinally(): want error for exit status 1, got nil")
-	}
+	task.runFinally(ctx, &err)
+	g.Should(ghost.ErrorEqual(err, "exit status 1"))
 
-	actual := bufActual.String()
-
-	if expected != actual {
-		t.Fatalf(
-			"task.runFinally(): want to print %q, got %q",
-			expected, actual,
-		)
-	}
+	g.Should(ghost.Equal(want.String(), got.String()))
 }
