@@ -46,6 +46,19 @@ linters:
     - usestdlibvars
 
 linters-settings:
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+      - experimental
+      - opinionated
+    disabled-checks:
+      - paramTypeCombine
+      - ptrToRefParam
+      - sloppyTestFuncName
+      - whyNoLint # TODO: Address these
+
   gofumpt:
     module-path: github.com/rliebz/ghost
 

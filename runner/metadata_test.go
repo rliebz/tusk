@@ -299,7 +299,7 @@ func TestMetadata_Set_interpreter(t *testing.T) {
 	}
 }
 
-func stashEnv(t *testing.T) {
+func stashEnv(t testing.TB) {
 	t.Helper()
 
 	environ := os.Environ()
