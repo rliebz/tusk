@@ -21,7 +21,6 @@ linters:
     - errname
     - errorlint
     - exportloopref
-    - gocognit
     - gocritic
     - gofumpt
     - gosec
@@ -47,9 +46,6 @@ linters:
     - usestdlibvars
 
 linters-settings:
-  gocognit:
-    min-complexity: 15
-
   gofumpt:
     module-path: github.com/rliebz/ghost
 
@@ -71,5 +67,8 @@ linters-settings:
   revive:
     confidence: 0
     rules:
+      - name: cognitive-complexity
+        disabled: false
+        arguments: [15]
       - name: if-return
         disabled: true
