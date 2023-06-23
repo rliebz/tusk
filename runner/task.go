@@ -180,7 +180,7 @@ func (t *Task) run(ctx Context, r *Run, s executionState) error {
 	return nil
 }
 
-// check if the command or any of the tasks in the stack are quiet
+// shouldBeQuiet checks if the command or any of the tasks in the stack are quiet.
 func shouldBeQuiet(cmd Command, ctx Context) bool {
 	if cmd.Quiet {
 		return true

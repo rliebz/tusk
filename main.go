@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -108,7 +109,8 @@ func printVersion(meta *runner.Metadata) {
 
 func runApp(app *cli.App, meta *runner.Metadata, args []string) (int, error) {
 	if err := app.Run(args); err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
 			if meta.Logger.Verbosity < ui.VerbosityLevelVerbose {
 				err = nil
 			}

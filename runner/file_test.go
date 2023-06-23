@@ -118,7 +118,7 @@ func mkConfigFile(t *testing.T, dir, fileName string) string {
 	t.Helper()
 
 	fullPath := filepath.Join(dir, fileName)
-	if err := os.WriteFile(fullPath, []byte{}, 0o644); err != nil {
+	if err := os.WriteFile(fullPath, []byte{}, 0o600); err != nil {
 		t.Fatalf("failed to create file: %v", err)
 	}
 

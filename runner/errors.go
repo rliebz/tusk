@@ -1,13 +1,14 @@
 package runner
 
 import (
+	"errors"
 	"fmt"
 )
 
 // IsFailedCondition checks if an error was because of a failed condition.
 func IsFailedCondition(err error) bool {
-	we, ok := err.(conditionFailed)
-	return ok && we.WhenConditionFailed()
+	var cf conditionFailed
+	return errors.As(err, &cf) && cf.WhenConditionFailed()
 }
 
 type conditionFailed interface {
@@ -39,8 +40,8 @@ func newCondFailErrorf(msg string, a ...interface{}) error {
 
 // IsUnspecifiedClause checks if an error was because a clause is not defined.
 func IsUnspecifiedClause(err error) bool {
-	we, ok := err.(unspecifiedClause)
-	return ok && we.WhenUnspecifiedClause()
+	var uc unspecifiedClause
+	return errors.As(err, &uc) && uc.WhenUnspecifiedClause()
 }
 
 type unspecifiedClauseError struct {

@@ -10,7 +10,7 @@ tasks:
         type: bool
         short: f
         rewrite: --fast
-    run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.1 run ${fast} ./...
+    run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.53.3 run ${fast} ./...
 
   test:
     usage: Run the tests
@@ -41,7 +41,7 @@ tasks:
           name: lint
           options:
             fast: ${fast}
-      - command: go test -cover -race ${fast-flag} ${verbose} ./...
+      - command: go test -race ${fast-flag} ${verbose} ./...
 
   tidy:
     usage: Clean up and format the repo

@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"os"
 	"reflect"
 	"testing"
 
@@ -106,9 +105,7 @@ var valuetests = []struct {
 }
 
 func TestOption_Evaluate(t *testing.T) {
-	if err := os.Setenv("OPTION_VAR", "option_val"); err != nil {
-		t.Fatalf("unexpected err setting environment variable: %s", err)
-	}
+	t.Setenv("OPTION_VAR", "option_val")
 
 	for _, tt := range valuetests {
 		actual, err := tt.input.Evaluate(Context{}, nil)
@@ -192,9 +189,7 @@ func TestOption_Evaluate_required_with_environment(t *testing.T) {
 	expected := "foo"
 
 	option := Option{Required: true, Environment: envVar}
-	if err := os.Setenv(envVar, expected); err != nil {
-		t.Fatalf("unexpected err setting environment variable: %s", err)
-	}
+	t.Setenv(envVar, expected)
 
 	actual, err := option.Evaluate(Context{}, nil)
 	if err != nil {
@@ -263,9 +258,7 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 		},
 	}
 
-	if err := os.Setenv(envVar, expected); err != nil {
-		t.Fatalf("unexpected err setting environment variable: %s", err)
-	}
+	t.Setenv(envVar, expected)
 
 	actual, err := option.Evaluate(Context{}, nil)
 	if err != nil {
@@ -308,9 +301,7 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 		},
 	}
 
-	if err := os.Setenv(envVar, expected); err != nil {
-		t.Fatalf("unexpected err setting environment variable: %s", err)
-	}
+	t.Setenv(envVar, expected)
 
 	_, err := option.Evaluate(Context{}, nil)
 	if err == nil {

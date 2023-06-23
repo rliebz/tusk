@@ -34,6 +34,7 @@ func UnmarshalOneOf(candidates ...UnmarshalCandidate) error {
 	for _, c := range candidates {
 		if err = c.Unmarshal(); err != nil {
 			// TypeErrors are expected; try the next candidate
+			//nolint:errorlint // Not sure why, but errors.As breaks tests.
 			if _, ok := err.(*yaml.TypeError); ok {
 				continue
 			}

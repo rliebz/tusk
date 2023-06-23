@@ -113,7 +113,9 @@ tasks:
 
 	g.Must(ghost.Len(1, app.Commands))
 
-	exitErr, ok := app.Run(args).(*exec.ExitError)
+	err = app.Run(args)
+	var exitErr *exec.ExitError
+	ok := errors.As(err, &exitErr)
 	g.Must(ghost.BeTrue(ok))
 
 	exitCode := exitErr.Sys().(syscall.WaitStatus).ExitStatus()
@@ -143,7 +145,9 @@ tasks:
 	g.Must(ghost.Len(1, app.Commands))
 
 	// Ensure private task still runs as subtask
-	exitErr, ok := app.Run(args).(*exec.ExitError)
+	err = app.Run(args)
+	var exitErr *exec.ExitError
+	ok := errors.As(err, &exitErr)
 	g.Must(ghost.BeTrue(ok))
 
 	exitCode := exitErr.Sys().(syscall.WaitStatus).ExitStatus()

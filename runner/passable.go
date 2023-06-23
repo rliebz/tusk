@@ -42,7 +42,7 @@ func (p *Passable) validatePassed(kind string, value string) error {
 	return nil
 }
 
-// TODO: Remove when slices package is added to stdlib
+// TODO: Remove when slices package is added to stdlib.
 func contains(slice []string, item string) bool {
 	for _, s := range slice {
 		if s == item {
