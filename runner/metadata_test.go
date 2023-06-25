@@ -273,7 +273,8 @@ func TestMetadata_Set_interpreter(t *testing.T) {
 			name:   "invalid yaml",
 			config: "🥔",
 			wantErr: `yaml: unmarshal errors:
-  line 1: cannot unmarshal !!str ` + "`🥔`" + ` into struct { Interpreter string "yaml:\"interpreter\"" }`,
+  line 1: cannot unmarshal !!str ` + "`🥔`" +
+				` into struct { Interpreter string "yaml:\"interpreter\"" }`,
 		},
 	}
 

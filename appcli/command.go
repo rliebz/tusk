@@ -27,7 +27,11 @@ func createExecuteCommand(_ *cli.App, meta *runner.Metadata, t *runner.Task) (*c
 	}), nil
 }
 
-func createMetadataBuildCommand(app *cli.App, _ *runner.Metadata, t *runner.Task) (*cli.Command, error) {
+func createMetadataBuildCommand(
+	app *cli.App,
+	_ *runner.Metadata,
+	t *runner.Task,
+) (*cli.Command, error) {
 	argsPassed, flagsPassed, err := getPassedValues(app)
 	if err != nil {
 		return nil, err

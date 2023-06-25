@@ -64,7 +64,11 @@ func defaultComplete(w io.Writer, c context, app *cli.App) {
 // The metadata includes the completion type followed by a list of options.
 // The available completion types are "normal" and "file". Normal will return
 // task-specific flags, while file allows completion engines to use system files.
-func createCommandComplete(w io.Writer, command *cli.Command, cfg *runner.Config) func(c *cli.Context) {
+func createCommandComplete(
+	w io.Writer,
+	command *cli.Command,
+	cfg *runner.Config,
+) func(c *cli.Context) {
 	return func(c *cli.Context) {
 		commandComplete(w, c, command, cfg)
 	}

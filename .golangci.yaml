@@ -71,6 +71,10 @@ linters-settings:
   govet:
     check-shadowing: true
 
+  lll:
+    line-length: 100
+    tab-width: 2
+
   misspell:
     locale: US
 

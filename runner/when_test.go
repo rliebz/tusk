@@ -21,7 +21,11 @@ var unmarshalTests = []struct {
 	{
 		"list short notation",
 		`[foo, bar, baz]`,
-		createWhen(withWhenEqual("foo", "true"), withWhenEqual("bar", "true"), withWhenEqual("baz", "true")),
+		createWhen(
+			withWhenEqual("foo", "true"),
+			withWhenEqual("bar", "true"),
+			withWhenEqual("baz", "true"),
+		),
 	},
 	{
 		"not-equal",
