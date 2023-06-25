@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 	"github.com/rliebz/tusk/runner"
 	"github.com/urfave/cli"
 )
@@ -18,9 +19,9 @@ func TestCreateCLIFlag_undefined(t *testing.T) {
 	}
 
 	flag, err := createCLIFlag(opt)
-	g.Should(ghost.ErrorEqual(err, `unsupported flag type "wrong"`))
+	g.Should(be.ErrorEqual(`unsupported flag type "wrong"`, err))
 
-	g.Should(ghost.BeNil(flag))
+	g.Should(be.Nil(flag))
 }
 
 func TestAddFlag_no_duplicates(t *testing.T) {
@@ -41,5 +42,5 @@ func TestAddFlag_no_duplicates(t *testing.T) {
 	err = addFlag(command, opt)
 	g.NoError(err)
 
-	g.Should(ghost.Equal(1, len(command.Flags)))
+	g.Should(be.Equal(1, len(command.Flags)))
 }

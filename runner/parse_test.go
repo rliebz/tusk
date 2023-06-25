@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 	"github.com/rliebz/tusk/marshal"
 )
 
@@ -855,7 +856,7 @@ given input:
 			g.NoError(err)
 
 			got := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
-			g.Should(ghost.DeepEqual(tt.want, got))
+			g.Should(be.DeepEqual(tt.want, got))
 		})
 	}
 }
@@ -1119,8 +1120,8 @@ given input:
 			}
 
 			_, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
-			g.Must(ghost.Error(err))
-			g.Should(ghost.Equal(tt.wantErr, err.Error()))
+			g.Must(be.Error(err))
+			g.Should(be.Equal(tt.wantErr, err.Error()))
 		})
 	}
 }
@@ -1148,11 +1149,11 @@ tasks:
 
 	wantBar := "${foo}"
 	gotBar := cfg.Options[1].DefaultValues[0].Value
-	g.Should(ghost.Equal(wantBar, gotBar))
+	g.Should(be.Equal(wantBar, gotBar))
 
 	wantCommand := "echo ${bar}"
 	gotCommand := cfg.Tasks["mytask"].RunList[0].Command[0].Exec
-	g.Should(ghost.Equal(wantCommand, gotCommand))
+	g.Should(be.Equal(wantCommand, gotCommand))
 }
 
 func TestParseComplete_quiet(t *testing.T) {
@@ -1177,6 +1178,6 @@ tasks:
 	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
 	g.NoError(err)
 
-	g.Should(ghost.BeTrue(cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet))
-	g.Should(ghost.BeTrue(cfg.Tasks["quietTask"].Quiet))
+	g.Should(be.True(cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet))
+	g.Should(be.True(cfg.Tasks["quietTask"].Quiet))
 }

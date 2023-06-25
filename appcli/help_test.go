@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
+
 	"github.com/rliebz/tusk/runner"
 )
 
@@ -30,7 +32,7 @@ func TestFlagPrefixer(t *testing.T) {
 			g := ghost.New(t)
 
 			got := flagPrefixer(tt.flags, tt.placeholder)
-			g.Should(ghost.Equal(tt.want, got))
+			g.Should(be.Equal(tt.want, got))
 		})
 	}
 }
@@ -93,7 +95,7 @@ Arguments:
 			g.NoError(err)
 
 			got := createArgsSection(cfg.Tasks[taskName])
-			g.Should(ghost.Equal(tt.want, got))
+			g.Should(be.Equal(tt.want, got))
 		})
 	}
 }

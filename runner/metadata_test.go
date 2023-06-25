@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 	"github.com/rliebz/tusk/ui"
 	"gotest.tools/v3/fs"
 )
@@ -244,7 +245,7 @@ func TestMetadata_Set(t *testing.T) {
 			tt.meta.Directory, err = filepath.EvalSymlinks(tt.meta.Directory)
 			g.NoError(err)
 
-			g.Should(ghost.DeepEqual(tt.meta, meta))
+			g.Should(be.DeepEqual(tt.meta, meta))
 		})
 	}
 }
@@ -290,12 +291,12 @@ func TestMetadata_Set_interpreter(t *testing.T) {
 			var meta Metadata
 			err := meta.Set(opts)
 			if tt.wantErr != "" {
-				g.Should(ghost.ErrorEqual(err, tt.wantErr))
+				g.Should(be.ErrorEqual(tt.wantErr, err))
 				return
 			}
 			g.NoError(err)
 
-			g.Should(ghost.DeepEqual(tt.want, meta.Interpreter))
+			g.Should(be.DeepEqual(tt.want, meta.Interpreter))
 		})
 	}
 }

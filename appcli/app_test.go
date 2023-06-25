@@ -10,9 +10,11 @@ import (
 	"testing"
 
 	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
+	"github.com/urfave/cli"
+
 	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
-	"github.com/urfave/cli"
 )
 
 func TestNewFlagApp(t *testing.T) {
@@ -35,14 +37,14 @@ tasks:
 	g.NoError(err)
 
 	command, ok := flagApp.Metadata["command"].(*cli.Command)
-	g.Must(ghost.BeTrue(ok))
+	g.Must(be.True(ok))
 
-	g.Should(ghost.Equal("mytask", command.Name))
+	g.Should(be.Equal("mytask", command.Name))
 
 	flags, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
-	g.Must(ghost.BeTrue(ok))
+	g.Must(be.True(ok))
 
-	g.Should(ghost.DeepEqual(map[string]string{"foo": "other"}, flags))
+	g.Should(be.DeepEqual(map[string]string{"foo": "other"}, flags))
 }
 
 func TestNewFlagApp_no_options(t *testing.T) {
@@ -60,14 +62,14 @@ func TestNewFlagApp_no_options(t *testing.T) {
 	g.NoError(err)
 
 	command, ok := flagApp.Metadata["command"].(*cli.Command)
-	g.Must(ghost.BeTrue(ok))
+	g.Must(be.True(ok))
 
-	g.Should(ghost.Equal("mytask", command.Name))
+	g.Should(be.Equal("mytask", command.Name))
 
 	flags, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
-	g.Must(ghost.BeTrue(ok))
+	g.Must(be.True(ok))
 
-	g.Should(ghost.DeepEqual(map[string]string{}, flags))
+	g.Should(be.DeepEqual(map[string]string{}, flags))
 }
 
 func TestNewApp(t *testing.T) {
@@ -89,9 +91,9 @@ tasks: { %q: {} }
 	app, err := NewApp([]string{"tusk", taskName}, meta)
 	g.NoError(err)
 
-	g.Should(ghost.Len(1, app.Commands))
-	g.Should(ghost.Equal(name, app.Name))
-	g.Should(ghost.Equal(usage, app.Usage))
+	g.Should(be.Len(1, app.Commands))
+	g.Should(be.Equal(name, app.Name))
+	g.Should(be.Equal(usage, app.Usage))
 }
 
 func TestNewApp_exit_code(t *testing.T) {
@@ -111,15 +113,15 @@ tasks:
 	app, err := NewApp(args, meta)
 	g.NoError(err)
 
-	g.Must(ghost.Len(1, app.Commands))
+	g.Must(be.Len(1, app.Commands))
 
 	err = app.Run(args)
 	var exitErr *exec.ExitError
 	ok := errors.As(err, &exitErr)
-	g.Must(ghost.BeTrue(ok))
+	g.Must(be.True(ok))
 
 	exitCode := exitErr.Sys().(syscall.WaitStatus).ExitStatus()
-	g.Should(ghost.Equal(wantExitCode, exitCode))
+	g.Should(be.Equal(wantExitCode, exitCode))
 }
 
 func TestNewApp_private_task(t *testing.T) {
@@ -142,16 +144,16 @@ tasks:
 	app, err := NewApp(args, meta)
 	g.NoError(err)
 
-	g.Must(ghost.Len(1, app.Commands))
+	g.Must(be.Len(1, app.Commands))
 
 	// Ensure private task still runs as subtask
 	err = app.Run(args)
 	var exitErr *exec.ExitError
 	ok := errors.As(err, &exitErr)
-	g.Must(ghost.BeTrue(ok))
+	g.Must(be.True(ok))
 
 	exitCode := exitErr.Sys().(syscall.WaitStatus).ExitStatus()
-	g.Should(ghost.Equal(wantExitCode, exitCode))
+	g.Should(be.Equal(wantExitCode, exitCode))
 }
 
 func TestNewApp_fails_bad_config(t *testing.T) {
@@ -161,8 +163,9 @@ func TestNewApp_fails_bad_config(t *testing.T) {
 		[]string{"tusk"},
 		&runner.Metadata{CfgText: []byte(`invalid`)},
 	)
-	g.Should(ghost.ErrorEqual(err,
+	g.Should(be.ErrorEqual(
 		"yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `invalid` into runner.configType",
+		err,
 	))
 }
 
@@ -170,7 +173,7 @@ func TestNewApp_fails_bad_flag(t *testing.T) {
 	g := ghost.New(t)
 
 	_, err := NewApp([]string{"tusk", "--invalid"}, &runner.Metadata{})
-	g.Should(ghost.ErrorEqual(err, "flag provided but not defined: -invalid"))
+	g.Should(be.ErrorEqual("flag provided but not defined: -invalid", err))
 }
 
 func TestGetConfigMetadata_defaults(t *testing.T) {
@@ -185,9 +188,9 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 	wd, err := os.Getwd()
 	g.NoError(err)
 
-	g.Should(ghost.Equal(filepath.Dir(wd), metadata.Directory))
-	g.Should(ghost.Equal(ui.VerbosityLevelNormal, metadata.Logger.Verbosity))
-	g.ShouldNot(ghost.BeTrue(metadata.PrintVersion))
+	g.Should(be.Equal(filepath.Dir(wd), metadata.Directory))
+	g.Should(be.Equal(ui.VerbosityLevelNormal, metadata.Logger.Verbosity))
+	g.ShouldNot(be.True(metadata.PrintVersion))
 }
 
 func TestGetConfigMetadata_file(t *testing.T) {
@@ -199,19 +202,19 @@ func TestGetConfigMetadata_file(t *testing.T) {
 	metadata, err := GetConfigMetadata(args)
 	g.NoError(err)
 
-	g.Should(ghost.Equal("testdata", metadata.Directory))
+	g.Should(be.Equal("testdata", metadata.Directory))
 
 	cfgText, err := os.ReadFile(cfgPath)
 	g.NoError(err)
 
-	g.Should(ghost.Equal(string(cfgText), string(metadata.CfgText)))
+	g.Should(be.Equal(string(cfgText), string(metadata.CfgText)))
 }
 
 func TestGetConfigMetadata_fileNoExist(t *testing.T) {
 	g := ghost.New(t)
 
 	_, err := GetConfigMetadata([]string{"tusk", "--file", "fakefile.yml"})
-	if !g.Should(ghost.BeTrue(errors.Is(err, os.ErrNotExist))) {
+	if !g.Should(be.True(errors.Is(err, os.ErrNotExist))) {
 		t.Log(err)
 	}
 }
@@ -222,7 +225,7 @@ func TestGetConfigMetadata_version(t *testing.T) {
 	metadata, err := GetConfigMetadata([]string{"tusk", "--version"})
 	g.NoError(err)
 
-	g.Should(ghost.BeTrue(metadata.PrintVersion))
+	g.Should(be.True(metadata.PrintVersion))
 }
 
 func TestGetConfigMetadata_verbosity(t *testing.T) {
@@ -280,7 +283,7 @@ func TestGetConfigMetadata_verbosity(t *testing.T) {
 			metadata, err := GetConfigMetadata(tt.args)
 			g.NoError(err)
 
-			g.Should(ghost.Equal(tt.want, metadata.Logger.Verbosity))
+			g.Should(be.Equal(tt.want, metadata.Logger.Verbosity))
 		})
 	}
 }

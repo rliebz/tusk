@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 )
 
 func withStdout(l *Logger, out io.Writer) {
@@ -30,7 +31,7 @@ func testPrint(t *testing.T, tt printTestCase) {
 
 	empty := new(bytes.Buffer)
 	t.Cleanup(func() {
-		g.Should(ghost.BeZero(empty.String()))
+		g.Should(be.Zero(empty.String()))
 	})
 
 	logger := New()
@@ -45,7 +46,7 @@ func testPrint(t *testing.T, tt printTestCase) {
 
 		logger.Verbosity = tt.levelNoOutput
 		tt.printFunc(logger)
-		g.Should(ghost.BeZero(buf.String()))
+		g.Should(be.Zero(buf.String()))
 	})
 
 	buf.Reset()
@@ -55,7 +56,7 @@ func testPrint(t *testing.T, tt printTestCase) {
 
 		logger.Verbosity = tt.levelWithOutput
 		tt.printFunc(logger)
-		g.Should(ghost.Equal(tt.expected, buf.String()))
+		g.Should(be.Equal(tt.expected, buf.String()))
 	})
 }
 
@@ -75,7 +76,7 @@ func TestVerbosityLevel_String(t *testing.T) {
 		t.Run(tt.level.String(), func(t *testing.T) {
 			g := ghost.New(t)
 
-			g.Should(ghost.Equal(tt.want, tt.level.String()))
+			g.Should(be.Equal(tt.want, tt.level.String()))
 		})
 	}
 }

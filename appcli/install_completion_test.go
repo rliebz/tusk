@@ -8,9 +8,11 @@ import (
 	"testing"
 
 	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
+	"gotest.tools/v3/fs"
+
 	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
-	"gotest.tools/v3/fs"
 )
 
 func TestInstallCompletionUnsupported(t *testing.T) {
@@ -21,7 +23,7 @@ func TestInstallCompletionUnsupported(t *testing.T) {
 			InstallCompletion: "fake",
 		},
 	)
-	g.Should(ghost.ErrorContaining(err, `tab completion for "fake" is not supported`))
+	g.Should(be.ErrorContaining(`tab completion for "fake" is not supported`, err))
 }
 
 func TestUninstallCompletionUnsupported(t *testing.T) {
@@ -32,7 +34,7 @@ func TestUninstallCompletionUnsupported(t *testing.T) {
 			UninstallCompletion: "fake",
 		},
 	)
-	g.Should(ghost.ErrorContaining(err, `tab completion for "fake" is not supported`))
+	g.Should(be.ErrorContaining(`tab completion for "fake" is not supported`, err))
 }
 
 func TestInstallBashCompletion(t *testing.T) {
@@ -52,14 +54,14 @@ func TestInstallBashCompletion(t *testing.T) {
 	contents, err := os.ReadFile(completionFile)
 	g.NoError(err)
 
-	g.Should(ghost.Equal(string(contents), rawBashCompletion))
+	g.Should(be.Equal(string(contents), rawBashCompletion))
 
 	rcfile := filepath.Join(homedir.Path(), ".bashrc")
 	rcContents, err := os.ReadFile(rcfile)
 	g.NoError(err)
 
 	command := fmt.Sprintf("source %q", filepath.ToSlash(completionFile))
-	g.Should(ghost.ContainString(string(rcContents), command))
+	g.Should(be.ContainingString(string(rcContents), command))
 }
 
 func TestGetBashRCFile(t *testing.T) {
@@ -111,7 +113,7 @@ func TestGetBashRCFile(t *testing.T) {
 			g.NoError(err)
 
 			want := filepath.Join(homedir.Path(), tt.want)
-			g.Should(ghost.Equal(want, rcfile))
+			g.Should(be.Equal(want, rcfile))
 		})
 	}
 }
@@ -161,7 +163,7 @@ func TestAppendIfAbsent(t *testing.T) {
 			got, err := os.ReadFile(f.Path())
 			g.NoError(err)
 
-			g.Should(ghost.Equal(tt.want, string(got)))
+			g.Should(be.Equal(tt.want, string(got)))
 		})
 	}
 
@@ -177,7 +179,7 @@ func TestAppendIfAbsent(t *testing.T) {
 		got, err := os.ReadFile(f.Path())
 		g.NoError(err)
 
-		g.Should(ghost.Equal(text+"\n", string(got)))
+		g.Should(be.Equal(text+"\n", string(got)))
 	})
 }
 
@@ -205,12 +207,12 @@ func TestUninstallBashCompletion(t *testing.T) {
 	g.NoError(err)
 
 	_, err = os.Stat(rcfile)
-	g.Should(ghost.BeTrue(os.IsNotExist(err)))
+	g.Should(be.True(os.IsNotExist(err)))
 
 	got, err := os.ReadFile(filepath.Join(homedir.Path(), ".bashrc"))
 	g.NoError(err)
 
-	g.Should(ghost.Equal("# Preamble\n", string(got)))
+	g.Should(be.Equal("# Preamble\n", string(got)))
 }
 
 func TestRemoveLineInFile(t *testing.T) {
@@ -235,7 +237,7 @@ match`
 	got, err := os.ReadFile(file.Path())
 	g.NoError(err)
 
-	g.Should(ghost.Equal(want, string(got)))
+	g.Should(be.Equal(want, string(got)))
 }
 
 func TestInstallFishCompletion(t *testing.T) {
@@ -252,7 +254,7 @@ func TestInstallFishCompletion(t *testing.T) {
 	got, err := os.ReadFile(completionFile)
 	g.NoError(err)
 
-	g.Should(ghost.Equal(rawFishCompletion, string(got)))
+	g.Should(be.Equal(rawFishCompletion, string(got)))
 }
 
 func TestUninstallFishCompletion(t *testing.T) {
@@ -280,7 +282,7 @@ func TestUninstallFishCompletion(t *testing.T) {
 	g.NoError(err)
 
 	_, err = os.Stat(completionFile)
-	g.Should(ghost.BeTrue(os.IsNotExist(err)))
+	g.Should(be.True(os.IsNotExist(err)))
 }
 
 func TestGetDataDir_xdg(t *testing.T) {
@@ -294,7 +296,7 @@ func TestGetDataDir_xdg(t *testing.T) {
 	got, err := getDataDir()
 	g.NoError(err)
 
-	g.Should(ghost.Equal(want, got))
+	g.Should(be.Equal(want, got))
 }
 
 func TestGetDataDir_default(t *testing.T) {
@@ -308,7 +310,7 @@ func TestGetDataDir_default(t *testing.T) {
 	got, err := getDataDir()
 	g.NoError(err)
 
-	g.Should(ghost.Equal(want, got))
+	g.Should(be.Equal(want, got))
 }
 
 func TestGetFishCompletionsDir_xdg(t *testing.T) {
@@ -322,7 +324,7 @@ func TestGetFishCompletionsDir_xdg(t *testing.T) {
 	got, err := getFishCompletionsDir()
 	g.NoError(err)
 
-	g.Should(ghost.Equal(want, got))
+	g.Should(be.Equal(want, got))
 }
 
 func TestGetFishCompletionsDir_default(t *testing.T) {
@@ -336,7 +338,7 @@ func TestGetFishCompletionsDir_default(t *testing.T) {
 	got, err := getFishCompletionsDir()
 	g.NoError(err)
 
-	g.Should(ghost.Equal(want, got))
+	g.Should(be.Equal(want, got))
 }
 
 func TestInstallZshCompletion(t *testing.T) {
@@ -350,7 +352,7 @@ func TestInstallZshCompletion(t *testing.T) {
 	contents, err := os.ReadFile(filepath.Join(dir.Path(), "_tusk"))
 	g.NoError(err)
 
-	g.Should(ghost.Equal(rawZshCompletion, string(contents)))
+	g.Should(be.Equal(rawZshCompletion, string(contents)))
 }
 
 func TestUninstallZshCompletion(t *testing.T) {
@@ -362,7 +364,7 @@ func TestUninstallZshCompletion(t *testing.T) {
 	g.NoError(err)
 
 	_, err = os.Stat(filepath.Join(dir.Path(), "_tusk"))
-	g.Should(ghost.BeTrue(os.IsNotExist(err)))
+	g.Should(be.True(os.IsNotExist(err)))
 }
 
 func TestUninstallZshCompletion_empty(t *testing.T) {
@@ -374,5 +376,5 @@ func TestUninstallZshCompletion_empty(t *testing.T) {
 	g.NoError(err)
 
 	_, err = os.Stat(filepath.Join(dir.Path(), "_tusk"))
-	g.Should(ghost.BeTrue(os.IsNotExist(err)))
+	g.Should(be.True(os.IsNotExist(err)))
 }

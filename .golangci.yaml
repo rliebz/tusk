@@ -2,6 +2,7 @@ issues:
   max-same-issues: 0
   exclude-use-default: 0
   exclude:
+    - if-return
     - should have a package comment
   exclude-rules:
     path: _test\.go
@@ -21,6 +22,7 @@ linters:
     - errname
     - errorlint
     - exportloopref
+    - gocognit
     - gocritic
     - gofumpt
     - gosec
@@ -46,6 +48,9 @@ linters:
     - usestdlibvars
 
 linters-settings:
+  gocognit:
+    min-complexity: 15 # TODO: Lower to 10
+
   gocritic:
     enabled-tags:
       - diagnostic
@@ -83,9 +88,3 @@ linters-settings:
 
   revive:
     confidence: 0
-    rules:
-      - name: cognitive-complexity
-        disabled: false
-        arguments: [15]
-      - name: if-return
-        disabled: true

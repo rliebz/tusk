@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 )
 
 func TestRun_printVersion(t *testing.T) {
@@ -24,8 +25,8 @@ func TestRun_printVersion(t *testing.T) {
 	)
 
 	want := "(devel)\n"
-	g.Should(ghost.Equal(want, stdout.String()))
-	g.Should(ghost.Equal(0, status))
+	g.Should(be.Equal(want, stdout.String()))
+	g.Should(be.Equal(0, status))
 }
 
 func TestRun_printHelp(t *testing.T) {
@@ -71,8 +72,8 @@ Global Options:
 	g.NoError(err)
 
 	want := buf.String()
-	g.Should(ghost.Equal(want, stdout.String()))
-	g.Should(ghost.Equal(0, status))
+	g.Should(be.Equal(want, stdout.String()))
+	g.Should(be.Equal(0, status))
 }
 
 func TestRun_exitCodeZero(t *testing.T) {
@@ -89,8 +90,8 @@ func TestRun_exitCodeZero(t *testing.T) {
 	)
 
 	want := "exit $ exit 0\n"
-	g.Should(ghost.Equal(want, stderr.String()))
-	g.Should(ghost.Equal(0, status))
+	g.Should(be.Equal(want, stderr.String()))
+	g.Should(be.Equal(0, status))
 }
 
 func TestRun_exitCodeNonZero(t *testing.T) {
@@ -110,8 +111,8 @@ func TestRun_exitCodeNonZero(t *testing.T) {
 exit status 5
 `
 
-	g.Should(ghost.Equal(want, stderr.String()))
-	g.Should(ghost.Equal(5, status))
+	g.Should(be.Equal(want, stderr.String()))
+	g.Should(be.Equal(5, status))
 }
 
 func TestRun_incorrectUsage(t *testing.T) {
@@ -128,6 +129,6 @@ func TestRun_incorrectUsage(t *testing.T) {
 	)
 
 	want := "Error: No help topic for 'fake-command'\n"
-	g.Should(ghost.Equal(want, stderr.String()))
-	g.Should(ghost.Equal(1, status))
+	g.Should(be.Equal(want, stderr.String()))
+	g.Should(be.Equal(1, status))
 }
