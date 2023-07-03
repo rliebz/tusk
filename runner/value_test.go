@@ -1,84 +1,47 @@
 package runner
 
 import (
-	"reflect"
 	"testing"
 
+	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func TestValue_UnmarshalYAML(t *testing.T) {
-	s1 := []byte(`value: example`)
-	s2 := []byte(`example`)
-	v1 := Value{}
-	v2 := Value{}
+	g := ghost.New(t)
 
-	if err := yaml.UnmarshalStrict(s1, &v1); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
-	}
+	var v1 Value
+	err := yaml.UnmarshalStrict([]byte(`value: example`), &v1)
+	g.NoError(err)
 
-	if err := yaml.UnmarshalStrict(s2, &v2); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
-	}
+	var v2 Value
+	err = yaml.UnmarshalStrict([]byte(`example`), &v2)
+	g.NoError(err)
 
-	if !reflect.DeepEqual(v1, v2) {
-		t.Errorf(
-			"Unmarshaling of values `%s` and `%s` not equal:\n%#v != %#v",
-			s1, s2, v1, v2,
-		)
-	}
-
-	if v1.Value != "example" {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
-			s1, "example", v1.Command,
-		)
-	}
+	g.Should(be.DeepEqual(v1, v2))
+	g.Should(be.Equal("example", v1.Value))
 }
 
 func TestValue_UnmarshalYAML_value_and_command(t *testing.T) {
-	s := []byte(`{value: "example", command: "echo hello"}`)
-	v := Value{}
+	g := ghost.New(t)
 
-	if err := yaml.UnmarshalStrict(s, &v); err == nil {
-		t.Fatalf(
-			"yaml.UnmarshalStrict(%s, ...): expected err, actual nil", s,
-		)
-	}
+	var v Value
+	err := yaml.UnmarshalStrict([]byte(`{value: "example", command: "echo hello"}`), &v)
+	g.Should(be.ErrorEqual("value (example) and command (echo hello) are both defined", err))
 }
 
 func TestValueList_UnmarshalYAML(t *testing.T) {
-	s1 := []byte(`example`)
-	s2 := []byte(`[example]`)
-	v1 := ValueList{}
-	v2 := ValueList{}
+	g := ghost.New(t)
 
-	if err := yaml.UnmarshalStrict(s1, &v1); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpcted error: %s", s1, err)
-	}
+	var v1 ValueList
+	err := yaml.UnmarshalStrict([]byte(`example`), &v1)
+	g.NoError(err)
 
-	if err := yaml.UnmarshalStrict(s2, &v2); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpcted error: %s", s2, err)
-	}
+	var v2 ValueList
+	err = yaml.UnmarshalStrict([]byte(`[example]`), &v2)
+	g.NoError(err)
 
-	if !reflect.DeepEqual(v1, v2) {
-		t.Errorf(
-			"Unmarshaling of valueLists `%s` and `%s` not equal:\n%#v != %#v",
-			s1, s2, v1, v2,
-		)
-	}
-
-	if len(v1) != 1 {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
-			s1, len(v1),
-		)
-	}
-
-	if v1[0].Value != "example" {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
-			s1, "example", v1[0].Value,
-		)
-	}
+	g.Should(be.DeepEqual(v1, v2))
+	g.Should(be.DeepEqual(ValueList{{Value: "example"}}, v1))
 }

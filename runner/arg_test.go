@@ -3,124 +3,109 @@ package runner
 import (
 	"testing"
 
+	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func TestEvaluate(t *testing.T) {
-	expected := "foo"
+	g := ghost.New(t)
+
+	want := "foo"
 	arg := Arg{
 		Passable: Passable{
-			Passed: expected,
+			Passed: want,
 		},
 	}
 
-	actual, err := arg.Evaluate()
-	if err != nil {
-		t.Fatalf("Arg.Evaluate() => unexpected error: %v", err)
-	}
+	got, err := arg.Evaluate()
+	g.NoError(err)
 
-	if expected != actual {
-		t.Errorf("Arg.Evaluate() => want %q, got %q", expected, actual)
-	}
+	g.Should(be.Equal(want, got))
 }
 
 func TestEvaluate_specified(t *testing.T) {
-	expected := "foo"
+	g := ghost.New(t)
+
+	want := "foo"
 	arg := Arg{
 		Passable: Passable{
-			Passed:        expected,
-			ValuesAllowed: marshal.StringList{"wrong", expected, "other"},
+			Passed:        want,
+			ValuesAllowed: marshal.StringList{"wrong", want, "other"},
 		},
 	}
 
-	actual, err := arg.Evaluate()
-	if err != nil {
-		t.Fatalf("Arg.Evaluate() => unexpected error: %v", err)
-	}
+	got, err := arg.Evaluate()
+	g.NoError(err)
 
-	if expected != actual {
-		t.Errorf("Arg.Evaluate() => want %q, got %q", expected, actual)
-	}
+	g.Should(be.Equal(want, got))
 }
 
 func TestEvaluate_unspecified(t *testing.T) {
+	g := ghost.New(t)
+
 	passed := "foo"
 	arg := Arg{
 		Passable: Passable{
+			Name:          "my-arg",
 			Passed:        passed,
 			ValuesAllowed: marshal.StringList{"wrong", "other"},
 		},
 	}
 
-	if _, err := arg.Evaluate(); err == nil {
-		t.Fatal("Arg.Evaluate() => want error for nil argument, got nil")
-	}
+	_, err := arg.Evaluate()
+	g.Should(be.ErrorEqual(`value "foo" for argument "my-arg" must be one of [wrong other]`, err))
 }
 
 func TestEvaluate_nil(t *testing.T) {
+	g := ghost.New(t)
+
 	var arg *Arg
-	if _, err := arg.Evaluate(); err == nil {
-		t.Fatal("Arg.Evaluate() => want error for nil argument, got nil")
-	}
+	_, err := arg.Evaluate()
+	g.Should(be.ErrorEqual("nil argument evaluated", err))
 }
 
 func TestGetArgsWithOrder(t *testing.T) {
-	name := "foo"
-	usage := "use me"
+	g := ghost.New(t)
+
 	ms := yaml.MapSlice{
-		{Key: name, Value: &Arg{
-			Passable: Passable{
-				Usage: usage,
+		{
+			Key: "foo",
+			Value: &Arg{
+				Passable: Passable{
+					Usage: "first usage",
+				},
 			},
-		}},
-		{Key: "bar", Value: &Arg{
-			Passable: Passable{
-				Usage: "other usage",
+		},
+		{
+			Key: "bar",
+			Value: &Arg{
+				Passable: Passable{
+					Usage: "other usage",
+				},
 			},
-		}},
+		},
 	}
 
 	args, err := getArgsWithOrder(ms)
-	if err != nil {
-		t.Fatalf("GetArgsWithOrder(ms) => unexpected error: %v", err)
-	}
+	g.NoError(err)
 
-	if len(ms) != len(args) {
-		t.Fatalf(
-			"GetArgsWithOrder(ms) => want %d items, got %d",
-			len(ms), len(args),
-		)
-	}
+	g.Must(be.Len(2, args))
 
-	opt := args[0]
-
-	if name != opt.Name {
-		t.Errorf(
-			"GetArgsWithOrder(ms) => want opt.Name %q, got %q",
-			name, opt.Name,
-		)
-	}
-
-	if usage != opt.Usage {
-		t.Errorf(
-			"GetArgsWithOrder(ms) => want arg.Usage %q, got %q",
-			usage, opt.Usage,
-		)
-	}
-
-	if args[1].Name != "bar" {
-		t.Errorf("GetArgsWithOrder(ms) => want 2nd arg %q, got %q", "bar", args[1].Name)
-	}
+	g.Should(be.Equal("foo", args[0].Name))
+	g.Should(be.Equal("first usage", args[0].Usage))
+	g.Should(be.Equal("bar", args[1].Name))
+	g.Should(be.Equal("other usage", args[1].Usage))
 }
 
 func TestGetArgsWithOrder_invalid(t *testing.T) {
+	g := ghost.New(t)
+
 	ms := yaml.MapSlice{
 		{Key: "foo", Value: "not an arg"},
 	}
 
 	_, err := getArgsWithOrder(ms)
-	if err == nil {
-		t.Error("GetArgsWithOrder() => expected yaml parsing error")
-	}
+	g.Should(be.ErrorContaining("cannot unmarshal !!str `not an arg` into runner.Arg", err))
 }

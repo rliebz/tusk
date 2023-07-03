@@ -9,6 +9,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -56,15 +58,13 @@ func TestCommand_UnmarshalYAML(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
 			var got Command
+			err := yaml.UnmarshalStrict([]byte(tt.yaml), &got)
+			g.NoError(err)
 
-			if err := yaml.UnmarshalStrict([]byte(tt.yaml), &got); err != nil {
-				t.Fatalf("failed to unmarshal: %v", err)
-			}
-
-			if diff := cmp.Diff(tt.want, got); diff != "" {
-				t.Errorf("mismatched values:\n%s", diff)
-			}
+			g.Should(be.Equal(tt.want, got))
 		})
 	}
 }
@@ -91,18 +91,18 @@ func TestCommand_exec(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			wd, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			wantDir := filepath.Dir(wd)
+			g := ghost.New(t)
 
+			wd, err := os.Getwd()
+			g.NoError(err)
+
+			wantDir := filepath.Dir(wd)
 			command := Command{
 				Exec: tt.command,
 				Dir:  "..",
 			}
 
-			defer func() { execCommand = exec.Command }()
+			t.Cleanup(func() { execCommand = exec.Command })
 			execCommand = func(name string, arg ...string) *exec.Cmd {
 				cs := []string{"-test.run=TestCommand_exec_helper", "--", name}
 				cs = append(cs, arg...)
@@ -120,9 +120,8 @@ func TestCommand_exec(t *testing.T) {
 				Interpreter: tt.interpreter,
 			}
 
-			if err := command.exec(ctx); err != nil {
-				t.Fatal(err)
-			}
+			err = command.exec(ctx)
+			g.NoError(err)
 		})
 	}
 }
@@ -216,15 +215,13 @@ func TestCommandList_UnmarshalYAML(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
 			var got CommandList
+			err := yaml.UnmarshalStrict([]byte(tt.yaml), &got)
+			g.NoError(err)
 
-			if err := yaml.UnmarshalStrict([]byte(tt.yaml), &got); err != nil {
-				t.Fatalf("failed to unmarshal: %v", err)
-			}
-
-			if diff := cmp.Diff(tt.want, got); diff != "" {
-				t.Errorf("mismatched values:\n%s", diff)
-			}
+			g.Should(be.DeepEqual(tt.want, got))
 		})
 	}
 }

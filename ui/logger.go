@@ -35,11 +35,6 @@ func New() *Logger {
 	}
 }
 
-// Equal compares two loggers for testing purposes.
-func (l *Logger) Equal(other *Logger) bool {
-	return l.Stdout == other.Stdout && l.Stderr == other.Stderr && l.Verbosity == other.Verbosity
-}
-
 // Noop returns a logger that does not print anything.
 func Noop() *Logger {
 	return &Logger{
