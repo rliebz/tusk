@@ -534,7 +534,7 @@ func TestList_Dependencies_nil(t *testing.T) {
 	g := ghost.New(t)
 
 	var l *WhenList
-	g.Should(be.Len(0, l.Dependencies()))
+	g.Should(be.SliceLen(0, l.Dependencies()))
 }
 
 func TestList_Validate(t *testing.T) {

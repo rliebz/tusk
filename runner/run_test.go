@@ -72,7 +72,7 @@ func TestRun_UnmarshalYAML_SetEnvironment(t *testing.T) {
 			err := yaml.UnmarshalStrict([]byte(tt.input), &r)
 			g.NoError(err)
 
-			g.Should(be.Equal(tt.wantLen, len(r.SetEnvironment)))
+			g.Should(be.MapLen(tt.wantLen, r.SetEnvironment))
 		})
 	}
 }

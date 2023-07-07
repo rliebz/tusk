@@ -91,7 +91,7 @@ tasks: { %q: {} }
 	app, err := NewApp([]string{"tusk", taskName}, meta)
 	g.NoError(err)
 
-	g.Should(be.Len(1, app.Commands))
+	g.Should(be.SliceLen(1, app.Commands))
 	g.Should(be.Equal(name, app.Name))
 	g.Should(be.Equal(usage, app.Usage))
 }
@@ -113,7 +113,7 @@ tasks:
 	app, err := NewApp(args, meta)
 	g.NoError(err)
 
-	g.Must(be.Len(1, app.Commands))
+	g.Must(be.SliceLen(1, app.Commands))
 
 	err = app.Run(args)
 	var exitErr *exec.ExitError
@@ -144,7 +144,7 @@ tasks:
 	app, err := NewApp(args, meta)
 	g.NoError(err)
 
-	g.Must(be.Len(1, app.Commands))
+	g.Must(be.SliceLen(1, app.Commands))
 
 	// Ensure private task still runs as subtask
 	err = app.Run(args)

@@ -381,7 +381,7 @@ func TestGetOptionsWithOrder(t *testing.T) {
 	options, err := getOptionsWithOrder(ms)
 	g.NoError(err)
 
-	g.Must(be.Len(2, options))
+	g.Must(be.SliceLen(2, options))
 
 	g.Should(be.Equal("foo", options[0].Name))
 	g.Should(be.Equal("fooenv", options[0].Environment))

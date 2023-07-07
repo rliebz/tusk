@@ -1,73 +1,39 @@
 package runner
 
 import (
-	"reflect"
 	"testing"
 
+	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func TestSubTask_UnmarshalYAML(t *testing.T) {
-	s1 := []byte(`name: example`)
-	s2 := []byte(`example`)
-	st1 := SubTask{}
-	st2 := SubTask{}
+	g := ghost.New(t)
 
-	if err := yaml.UnmarshalStrict(s1, &st1); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
-	}
+	var st1 SubTask
+	err := yaml.UnmarshalStrict([]byte(`name: example`), &st1)
+	g.NoError(err)
 
-	if err := yaml.UnmarshalStrict(s2, &st2); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
-	}
+	var st2 SubTask
+	err = yaml.UnmarshalStrict([]byte(`example`), &st2)
+	g.NoError(err)
 
-	if !reflect.DeepEqual(st1, st2) {
-		t.Errorf(
-			"Unmarshaling of subtasks `%s` and `%s` not equal:\n%#v != %#v",
-			s1, s2, st1, st2,
-		)
-	}
-
-	if st1.Name != "example" {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%s`",
-			s1, "example", st1.Name,
-		)
-	}
+	g.Should(be.DeepEqual(st1, st2))
+	g.Should(be.DeepEqual(SubTask{Name: "example"}, st1))
 }
 
 func TestSubTaskList_UnmarshalYAML(t *testing.T) {
-	s1 := []byte(`example`)
-	s2 := []byte(`[example]`)
-	l1 := SubTaskList{}
-	l2 := SubTaskList{}
+	g := ghost.New(t)
 
-	if err := yaml.UnmarshalStrict(s1, &l1); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s1, err)
-	}
+	var l1 SubTaskList
+	err := yaml.UnmarshalStrict([]byte(`example`), &l1)
+	g.NoError(err)
 
-	if err := yaml.UnmarshalStrict(s2, &l2); err != nil {
-		t.Fatalf("yaml.UnmarshalStrict(%s, ...): unexpected error: %s", s2, err)
-	}
+	var l2 SubTaskList
+	err = yaml.UnmarshalStrict([]byte(`[example]`), &l2)
+	g.NoError(err)
 
-	if !reflect.DeepEqual(l1, l2) {
-		t.Errorf(
-			"Unmarshaling of SubTaskLists `%s` and `%s` not equal:\n%#v != %#v",
-			s1, s2, l1, l2,
-		)
-	}
-
-	if len(l1) != 1 {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected 1 item, actual %d",
-			s1, len(l1),
-		)
-	}
-
-	if l1[0].Name != "example" {
-		t.Errorf(
-			"yaml.UnmarshalStrict(%s, ...): expected member `%s`, actual `%v`",
-			s1, "example", l1[0].Name,
-		)
-	}
+	g.Should(be.DeepEqual(l1, l2))
+	g.Should(be.DeepEqual(SubTaskList{{Name: "example"}}, l1))
 }

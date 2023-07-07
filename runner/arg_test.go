@@ -91,7 +91,7 @@ func TestGetArgsWithOrder(t *testing.T) {
 	args, err := getArgsWithOrder(ms)
 	g.NoError(err)
 
-	g.Must(be.Len(2, args))
+	g.Must(be.SliceLen(2, args))
 
 	g.Should(be.Equal("foo", args[0].Name))
 	g.Should(be.Equal("first usage", args[0].Usage))

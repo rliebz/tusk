@@ -42,5 +42,5 @@ func TestAddFlag_no_duplicates(t *testing.T) {
 	err = addFlag(command, opt)
 	g.NoError(err)
 
-	g.Should(be.Equal(1, len(command.Flags)))
+	g.Should(be.SliceLen(1, command.Flags))
 }

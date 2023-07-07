@@ -60,8 +60,8 @@ func TestInstallBashCompletion(t *testing.T) {
 	rcContents, err := os.ReadFile(rcfile)
 	g.NoError(err)
 
-	command := fmt.Sprintf("source %q", filepath.ToSlash(completionFile))
-	g.Should(be.ContainingString(string(rcContents), command))
+	wantCommand := fmt.Sprintf("source %q", filepath.ToSlash(completionFile))
+	g.Should(be.ContainingString(wantCommand, string(rcContents)))
 }
 
 func TestGetBashRCFile(t *testing.T) {
