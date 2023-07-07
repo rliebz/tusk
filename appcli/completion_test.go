@@ -2,10 +2,12 @@ package appcli
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 	"github.com/rliebz/tusk/marshal"
 	"github.com/rliebz/tusk/runner"
 	"github.com/urfave/cli"
@@ -53,13 +55,16 @@ foo:a foo command
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			defer func(args []string) {
-				os.Args = args
-			}(os.Args)
+			g := ghost.New(t)
+
+			originalArgs := os.Args
+			t.Cleanup(func() {
+				os.Args = originalArgs
+			})
+
 			// We only care about the "trailing" arg, second from last
 			os.Args = []string{tt.trailing, "--"}
 
-			var buf bytes.Buffer
 			app := cli.NewApp()
 			app.Commands = []cli.Command{
 				{
@@ -88,11 +93,11 @@ foo:a foo command
 				narg:  tt.narg,
 				flags: tt.flagsSet,
 			}
+
+			var buf bytes.Buffer
 			defaultComplete(&buf, c, app)
 
-			if diff := cmp.Diff(tt.want, buf.String()); diff != "" {
-				t.Errorf("completion output differs:\n%s", diff)
-			}
+			g.Should(be.Equal(tt.want, buf.String()))
 		})
 	}
 }
@@ -213,13 +218,15 @@ baz
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			defer func(args []string) {
-				os.Args = args
-			}(os.Args)
+			g := ghost.New(t)
+
+			originalArgs := os.Args
+			t.Cleanup(func() {
+				os.Args = originalArgs
+			})
+
 			// We only care about the "trailing" arg, second from last
 			os.Args = []string{tt.trailing, "--"}
-
-			var buf bytes.Buffer
 
 			cmd := &cli.Command{
 				Name:  "my-cmd",
@@ -272,11 +279,10 @@ baz
 				flags: tt.flagsSet,
 			}
 
+			var buf bytes.Buffer
 			commandComplete(&buf, c, cmd, cfg)
 
-			if diff := cmp.Diff(tt.want, buf.String()); diff != "" {
-				t.Errorf("completion output differs:\n%v", diff)
-			}
+			g.Should(be.Equal(tt.want, buf.String()))
 		})
 	}
 }
@@ -330,13 +336,12 @@ func TestPrintCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var buf bytes.Buffer
+			g := ghost.New(t)
 
+			var buf bytes.Buffer
 			printCommand(&buf, tt.command)
 
-			if diff := cmp.Diff(tt.want, buf.String()); diff != "" {
-				t.Errorf("completion output differs:\n%v", diff)
-			}
+			g.Should(be.Equal(tt.want, buf.String()))
 		})
 	}
 }
@@ -381,23 +386,23 @@ func TestPrintFlag(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var buf bytes.Buffer
+			g := ghost.New(t)
+
 			var c mockContext
 
+			var buf bytes.Buffer
 			printFlag(&buf, c, tt.flag)
 
-			if diff := cmp.Diff(tt.want, buf.String()); diff != "" {
-				t.Errorf("completion output differs:\n%v", diff)
-			}
+			g.Should(be.Equal(tt.want, buf.String()))
 		})
 	}
 }
 
 func TestIsCompletingFlagArg(t *testing.T) {
 	tests := []struct {
-		flags    []cli.Flag
-		arg      string
-		expected bool
+		flags []cli.Flag
+		arg   string
+		want  bool
 	}{
 		{[]cli.Flag{}, "foo", false},
 		{[]cli.Flag{}, "-f", false},
@@ -416,13 +421,20 @@ func TestIsCompletingFlagArg(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		actual := isCompletingFlagArg(tt.flags, tt.arg)
-		if tt.expected != actual {
-			t.Errorf(
-				"isCompletingFlagArg(%#v, %s) => %t, want %t",
-				tt.flags, tt.arg, actual, tt.expected,
-			)
+		flag := "<no flags>"
+		if len(tt.flags) >= 1 {
+			flag = fmt.Sprintf("%T:%v", tt.flags[0], tt.flags[0].GetName())
 		}
+		if len(tt.flags) >= 2 {
+			flag += fmt.Sprintf("|%T:%v", tt.flags[1], tt.flags[1].GetName())
+		}
+
+		t.Run(fmt.Sprintf("[%s] [%s]", flag, tt.arg), func(t *testing.T) {
+			g := ghost.New(t)
+
+			got := isCompletingFlagArg(tt.flags, tt.arg)
+			g.Should(be.Equal(tt.want, got))
+		})
 	}
 }
 

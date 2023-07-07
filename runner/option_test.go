@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/rliebz/ghost"
@@ -24,25 +23,21 @@ func TestOption_Dependencies(t *testing.T) {
 		)}, Value: "bar"},
 	}}
 
-	g.Should(be.True(equalUnordered([]string{"foo", "bar", "baz"}, option.Dependencies())))
+	g.Should(beEqualUnordered([]string{"foo", "bar", "baz"}, option.Dependencies()))
 }
 
-func equalUnordered(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	aMap := make(map[string]interface{})
+func beEqualUnordered[T comparable](a, b []T) ghost.Result {
+	aMap := make(map[T]interface{})
 	for _, val := range a {
 		aMap[val] = struct{}{}
 	}
 
-	bMap := make(map[string]interface{})
+	bMap := make(map[T]interface{})
 	for _, val := range b {
 		bMap[val] = struct{}{}
 	}
 
-	return reflect.DeepEqual(aMap, bMap)
+	return be.DeepEqual(aMap, bMap)
 }
 
 func TestOption_Evaluate(t *testing.T) {
@@ -273,39 +268,36 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 	g.Should(be.ErrorEqual(`value "foo" for option "my-opt" must be one of [bad values FOO]`, err))
 }
 
-var evaluteTypeDefaultTests = []struct {
-	typeName string
-	expected string
-}{
-	{"int", "0"},
-	{"INTEGER", "0"},
-	{"Float", "0"},
-	{"float64", "0"},
-	{"double", "0"},
-	{"bool", "false"},
-	{"boolean", "false"},
-	{"", ""},
-}
-
 func TestOption_Evaluate_type_defaults(t *testing.T) {
-	for _, tt := range evaluteTypeDefaultTests {
-		opt := Option{
-			Passable: Passable{
-				Type: tt.typeName,
-			},
-		}
-		actual, err := opt.Evaluate(Context{}, nil)
-		if err != nil {
-			t.Errorf("Option.Evaluate(): unexpected error: %s", err)
-			continue
-		}
+	tests := []struct {
+		typeName string
+		want     string
+	}{
+		{"int", "0"},
+		{"INTEGER", "0"},
+		{"Float", "0"},
+		{"float64", "0"},
+		{"double", "0"},
+		{"bool", "false"},
+		{"boolean", "false"},
+		{"", ""},
+	}
 
-		if tt.expected != actual {
-			t.Errorf(
-				"Option.Evaluate(): expected %q, actual %q",
-				tt.expected, actual,
-			)
-		}
+	for _, tt := range tests {
+		t.Run(tt.typeName, func(t *testing.T) {
+			g := ghost.New(t)
+
+			opt := Option{
+				Passable: Passable{
+					Type: tt.typeName,
+				},
+			}
+
+			got, err := opt.Evaluate(Context{}, nil)
+			g.NoError(err)
+
+			g.Should(be.Equal(tt.want, got))
+		})
 	}
 }
 

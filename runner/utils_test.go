@@ -10,14 +10,14 @@ import (
 )
 
 // createOption creates a custom option for testing purposes.
-func createOption(operators ...func(o *Option)) Option {
+func createOption(operators ...func(o *Option)) *Option {
 	o := Option{}
 
 	for _, f := range operators {
 		f(&o)
 	}
 
-	return o
+	return &o
 }
 
 // withOptionName returns an operator that adds a name to an option.

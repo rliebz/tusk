@@ -4,17 +4,19 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func createTypeErrorCandidate(t *testing.T) UnmarshalCandidate {
 	return UnmarshalCandidate{
-		Unmarshal: func() error { return &yaml.TypeError{} },
+		Unmarshal: func() error { return &yaml.TypeError{Errors: []string{"oh no"}} },
 		Assign: func() {
-			t.Error("failed candidate called Assign function")
+			t.Error("unexpected call to Assign function")
 		},
 		Validate: func() error {
-			t.Errorf("failed candidate called Validate function")
+			t.Errorf("unexpected call to Validate function")
 			return nil
 		},
 	}
@@ -24,10 +26,10 @@ func createFailCandidate(t *testing.T) UnmarshalCandidate {
 	return UnmarshalCandidate{
 		Unmarshal: func() error { return errors.New("oops") },
 		Assign: func() {
-			t.Error("failed candidate called Assign function")
+			t.Error("unexpected call to Assign function")
 		},
 		Validate: func() error {
-			t.Errorf("failed candidate called Validate function")
+			t.Errorf("unexpected call to Validate function")
 			return nil
 		},
 	}
@@ -36,7 +38,7 @@ func createFailCandidate(t *testing.T) UnmarshalCandidate {
 func createInvalidCandidate(t *testing.T) UnmarshalCandidate {
 	return UnmarshalCandidate{
 		Unmarshal: func() error { return nil },
-		Assign:    func() { t.Error("invalid candidate called Assign function") },
+		Assign:    func() { t.Error("unexpected call to Assign function") },
 		Validate:  func() error { return errors.New("expected failure") },
 	}
 }
@@ -44,54 +46,44 @@ func createInvalidCandidate(t *testing.T) UnmarshalCandidate {
 func createNeverReachedCandidate(t *testing.T) UnmarshalCandidate {
 	return UnmarshalCandidate{
 		Unmarshal: func() error {
-			t.Error("candidate was unexpectedly reached")
+			t.Error("unexpected call to Unmarshal function")
 			return nil
 		},
 	}
 }
 
 func TestOneOf_error(t *testing.T) {
-	if err := UnmarshalOneOf(); err == nil {
-		t.Error("OneOf(): expected error, got nil")
-	}
+	g := ghost.New(t)
 
-	if err := UnmarshalOneOf(
-		createTypeErrorCandidate(t),
-	); err == nil {
-		t.Error("OneOf(typeError): expected error, got nil")
-	}
+	err := UnmarshalOneOf()
+	g.Should(be.ErrorEqual("no candidates passed", err))
 
-	if err := UnmarshalOneOf(
+	err = UnmarshalOneOf(createTypeErrorCandidate(t))
+	g.Should(be.Error(err))
+
+	err = UnmarshalOneOf(
 		createFailCandidate(t),
 		createNeverReachedCandidate(t),
-	); err == nil {
-		t.Error("OneOf(failed): expected error, got nil")
-	}
+	)
+	g.Should(be.Error(err))
 
-	if err := UnmarshalOneOf(
+	err = UnmarshalOneOf(
 		createInvalidCandidate(t),
 		createNeverReachedCandidate(t),
-	); err == nil {
-		t.Error("OneOf(invalid): expected error, got nil")
-	}
+	)
+	g.Should(be.Error(err))
 }
 
 func TestOneOf_success(t *testing.T) {
+	g := ghost.New(t)
+
 	validateCalled := false
 	assignCalled := false
 
-	defer func() {
-		if !validateCalled {
-			t.Error(
-				"OneOf(typeError, success): validate was never called on successful candidate",
-			)
-		}
-		if !assignCalled {
-			t.Error(
-				"OneOf(typeError, success): assign was never called on successful candidate",
-			)
-		}
-	}()
+	t.Cleanup(func() {
+		g.Should(be.True(validateCalled))
+		g.Should(be.True(assignCalled))
+	})
 
 	successCandidate := UnmarshalCandidate{
 		Unmarshal: func() error { return nil },
@@ -102,11 +94,10 @@ func TestOneOf_success(t *testing.T) {
 		},
 	}
 
-	if err := UnmarshalOneOf(
+	err := UnmarshalOneOf(
 		createTypeErrorCandidate(t),
 		successCandidate,
 		createNeverReachedCandidate(t),
-	); err != nil {
-		t.Errorf(`OneOf(failed, invalid, success): unexpected error: %s`, err)
-	}
+	)
+	g.NoError(err)
 }

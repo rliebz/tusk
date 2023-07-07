@@ -3,122 +3,122 @@ package runner
 import (
 	"fmt"
 	"runtime"
+	"strconv"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
 	yaml "gopkg.in/yaml.v2"
 )
 
-var unmarshalTests = []struct {
-	desc     string
-	input    string
-	expected When
-}{
-	{
-		"short notation",
-		`foo`,
-		createWhen(withWhenEqual("foo", "true")),
-	},
-	{
-		"list short notation",
-		`[foo, bar, baz]`,
-		createWhen(
-			withWhenEqual("foo", "true"),
-			withWhenEqual("bar", "true"),
-			withWhenEqual("baz", "true"),
-		),
-	},
-	{
-		"not-equal",
-		`not-equal: {foo: bar}`,
-		createWhen(withWhenNotEqual("foo", "bar")),
-	},
-	{
-		"not-exists",
-		`not-exists: file.txt`,
-		createWhen(withWhenNotExists("file.txt")),
-	},
-	{
-		"null environment",
-		`environment: {foo: null}`,
-		createWhen(withoutWhenEnv("foo")),
-	},
-	{
-		"environment list with null",
-		`environment: {foo: ["a", null, "b"]}`,
-		createWhen(
-			withWhenEnv("foo", "a"),
-			withoutWhenEnv("foo"),
-			withWhenEnv("foo", "b"),
-		),
-	},
-}
-
 func TestWhen_UnmarshalYAML(t *testing.T) {
-	for _, tt := range unmarshalTests {
-		w := When{}
-		if err := yaml.UnmarshalStrict([]byte(tt.input), &w); err != nil {
-			t.Errorf(
-				`Unmarshaling %s: unexpected error: %s`,
-				tt.desc, err,
-			)
-			continue
-		}
+	tests := []struct {
+		name  string
+		input string
+		want  When
+	}{
+		{
+			"short notation",
+			`foo`,
+			createWhen(withWhenEqual("foo", "true")),
+		},
+		{
+			"list short notation",
+			`[foo, bar, baz]`,
+			createWhen(
+				withWhenEqual("foo", "true"),
+				withWhenEqual("bar", "true"),
+				withWhenEqual("baz", "true"),
+			),
+		},
+		{
+			"not-equal",
+			`not-equal: {foo: bar}`,
+			createWhen(withWhenNotEqual("foo", "bar")),
+		},
+		{
+			"not-exists",
+			`not-exists: file.txt`,
+			createWhen(withWhenNotExists("file.txt")),
+		},
+		{
+			"null environment",
+			`environment: {foo: null}`,
+			createWhen(withoutWhenEnv("foo")),
+		},
+		{
+			"environment list with null",
+			`environment: {foo: ["a", null, "b"]}`,
+			createWhen(
+				withWhenEnv("foo", "a"),
+				withoutWhenEnv("foo"),
+				withWhenEnv("foo", "b"),
+			),
+		},
+	}
 
-		if !cmp.Equal(w, tt.expected) {
-			t.Errorf("mismatch:\n%s", cmp.Diff(tt.expected, w))
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
+			var got When
+			err := yaml.UnmarshalStrict([]byte(tt.input), &got)
+			g.NoError(err)
+
+			g.Should(be.DeepEqual(tt.want, got))
+		})
 	}
 }
 
-var whenDepTests = []struct {
-	when     When
-	expected []string
-}{
-	{When{}, []string{}},
-
-	// Equal
-	{
-		createWhen(withWhenEqual("foo", "true")),
-		[]string{"foo"},
-	},
-	{
-		createWhen(withWhenEqual("foo", "true"), withWhenEqual("bar", "true")),
-		[]string{"foo", "bar"},
-	},
-
-	// NotEqual
-	{
-		createWhen(withWhenNotEqual("foo", "true")),
-		[]string{"foo"},
-	},
-	{
-		createWhen(withWhenNotEqual("foo", "true"), withWhenNotEqual("bar", "true")),
-		[]string{"foo", "bar"},
-	},
-
-	// Both
-	{
-		createWhen(withWhenEqual("foo", "true"), withWhenNotEqual("foo", "true")),
-		[]string{"foo"},
-	},
-	{
-		createWhen(withWhenEqual("foo", "true"), withWhenNotEqual("bar", "true")),
-		[]string{"foo", "bar"},
-	},
-}
-
 func TestWhen_Dependencies(t *testing.T) {
-	for _, tt := range whenDepTests {
-		actual := tt.when.Dependencies()
-		if !equalUnordered(tt.expected, actual) {
-			t.Errorf(
-				"%+v.Dependencies(): expected %s, actual %s",
-				tt.when, tt.expected, actual,
-			)
-		}
+	tests := []struct {
+		name string
+		when When
+		want []string
+	}{
+		{
+			name: "empty",
+			when: When{},
+			want: []string{},
+		},
+		{
+			name: "equal one",
+			when: createWhen(withWhenEqual("foo", "true")),
+			want: []string{"foo"},
+		},
+		{
+			name: "equal multi",
+			when: createWhen(withWhenEqual("foo", "true"), withWhenEqual("bar", "true")),
+			want: []string{"foo", "bar"},
+		},
+		{
+			name: "not equal one",
+			when: createWhen(withWhenNotEqual("foo", "true")),
+			want: []string{"foo"},
+		},
+		{
+			name: "not equal multi",
+			when: createWhen(withWhenNotEqual("foo", "true"), withWhenNotEqual("bar", "true")),
+			want: []string{"foo", "bar"},
+		},
+		{
+			name: "both one",
+			when: createWhen(withWhenEqual("foo", "true"), withWhenNotEqual("foo", "true")),
+			want: []string{"foo"},
+		},
+		{
+			name: "both multi",
+			when: createWhen(withWhenEqual("foo", "true"), withWhenNotEqual("bar", "true")),
+			want: []string{"foo", "bar"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
+			got := tt.when.Dependencies()
+			g.Should(beEqualUnordered(tt.want, got))
+		})
 	}
 }
 
@@ -361,15 +361,13 @@ var whenValidateTests = []struct {
 }
 
 func TestWhen_Validate(t *testing.T) {
-	for _, tt := range whenValidateTests {
-		err := tt.when.Validate(Context{}, tt.options)
-		didErr := err != nil
-		if tt.shouldErr != didErr {
-			t.Errorf(
-				"%+v.Validate():\nexpected error: %t, got error: '%s'",
-				tt.when, tt.shouldErr, err,
-			)
-		}
+	for i, tt := range whenValidateTests {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			g := ghost.New(t)
+
+			err := tt.when.Validate(Context{}, tt.options)
+			g.Should(be.Equal(tt.shouldErr, err != nil))
+		})
 	}
 
 	// TODO: Combine this table with above tests
@@ -411,35 +409,34 @@ func TestWhen_Validate(t *testing.T) {
 	}
 }
 
-var normalizetests = []struct {
-	input    string
-	expected string
-}{
-	{"nonsense", "nonsense"},
-	{"darwin", "darwin"},
-	{"Darwin", "darwin"},
-	{"OSX", "darwin"},
-	{"macOS", "darwin"},
-	{"win", "windows"},
-}
-
 func TestNormalizeOS(t *testing.T) {
-	for _, tt := range normalizetests {
-		actual := normalizeOS(tt.input)
-		if tt.expected != actual {
-			t.Errorf(
-				"normalizeOS(%s): expected: %s, actual: %s",
-				tt.input, tt.expected, actual,
-			)
-		}
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"nonsense", "nonsense"},
+		{"darwin", "darwin"},
+		{"Darwin", "darwin"},
+		{"OSX", "darwin"},
+		{"macOS", "darwin"},
+		{"win", "windows"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			g := ghost.New(t)
+
+			got := normalizeOS(tt.input)
+			g.Should(be.Equal(tt.want, got))
+		})
 	}
 }
 
 func TestList_UnmarshalYAML(t *testing.T) {
-	unmarshalTests := []struct {
-		name     string
-		input    string
-		expected WhenList
+	tests := []struct {
+		name  string
+		input string
+		want  WhenList
 	}{
 		{
 			"single item",
@@ -471,7 +468,7 @@ func TestList_UnmarshalYAML(t *testing.T) {
 		},
 	}
 
-	for _, tt := range unmarshalTests {
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			g := ghost.New(t)
 
@@ -479,7 +476,7 @@ func TestList_UnmarshalYAML(t *testing.T) {
 			err := yaml.UnmarshalStrict([]byte(tt.input), &got)
 			g.NoError(err)
 
-			g.Should(be.DeepEqual(tt.expected, got))
+			g.Should(be.DeepEqual(tt.want, got))
 		})
 	}
 }
@@ -525,7 +522,7 @@ func TestList_Dependencies(t *testing.T) {
 			g := ghost.New(t)
 
 			got := tt.list.Dependencies()
-			g.Should(be.True(equalUnordered(tt.want, got)))
+			g.Should(beEqualUnordered(tt.want, got))
 		})
 	}
 }

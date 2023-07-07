@@ -4,11 +4,13 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/rliebz/ghost"
+	"github.com/rliebz/ghost/be"
 )
 
 func TestSearchForFile(t *testing.T) {
-	tmpdir, cleanup := useTempDir(t)
-	defer cleanup()
+	tmpdir := useTempDir(t)
 
 	emptyDir := mkDir(t, tmpdir, "empty")
 
@@ -23,93 +25,78 @@ func TestSearchForFile(t *testing.T) {
 
 	inheritedDir := mkDir(t, topDir, "baz", "empty")
 
-	testcases := []struct {
-		wd   string
-		path string
+	tests := []struct {
+		wd       string
+		wantPath string
 	}{
 		{
-			wd:   emptyDir,
-			path: "",
+			wd:       emptyDir,
+			wantPath: "",
 		},
 		{
-			wd:   topDir,
-			path: topConfig,
+			wd:       topDir,
+			wantPath: topConfig,
 		},
 		{
-			wd:   yamlDir,
-			path: yamlConfig,
+			wd:       yamlDir,
+			wantPath: yamlConfig,
 		},
 		{
-			wd:   nestedDir,
-			path: nestedConfig,
+			wd:       nestedDir,
+			wantPath: nestedConfig,
 		},
 		{
-			wd:   inheritedDir,
-			path: topConfig,
+			wd:       inheritedDir,
+			wantPath: topConfig,
 		},
 	}
 
-	for _, tt := range testcases {
-		if err := os.Chdir(tt.wd); err != nil {
-			t.Fatalf("failed to change directory: %v", err)
-		}
+	for _, tt := range tests {
+		t.Run(tt.wd+"_"+tt.wantPath, func(t *testing.T) {
+			g := ghost.New(t)
 
-		fullPath, err := searchForFile()
-		if err != nil {
-			t.Errorf("unexpected error: %v", err)
-			continue
-		}
+			err := os.Chdir(tt.wd)
+			g.NoError(err)
 
-		if tt.path != fullPath {
-			t.Errorf(
-				"SearchForFile(): expected path: %s, actual: %s",
-				tt.path, fullPath,
-			)
-		}
+			fullPath, err := searchForFile()
+			g.NoError(err)
+
+			g.Should(be.Equal(tt.wantPath, fullPath))
+		})
 	}
 }
 
-func useTempDir(t *testing.T) (dirname string, cleanup func()) {
+func useTempDir(t *testing.T) string {
 	t.Helper()
 
-	tmpdir, err := os.MkdirTemp("", "tusk-test")
-	if err != nil {
-		t.Fatalf("failed to create temp dir: %v", err)
-	}
+	g := ghost.New(t)
 
-	tmpdir, err = filepath.EvalSymlinks(tmpdir)
-	if err != nil {
-		t.Fatalf("failed to follow symlink for temp dir: %v", err)
-	}
+	// MacOS gets fancy with symlinks, so this gets us the real working path.
+	tmpdir, err := filepath.EvalSymlinks(t.TempDir())
+	g.NoError(err)
 
 	oldwd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("failed to get working directory: %v", err)
-	}
+	g.NoError(err)
 
-	if err := os.Chdir(tmpdir); err != nil {
-		t.Fatalf("failed to change directory: %v", err)
-	}
+	err = os.Chdir(tmpdir)
+	g.NoError(err)
 
-	cleanup = func() {
-		if err := os.RemoveAll(tmpdir); err != nil {
-			t.Logf("failed to remove tmpdir: %v", err)
-		}
-		if err := os.Chdir(oldwd); err != nil {
-			t.Fatalf("failed to change directory: %v", err)
-		}
-	}
+	t.Cleanup(func() {
+		err := os.Chdir(oldwd)
+		g.Should(be.Nil(err))
+	})
 
-	return tmpdir, cleanup
+	return tmpdir
 }
 
 func mkDir(t *testing.T, elem ...string) string {
 	t.Helper()
 
+	g := ghost.New(t)
+
 	fullPath := filepath.Join(elem...)
-	if err := os.MkdirAll(fullPath, 0o750); err != nil {
-		t.Fatalf("failed to make directory: %v", err)
-	}
+	err := os.MkdirAll(fullPath, 0o700)
+	g.NoError(err)
 
 	return fullPath
 }
@@ -117,10 +104,11 @@ func mkDir(t *testing.T, elem ...string) string {
 func mkConfigFile(t *testing.T, dir, fileName string) string {
 	t.Helper()
 
+	g := ghost.New(t)
+
 	fullPath := filepath.Join(dir, fileName)
-	if err := os.WriteFile(fullPath, []byte{}, 0o600); err != nil {
-		t.Fatalf("failed to create file: %v", err)
-	}
+	err := os.WriteFile(fullPath, []byte{}, 0o600)
+	g.NoError(err)
 
 	return fullPath
 }
