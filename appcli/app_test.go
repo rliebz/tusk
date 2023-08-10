@@ -190,7 +190,7 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 
 	g.Should(be.Equal(filepath.Dir(wd), metadata.Directory))
 	g.Should(be.Equal(ui.VerbosityLevelNormal, metadata.Logger.Verbosity))
-	g.ShouldNot(be.True(metadata.PrintVersion))
+	g.Should(be.False(metadata.PrintVersion))
 }
 
 func TestGetConfigMetadata_file(t *testing.T) {

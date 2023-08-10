@@ -248,7 +248,7 @@ func TestTask_run_environment(t *testing.T) {
 
 	got, ok := os.LookupEnv(toBeUnset)
 	g.Should(be.Equal("", got))
-	g.ShouldNot(be.True(ok))
+	g.Should(be.False(ok))
 }
 
 func TestTask_run_finally(t *testing.T) {
