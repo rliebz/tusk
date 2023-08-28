@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/fatih/color v1.14.1
 	github.com/google/go-cmp v0.5.9
-	github.com/rliebz/ghost v0.0.0-20230810052645-a2ad46a2ee12
+	github.com/rliebz/ghost v0.0.0-20230828002912-88331973b5af
 	github.com/urfave/cli v1.22.12
 	gopkg.in/yaml.v2 v2.4.0
 	gotest.tools/v3 v3.0.2
