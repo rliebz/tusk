@@ -31,7 +31,7 @@ documentation][documentation].
 
 #### Go
 
-With Go 1.18+ installed:
+With Go 1.21+ installed:
 
 ```bash
 go install github.com/rliebz/tusk@latest

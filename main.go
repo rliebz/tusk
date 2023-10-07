@@ -36,13 +36,10 @@ func run(cfg config) (status int) {
 	defer func() {
 		if r := recover(); r != nil {
 			if !appcli.IsCompleting(cfg.args) {
-				err := fmt.Errorf("recovered from panic: %v", r)
-				ui.New().Error(err)
+				ui.New().Error(fmt.Errorf("recovered from panic: %v", r))
 			}
 
-			if status == 0 {
-				status = 1
-			}
+			status = or(status, 1)
 		}
 	}()
 
@@ -60,12 +57,20 @@ func run(cfg config) (status int) {
 	status, err = runMeta(meta, cfg.args)
 	if err != nil {
 		meta.Logger.Error(err)
-		if status == 0 {
-			return 1
-		}
+		return or(status, 1)
 	}
 
 	return status
+}
+
+func or[T comparable](vals ...T) T {
+	var zero T
+	for _, val := range vals {
+		if val != zero {
+			return val
+		}
+	}
+	return zero
 }
 
 func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {

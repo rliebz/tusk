@@ -207,35 +207,36 @@ func (w *When) validateEnv() error {
 	}
 
 	for varName, values := range w.Environment {
-		stringValues := make([]string, 0, len(values))
-		for _, value := range values {
-			if value != nil {
-				stringValues = append(stringValues, *value)
-			}
-		}
-
-		isNullAllowed := len(values) != len(stringValues)
-
-		actual, ok := os.LookupEnv(varName)
-		if !ok {
-			if isNullAllowed {
-				return nil
-			}
-
-			continue
-		}
-
-		if err := validateOneOf(
-			fmt.Sprintf("environment variable %s", varName),
-			actual,
-			stringValues,
-			func(a, b string) bool { return a == b },
-		); err == nil {
+		if w.isEnvVarValid(varName, values) {
 			return nil
 		}
 	}
 
 	return newCondFailError("no environment variables matched")
+}
+
+func (w *When) isEnvVarValid(varName string, values marshal.NullableStringList) bool {
+	stringValues := make([]string, 0, len(values))
+	for _, value := range values {
+		if value != nil {
+			stringValues = append(stringValues, *value)
+		}
+	}
+
+	isNullAllowed := len(values) != len(stringValues)
+
+	actual, ok := os.LookupEnv(varName)
+	if !ok {
+		return isNullAllowed
+	}
+
+	err := validateOneOf(
+		fmt.Sprintf("environment variable %s", varName),
+		actual,
+		stringValues,
+		func(a, b string) bool { return a == b },
+	)
+	return err == nil
 }
 
 func (w *When) validateEqual(vars map[string]string) error {

@@ -8,6 +8,7 @@ issues:
     path: _test\.go
     linters:
       - dupl
+      - gocognit
       - gosec
 
 linters:
@@ -49,7 +50,7 @@ linters:
 
 linters-settings:
   gocognit:
-    min-complexity: 15 # TODO: Lower to 10
+    min-complexity: 10
 
   gocritic:
     enabled-tags:

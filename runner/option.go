@@ -63,19 +63,8 @@ func (o *Option) validate() error {
 	}
 
 	if o.Private {
-		if o.Required {
-			return errors.New("option cannot be both private and required")
-		}
-
-		if o.Environment != "" {
-			return fmt.Errorf(
-				"environment variable %q defined for private option",
-				o.Environment,
-			)
-		}
-
-		if len(o.ValuesAllowed) != 0 {
-			return errors.New("option cannot be private and specify values")
+		if err := o.validatePrivate(); err != nil {
+			return err
 		}
 	}
 
@@ -85,6 +74,25 @@ func (o *Option) validate() error {
 
 	if o.Rewrite != "" && !o.isBoolean() {
 		return errors.New("rewrite may only be performed on boolean values")
+	}
+
+	return nil
+}
+
+func (o *Option) validatePrivate() error {
+	if o.Required {
+		return errors.New("option cannot be both private and required")
+	}
+
+	if o.Environment != "" {
+		return fmt.Errorf(
+			"environment variable %q defined for private option",
+			o.Environment,
+		)
+	}
+
+	if len(o.ValuesAllowed) != 0 {
+		return errors.New("option cannot be private and specify values")
 	}
 
 	return nil

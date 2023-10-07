@@ -32,28 +32,34 @@ func UnmarshalOneOf(candidates ...UnmarshalCandidate) error {
 	err := errors.New("no candidates passed")
 
 	for _, c := range candidates {
-		if err = c.Unmarshal(); err != nil {
-			// TypeErrors are expected; try the next candidate
+		if err = unmarshalOne(c); err != nil {
 			//nolint:errorlint // Not sure why, but errors.As breaks tests.
 			if _, ok := err.(*yaml.TypeError); ok {
 				continue
 			}
-
 			return err
-		}
-
-		if c.Validate != nil {
-			if validationErr := c.Validate(); validationErr != nil {
-				return validationErr
-			}
-		}
-
-		if c.Assign != nil {
-			c.Assign()
 		}
 
 		return nil
 	}
 
 	return err
+}
+
+func unmarshalOne(c UnmarshalCandidate) error {
+	if err := c.Unmarshal(); err != nil {
+		return err
+	}
+
+	if c.Validate != nil {
+		if err := c.Validate(); err != nil {
+			return err
+		}
+	}
+
+	if c.Assign != nil {
+		c.Assign()
+	}
+
+	return nil
 }

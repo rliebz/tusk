@@ -38,32 +38,42 @@ func FindAllOptions(t *Task, cfg *Config) ([]*Option, error) {
 }
 
 func findRequiredOptionsRecursively(
-	entry []string, candidates map[string]*Option, found []*Option,
+	entry []string,
+	candidates map[string]*Option,
+	found []*Option,
 ) ([]*Option, error) {
 	for _, item := range entry {
-		candidate, ok := candidates[item]
-		if !ok || optionsContains(found, candidate) {
-			continue
-		}
-
-		found = append(found, candidate)
-		var dependencies []string
-		for _, opt := range found {
-			nested, err := getDependencies(opt)
-			if err != nil {
-				return nil, err
-			}
-			dependencies = append(dependencies, nested...)
-		}
-
 		var err error
-		found, err = findRequiredOptionsRecursively(dependencies, candidates, found)
+		found, err = findRequiredOptionsRecursivelyForItem(item, candidates, found)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	return found, nil
+}
+
+func findRequiredOptionsRecursivelyForItem(
+	item string,
+	candidates map[string]*Option,
+	found []*Option,
+) ([]*Option, error) {
+	candidate, ok := candidates[item]
+	if !ok || optionsContains(found, candidate) {
+		return found, nil
+	}
+
+	found = append(found, candidate)
+	var dependencies []string
+	for _, opt := range found {
+		nested, err := getDependencies(opt)
+		if err != nil {
+			return nil, err
+		}
+		dependencies = append(dependencies, nested...)
+	}
+
+	return findRequiredOptionsRecursively(dependencies, candidates, found)
 }
 
 func optionsContains(items []*Option, item *Option) bool {
