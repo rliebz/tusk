@@ -97,7 +97,7 @@ foo:a foo command
 			var buf bytes.Buffer
 			defaultComplete(&buf, c, app)
 
-			g.Should(be.Equal(tt.want, buf.String()))
+			g.Should(be.Equal(buf.String(), tt.want))
 		})
 	}
 }
@@ -282,7 +282,7 @@ baz
 			var buf bytes.Buffer
 			commandComplete(&buf, c, cmd, cfg)
 
-			g.Should(be.Equal(tt.want, buf.String()))
+			g.Should(be.Equal(buf.String(), tt.want))
 		})
 	}
 }
@@ -341,7 +341,7 @@ func TestPrintCommand(t *testing.T) {
 			var buf bytes.Buffer
 			printCommand(&buf, tt.command)
 
-			g.Should(be.Equal(tt.want, buf.String()))
+			g.Should(be.Equal(buf.String(), tt.want))
 		})
 	}
 }
@@ -393,7 +393,7 @@ func TestPrintFlag(t *testing.T) {
 			var buf bytes.Buffer
 			printFlag(&buf, c, tt.flag)
 
-			g.Should(be.Equal(tt.want, buf.String()))
+			g.Should(be.Equal(buf.String(), tt.want))
 		})
 	}
 }
@@ -433,7 +433,7 @@ func TestIsCompletingFlagArg(t *testing.T) {
 			g := ghost.New(t)
 
 			got := isCompletingFlagArg(tt.flags, tt.arg)
-			g.Should(be.Equal(tt.want, got))
+			g.Should(be.Equal(got, tt.want))
 		})
 	}
 }

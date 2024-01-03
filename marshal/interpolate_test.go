@@ -18,7 +18,7 @@ func TestInterpolate_string(t *testing.T) {
 	err := Interpolate(&input, values)
 	g.NoError(err)
 
-	g.Should(be.Equal(want, input))
+	g.Should(be.Equal(input, want))
 }
 
 func TestInterpolate_slice(t *testing.T) {
@@ -32,7 +32,7 @@ func TestInterpolate_slice(t *testing.T) {
 	err := Interpolate(&input, values)
 	g.NoError(err)
 
-	g.Should(be.DeepEqual(want, input))
+	g.Should(be.DeepEqual(input, want))
 }
 
 func TestInterpolate_struct(t *testing.T) {
@@ -51,7 +51,7 @@ func TestInterpolate_struct(t *testing.T) {
 	err := Interpolate(&input, values)
 	g.NoError(err)
 
-	g.Should(be.Equal(want, input))
+	g.Should(be.Equal(input, want))
 }
 
 func TestEscape(t *testing.T) {
@@ -71,7 +71,7 @@ func TestEscape(t *testing.T) {
 			escaped := escape([]byte(tt.input))
 			got := string(escaped)
 
-			g.Should(be.Equal(tt.want, got))
+			g.Should(be.Equal(got, tt.want))
 		})
 	}
 }
@@ -101,7 +101,7 @@ func TestMap(t *testing.T) {
 			got, err := mapInterpolate([]byte(tt.input), vars)
 			g.NoError(err)
 
-			g.Should(be.Equal(tt.want, string(got)))
+			g.Should(be.Equal(string(got), tt.want))
 		})
 	}
 }
@@ -128,7 +128,7 @@ func TestFindPotentialVariables(t *testing.T) {
 			g := ghost.New(t)
 
 			got := FindPotentialVariables([]byte(tt.input))
-			g.Should(be.DeepEqual(tt.want, got))
+			g.Should(be.DeepEqual(got, tt.want))
 		})
 	}
 }

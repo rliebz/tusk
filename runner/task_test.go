@@ -111,12 +111,12 @@ args: { foo: {} }
 			var got Task
 			err := yaml.UnmarshalStrict([]byte(tt.input), &got)
 			if tt.wantErr != "" {
-				g.Should(be.ErrorContaining(tt.wantErr, err))
+				g.Should(be.ErrorContaining(err, tt.wantErr))
 				return
 			}
 			g.NoError(err)
 
-			g.Should(be.DeepEqual(tt.want, got))
+			g.Should(be.DeepEqual(got, tt.want))
 		})
 	}
 }
@@ -160,7 +160,7 @@ func TestTaskExecute_errors_returned(t *testing.T) {
 			}
 
 			err := task.Execute(Context{Logger: ui.Noop()})
-			g.Should(be.ErrorEqual(tt.wantErr, err))
+			g.Should(be.ErrorEqual(err, tt.wantErr))
 		})
 	}
 }
@@ -185,7 +185,7 @@ func TestTask_run_commands(t *testing.T) {
 	}
 
 	err = task.run(Context{Logger: ui.Noop()}, runFailure, stateRunning)
-	g.Should(be.ErrorEqual("exit status 1", err))
+	g.Should(be.ErrorEqual(err, "exit status 1"))
 }
 
 func TestTask_run_sub_tasks(t *testing.T) {
@@ -217,7 +217,7 @@ func TestTask_run_sub_tasks(t *testing.T) {
 	r.Tasks = append(r.Tasks, taskFailure)
 
 	err = task.run(Context{Logger: ui.Noop()}, r, stateRunning)
-	g.Should(be.ErrorEqual("exit status 1", err))
+	g.Should(be.ErrorEqual(err, "exit status 1"))
 }
 
 func TestTask_run_environment(t *testing.T) {
@@ -244,7 +244,7 @@ func TestTask_run_environment(t *testing.T) {
 	err := task.run(Context{Logger: ui.Noop()}, r, stateRunning)
 	g.NoError(err)
 
-	g.Should(be.Equal(toBeSetValue, os.Getenv(toBeSet)))
+	g.Should(be.Equal(os.Getenv(toBeSet), toBeSetValue))
 
 	got, ok := os.LookupEnv(toBeUnset)
 	g.Should(be.Equal("", got))
@@ -276,7 +276,7 @@ func TestTask_run_finally_error(t *testing.T) {
 
 	var err error
 	task.runFinally(Context{Logger: ui.Noop()}, &err)
-	g.Should(be.ErrorEqual("exit status 1", err))
+	g.Should(be.ErrorEqual(err, "exit status 1"))
 }
 
 func TestTask_run_finally_ui(t *testing.T) {
@@ -312,7 +312,7 @@ func TestTask_run_finally_ui(t *testing.T) {
 	task.runFinally(ctx, &err)
 	g.NoError(err)
 
-	g.Should(be.Equal(want.String(), got.String()))
+	g.Should(be.Equal(got.String(), want.String()))
 }
 
 func TestTask_run_finally_ui_fails(t *testing.T) {
@@ -348,7 +348,7 @@ func TestTask_run_finally_ui_fails(t *testing.T) {
 
 	var err error
 	task.runFinally(ctx, &err)
-	g.Should(be.ErrorEqual("exit status 1", err))
+	g.Should(be.ErrorEqual(err, "exit status 1"))
 
-	g.Should(be.Equal(want.String(), got.String()))
+	g.Should(be.Equal(got.String(), want.String()))
 }

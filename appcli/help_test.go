@@ -32,7 +32,7 @@ func TestFlagPrefixer(t *testing.T) {
 			g := ghost.New(t)
 
 			got := flagPrefixer(tt.flags, tt.placeholder)
-			g.Should(be.Equal(tt.want, got))
+			g.Should(be.Equal(got, tt.want))
 		})
 	}
 }
@@ -95,7 +95,7 @@ Arguments:
 			g.NoError(err)
 
 			got := createArgsSection(cfg.Tasks[taskName])
-			g.Should(be.Equal(tt.want, got))
+			g.Should(be.Equal(got, tt.want))
 		})
 	}
 }

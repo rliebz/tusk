@@ -25,8 +25,8 @@ func TestRun_printVersion(t *testing.T) {
 	)
 
 	want := "(devel)\n"
-	g.Should(be.Equal(want, stdout.String()))
-	g.Should(be.Equal(0, status))
+	g.Should(be.Equal(stdout.String(), want))
+	g.Should(be.Equal(status, 0))
 }
 
 func TestRun_printHelp(t *testing.T) {
@@ -72,8 +72,8 @@ Global Options:
 	g.NoError(err)
 
 	want := buf.String()
-	g.Should(be.Equal(want, stdout.String()))
-	g.Should(be.Equal(0, status))
+	g.Should(be.Equal(stdout.String(), want))
+	g.Should(be.Equal(status, 0))
 }
 
 func TestRun_exitCodeZero(t *testing.T) {
@@ -90,8 +90,8 @@ func TestRun_exitCodeZero(t *testing.T) {
 	)
 
 	want := "exit $ exit 0\n"
-	g.Should(be.Equal(want, stderr.String()))
-	g.Should(be.Equal(0, status))
+	g.Should(be.Equal(stderr.String(), want))
+	g.Should(be.Equal(status, 0))
 }
 
 func TestRun_exitCodeNonZero(t *testing.T) {
@@ -111,8 +111,8 @@ func TestRun_exitCodeNonZero(t *testing.T) {
 exit status 5
 `
 
-	g.Should(be.Equal(want, stderr.String()))
-	g.Should(be.Equal(5, status))
+	g.Should(be.Equal(stderr.String(), want))
+	g.Should(be.Equal(status, 5))
 }
 
 func TestRun_incorrectUsage(t *testing.T) {
@@ -129,6 +129,6 @@ func TestRun_incorrectUsage(t *testing.T) {
 	)
 
 	want := "Error: No help topic for 'fake-command'\n"
-	g.Should(be.Equal(want, stderr.String()))
-	g.Should(be.Equal(1, status))
+	g.Should(be.Equal(stderr.String(), want))
+	g.Should(be.Equal(status, 1))
 }

@@ -20,7 +20,7 @@ func TestValue_UnmarshalYAML(t *testing.T) {
 	g.NoError(err)
 
 	g.Should(be.DeepEqual(v1, v2))
-	g.Should(be.Equal("example", v1.Value))
+	g.Should(be.Equal(v1.Value, "example"))
 }
 
 func TestValue_UnmarshalYAML_value_and_command(t *testing.T) {
@@ -28,7 +28,7 @@ func TestValue_UnmarshalYAML_value_and_command(t *testing.T) {
 
 	var v Value
 	err := yaml.UnmarshalStrict([]byte(`{value: "example", command: "echo hello"}`), &v)
-	g.Should(be.ErrorEqual("value (example) and command (echo hello) are both defined", err))
+	g.Should(be.ErrorEqual(err, "value (example) and command (echo hello) are both defined"))
 }
 
 func TestValueList_UnmarshalYAML(t *testing.T) {
@@ -43,5 +43,5 @@ func TestValueList_UnmarshalYAML(t *testing.T) {
 	g.NoError(err)
 
 	g.Should(be.DeepEqual(v1, v2))
-	g.Should(be.DeepEqual(ValueList{{Value: "example"}}, v1))
+	g.Should(be.DeepEqual(v1, ValueList{{Value: "example"}}))
 }

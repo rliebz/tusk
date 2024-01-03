@@ -856,7 +856,7 @@ given input:
 			g.NoError(err)
 
 			got := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
-			g.Should(be.DeepEqual(tt.want, got))
+			g.Should(be.DeepEqual(got, tt.want))
 		})
 	}
 }
@@ -1121,7 +1121,7 @@ given input:
 
 			_, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
 			g.Must(be.Error(err))
-			g.Should(be.Equal(tt.wantErr, err.Error()))
+			g.Should(be.Equal(err.Error(), tt.wantErr))
 		})
 	}
 }
@@ -1149,11 +1149,11 @@ tasks:
 
 	wantBar := "${foo}"
 	gotBar := cfg.Options[1].DefaultValues[0].Value
-	g.Should(be.Equal(wantBar, gotBar))
+	g.Should(be.Equal(gotBar, wantBar))
 
 	wantCommand := "echo ${bar}"
 	gotCommand := cfg.Tasks["mytask"].RunList[0].Command[0].Exec
-	g.Should(be.Equal(wantCommand, gotCommand))
+	g.Should(be.Equal(gotCommand, wantCommand))
 }
 
 func TestParseComplete_quiet(t *testing.T) {

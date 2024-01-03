@@ -245,7 +245,7 @@ func TestMetadata_Set(t *testing.T) {
 			tt.meta.Directory, err = filepath.EvalSymlinks(tt.meta.Directory)
 			g.NoError(err)
 
-			g.Should(be.DeepEqual(tt.meta, meta))
+			g.Should(be.DeepEqual(meta, tt.meta))
 		})
 	}
 }
@@ -291,12 +291,12 @@ func TestMetadata_Set_interpreter(t *testing.T) {
 			var meta Metadata
 			err := meta.Set(opts)
 			if tt.wantErr != "" {
-				g.Should(be.ErrorEqual(tt.wantErr, err))
+				g.Should(be.ErrorEqual(err, tt.wantErr))
 				return
 			}
 			g.NoError(err)
 
-			g.Should(be.DeepEqual(tt.want, meta.Interpreter))
+			g.Should(be.DeepEqual(meta.Interpreter, tt.want))
 		})
 	}
 }

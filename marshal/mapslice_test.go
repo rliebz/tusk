@@ -26,12 +26,12 @@ func TestParseOrderedMap(t *testing.T) {
 		key, ok := ms[index].Key.(string)
 		g.Should(be.True(ok))
 
-		g.Should(be.Equal(name, key))
+		g.Should(be.Equal(key, name))
 
 		value, ok := ms[index].Value.(string)
 		g.Should(be.True(ok))
 
-		g.Should(be.Equal(value+"\n", string(text)))
+		g.Should(be.Equal(string(text), value+"\n"))
 
 		return nil
 	}
@@ -40,7 +40,7 @@ func TestParseOrderedMap(t *testing.T) {
 	g.NoError(err)
 
 	want := []string{"foo", "bar"}
-	g.Should(be.DeepEqual(want, got))
+	g.Should(be.DeepEqual(got, want))
 }
 
 func TestParseOrderedMap_stops_on_failure(t *testing.T) {
@@ -60,7 +60,7 @@ func TestParseOrderedMap_stops_on_failure(t *testing.T) {
 	}
 
 	_, err := ParseOrderedMap(ms, assign)
-	g.Should(be.ErrorEqual("uh oh", err))
+	g.Should(be.ErrorEqual(err, "uh oh"))
 }
 
 func TestParseOrderedMap_validates_key(t *testing.T) {
@@ -75,5 +75,5 @@ func TestParseOrderedMap_validates_key(t *testing.T) {
 	}
 
 	_, err := ParseOrderedMap(ms, assign)
-	g.Should(be.ErrorEqual(`["foo" "bar"] is not a valid key name`, err))
+	g.Should(be.ErrorEqual(err, `["foo" "bar"] is not a valid key name`))
 }

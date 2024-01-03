@@ -64,7 +64,7 @@ func TestCommand_UnmarshalYAML(t *testing.T) {
 			err := yaml.UnmarshalStrict([]byte(tt.yaml), &got)
 			g.NoError(err)
 
-			g.Should(be.Equal(tt.want, got))
+			g.Should(be.Equal(got, tt.want))
 		})
 	}
 }
@@ -221,7 +221,7 @@ func TestCommandList_UnmarshalYAML(t *testing.T) {
 			err := yaml.UnmarshalStrict([]byte(tt.yaml), &got)
 			g.NoError(err)
 
-			g.Should(be.DeepEqual(tt.want, got))
+			g.Should(be.DeepEqual(got, tt.want))
 		})
 	}
 }

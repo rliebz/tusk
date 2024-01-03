@@ -22,7 +22,7 @@ func TestEvaluate(t *testing.T) {
 	got, err := arg.Evaluate()
 	g.NoError(err)
 
-	g.Should(be.Equal(want, got))
+	g.Should(be.Equal(got, want))
 }
 
 func TestEvaluate_specified(t *testing.T) {
@@ -39,7 +39,7 @@ func TestEvaluate_specified(t *testing.T) {
 	got, err := arg.Evaluate()
 	g.NoError(err)
 
-	g.Should(be.Equal(want, got))
+	g.Should(be.Equal(got, want))
 }
 
 func TestEvaluate_unspecified(t *testing.T) {
@@ -55,7 +55,7 @@ func TestEvaluate_unspecified(t *testing.T) {
 	}
 
 	_, err := arg.Evaluate()
-	g.Should(be.ErrorEqual(`value "foo" for argument "my-arg" must be one of [wrong other]`, err))
+	g.Should(be.ErrorEqual(err, `value "foo" for argument "my-arg" must be one of [wrong other]`))
 }
 
 func TestEvaluate_nil(t *testing.T) {
@@ -63,7 +63,7 @@ func TestEvaluate_nil(t *testing.T) {
 
 	var arg *Arg
 	_, err := arg.Evaluate()
-	g.Should(be.ErrorEqual("nil argument evaluated", err))
+	g.Should(be.ErrorEqual(err, "nil argument evaluated"))
 }
 
 func TestGetArgsWithOrder(t *testing.T) {
@@ -91,12 +91,12 @@ func TestGetArgsWithOrder(t *testing.T) {
 	args, err := getArgsWithOrder(ms)
 	g.NoError(err)
 
-	g.Must(be.SliceLen(2, args))
+	g.Must(be.SliceLen(args, 2))
 
-	g.Should(be.Equal("foo", args[0].Name))
-	g.Should(be.Equal("first usage", args[0].Usage))
-	g.Should(be.Equal("bar", args[1].Name))
-	g.Should(be.Equal("other usage", args[1].Usage))
+	g.Should(be.Equal(args[0].Name, "foo"))
+	g.Should(be.Equal(args[0].Usage, "first usage"))
+	g.Should(be.Equal(args[1].Name, "bar"))
+	g.Should(be.Equal(args[1].Usage, "other usage"))
 }
 
 func TestGetArgsWithOrder_invalid(t *testing.T) {
@@ -107,5 +107,5 @@ func TestGetArgsWithOrder_invalid(t *testing.T) {
 	}
 
 	_, err := getArgsWithOrder(ms)
-	g.Should(be.ErrorContaining("cannot unmarshal !!str `not an arg` into runner.Arg", err))
+	g.Should(be.ErrorContaining(err, "cannot unmarshal !!str `not an arg` into runner.Arg"))
 }

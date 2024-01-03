@@ -65,7 +65,7 @@ func TestWhen_UnmarshalYAML(t *testing.T) {
 			err := yaml.UnmarshalStrict([]byte(tt.input), &got)
 			g.NoError(err)
 
-			g.Should(be.DeepEqual(tt.want, got))
+			g.Should(be.DeepEqual(got, tt.want))
 		})
 	}
 }
@@ -366,7 +366,7 @@ func TestWhen_Validate(t *testing.T) {
 			g := ghost.New(t)
 
 			err := tt.when.Validate(Context{}, tt.options)
-			g.Should(be.Equal(tt.shouldErr, err != nil))
+			g.Should(be.Equal(err != nil, tt.shouldErr))
 		})
 	}
 
@@ -427,7 +427,7 @@ func TestNormalizeOS(t *testing.T) {
 			g := ghost.New(t)
 
 			got := normalizeOS(tt.input)
-			g.Should(be.Equal(tt.want, got))
+			g.Should(be.Equal(got, tt.want))
 		})
 	}
 }
@@ -476,7 +476,7 @@ func TestList_UnmarshalYAML(t *testing.T) {
 			err := yaml.UnmarshalStrict([]byte(tt.input), &got)
 			g.NoError(err)
 
-			g.Should(be.DeepEqual(tt.want, got))
+			g.Should(be.DeepEqual(got, tt.want))
 		})
 	}
 }
@@ -531,7 +531,7 @@ func TestList_Dependencies_nil(t *testing.T) {
 	g := ghost.New(t)
 
 	var l *WhenList
-	g.Should(be.SliceLen(0, l.Dependencies()))
+	g.Should(be.SliceLen(l.Dependencies(), 0))
 }
 
 func TestList_Validate(t *testing.T) {
@@ -576,7 +576,7 @@ func TestList_Validate(t *testing.T) {
 
 			err := tt.list.Validate(Context{}, tt.options)
 			if tt.wantErr != "" {
-				g.Should(be.ErrorEqual(tt.wantErr, err))
+				g.Should(be.ErrorEqual(err, tt.wantErr))
 				return
 			}
 			g.NoError(err)

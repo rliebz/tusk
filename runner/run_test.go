@@ -48,7 +48,7 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 			err := yaml.UnmarshalStrict([]byte(tt.yaml), &got)
 			g.NoError(err)
 
-			g.Should(be.DeepEqual(tt.want, got))
+			g.Should(be.DeepEqual(got, tt.want))
 		})
 	}
 }
@@ -72,7 +72,7 @@ func TestRun_UnmarshalYAML_SetEnvironment(t *testing.T) {
 			err := yaml.UnmarshalStrict([]byte(tt.input), &r)
 			g.NoError(err)
 
-			g.Should(be.MapLen(tt.wantLen, r.SetEnvironment))
+			g.Should(be.MapLen(r.SetEnvironment, tt.wantLen))
 		})
 	}
 }
@@ -134,7 +134,7 @@ func TestRun_shouldRun(t *testing.T) {
 			got, err := tt.input.shouldRun(Context{}, tt.vars)
 			g.NoError(err)
 
-			g.Should(be.Equal(tt.want, got))
+			g.Should(be.Equal(got, tt.want))
 		})
 	}
 }
@@ -178,7 +178,7 @@ func TestRunList_UnmarshalYAML(t *testing.T) {
 			err := yaml.UnmarshalStrict([]byte(tt.yaml), &got)
 			g.NoError(err)
 
-			g.Should(be.DeepEqual(tt.want, got))
+			g.Should(be.DeepEqual(got, tt.want))
 		})
 	}
 }

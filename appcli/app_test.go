@@ -39,12 +39,12 @@ tasks:
 	command, ok := flagApp.Metadata["command"].(*cli.Command)
 	g.Must(be.True(ok))
 
-	g.Should(be.Equal("mytask", command.Name))
+	g.Should(be.Equal(command.Name, "mytask"))
 
 	flags, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
 	g.Must(be.True(ok))
 
-	g.Should(be.DeepEqual(map[string]string{"foo": "other"}, flags))
+	g.Should(be.DeepEqual(flags, map[string]string{"foo": "other"}))
 }
 
 func TestNewFlagApp_no_options(t *testing.T) {
@@ -64,12 +64,12 @@ func TestNewFlagApp_no_options(t *testing.T) {
 	command, ok := flagApp.Metadata["command"].(*cli.Command)
 	g.Must(be.True(ok))
 
-	g.Should(be.Equal("mytask", command.Name))
+	g.Should(be.Equal(command.Name, "mytask"))
 
 	flags, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
 	g.Must(be.True(ok))
 
-	g.Should(be.DeepEqual(map[string]string{}, flags))
+	g.Should(be.DeepEqual(flags, map[string]string{}))
 }
 
 func TestNewApp(t *testing.T) {
@@ -91,9 +91,9 @@ tasks: { %q: {} }
 	app, err := NewApp([]string{"tusk", taskName}, meta)
 	g.NoError(err)
 
-	g.Should(be.SliceLen(1, app.Commands))
-	g.Should(be.Equal(name, app.Name))
-	g.Should(be.Equal(usage, app.Usage))
+	g.Should(be.SliceLen(app.Commands, 1))
+	g.Should(be.Equal(app.Name, name))
+	g.Should(be.Equal(app.Usage, usage))
 }
 
 func TestNewApp_exit_code(t *testing.T) {
@@ -113,7 +113,7 @@ tasks:
 	app, err := NewApp(args, meta)
 	g.NoError(err)
 
-	g.Must(be.SliceLen(1, app.Commands))
+	g.Must(be.SliceLen(app.Commands, 1))
 
 	err = app.Run(args)
 	var exitErr *exec.ExitError
@@ -121,7 +121,7 @@ tasks:
 	g.Must(be.True(ok))
 
 	exitCode := exitErr.Sys().(syscall.WaitStatus).ExitStatus()
-	g.Should(be.Equal(wantExitCode, exitCode))
+	g.Should(be.Equal(exitCode, wantExitCode))
 }
 
 func TestNewApp_private_task(t *testing.T) {
@@ -144,7 +144,7 @@ tasks:
 	app, err := NewApp(args, meta)
 	g.NoError(err)
 
-	g.Must(be.SliceLen(1, app.Commands))
+	g.Must(be.SliceLen(app.Commands, 1))
 
 	// Ensure private task still runs as subtask
 	err = app.Run(args)
@@ -153,7 +153,7 @@ tasks:
 	g.Must(be.True(ok))
 
 	exitCode := exitErr.Sys().(syscall.WaitStatus).ExitStatus()
-	g.Should(be.Equal(wantExitCode, exitCode))
+	g.Should(be.Equal(exitCode, wantExitCode))
 }
 
 func TestNewApp_fails_bad_config(t *testing.T) {
@@ -164,8 +164,8 @@ func TestNewApp_fails_bad_config(t *testing.T) {
 		&runner.Metadata{CfgText: []byte(`invalid`)},
 	)
 	g.Should(be.ErrorEqual(
-		"yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `invalid` into runner.configType",
 		err,
+		"yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `invalid` into runner.configType",
 	))
 }
 
@@ -173,7 +173,7 @@ func TestNewApp_fails_bad_flag(t *testing.T) {
 	g := ghost.New(t)
 
 	_, err := NewApp([]string{"tusk", "--invalid"}, &runner.Metadata{})
-	g.Should(be.ErrorEqual("flag provided but not defined: -invalid", err))
+	g.Should(be.ErrorEqual(err, "flag provided but not defined: -invalid"))
 }
 
 func TestGetConfigMetadata_defaults(t *testing.T) {
@@ -188,8 +188,8 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 	wd, err := os.Getwd()
 	g.NoError(err)
 
-	g.Should(be.Equal(filepath.Dir(wd), metadata.Directory))
-	g.Should(be.Equal(ui.VerbosityLevelNormal, metadata.Logger.Verbosity))
+	g.Should(be.Equal(metadata.Directory, filepath.Dir(wd)))
+	g.Should(be.Equal(metadata.Logger.Verbosity, ui.VerbosityLevelNormal))
 	g.Should(be.False(metadata.PrintVersion))
 }
 
@@ -202,12 +202,12 @@ func TestGetConfigMetadata_file(t *testing.T) {
 	metadata, err := GetConfigMetadata(args)
 	g.NoError(err)
 
-	g.Should(be.Equal("testdata", metadata.Directory))
+	g.Should(be.Equal(metadata.Directory, "testdata"))
 
 	cfgText, err := os.ReadFile(cfgPath)
 	g.NoError(err)
 
-	g.Should(be.Equal(string(cfgText), string(metadata.CfgText)))
+	g.Should(be.Equal(string(metadata.CfgText), string(cfgText)))
 }
 
 func TestGetConfigMetadata_fileNoExist(t *testing.T) {
@@ -283,7 +283,7 @@ func TestGetConfigMetadata_verbosity(t *testing.T) {
 			metadata, err := GetConfigMetadata(tt.args)
 			g.NoError(err)
 
-			g.Should(be.Equal(tt.want, metadata.Logger.Verbosity))
+			g.Should(be.Equal(metadata.Logger.Verbosity, tt.want))
 		})
 	}
 }

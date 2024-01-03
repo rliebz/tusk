@@ -20,7 +20,7 @@ func TestSubTask_UnmarshalYAML(t *testing.T) {
 	g.NoError(err)
 
 	g.Should(be.DeepEqual(st1, st2))
-	g.Should(be.DeepEqual(SubTask{Name: "example"}, st1))
+	g.Should(be.DeepEqual(st1, SubTask{Name: "example"}))
 }
 
 func TestSubTaskList_UnmarshalYAML(t *testing.T) {
@@ -35,5 +35,5 @@ func TestSubTaskList_UnmarshalYAML(t *testing.T) {
 	g.NoError(err)
 
 	g.Should(be.DeepEqual(l1, l2))
-	g.Should(be.DeepEqual(SubTaskList{{Name: "example"}}, l1))
+	g.Should(be.DeepEqual(l1, SubTaskList{{Name: "example"}}))
 }

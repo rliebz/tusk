@@ -227,7 +227,7 @@ func assertOptionsEqualUnordered(t *testing.T, a, b []*Option) {
 
 	g := ghost.New(t)
 
-	if !g.Should(be.SliceLen(len(a), b)) {
+	if !g.Should(be.SliceLen(b, len(a))) {
 		return
 	}
 

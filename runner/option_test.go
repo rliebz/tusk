@@ -106,7 +106,7 @@ func TestOption_Evaluate(t *testing.T) {
 			got, err := tt.input.Evaluate(Context{}, nil)
 			g.NoError(err)
 
-			g.Should(be.Equal(tt.want, got))
+			g.Should(be.Equal(got, tt.want))
 		})
 	}
 }
@@ -122,7 +122,7 @@ func TestOption_Evaluate_required_nothing_passed(t *testing.T) {
 	}
 
 	_, err := option.Evaluate(Context{}, nil)
-	g.Should(be.ErrorEqual("no value passed for required option: my-opt", err))
+	g.Should(be.ErrorEqual(err, "no value passed for required option: my-opt"))
 }
 
 func TestOption_Evaluate_passes_vars(t *testing.T) {
@@ -143,7 +143,7 @@ func TestOption_Evaluate_passes_vars(t *testing.T) {
 	got, err := opt.Evaluate(Context{}, map[string]string{"foo": "foovalue"})
 	g.NoError(err)
 
-	g.Should(be.Equal(want, got))
+	g.Should(be.Equal(got, want))
 }
 
 func TestOption_Evaluate_required_with_passed(t *testing.T) {
@@ -160,7 +160,7 @@ func TestOption_Evaluate_required_with_passed(t *testing.T) {
 	got, err := option.Evaluate(Context{}, nil)
 	g.NoError(err)
 
-	g.Should(be.Equal(want, got))
+	g.Should(be.Equal(got, want))
 }
 
 func TestOption_Evaluate_required_with_environment(t *testing.T) {
@@ -175,7 +175,7 @@ func TestOption_Evaluate_required_with_environment(t *testing.T) {
 	got, err := option.Evaluate(Context{}, nil)
 	g.NoError(err)
 
-	g.Should(be.Equal(want, got))
+	g.Should(be.Equal(got, want))
 }
 
 func TestOption_Evaluate_values_none_specified(t *testing.T) {
@@ -191,7 +191,7 @@ func TestOption_Evaluate_values_none_specified(t *testing.T) {
 	got, err := option.Evaluate(Context{}, nil)
 	g.NoError(err)
 
-	g.Should(be.Equal(want, got))
+	g.Should(be.Equal(got, want))
 }
 
 func TestOption_Evaluate_values_with_passed(t *testing.T) {
@@ -208,7 +208,7 @@ func TestOption_Evaluate_values_with_passed(t *testing.T) {
 	got, err := option.Evaluate(Context{}, nil)
 	g.NoError(err)
 
-	g.Should(be.Equal(want, got))
+	g.Should(be.Equal(got, want))
 }
 
 func TestOption_Evaluate_values_with_environment(t *testing.T) {
@@ -229,7 +229,7 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 	got, err := option.Evaluate(Context{}, nil)
 	g.NoError(err)
 
-	g.Should(be.Equal(want, got))
+	g.Should(be.Equal(got, want))
 }
 
 func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
@@ -245,7 +245,7 @@ func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
 	}
 
 	_, err := option.Evaluate(Context{}, nil)
-	g.Should(be.ErrorEqual(`value "foo" for option "my-opt" must be one of [bad values FOO]`, err))
+	g.Should(be.ErrorEqual(err, `value "foo" for option "my-opt" must be one of [bad values FOO]`))
 }
 
 func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
@@ -265,7 +265,7 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 	t.Setenv(envVar, want)
 
 	_, err := option.Evaluate(Context{}, nil)
-	g.Should(be.ErrorEqual(`value "foo" for option "my-opt" must be one of [bad values FOO]`, err))
+	g.Should(be.ErrorEqual(err, `value "foo" for option "my-opt" must be one of [bad values FOO]`))
 }
 
 func TestOption_Evaluate_type_defaults(t *testing.T) {
@@ -296,7 +296,7 @@ func TestOption_Evaluate_type_defaults(t *testing.T) {
 			got, err := opt.Evaluate(Context{}, nil)
 			g.NoError(err)
 
-			g.Should(be.Equal(tt.want, got))
+			g.Should(be.Equal(got, tt.want))
 		})
 	}
 }
@@ -317,7 +317,7 @@ func TestOption_UnmarshalYAML(t *testing.T) {
 	err := yaml.UnmarshalStrict(s, &got)
 	g.NoError(err)
 
-	g.Should(be.DeepEqual(want, got))
+	g.Should(be.DeepEqual(got, want))
 }
 
 func TestOption_UnmarshalYAML_invalid_definitions(t *testing.T) {
@@ -373,10 +373,10 @@ func TestGetOptionsWithOrder(t *testing.T) {
 	options, err := getOptionsWithOrder(ms)
 	g.NoError(err)
 
-	g.Must(be.SliceLen(2, options))
+	g.Must(be.SliceLen(options, 2))
 
-	g.Should(be.Equal("foo", options[0].Name))
-	g.Should(be.Equal("fooenv", options[0].Environment))
-	g.Should(be.Equal("bar", options[1].Name))
-	g.Should(be.Equal("barenv", options[1].Environment))
+	g.Should(be.Equal(options[0].Name, "foo"))
+	g.Should(be.Equal(options[0].Environment, "fooenv"))
+	g.Should(be.Equal(options[1].Name, "bar"))
+	g.Should(be.Equal(options[1].Environment, "barenv"))
 }

@@ -61,7 +61,7 @@ func TestSearchForFile(t *testing.T) {
 			fullPath, err := searchForFile()
 			g.NoError(err)
 
-			g.Should(be.Equal(tt.wantPath, fullPath))
+			g.Should(be.Equal(fullPath, tt.wantPath))
 		})
 	}
 }

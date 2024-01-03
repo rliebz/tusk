@@ -24,7 +24,7 @@ func TestStringList(t *testing.T) {
 	g.NoError(err)
 
 	g.Should(be.DeepEqual(h1, h2))
-	g.Should(be.DeepEqual(StringListHolder{Foo: StringList{"example"}}, h1))
+	g.Should(be.DeepEqual(h1, StringListHolder{Foo: StringList{"example"}}))
 }
 
 func TestStringList_fails(t *testing.T) {
@@ -32,11 +32,11 @@ func TestStringList_fails(t *testing.T) {
 
 	var h1 StringListHolder
 	err := yaml.UnmarshalStrict([]byte(`foo: [bar: baz]`), &h1)
-	g.Should(be.ErrorContaining("cannot unmarshal !!map into string", err))
+	g.Should(be.ErrorContaining(err, "cannot unmarshal !!map into string"))
 
 	var h2 StringListHolder
 	err = yaml.UnmarshalStrict([]byte(`foo: bar: baz`), &h2)
-	g.Should(be.ErrorContaining("mapping values are not allowed in this context", err))
+	g.Should(be.ErrorContaining(err, "mapping values are not allowed in this context"))
 }
 
 func TestNullableStringList(t *testing.T) {
@@ -53,7 +53,7 @@ func TestNullableStringList(t *testing.T) {
 	g.Should(be.DeepEqual(nsl1, nsl2))
 
 	want := "example"
-	g.Should(be.DeepEqual(NullableStringList{&want}, nsl1))
+	g.Should(be.DeepEqual(nsl1, NullableStringList{&want}))
 }
 
 func TestNullableStringList_null(t *testing.T) {
@@ -63,7 +63,7 @@ func TestNullableStringList_null(t *testing.T) {
 	err := yaml.UnmarshalStrict([]byte("~"), &nsl)
 	g.NoError(err)
 
-	g.Should(be.SliceLen(0, nsl))
+	g.Should(be.SliceLen(nsl, 0))
 }
 
 func TestNullableStringList_null_item(t *testing.T) {
@@ -73,7 +73,7 @@ func TestNullableStringList_null_item(t *testing.T) {
 	err := yaml.UnmarshalStrict([]byte("[one, null, two]"), &nsl)
 	g.NoError(err)
 
-	if g.Should(be.SliceLen(3, nsl)) {
+	if g.Should(be.SliceLen(nsl, 3)) {
 		g.Should(be.Nil(nsl[1]))
 	}
 }
@@ -83,9 +83,9 @@ func TestNullableStringList_fails(t *testing.T) {
 
 	var nsl1 NullableStringList
 	err := yaml.UnmarshalStrict([]byte(`[bar: baz]`), &nsl1)
-	g.Should(be.ErrorContaining("cannot unmarshal !!map into string", err))
+	g.Should(be.ErrorContaining(err, "cannot unmarshal !!map into string"))
 
 	var nsl2 NullableStringList
 	err = yaml.UnmarshalStrict([]byte(`foo: bar: baz`), &nsl2)
-	g.Should(be.ErrorEqual("yaml: mapping values are not allowed in this context", err))
+	g.Should(be.ErrorEqual(err, "yaml: mapping values are not allowed in this context"))
 }

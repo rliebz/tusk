@@ -56,7 +56,7 @@ func TestOneOf_error(t *testing.T) {
 	g := ghost.New(t)
 
 	err := UnmarshalOneOf()
-	g.Should(be.ErrorEqual("no candidates passed", err))
+	g.Should(be.ErrorEqual(err, "no candidates passed"))
 
 	err = UnmarshalOneOf(createTypeErrorCandidate(t))
 	g.Should(be.Error(err))

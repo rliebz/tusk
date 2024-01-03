@@ -19,7 +19,7 @@ func TestCreateCLIFlag_undefined(t *testing.T) {
 	}
 
 	flag, err := createCLIFlag(opt)
-	g.Should(be.ErrorEqual(`unsupported flag type "wrong"`, err))
+	g.Should(be.ErrorEqual(err, `unsupported flag type "wrong"`))
 
 	g.Should(be.Nil(flag))
 }
@@ -42,5 +42,5 @@ func TestAddFlag_no_duplicates(t *testing.T) {
 	err = addFlag(command, opt)
 	g.NoError(err)
 
-	g.Should(be.SliceLen(1, command.Flags))
+	g.Should(be.SliceLen(command.Flags, 1))
 }

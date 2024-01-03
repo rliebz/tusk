@@ -56,7 +56,7 @@ func testPrint(t *testing.T, tt printTestCase) {
 
 		logger.Verbosity = tt.levelWithOutput
 		tt.printFunc(logger)
-		g.Should(be.Equal(tt.expected, buf.String()))
+		g.Should(be.Equal(buf.String(), tt.expected))
 	})
 }
 
@@ -76,7 +76,7 @@ func TestVerbosityLevel_String(t *testing.T) {
 		t.Run(tt.level.String(), func(t *testing.T) {
 			g := ghost.New(t)
 
-			g.Should(be.Equal(tt.want, tt.level.String()))
+			g.Should(be.Equal(tt.level.String(), tt.want))
 		})
 	}
 }
