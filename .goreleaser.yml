@@ -43,7 +43,7 @@ release:
     owner: rliebz
     name: tusk
 brews:
-  - tap:
+  - repository:
       owner: rliebz
       name: homebrew-tusk
     homepage: https://github.com/rliebz/tusk

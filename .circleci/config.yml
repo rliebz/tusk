@@ -44,7 +44,7 @@ jobs:
 
   release_dry_run:
     docker:
-      - image: goreleaser/goreleaser:v1.5.0
+      - image: goreleaser/goreleaser:v1.23.0
     steps:
       - checkout
       - deploy:
@@ -52,11 +52,11 @@ jobs:
           command: |
             header='^## [0-9]+\.[0-9]+\.[0-9]+'
             awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
-                goreleaser --rm-dist --release-notes /dev/stdin --snapshot
+                goreleaser --release-notes /dev/stdin --snapshot
 
   release:
     docker:
-      - image: goreleaser/goreleaser:v1.5.0
+      - image: goreleaser/goreleaser:v1.23.0
     steps:
       - checkout
       - deploy:
@@ -64,7 +64,7 @@ jobs:
           command: |
             header='^## [0-9]+\.[0-9]+\.[0-9]+'
             awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
-                goreleaser --rm-dist --release-notes /dev/stdin
+                goreleaser --release-notes /dev/stdin
 
   publish_docs_dry_run:
     docker:
