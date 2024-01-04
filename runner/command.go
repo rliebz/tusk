@@ -32,13 +32,13 @@ type Command struct {
 
 // UnmarshalYAML allows strings to be interpreted as Do actions.
 func (c *Command) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var do string
-	doCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&do) },
+	var str string
+	strCandidate := marshal.UnmarshalCandidate{
+		Unmarshal: func() error { return unmarshal(&str) },
 		Assign: func() {
 			*c = Command{
-				Exec:  do,
-				Print: do,
+				Exec:  str,
+				Print: str,
 			}
 		},
 	}
@@ -55,7 +55,7 @@ func (c *Command) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		},
 	}
 
-	return marshal.UnmarshalOneOf(doCandidate, commandCandidate)
+	return marshal.UnmarshalOneOf(strCandidate, commandCandidate)
 }
 
 // newCmd creates an exec.Cmd that uses the interpreter and the script passed.
