@@ -91,6 +91,10 @@ func (o *Option) validatePrivate() error {
 		)
 	}
 
+	if o.Short != "" {
+		return errors.New("option cannot be private and specify a short name")
+	}
+
 	if len(o.ValuesAllowed) != 0 {
 		return errors.New("option cannot be private and specify values")
 	}

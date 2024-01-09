@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Fixed
 
 - Arguments and options are now properly validated when passed to sub-tasks.
+- Short names may no longer be provided for private options.
 
 ## 0.6.4 (2022-09-27)
 

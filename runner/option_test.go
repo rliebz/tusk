@@ -342,6 +342,10 @@ func TestOption_UnmarshalYAML_invalid_definitions(t *testing.T) {
 			"{private: true, environment: ENV_VAR}",
 		},
 		{
+			"private and short defined",
+			"{private: true, short: n}",
+		},
+		{
 			"private and values defined",
 			"{private: true, values: [foo, bar]}",
 		},
