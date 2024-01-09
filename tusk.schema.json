@@ -336,7 +336,7 @@
 						"args": {
 							"description": "The argument values to pass to the sub-task.",
 							"items": {
-								"type": "string"
+								"$ref": "#/$defs/value"
 							},
 							"title": "sub-task args",
 							"type": "array"
@@ -348,7 +348,7 @@
 						},
 						"options": {
 							"additionalProperties": {
-								"type": "string"
+								"$ref": "#/$defs/value"
 							},
 							"description": "The option values to pass to the sub-task.",
 							"title": "sub-task options",

@@ -301,13 +301,13 @@ $defs:
             description: The argument values to pass to the sub-task.
             type: array
             items:
-              type: string
+              $ref: "#/$defs/value"
           options:
             title: sub-task options
             description: The option values to pass to the sub-task.
             type: object
             additionalProperties:
-              type: string
+              $ref: "#/$defs/value"
 
   taskClause:
     description: The task definition.
