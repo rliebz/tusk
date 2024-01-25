@@ -1,15 +1,15 @@
 issues:
   max-same-issues: 0
-  exclude-use-default: 0
+  exclude-use-default: false
   exclude:
     - if-return
     - should have a package comment
   exclude-rules:
-    path: _test\.go
-    linters:
-      - dupl
-      - gocognit
-      - gosec
+    - path: _test\.go
+      linters:
+        - dupl
+        - gocognit
+        - gosec
 
 linters:
   enable:
@@ -62,7 +62,6 @@ linters-settings:
     disabled-checks:
       - paramTypeCombine
       - ptrToRefParam
-      - sloppyTestFuncName
       - whyNoLint # TODO: Address these
 
   gofumpt:

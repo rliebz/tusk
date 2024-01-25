@@ -1,7 +1,7 @@
 defaults:
   # Common
   test_defaults: &test_defaults
-    environment: &environment_defaults
+    environment:
       TEST_RESULTS: /tmp/test-results
   mktestdir: &mktestdir
     name: Create the test directory
@@ -17,7 +17,7 @@ jobs:
   lint:
     <<: *test_defaults
     docker:
-      - image: golangci/golangci-lint:v1.54.2-alpine
+      - image: golangci/golangci-lint:v1.55.2-alpine
     steps:
       - checkout
       - run: *mktestdir
