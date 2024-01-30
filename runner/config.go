@@ -10,6 +10,7 @@ type Config struct {
 	//
 	// It is included here only so that strict unmarshaling does not fail.
 	Interpreter string `yaml:"interpreter"`
+	EnvFile     string `yaml:"env_file"`
 
 	Tasks   map[string]*Task `yaml:"tasks"`
 	Options Options          `yaml:"options,omitempty"`

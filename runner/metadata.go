@@ -56,6 +56,15 @@ func (m *Metadata) Set(o OptGetter) error {
 		return err
 	}
 
+	if envFile, err := getEnvFile(m.CfgText); err != nil {
+		return err
+	} else if envFile != "" {
+		fmt.Printf("envFile: %v", envFile)
+		if err := readEnvFile(envFile); err != nil {
+			return err
+		}
+	}
+
 	m.Interpreter = interpreter
 	m.InstallCompletion = o.String("install-completion")
 	m.UninstallCompletion = o.String("uninstall-completion")
@@ -86,6 +95,46 @@ func getInterpreter(cfgText []byte) ([]string, error) {
 	}
 
 	return strings.Fields(cfg.Interpreter), nil
+}
+
+// getEnvFile attempts to determine the env file from reading the env var and
+// the config file, in that order. If no env file is specified, "" is used.
+func getEnvFile(cfgText []byte) (string, error) {
+	var cfg struct {
+		EnvFile string `yaml:"env_file"`
+	}
+
+	if err := yaml.Unmarshal(cfgText, &cfg); err != nil {
+		return "", err
+	}
+
+	if cfg.EnvFile == "" {
+		return "", nil
+	}
+
+	return cfg.EnvFile, nil
+}
+
+// readEnvFile reads the env file and set all env vars into the current env
+func readEnvFile(envfile string) error {
+	// read the env file envFile
+	raw, err := os.ReadFile(envfile)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	for _, env := range strings.Split(string(raw), "\n") {
+		fmt.Println(env)
+		pair := strings.SplitN(env, "=", 2)
+		if len(pair) == 2 { // only set if there is a variable and a value
+			err := os.Setenv(pair[0], pair[1])
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 // OptGetter pulls various options based on a name.
