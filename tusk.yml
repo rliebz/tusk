@@ -11,7 +11,7 @@ tasks:
         type: bool
         short: f
         rewrite: --fast
-    run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2 run ${fast} ./...
+    run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.56.1 run ${fast} ./...
 
   test:
     usage: Run the tests

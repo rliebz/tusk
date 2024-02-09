@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"io"
@@ -9,10 +10,11 @@ import (
 	"runtime/debug"
 	"syscall"
 
+	"github.com/urfave/cli"
+
 	"github.com/rliebz/tusk/appcli"
 	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
-	"github.com/urfave/cli"
 )
 
 var version string
@@ -39,7 +41,7 @@ func run(cfg config) (status int) {
 				ui.New().Error(fmt.Errorf("recovered from panic: %v", r))
 			}
 
-			status = or(status, 1)
+			status = cmp.Or(status, 1)
 		}
 	}()
 
@@ -57,20 +59,10 @@ func run(cfg config) (status int) {
 	status, err = runMeta(meta, cfg.args)
 	if err != nil {
 		meta.Logger.Error(err)
-		return or(status, 1)
+		return cmp.Or(status, 1)
 	}
 
 	return status
-}
-
-func or[T comparable](vals ...T) T {
-	var zero T
-	for _, val := range vals {
-		if val != zero {
-			return val
-		}
-	}
-	return zero
 }
 
 func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {

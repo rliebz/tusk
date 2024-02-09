@@ -54,7 +54,7 @@ func TestParseOrderedMap_stops_on_failure(t *testing.T) {
 
 	defer func() { g.Should(be.Equal(1, index)) }()
 
-	assign := func(name string, text []byte) error {
+	assign := func(string, []byte) error {
 		index++
 		return errors.New("uh oh")
 	}
@@ -70,7 +70,7 @@ func TestParseOrderedMap_validates_key(t *testing.T) {
 		{Key: []string{"foo", "bar"}, Value: "bar"},
 	}
 
-	assign := func(name string, text []byte) error {
+	assign := func(string, []byte) error {
 		return nil
 	}
 

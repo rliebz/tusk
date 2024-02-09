@@ -65,7 +65,7 @@ func newSilentApp() *cli.App {
 	app := newBaseApp()
 	app.Writer = io.Discard
 	app.ErrWriter = io.Discard
-	app.CommandNotFound = func(c *cli.Context, command string) {}
+	app.CommandNotFound = func(*cli.Context, string) {}
 	return app
 }
 

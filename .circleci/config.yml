@@ -17,7 +17,7 @@ jobs:
   lint:
     <<: *test_defaults
     docker:
-      - image: golangci/golangci-lint:v1.55.2-alpine
+      - image: golangci/golangci-lint:v1.56.1-alpine
     steps:
       - checkout
       - run: *mktestdir
@@ -30,7 +30,7 @@ jobs:
   test:
     <<: *test_defaults
     docker:
-      - image: cimg/go:1.18.4
+      - image: cimg/go:1.22.0
     steps:
       - checkout
       - run: *mktestdir
