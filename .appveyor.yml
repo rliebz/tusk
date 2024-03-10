@@ -12,7 +12,7 @@ environment:
 install:
   # Install specific Go version
   - rmdir c:\go /s /q
-  - appveyor DownloadFile https://storage.googleapis.com/golang/go%GO_VERSION%.windows-amd64.msi
+  - appveyor DownloadFile https://go.dev/dl/go%GO_VERSION%.windows-amd64.msi
   - msiexec /i go%GO_VERSION%.windows-amd64.msi /q
   # Add reference to Go installation
   - set PATH=c:\Program Files\Go\bin;%PATH%

@@ -44,7 +44,7 @@ jobs:
 
   release_dry_run:
     docker:
-      - image: goreleaser/goreleaser:v1.23.0
+      - image: goreleaser/goreleaser:v1.24.0
     steps:
       - checkout
       - deploy:
