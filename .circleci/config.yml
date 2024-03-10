@@ -17,13 +17,15 @@ jobs:
   lint:
     <<: *test_defaults
     docker:
-      - image: golangci/golangci-lint:v1.56.1-alpine
+      - image: golang:1.22.0
     steps:
       - checkout
       - run: *mktestdir
       - run:
           name: Run golangci-lint
-          command: golangci-lint run | tee $TEST_RESULTS/golangci-lint.out
+          command: |
+            go run github.com/golangci/golangci-lint/cmd/golangci-lint run |
+              tee $TEST_RESULTS/golangci-lint.out
       - store_artifacts: *store_artifacts
       - store_test_results: *store_test_results
 
@@ -44,7 +46,7 @@ jobs:
 
   release_dry_run:
     docker:
-      - image: goreleaser/goreleaser:v1.24.0
+      - image: golang:1.22.0
     steps:
       - checkout
       - deploy:
@@ -52,11 +54,11 @@ jobs:
           command: |
             header='^## [0-9]+\.[0-9]+\.[0-9]+'
             awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
-                goreleaser --release-notes /dev/stdin --snapshot
+              go run github.com/goreleaser/goreleaser --release-notes /dev/stdin --snapshot
 
   release:
     docker:
-      - image: goreleaser/goreleaser:v1.23.0
+      - image: golang:1.22.0
     steps:
       - checkout
       - deploy:
@@ -64,7 +66,7 @@ jobs:
           command: |
             header='^## [0-9]+\.[0-9]+\.[0-9]+'
             awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
-                goreleaser --release-notes /dev/stdin
+              go run github.com/goreleaser/goreleaser --release-notes /dev/stdin
 
   publish_docs_dry_run:
     docker:

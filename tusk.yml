@@ -11,7 +11,7 @@ tasks:
         type: bool
         short: f
         rewrite: --fast
-    run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.56.1 run ${fast} ./...
+    run: go run github.com/golangci/golangci-lint/cmd/golangci-lint run ${fast} ./...
 
   test:
     usage: Run the tests
@@ -64,4 +64,4 @@ tasks:
     run: |
       header='^## [0-9]+\.[0-9]+\.[0-9]+'
       awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
-          goreleaser --clean --release-notes /dev/stdin ${snapshot}
+        go run github.com/goreleaser/goreleaser --clean --release-notes /dev/stdin ${snapshot}
