@@ -239,7 +239,7 @@ $defs:
 
   runClause:
     description: The behavior of the task.
-    oneOf:
+    anyOf:
       - $ref: "#/$defs/runItem"
       - type: array
         items:
@@ -247,7 +247,7 @@ $defs:
 
   runItem:
     oneOf:
-      - type: string
+      - $ref: "#/$defs/commandClause"
       - type: object
         additionalProperties: false
         properties:

@@ -242,8 +242,7 @@
 			"type": "object"
 		},
 		"runClause": {
-			"description": "The behavior of the task.",
-			"oneOf": [
+			"anyOf": [
 				{
 					"$ref": "#/$defs/runItem"
 				},
@@ -253,12 +252,13 @@
 					},
 					"type": "array"
 				}
-			]
+			],
+			"description": "The behavior of the task."
 		},
 		"runItem": {
 			"oneOf": [
 				{
-					"type": "string"
+					"$ref": "#/$defs/commandClause"
 				},
 				{
 					"additionalProperties": false,
