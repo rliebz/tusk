@@ -8,7 +8,9 @@ import (
 var defaultFiles = []string{"tusk.yml", "tusk.yaml"}
 
 // searchForFile checks the working directory and every parent directory to
-// find a configuration file with the default name.
+// find a configuration file with the default name. If no file is found, an
+// empty string will be returned
+//
 // This should be called when an explicit file is not passed in to determine
 // the full path to the relevant config file.
 func searchForFile() (string, error) {

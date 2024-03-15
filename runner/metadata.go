@@ -6,8 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/ui"
 )
 
 // NewMetadata creates a metadata struct with a default logger.
@@ -33,30 +34,18 @@ type Metadata struct {
 
 // Set sets the metadata based on options.
 func (m *Metadata) Set(o OptGetter) error {
-	fullPath := o.String("file")
-
-	if fullPath == "" {
-		var err error
-		fullPath, err = searchForFile()
-		if err != nil {
-			return err
-		}
-	}
-
-	if fullPath != "" {
-		var err error
-		m.CfgText, err = os.ReadFile(fullPath)
-		if err != nil {
-			return fmt.Errorf("reading config file %q: %w", fullPath, err)
-		}
-	}
-
-	interpreter, err := getInterpreter(m.CfgText)
+	var fullPath string
+	var err error
+	fullPath, m.CfgText, err = getConfigFile(o)
 	if err != nil {
 		return err
 	}
 
-	m.Interpreter = interpreter
+	m.Interpreter, err = getInterpreter(m.CfgText)
+	if err != nil {
+		return err
+	}
+
 	m.InstallCompletion = o.String("install-completion")
 	m.UninstallCompletion = o.String("uninstall-completion")
 	m.Directory = filepath.Dir(fullPath)
@@ -69,9 +58,30 @@ func (m *Metadata) Set(o OptGetter) error {
 	return nil
 }
 
-// getInterpreter attempts to determine the interpreter from reading the env
-// var and the config file, in that order. If no interpreter is specified, "sh"
-// is used.
+func getConfigFile(o OptGetter) (fullPath string, cfgText []byte, _ error) {
+	fullPath = o.String("file")
+
+	if fullPath == "" {
+		var err error
+		fullPath, err = searchForFile()
+		if err != nil || fullPath == "" {
+			return "", nil, err
+		}
+	}
+
+	cfgText, err := os.ReadFile(fullPath)
+	if err != nil {
+		return "", nil, fmt.Errorf("reading config file %q: %w", fullPath, err)
+	}
+
+	return fullPath, cfgText, nil
+}
+
+// getInterpreter attempts to determine the interpreter by reading hte config
+// file. This should occur before full config parsing, as it may influence the
+// interpretation of option and arg resolutions.
+//
+// If no interpreter is specified, nil will be returned.
 func getInterpreter(cfgText []byte) ([]string, error) {
 	var cfg struct {
 		Interpreter string `yaml:"interpreter"`
