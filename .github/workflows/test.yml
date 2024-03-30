@@ -23,7 +23,7 @@ jobs:
       - name: Set up
         uses: actions/setup-go@v4
         with:
-          go-version: "1.22.0"
+          go-version: "1.22.1"
       - name: Build
         run: go build -v ./...
       - name: Test
@@ -39,11 +39,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.22.0"
+          go-version: "1.22.1"
       - name: Lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.57.1
+          version: v1.57.2
 
   release:
     name: Release Dry Run
@@ -53,7 +53,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.22.0"
+          go-version: "1.22.1"
       - name: Release Dry Run
         run: |
           header='^## [0-9]+\.[0-9]+\.[0-9]+'
