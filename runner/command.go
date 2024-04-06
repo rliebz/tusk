@@ -89,23 +89,3 @@ func (c *Command) exec(ctx Context) error {
 
 	return cmd.Run()
 }
-
-// CommandList is a list of commands with custom yaml unamrshaling.
-type CommandList []Command
-
-// UnmarshalYAML allows single items to be used as lists.
-func (cl *CommandList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var commandSlice []Command
-	sliceCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&commandSlice) },
-		Assign:    func() { *cl = commandSlice },
-	}
-
-	var commandItem Command
-	itemCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&commandItem) },
-		Assign:    func() { *cl = CommandList{commandItem} },
-	}
-
-	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)
-}

@@ -5,14 +5,15 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
-	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/marshal"
 )
 
 func TestOption_Dependencies(t *testing.T) {
 	g := ghost.New(t)
 
-	option := &Option{DefaultValues: ValueList{
+	option := &Option{DefaultValues: marshal.Slice[Value]{
 		{When: WhenList{whenFalse}, Value: "foo"},
 		{When: WhenList{createWhen(
 			withWhenEqual("foo", "foovalue"),
@@ -53,14 +54,14 @@ func TestOption_Evaluate(t *testing.T) {
 		{"empty option", &Option{}, ""},
 		{
 			"default only",
-			&Option{DefaultValues: ValueList{
+			&Option{DefaultValues: marshal.Slice[Value]{
 				{Value: "default"},
 			}},
 			"default",
 		},
 		{
 			"command only",
-			&Option{DefaultValues: ValueList{
+			&Option{DefaultValues: marshal.Slice[Value]{
 				{Command: "echo command"},
 			}},
 			"command",
@@ -77,7 +78,7 @@ func TestOption_Evaluate(t *testing.T) {
 		},
 		{
 			"conditional value",
-			&Option{DefaultValues: ValueList{
+			&Option{DefaultValues: marshal.Slice[Value]{
 				{When: WhenList{whenFalse}, Value: "foo"},
 				{When: WhenList{whenTrue}, Value: "bar"},
 				{When: WhenList{whenFalse}, Value: "baz"},
@@ -88,7 +89,7 @@ func TestOption_Evaluate(t *testing.T) {
 			"passed when all settings are defined",
 			&Option{
 				Environment: "OPTION_VAR",
-				DefaultValues: ValueList{
+				DefaultValues: marshal.Slice[Value]{
 					{When: WhenList{whenTrue}, Value: "when"},
 				},
 				Passable: Passable{
@@ -130,7 +131,7 @@ func TestOption_Evaluate_passes_vars(t *testing.T) {
 
 	want := "some value"
 	opt := Option{
-		DefaultValues: ValueList{
+		DefaultValues: marshal.Slice[Value]{
 			{When: WhenList{whenFalse}, Value: "wrong"},
 			{
 				When:  WhenList{createWhen(withWhenEqual("foo", "foovalue"))},
@@ -184,7 +185,7 @@ func TestOption_Evaluate_values_none_specified(t *testing.T) {
 	want := ""
 	option := Option{
 		Passable: Passable{
-			ValuesAllowed: marshal.StringList{"red", "herring"},
+			ValuesAllowed: marshal.Slice[string]{"red", "herring"},
 		},
 	}
 
@@ -201,7 +202,7 @@ func TestOption_Evaluate_values_with_passed(t *testing.T) {
 	option := Option{
 		Passable: Passable{
 			Passed:        want,
-			ValuesAllowed: marshal.StringList{"red", want, "herring"},
+			ValuesAllowed: marshal.Slice[string]{"red", want, "herring"},
 		},
 	}
 
@@ -220,7 +221,7 @@ func TestOption_Evaluate_values_with_environment(t *testing.T) {
 	option := Option{
 		Environment: envVar,
 		Passable: Passable{
-			ValuesAllowed: marshal.StringList{"red", want, "herring"},
+			ValuesAllowed: marshal.Slice[string]{"red", want, "herring"},
 		},
 	}
 
@@ -240,7 +241,7 @@ func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
 		Passable: Passable{
 			Name:          "my-opt",
 			Passed:        want,
-			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
+			ValuesAllowed: marshal.Slice[string]{"bad", "values", "FOO"},
 		},
 	}
 
@@ -258,7 +259,7 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 		Environment: envVar,
 		Passable: Passable{
 			Name:          "my-opt",
-			ValuesAllowed: marshal.StringList{"bad", "values", "FOO"},
+			ValuesAllowed: marshal.Slice[string]{"bad", "values", "FOO"},
 		},
 	}
 

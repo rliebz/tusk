@@ -5,7 +5,7 @@ import "github.com/rliebz/tusk/marshal"
 // SubTask is a description of a sub-task with passed options.
 type SubTask struct {
 	Name    string
-	Args    marshal.StringList
+	Args    marshal.Slice[string]
 	Options map[string]string
 }
 
@@ -25,24 +25,4 @@ func (s *SubTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	return marshal.UnmarshalOneOf(nameCandidate, subTaskCandidate)
-}
-
-// SubTaskList is a list of subtasks with custom yaml unmarshaling.
-type SubTaskList []*SubTask
-
-// UnmarshalYAML allows single items to be used as lists.
-func (l *SubTaskList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var subTaskSlice []*SubTask
-	sliceCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&subTaskSlice) },
-		Assign:    func() { *l = subTaskSlice },
-	}
-
-	var subTaskItem *SubTask
-	itemCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&subTaskItem) },
-		Assign:    func() { *l = SubTaskList{subTaskItem} },
-	}
-
-	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)
 }

@@ -266,7 +266,7 @@ baz
 							{
 								Passable: runner.Passable{
 									Name:          "values",
-									ValuesAllowed: marshal.StringList{"foo", "bar", "baz"},
+									ValuesAllowed: marshal.Slice[string]{"foo", "bar", "baz"},
 								},
 							},
 						},

@@ -11,8 +11,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
-	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/ui"
 )
 
 func TestCommand_UnmarshalYAML(t *testing.T) {
@@ -167,61 +168,5 @@ func TestCommand_exec_helper(*testing.T) {
 	wantDir := os.Getenv("TUSK_TEST_COMMAND_DIR")
 	if wantDir != "" && dir != wantDir {
 		fail(fmt.Sprintf("want working dir %s, got %s", wantDir, dir))
-	}
-}
-
-func TestCommandList_UnmarshalYAML(t *testing.T) {
-	tests := []struct {
-		name string
-		yaml string
-		want CommandList
-	}{
-		{
-			"single-short-command",
-			`example`,
-			CommandList{
-				{Exec: "example", Print: "example"},
-			},
-		},
-		{
-			"list-short-commands",
-			`[one,two]`,
-			CommandList{
-				{Exec: "one", Print: "one"},
-				{Exec: "two", Print: "two"},
-			},
-		},
-		{
-			"single-do-command",
-			`exec: example`,
-			CommandList{
-				{Exec: "example", Print: "example"},
-			},
-		},
-		{
-			"list-do-commands",
-			`[{exec: one},{exec: two}]`,
-			CommandList{
-				{Exec: "one", Print: "one"},
-				{Exec: "two", Print: "two"},
-			},
-		},
-		{
-			"empty-list",
-			`[]`,
-			CommandList{},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			g := ghost.New(t)
-
-			var got CommandList
-			err := yaml.UnmarshalStrict([]byte(tt.yaml), &got)
-			g.NoError(err)
-
-			g.Should(be.DeepEqual(got, tt.want))
-		})
 	}
 }

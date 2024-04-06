@@ -59,23 +59,3 @@ func (v *Value) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	return marshal.UnmarshalOneOf(stringCandidate, valueCandidate)
 }
-
-// ValueList is a slice of values with custom unmarshaling.
-type ValueList []Value
-
-// UnmarshalYAML allows single items to be used as lists.
-func (vl *ValueList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var valueSlice []Value
-	sliceCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&valueSlice) },
-		Assign:    func() { *vl = valueSlice },
-	}
-
-	var valueItem Value
-	itemCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&valueItem) },
-		Assign:    func() { *vl = ValueList{valueItem} },
-	}
-
-	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)
-}

@@ -6,6 +6,8 @@ import (
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/marshal"
 )
 
 func TestRun_UnmarshalYAML(t *testing.T) {
@@ -18,14 +20,14 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 			"short-command",
 			`example`,
 			Run{
-				Command: CommandList{{Exec: "example", Print: "example"}},
+				Command: marshal.Slice[*Command]{{Exec: "example", Print: "example"}},
 			},
 		},
 		{
 			"short-command-list",
 			`[one,two]`,
 			Run{
-				Command: CommandList{
+				Command: marshal.Slice[*Command]{
 					{Exec: "one", Print: "one"},
 					{Exec: "two", Print: "two"},
 				},
@@ -35,7 +37,7 @@ func TestRun_UnmarshalYAML(t *testing.T) {
 			"named-command",
 			`command: example`,
 			Run{
-				Command: CommandList{{Exec: "example", Print: "example"}},
+				Command: marshal.Slice[*Command]{{Exec: "example", Print: "example"}},
 			},
 		},
 	}
@@ -143,28 +145,28 @@ func TestRunList_UnmarshalYAML(t *testing.T) {
 	tests := []struct {
 		name string
 		yaml string
-		want RunList
+		want marshal.Slice[*Run]
 	}{
 		{
 			"single-short-run",
 			`example`,
-			RunList{
-				{Command: CommandList{{Exec: "example", Print: "example"}}},
+			marshal.Slice[*Run]{
+				{Command: marshal.Slice[*Command]{{Exec: "example", Print: "example"}}},
 			},
 		},
 		{
 			"list-short-runs",
 			`[one,two]`,
-			RunList{
-				{Command: CommandList{{Exec: "one", Print: "one"}}},
-				{Command: CommandList{{Exec: "two", Print: "two"}}},
+			marshal.Slice[*Run]{
+				{Command: marshal.Slice[*Command]{{Exec: "one", Print: "one"}}},
+				{Command: marshal.Slice[*Command]{{Exec: "two", Print: "two"}}},
 			},
 		},
 		{
 			"list-full-runs",
 			`[{command: foo},{set-environment: {bar: null}}]`,
-			RunList{
-				{Command: CommandList{{Exec: "foo", Print: "foo"}}},
+			marshal.Slice[*Run]{
+				{Command: marshal.Slice[*Command]{{Exec: "foo", Print: "foo"}}},
 				{SetEnvironment: map[string]*string{"bar": nil}},
 			},
 		},
@@ -174,7 +176,7 @@ func TestRunList_UnmarshalYAML(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			g := ghost.New(t)
 
-			var got RunList
+			var got marshal.Slice[*Run]
 			err := yaml.UnmarshalStrict([]byte(tt.yaml), &got)
 			g.NoError(err)
 

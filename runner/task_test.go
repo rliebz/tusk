@@ -10,8 +10,10 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
-	"github.com/rliebz/tusk/ui"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/marshal"
+	"github.com/rliebz/tusk/ui"
 )
 
 func TestTask_UnmarshalYAML(t *testing.T) {
@@ -68,7 +70,7 @@ args: { three: {}, four: {} }
 			input: fmt.Sprintf(`{include: %q}`, testdata("included.yml")),
 			want: Task{
 				Usage: "A valid example of an included task",
-				RunList: RunList{{Command: CommandList{{
+				RunList: marshal.Slice[*Run]{{Command: marshal.Slice[*Command]{{
 					Exec:  `echo "We're in!"`,
 					Print: `echo "We're in!"`,
 				}}}},
@@ -152,11 +154,11 @@ func TestTaskExecute_errors_returned(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			g := ghost.New(t)
 
-			run := Run{Command: CommandList{{Exec: tt.run}}}
-			finally := Run{Command: CommandList{{Exec: tt.finally}}}
+			run := Run{Command: marshal.Slice[*Command]{{Exec: tt.run}}}
+			finally := Run{Command: marshal.Slice[*Command]{{Exec: tt.finally}}}
 			task := Task{
-				RunList: RunList{&run},
-				Finally: RunList{&finally},
+				RunList: marshal.Slice[*Run]{&run},
+				Finally: marshal.Slice[*Run]{&finally},
 			}
 
 			err := task.Execute(Context{Logger: ui.Noop()})
@@ -171,14 +173,14 @@ func TestTask_run_commands(t *testing.T) {
 	var task Task
 
 	runSuccess := &Run{
-		Command: CommandList{{Exec: "exit 0"}},
+		Command: marshal.Slice[*Command]{{Exec: "exit 0"}},
 	}
 
 	err := task.run(Context{Logger: ui.Noop()}, runSuccess, stateRunning)
 	g.NoError(err)
 
 	runFailure := &Run{
-		Command: CommandList{
+		Command: marshal.Slice[*Command]{
 			{Exec: "exit 0"},
 			{Exec: "exit 1"},
 		},
@@ -193,15 +195,15 @@ func TestTask_run_sub_tasks(t *testing.T) {
 
 	taskSuccess := Task{
 		Name: "success",
-		RunList: RunList{
-			&Run{Command: CommandList{{Exec: "exit 0"}}},
+		RunList: marshal.Slice[*Run]{
+			&Run{Command: marshal.Slice[*Command]{{Exec: "exit 0"}}},
 		},
 	}
 
 	taskFailure := Task{
 		Name: "failure",
-		RunList: RunList{
-			&Run{Command: CommandList{{Exec: "exit 1"}}},
+		RunList: marshal.Slice[*Run]{
+			&Run{Command: marshal.Slice[*Command]{{Exec: "exit 1"}}},
 		},
 	}
 
@@ -255,8 +257,8 @@ func TestTask_run_finally(t *testing.T) {
 	g := ghost.New(t)
 
 	task := Task{
-		Finally: RunList{
-			&Run{Command: CommandList{{Exec: "exit 0"}}},
+		Finally: marshal.Slice[*Run]{
+			&Run{Command: marshal.Slice[*Command]{{Exec: "exit 0"}}},
 		},
 	}
 
@@ -269,8 +271,8 @@ func TestTask_run_finally_error(t *testing.T) {
 	g := ghost.New(t)
 
 	task := Task{
-		Finally: RunList{
-			&Run{Command: CommandList{{Exec: "exit 1"}}},
+		Finally: marshal.Slice[*Run]{
+			&Run{Command: marshal.Slice[*Command]{{Exec: "exit 1"}}},
 		},
 	}
 
@@ -298,8 +300,8 @@ func TestTask_run_finally_ui(t *testing.T) {
 
 	task := Task{
 		Name: taskName,
-		Finally: RunList{
-			&Run{Command: CommandList{{Print: command}}},
+		Finally: marshal.Slice[*Run]{
+			&Run{Command: marshal.Slice[*Command]{{Print: command}}},
 		},
 	}
 
@@ -336,8 +338,8 @@ func TestTask_run_finally_ui_fails(t *testing.T) {
 
 	task := Task{
 		Name: taskName,
-		Finally: RunList{
-			&Run{Command: CommandList{{Exec: command, Print: command}}},
+		Finally: marshal.Slice[*Run]{
+			&Run{Command: marshal.Slice[*Command]{{Exec: command, Print: command}}},
 		},
 	}
 

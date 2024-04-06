@@ -30,18 +30,3 @@ func TestValue_UnmarshalYAML_value_and_command(t *testing.T) {
 	err := yaml.UnmarshalStrict([]byte(`{value: "example", command: "echo hello"}`), &v)
 	g.Should(be.ErrorEqual(err, "value (example) and command (echo hello) are both defined"))
 }
-
-func TestValueList_UnmarshalYAML(t *testing.T) {
-	g := ghost.New(t)
-
-	var v1 ValueList
-	err := yaml.UnmarshalStrict([]byte(`example`), &v1)
-	g.NoError(err)
-
-	var v2 ValueList
-	err = yaml.UnmarshalStrict([]byte(`[example]`), &v2)
-	g.NoError(err)
-
-	g.Should(be.DeepEqual(v1, v2))
-	g.Should(be.DeepEqual(v1, ValueList{{Value: "example"}}))
-}

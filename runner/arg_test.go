@@ -32,7 +32,7 @@ func TestEvaluate_specified(t *testing.T) {
 	arg := Arg{
 		Passable: Passable{
 			Passed:        want,
-			ValuesAllowed: marshal.StringList{"wrong", want, "other"},
+			ValuesAllowed: marshal.Slice[string]{"wrong", want, "other"},
 		},
 	}
 
@@ -50,7 +50,7 @@ func TestEvaluate_unspecified(t *testing.T) {
 		Passable: Passable{
 			Name:          "my-arg",
 			Passed:        passed,
-			ValuesAllowed: marshal.StringList{"wrong", "other"},
+			ValuesAllowed: marshal.Slice[string]{"wrong", "other"},
 		},
 	}
 

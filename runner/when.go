@@ -7,31 +7,32 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/marshal"
 )
 
 // When defines the conditions for running a task.
 type When struct {
-	Command   marshal.StringList `yaml:",omitempty"`
-	Exists    marshal.StringList `yaml:",omitempty"`
-	NotExists marshal.StringList `yaml:"not-exists,omitempty"`
-	OS        marshal.StringList `yaml:",omitempty"`
+	Command   marshal.Slice[string] `yaml:",omitempty"`
+	Exists    marshal.Slice[string] `yaml:",omitempty"`
+	NotExists marshal.Slice[string] `yaml:"not-exists,omitempty"`
+	OS        marshal.Slice[string] `yaml:",omitempty"`
 
-	Environment map[string]marshal.NullableStringList `yaml:",omitempty"`
-	Equal       map[string]marshal.StringList         `yaml:",omitempty"`
-	NotEqual    map[string]marshal.StringList         `yaml:"not-equal,omitempty"`
+	Environment map[string]marshal.Slice[*string] `yaml:",omitempty"`
+	Equal       map[string]marshal.Slice[string]  `yaml:",omitempty"`
+	NotEqual    map[string]marshal.Slice[string]  `yaml:"not-equal,omitempty"`
 }
 
 // UnmarshalYAML warns about deprecated features.
 func (w *When) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var equal marshal.StringList
+	var equal marshal.Slice[string]
 	slCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&equal) },
 		Assign: func() {
-			equalityMap := make(map[string]marshal.StringList, len(equal))
+			equalityMap := make(map[string]marshal.Slice[string], len(equal))
 			for _, key := range equal {
-				equalityMap[key] = marshal.StringList{"true"}
+				equalityMap[key] = marshal.Slice[string]{"true"}
 			}
 			*w = When{Equal: equalityMap}
 		},
@@ -74,7 +75,7 @@ func fixNilEnvironment(w *When, ms yaml.MapSlice) {
 			envVar := envMS.Key.(string)
 
 			if envMS.Value == nil {
-				w.Environment[envVar] = marshal.NullableStringList{nil}
+				w.Environment[envVar] = marshal.Slice[*string]{nil}
 			}
 		}
 	}
@@ -215,7 +216,7 @@ func (w *When) validateEnv() error {
 	return newCondFailError("no environment variables matched")
 }
 
-func (w *When) isEnvVarValid(varName string, values marshal.NullableStringList) bool {
+func (w *When) isEnvVarValid(varName string, values marshal.Slice[*string]) bool {
 	stringValues := make([]string, 0, len(values))
 	for _, value := range values {
 		if value != nil {
@@ -297,7 +298,7 @@ func testCommand(ctx Context, command string) error {
 
 func validateEquality(
 	options map[string]string,
-	cases map[string]marshal.StringList,
+	cases map[string]marshal.Slice[string],
 	compare func(string, string) bool,
 ) error {
 	for optionName, values := range cases {
@@ -320,23 +321,11 @@ func validateEquality(
 }
 
 // WhenList is a list of when items with custom yaml unmarshaling.
-type WhenList []When
+type WhenList marshal.Slice[When]
 
 // UnmarshalYAML allows single items to be used as lists.
 func (l *WhenList) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var whenSlice []When
-	sliceCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&whenSlice) },
-		Assign:    func() { *l = whenSlice },
-	}
-
-	var whenItem When
-	itemCandidate := marshal.UnmarshalCandidate{
-		Unmarshal: func() error { return unmarshal(&whenItem) },
-		Assign:    func() { *l = WhenList{whenItem} },
-	}
-
-	return marshal.UnmarshalOneOf(sliceCandidate, itemCandidate)
+	return (*marshal.Slice[When])(l).UnmarshalYAML(unmarshal)
 }
 
 // Validate returns an error if any when clauses fail.

@@ -6,8 +6,9 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/marshal"
 )
 
 // Option represents an abstract command line option.
@@ -21,7 +22,7 @@ type Option struct {
 
 	// Used to determine value
 	Environment   string
-	DefaultValues ValueList `yaml:"default"`
+	DefaultValues marshal.Slice[Value] `yaml:"default"`
 
 	// Computed members not specified in yaml file
 	cacheValue string `yaml:"-"`

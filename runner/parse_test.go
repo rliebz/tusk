@@ -5,6 +5,7 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
+
 	"github.com/rliebz/tusk/marshal"
 )
 
@@ -14,7 +15,7 @@ var interpolatetests = []struct {
 	args     []string
 	flags    map[string]string
 	taskName string
-	want     RunList
+	want     marshal.Slice[*Run]
 }{
 	{
 		"interpreter",
@@ -28,8 +29,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "console.log('Hello')",
 				Print: "console.log('Hello')",
 			}},
@@ -48,8 +49,8 @@ tasks:
 		[]string{"foovalue"},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -69,8 +70,8 @@ tasks:
 		[]string{"foovalue", "barvalue"},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue barvalue",
 				Print: "echo foovalue barvalue",
 			}},
@@ -92,8 +93,8 @@ tasks:
 		[]string{"foovalue"},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -115,8 +116,8 @@ tasks:
 		[]string{"foovalue"},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue foovalue",
 				Print: "echo foovalue foovalue",
 			}},
@@ -136,8 +137,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo bar",
 				Print: "echo bar",
 			}},
@@ -157,8 +158,8 @@ tasks:
 		[]string{},
 		map[string]string{"foo": "passed"},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo passed",
 				Print: "echo passed",
 			}},
@@ -182,8 +183,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -208,8 +209,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo ${bar}",
 				Print: "echo ${bar}",
 			}},
@@ -231,8 +232,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -254,8 +255,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -278,8 +279,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -302,8 +303,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo newvalue",
 				Print: "echo newvalue",
 			}},
@@ -328,8 +329,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo barvalue",
 				Print: "echo barvalue",
 			}},
@@ -352,8 +353,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -379,8 +380,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -418,8 +419,8 @@ tasks:
 		[]string{},
 		map[string]string{"foo": "passed"},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo passed-1-2",
 				Print: "echo passed-1-2",
 			}},
@@ -471,13 +472,13 @@ tasks:
 		[]string{},
 		map[string]string{"foo": "passed"},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo passed-1-2",
 				Print: "echo passed-1-2",
 			}},
 		}, {
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo onevalue-2 twovalue-2",
 				Print: "echo onevalue-2 twovalue-2",
 			}},
@@ -509,13 +510,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo one two",
 				Print: "echo one two",
 			}},
 		}, {
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo three four",
 				Print: "echo three four",
 			}},
@@ -544,13 +545,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo one",
 				Print: "echo one",
 			}},
 		}, {
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo two",
 				Print: "echo two",
 			}},
@@ -576,8 +577,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -601,13 +602,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo hello",
 				Print: "echo hello",
 			}},
 		}, {
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -635,23 +636,23 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo first",
 				Print: "echo first",
 			}},
 		}, {
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo pre-foovalue",
 				Print: "echo pre-foovalue",
 			}},
 		}, {
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo pre-barvalue",
 				Print: "echo pre-barvalue",
 			}},
 		}, {
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo done",
 				Print: "echo done",
 			}},
@@ -677,8 +678,8 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -702,12 +703,12 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
+		marshal.Slice[*Run]{{
 			When: WhenList{
 				createWhen(withWhenOS("os1"), withWhenOS("os2")),
 				createWhen(withWhenCommand("echo hello"), withWhenOS("os3")),
 			},
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo goodbye",
 				Print: "echo goodbye",
 			}},
@@ -739,13 +740,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"mytask",
-		RunList{{
+		marshal.Slice[*Run]{{
 			When: WhenList{When{
-				Equal: map[string]marshal.StringList{
+				Equal: map[string]marshal.Slice[string]{
 					"foo": {"true"},
 				},
 			}},
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo yo",
 				Print: "echo yo",
 			}},
@@ -771,13 +772,13 @@ tasks:
 		[]string{},
 		map[string]string{},
 		"two",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
 		}, {
-			Command: CommandList{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "echo foovalue",
 			}},
@@ -799,8 +800,8 @@ tasks:
 		[]string{"foovalue"},
 		map[string]string{},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo foovalue",
 				Print: "don't echo foovalue",
 			}},
@@ -823,8 +824,8 @@ tasks:
 			"foo": "true",
 		},
 		"mytask",
-		RunList{{
-			Command: CommandList{{
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
 				Exec:  "echo newvalue",
 				Print: "echo newvalue",
 			}},
@@ -861,8 +862,8 @@ given input:
 	}
 }
 
-func flattenRuns(runList RunList) RunList {
-	var flattened RunList
+func flattenRuns(runList marshal.Slice[*Run]) marshal.Slice[*Run] {
+	var flattened marshal.Slice[*Run]
 
 	for _, run := range runList {
 		if len(run.Tasks) == 0 {

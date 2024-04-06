@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/marshal"
 )
 
 // executionState indicates whether a task is "running" or "finally".
@@ -22,10 +23,10 @@ type Task struct {
 	Args    Args    `yaml:"args,omitempty"`
 	Options Options `yaml:"options,omitempty"`
 
-	RunList     RunList `yaml:"run"`
-	Finally     RunList `yaml:"finally,omitempty"`
-	Usage       string  `yaml:",omitempty"`
-	Description string  `yaml:",omitempty"`
+	RunList     marshal.Slice[*Run] `yaml:"run"`
+	Finally     marshal.Slice[*Run] `yaml:"finally,omitempty"`
+	Usage       string              `yaml:",omitempty"`
+	Description string              `yaml:",omitempty"`
 	Private     bool
 	Quiet       bool
 
@@ -105,7 +106,7 @@ func (t *Task) checkOptArgCollisions() error {
 }
 
 // AllRunItems returns all run items referenced, including `run` and `finally`.
-func (t *Task) AllRunItems() RunList {
+func (t *Task) AllRunItems() marshal.Slice[*Run] {
 	return append(t.RunList, t.Finally...)
 }
 
@@ -181,7 +182,7 @@ func (t *Task) run(ctx Context, r *Run, s executionState) error {
 }
 
 // shouldBeQuiet checks if the command or any of the tasks in the stack are quiet.
-func shouldBeQuiet(cmd Command, ctx Context) bool {
+func shouldBeQuiet(cmd *Command, ctx Context) bool {
 	if cmd.Quiet {
 		return true
 	}

@@ -10,9 +10,9 @@ import (
 
 // Passable is a list of allowable values for an option or argument.
 type Passable struct {
-	Usage         string             `yaml:"usage"`
-	Type          string             `yaml:"type"`
-	ValuesAllowed marshal.StringList `yaml:"values"`
+	Usage         string                `yaml:"usage"`
+	Type          string                `yaml:"type"`
+	ValuesAllowed marshal.Slice[string] `yaml:"values"`
 
 	// Computed members not specified in yaml file
 	Name   string `yaml:"-"`

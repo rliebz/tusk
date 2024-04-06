@@ -53,7 +53,7 @@ func withOptionWhenDependency(name string) func(o *Option) {
 var whenTrue = When{}
 
 // whenFalse is a When that always evaluates to false.
-var whenFalse = When{OS: marshal.StringList{"fake"}}
+var whenFalse = When{OS: marshal.Slice[string]{"fake"}}
 
 // createWhen creates a custom when for testing purposes.
 func createWhen(operators ...func(w *When)) When {
@@ -174,7 +174,7 @@ func randomString() string {
 
 func ensureEnv(w *When) {
 	if w.Environment == nil {
-		w.Environment = make(map[string]marshal.NullableStringList)
+		w.Environment = make(map[string]marshal.Slice[*string])
 	}
 }
 
@@ -182,7 +182,7 @@ func ensureEnv(w *When) {
 func withWhenEqual(key, value string) func(w *When) {
 	return func(w *When) {
 		if w.Equal == nil {
-			w.Equal = make(map[string]marshal.StringList)
+			w.Equal = make(map[string]marshal.Slice[string])
 		}
 
 		w.Equal[key] = append(w.Equal[key], value)
@@ -193,7 +193,7 @@ func withWhenEqual(key, value string) func(w *When) {
 func withWhenNotEqual(key, value string) func(w *When) {
 	return func(w *When) {
 		if w.NotEqual == nil {
-			w.NotEqual = make(map[string]marshal.StringList)
+			w.NotEqual = make(map[string]marshal.Slice[string])
 		}
 		w.NotEqual[key] = append(w.NotEqual[key], value)
 	}
