@@ -7,7 +7,8 @@ require (
 	github.com/golangci/golangci-lint v1.59.1
 	github.com/google/go-cmp v0.6.0
 	github.com/goreleaser/goreleaser v1.24.0
-	github.com/rliebz/ghost v0.0.0-20240127160735-e335ae595622
+	github.com/joho/godotenv v1.5.1
+	github.com/rliebz/ghost v0.1.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/urfave/cli v1.22.15
 	gopkg.in/yaml.v2 v2.4.0

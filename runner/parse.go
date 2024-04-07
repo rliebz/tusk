@@ -18,7 +18,8 @@ func Parse(text []byte) (*Config, error) {
 	return &cfg, nil
 }
 
-// ParseComplete parses the file completely with interpolation.
+// ParseComplete parses the file completely with env file parsing and
+// interpolation.
 func ParseComplete(
 	meta *Metadata,
 	taskName string,
@@ -26,6 +27,11 @@ func ParseComplete(
 	flags map[string]string,
 ) (*Config, error) {
 	cfg, err := Parse(meta.CfgText)
+	if err != nil {
+		return nil, err
+	}
+
+	err = loadEnvFiles(cfg.EnvFile)
 	if err != nil {
 		return nil, err
 	}

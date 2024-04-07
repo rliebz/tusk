@@ -1,9 +1,12 @@
 package runner
 
+import "github.com/rliebz/tusk/marshal"
+
 // Config is a struct representing the format for configuration settings.
 type Config struct {
-	Name  string `yaml:"name"`
-	Usage string `yaml:"usage"`
+	Name    string                 `yaml:"name"`
+	Usage   string                 `yaml:"usage"`
+	EnvFile marshal.Slice[EnvFile] `yaml:"env-file"`
 	// The Interpreter field must be read before the config struct can be parsed
 	// completely from YAML. To do so, the config text parses it elsewhere in the
 	// code base independently from this struct.

@@ -21,6 +21,9 @@ properties:
       The usage text to display in help text when using shell aliases to create
       a custom named CLI application.
     default: the modern task runner
+  env-file:
+    title: env-file
+    $ref: "#/$defs/envFileClause"
   interpreter:
     title: interpreter
     type: string
@@ -158,6 +161,39 @@ $defs:
         oneOf:
           - required: [command]
           - required: [value]
+
+  envFile:
+    description: >
+      A file to load environment variables from.
+
+      File paths specified are relative to the configuration file.
+    oneOf:
+      - type: string
+      - type: object
+        additionalProperties: false
+        required:
+          - path
+        properties:
+          path:
+            description: >
+              The path to an environment file relative to the configuration file.
+            type: string
+          required:
+            description: Whether the file is required to exist.
+            type: boolean
+            default: true
+
+  envFileClause:
+    description: >
+      The files to load environment variables from.
+
+      If no value is specified, environment variables will be read from an
+      optional `.env` file automatically.
+    oneOf:
+      - $ref: "#/$defs/envFile"
+      - type: array
+        items:
+          $ref: "#/$defs/envFile"
 
   type:
     description: >

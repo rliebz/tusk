@@ -8,6 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - Arguments may now specify a `type`, which works the same way as options.
 - Boolean options may now be rewritten into strings using `rewrite`.
+- Environment variables are now automatically parsed from `.env` files.
+- Additional environment variable files can be specified with `env-file`.
 
 ### Fixed
 
