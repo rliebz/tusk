@@ -1,5 +1,13 @@
 # yaml-language-server: $schema=../tusk.schema.yaml
 ---
+# Environment variables can be read from a file.
+env-file:
+  # Environment files specified as strings are automatically required.
+  - .default.env
+  # Multiple environment files or optional files may be specified as well.
+  - path: .local.env
+    required: false
+
 # Options can be defined at a global or task-specific level.
 options:
   global:

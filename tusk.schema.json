@@ -136,6 +136,46 @@
 				}
 			]
 		},
+		"envFile": {
+			"description": "A file to load environment variables from.\nFile paths specified are relative to the configuration file.\n",
+			"oneOf": [
+				{
+					"type": "string"
+				},
+				{
+					"additionalProperties": false,
+					"properties": {
+						"path": {
+							"description": "The path to an environment file relative to the configuration file.\n",
+							"type": "string"
+						},
+						"required": {
+							"default": true,
+							"description": "Whether the file is required to exist.",
+							"type": "boolean"
+						}
+					},
+					"required": [
+						"path"
+					],
+					"type": "object"
+				}
+			]
+		},
+		"envFileClause": {
+			"description": "The files to load environment variables from.\nIf no value is specified, environment variables will be read from an optional `.env` file automatically.\n",
+			"oneOf": [
+				{
+					"$ref": "#/$defs/envFile"
+				},
+				{
+					"items": {
+						"$ref": "#/$defs/envFile"
+					},
+					"type": "array"
+				}
+			]
+		},
 		"option": {
 			"additionalProperties": false,
 			"allOf": [
@@ -560,6 +600,10 @@
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"additionalProperties": false,
 	"properties": {
+		"env-file": {
+			"$ref": "#/$defs/envFileClause",
+			"title": "env-file"
+		},
 		"interpreter": {
 			"default": "sh -c",
 			"description": "The interpreter to use for commands.\nThe interpreter is specified as an executable, which can either be an absolute path or available on the user's PATH, followed by a series of optional arguments.\nThe commands specified in individual tasks will be passed as the final argument.\n",
