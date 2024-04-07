@@ -77,7 +77,7 @@ func getConfigFile(o OptGetter) (fullPath string, cfgText []byte, _ error) {
 	return fullPath, cfgText, nil
 }
 
-// getInterpreter attempts to determine the interpreter by reading hte config
+// getInterpreter attempts to determine the interpreter by reading the config
 // file. This should occur before full config parsing, as it may influence the
 // interpretation of option and arg resolutions.
 //

@@ -3,19 +3,19 @@ package runner
 import (
 	"fmt"
 
-	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/marshal"
 )
 
 // Parse loads the contents of a config file into a struct.
 func Parse(text []byte) (*Config, error) {
-	cfg := new(Config)
-
-	if err := yaml.UnmarshalStrict(text, cfg); err != nil {
+	var cfg Config
+	if err := yaml.UnmarshalStrict(text, &cfg); err != nil {
 		return nil, err
 	}
 
-	return cfg, nil
+	return &cfg, nil
 }
 
 // ParseComplete parses the file completely with interpolation.

@@ -101,8 +101,8 @@ func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
 	}
 
 	var taskName string
-	command, ok := metaApp.Metadata["command"].(*cli.Command)
-	if ok {
+
+	if command, ok := metaApp.Metadata["command"].(*cli.Command); ok {
 		taskName = command.Name
 	}
 
