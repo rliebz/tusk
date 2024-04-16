@@ -101,7 +101,7 @@ tasks:
 As long as there is a `tusk.yml` file in the working or any parent directory,
 tasks can be run:
 
-```text
+```console
 $ tusk greet --name friend
 Running: echo "Hello, friend!"
 Hello, friend!
@@ -109,7 +109,7 @@ Hello, friend!
 
 Help messages are dynamically generated based on the YAML configuration:
 
-```text
+```console
 $ tusk --help
 tusk - the modern task runner
 
@@ -127,7 +127,7 @@ Global Options:
 
 Individual tasks have help messages as well:
 
-```text
+```console
 $ tusk greet --help
 tusk greet - Say hello to someone
 

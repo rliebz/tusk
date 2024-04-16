@@ -17,7 +17,7 @@ tasks:
 
 The commands can be run with no additional configuration:
 
-```text
+```console
 $ tusk hello
 Running: echo "Hello, world!"
 Hello, world!
@@ -393,7 +393,7 @@ tasks:
 
 The task can be invoked as such:
 
-```text
+```console
 $ tusk greet friend
 Hello, friend!
 ```
@@ -720,7 +720,8 @@ tasks:
 
 The example above will produce the following help documentation:
 
-```text
+```console
+$ tusk --help
 mycli - A custom aliased command-line application
 
 Usage:
