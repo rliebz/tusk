@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/rliebz/ghost"
@@ -831,9 +833,52 @@ tasks:
 			}},
 		}},
 	},
+
+	{
+		"env-file",
+		`
+env-file: example.env
+options:
+  foo:
+    environment: FOO
+  bar:
+    environment: BAR
+tasks:
+  mytask:
+    options:
+      baz:
+        environment: BAZ
+    run: echo ${foo} ${bar} ${baz}
+`,
+		[]string{},
+		map[string]string{
+			"baz": "bazclivalue",
+		},
+		"mytask",
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
+				Exec:  "echo foovalue barvalue bazclivalue",
+				Print: "echo foovalue barvalue bazclivalue",
+			}},
+		}},
+	},
 }
 
 func TestParseComplete_interpolates(t *testing.T) {
+	g := ghost.New(t)
+
+	stashEnv(t)
+	tmpdir := useTempDir(t)
+
+	envFileData := []byte(`
+FOO=foovalue
+BAR=barvalue
+BAZ=bazvalue
+`)
+
+	err := os.WriteFile(filepath.Join(tmpdir, "example.env"), envFileData, 0o644)
+	g.NoError(err)
+
 	for _, tt := range interpolatetests {
 		t.Run(tt.name, func(t *testing.T) {
 			g := ghost.New(t)

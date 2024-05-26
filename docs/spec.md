@@ -674,6 +674,55 @@ It is invalid to split the configuration; if the `include` clause is used, no
 other keys can be specified in the `tusk.yml`, and the full task must be
 defined in the included file.
 
+### Environment Files
+
+Environment variables are also automatically read from a `.env` file in the
+same directory as `tusk.yml` before task execution. This file is optional by
+default, and supports typical "dotenv" extended syntax such as quotation marks,
+comments, variable substitution, and the `export` keyword.
+
+A typical file might look like this:
+
+```sh
+FOO=foovalue
+BAR=barvalue
+```
+
+Environment files can be explicitly specified as configuration at the
+top-level:
+
+```yaml
+env-file: .local.env
+```
+
+This is shorthand syntax for the following:
+
+```yaml
+env-file:
+  - path: .local.env
+    required: true
+```
+
+Multiple environment files can be specified. Entries are evaluted in order, so
+environment variables from later files override values specified in previous
+entries.
+
+Specifying any value for `env-file` will disable the default behavior of
+auto-loading an optional `.env`. To re-enable it, specify it explicitly:
+
+```yaml
+env-file:
+  - path: .env
+    required: false
+  - .local.env
+```
+
+To disable loading environment files completely, pass `[]` or `/dev/null`:
+
+```yaml
+env-file: []
+```
+
 ### Interpreter
 
 By default, any command run will default to using `sh -c` as its interpreter.
