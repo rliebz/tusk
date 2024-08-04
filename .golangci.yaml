@@ -49,6 +49,13 @@ linters:
     - usestdlibvars
 
 linters-settings:
+  errcheck:
+    exclude-functions:
+      # We're only ever writing to stdout/stderr (outside of tests)
+      - fmt.Fprint
+      - fmt.Fprintf
+      - fmt.Fprintln
+
   gocognit:
     min-complexity: 10
 
