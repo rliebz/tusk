@@ -818,8 +818,11 @@ tasks:
     options:
       foo:
         type: bool
-        rewrite: newvalue
-    run: echo ${foo}
+        rewrite: foovalue
+      bar:
+        type: bool
+        rewrite: barvalue
+    run: echo ${foo} ${bar}
 `,
 		[]string{},
 		map[string]string{
@@ -828,8 +831,67 @@ tasks:
 		"mytask",
 		marshal.Slice[*Run]{{
 			Command: marshal.Slice[*Command]{{
-				Exec:  "echo newvalue",
-				Print: "echo newvalue",
+				Exec:  "echo foovalue",
+				Print: "echo foovalue",
+			}},
+		}},
+	},
+
+	{
+		"chained rewrite",
+		`
+tasks:
+  mytask:
+    options:
+      foo:
+        type: bool
+        rewrite: newvalue
+      bar:
+        default:
+          when:
+            equal: {foo: newvalue}
+          value: barvalue
+    run: echo ${bar}
+`,
+		[]string{},
+		map[string]string{
+			"foo": "true",
+		},
+		"mytask",
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
+				Exec:  "echo barvalue",
+				Print: "echo barvalue",
+			}},
+		}},
+	},
+
+	// This isn't really desirable, but we might as well capture that the
+	// behavior works the way it's expected to work.
+	{
+		"chained non-boolean rewrite",
+		`
+tasks:
+  mytask:
+    options:
+      foo:
+        type: bool
+        rewrite: newvalue
+      bar:
+        default:
+          when: foo
+          value: barvalue
+    run: echo ${bar}
+`,
+		[]string{},
+		map[string]string{
+			"foo": "true",
+		},
+		"mytask",
+		marshal.Slice[*Run]{{
+			Command: marshal.Slice[*Command]{{
+				Exec:  "echo",
+				Print: "echo",
 			}},
 		}},
 	},
@@ -1112,29 +1174,6 @@ tasks:
       foo:
         type: string
         rewrite: newvalue
-    run: echo ${bar}
-`,
-		flags: map[string]string{
-			"foo": "true",
-		},
-		taskName: "mytask",
-		wantErr:  "rewrite may only be performed on boolean values",
-	},
-
-	{
-		name: "chained rewrite",
-		input: `
-tasks:
-  mytask:
-    options:
-      foo:
-        type: bool
-        rewrite: newvalue
-      bar:
-        default:
-          when:
-            equal: {foo: newvalue}
-        rewrite: barvalue
     run: echo ${bar}
 `,
 		flags: map[string]string{

@@ -593,6 +593,29 @@ options:
 A private option will not accept environment variables or command line flags,
 and it will not appear in the help documentation.
 
+#### Option Rewrite
+
+Boolean values are convenient as CLI inputs, but the interpolated output of
+`true` or `false` is often not. Use the `rewrite` clause to change the
+interpolation behavior from `true`/`false` to a conditional specified string:
+
+```yaml
+tasks:
+  greet:
+    options:
+      verbose:
+        type: boolean
+        rewrite: --level=verbose
+    run: mycli greet ${verbose}
+```
+
+The above will interpolate to eitehr `mycli greet` or `mycli greet --level=verbose`
+depending on whether the `--verbose` flag is passed.
+
+Note that once a boolean option has been rewritten, the output is no longer
+`true`/`false`, which means `when: verbose` in the above example would never
+evaluate to true.
+
 #### Shared Options
 
 Options may also be defined at the root of the config file to be shared between
