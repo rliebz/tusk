@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 0.7.1 (2024-08-07)
+
+### Fixed
+
+- Updated go releaser action with necessary permissions.
+
 ## 0.7.0 (2024-08-07)
 
 ### Added
