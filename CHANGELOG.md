@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 0.7.0 (2024-08-07)
+
 ### Added
 
 - Arguments may now specify a `type`, which works the same way as options.
