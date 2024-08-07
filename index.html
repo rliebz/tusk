@@ -1,55 +1,48 @@
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="None">
-  
-  
-  <link rel="shortcut icon" href="img/favicon.ico">
-  <title>tusk</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
-
-  <link rel="stylesheet" href="css/theme.css" />
-  <link rel="stylesheet" href="css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
-  
-  <script>
-    // Current page data
-    var mkdocs_page_name = "Tusk";
-    var mkdocs_page_input_path = "index.md";
-    var mkdocs_page_url = null;
-  </script>
-  
-  <script src="js/jquery-2.1.1.min.js" defer></script>
-  <script src="js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>tusk</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Tusk";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/yaml.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="." class="icon icon-home"> tusk</a>
-        <div role="search">
+          <a href="." class="icon icon-home"> tusk
+        </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href=".">Tusk</a>
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href=".">Tusk</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
     </li>
@@ -57,13 +50,15 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#installation-script">Installation Script</a>
+    <li class="toctree-l4"><a class="reference internal" href="#go">Go</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#homebrew">Homebrew</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#tab-completion">Tab Completion</a>
+    <li class="toctree-l4"><a class="reference internal" href="#compiled-releases">Compiled Releases</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#installing-tab-completion">Installing Tab Completion</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
     </li>
@@ -72,55 +67,45 @@
     <li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a>
     </li>
     </ul>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="spec/">The Spec</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING/">Contributing</a>
-                    </li>
-                </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="spec/">The Spec</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING/">Contributing</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href=".">tusk</a>
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">tusk</a>
+        
       </nav>
-
-      
       <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".">Docs</a> &raquo;</li>
-    
-      
-    
-    <li>Tusk</li>
+    <li><a href="." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Tusk</li>
     <li class="wy-breadcrumbs-aside">
-      
         <a href="https://github.com/rliebz/tusk/edit/master/docs/index.md"
           class="icon icon-github"> Edit on GitHub</a>
-      
     </li>
   </ul>
-  
   <hr/>
 </div>
-          <div role="main">
-            <div class="section">
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
               
                 <h1 id="tusk">Tusk</h1>
 <p><a href="https://github.com/rliebz/tusk/releases"><img alt="GitHub release" src="https://img.shields.io/github/release/rliebz/tusk.svg" /></a>
-<a href="https://circleci.com/gh/rliebz/tusk/tree/master"><img alt="CircleCI" src="https://img.shields.io/circleci/project/github/rliebz/tusk/master.svg" /></a>
-<a href="https://ci.appveyor.com/project/RobertLiebowitz/tusk"><img alt="AppVeyor" src="https://img.shields.io/appveyor/ci/RobertLiebowitz/tusk/master.svg?label=windows" /></a>
+<a href="https://circleci.com/gh/rliebz/tusk/tree/main"><img alt="CircleCI" src="https://img.shields.io/circleci/project/github/rliebz/tusk/main.svg" /></a>
+<a href="https://ci.appveyor.com/project/RobertLiebowitz/tusk"><img alt="AppVeyor" src="https://img.shields.io/appveyor/ci/RobertLiebowitz/tusk/main.svg?label=windows" /></a>
 <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
 <a href="https://gitter.im/tusk-cli/tusk"><img alt="Gitter" src="https://img.shields.io/gitter/room/tusk-cli/tusk.svg" /></a></p>
 <p>Tusk is a yaml-based task runner. By creating a <code>tusk.yml</code> in the root of a
@@ -142,20 +127,23 @@ documentation</a>.</p>
 </ul>
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="installation">Installation</h3>
-<p>The latest version can be downloaded from the <a href="https://github.com/rliebz/tusk/releases">releases page</a>.</p>
-<h4 id="installation-script">Installation Script</h4>
-<p>To install automatically, or for use in CI, run the following command:</p>
-<pre><code class="language-bash">curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
+<h4 id="go">Go</h4>
+<p>With Go 1.21+ installed:</p>
+<pre><code class="language-bash">go install github.com/rliebz/tusk@latest
 </code></pre>
-<p>To pin to a specific version, replace <code>latest</code> with the tag for that version.
-This is recommended for automated scripts.</p>
-<p>To install to another directory, change the path passed to <code>-b</code>.</p>
 <h4 id="homebrew">Homebrew</h4>
 <p>On macOS, installation is also available through <a href="https://brew.sh">homebrew</a>:</p>
 <pre><code class="language-bash">brew install rliebz/tusk/tusk
 </code></pre>
 <p>With Homebrew, tab completion is installed automatically.</p>
-<h4 id="tab-completion">Tab Completion</h4>
+<h4 id="compiled-releases">Compiled Releases</h4>
+<p>The latest version can be downloaded from the <a href="https://github.com/rliebz/tusk/releases">releases page</a>.</p>
+<p>To install automatically:</p>
+<pre><code class="language-bash">curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
+</code></pre>
+<p>To pin to a specific version, replace <code>latest</code> with the tag for that version.</p>
+<p>To install to another directory, change the path passed to <code>-b</code>.</p>
+<h3 id="installing-tab-completion">Installing Tab Completion</h3>
 <p>For bash:</p>
 <pre><code class="language-bash">tusk --install-completion bash
 </code></pre>
@@ -165,7 +153,7 @@ This is recommended for automated scripts.</p>
 <p>For zsh:</p>
 <pre><code class="language-zsh">tusk --install-completion zsh
 </code></pre>
-<p>Completions can be uninstalled as well with the <code>--uninstall-completion</code> flag.</p>
+<p>Completions can be uninstalled with the <code>--uninstall-completion</code> flag.</p>
 <h3 id="usage">Usage</h3>
 <p>Create a <code>tusk.yml</code> file in the root of a project repository:</p>
 <pre><code class="language-yaml">tasks:
@@ -179,12 +167,12 @@ This is recommended for automated scripts.</p>
 </code></pre>
 <p>As long as there is a <code>tusk.yml</code> file in the working or any parent directory,
 tasks can be run:</p>
-<pre><code class="language-text">$ tusk greet --name friend
+<pre><code class="language-console">$ tusk greet --name friend
 Running: echo &quot;Hello, friend!&quot;
 Hello, friend!
 </code></pre>
 <p>Help messages are dynamically generated based on the YAML configuration:</p>
-<pre><code class="language-text">$ tusk --help
+<pre><code class="language-console">$ tusk --help
 tusk - the modern task runner
 
 Usage:
@@ -199,7 +187,7 @@ Global Options:
    ...
 </code></pre>
 <p>Individual tasks have help messages as well:</p>
-<pre><code class="language-text">$ tusk greet --help
+<pre><code class="language-console">$ tusk greet --help
 tusk greet - Say hello to someone
 
 Usage:
@@ -210,34 +198,27 @@ Options:
 </code></pre>
 <p>Additional information on the configuration spec can be found in the <a href="https://rliebz.github.io/tusk/spec/">project
 documentation</a>.</p>
-<p>For more detailed examples, check out the project's own <a href="https://github.com/rliebz/tusk/blob/master/tusk.yml"><code>tusk.yml</code></a>
+<p>For more detailed examples, check out the project's own <a href="https://github.com/rliebz/tusk/blob/main/tusk.yml"><code>tusk.yml</code></a>
 file.</p>
 <h2 id="contributing">Contributing</h2>
 <p>Set-up instructions for a development environment and contribution guidelines
-can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+can be found in <a href="https://github.com/rliebz/tusk/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
               
             </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="spec/" class="btn btn-neutral float-right" title="The Spec">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
   </div>
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+          
         </div>
       </div>
 
@@ -245,18 +226,21 @@ can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING
 
   </div>
 
-  <div class="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-          <a href="https://github.com/rliebz/tusk/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
-      
-        <span style="margin-left: 15px"><a href="spec/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
-    </span>
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/rliebz/tusk" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+      <span><a href="spec/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
 </div>
     <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
     <script src="js/theme.js" defer></script>
       <script src="search/main.js" defer></script>
     <script defer>
@@ -269,6 +253,6 @@ can be found in <a href="https://github.com/rliebz/tusk/blob/master/CONTRIBUTING
 </html>
 
 <!--
-MkDocs version : 1.1.2
-Build Date UTC : 2022-02-17 02:41:32.274277+00:00
+MkDocs version : 1.3.1
+Build Date UTC : 2024-08-07 13:35:38.757810+00:00
 -->

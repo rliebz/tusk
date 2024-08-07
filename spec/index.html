@@ -1,59 +1,52 @@
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  
-  
-  <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>The Spec - tusk</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
-
-  <link rel="stylesheet" href="../css/theme.css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
-  
-  <script>
-    // Current page data
-    var mkdocs_page_name = "The Spec";
-    var mkdocs_page_input_path = "spec.md";
-    var mkdocs_page_url = null;
-  </script>
-  
-  <script src="../js/jquery-2.1.1.min.js" defer></script>
-  <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>The Spec - tusk</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "The Spec";
+        var mkdocs_page_input_path = "spec.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/yaml.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href=".." class="icon icon-home"> tusk</a>
-        <div role="search">
+          <a href=".." class="icon icon-home"> tusk
+        </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="..">Tusk</a>
-                    </li>
-                </ul>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">The Spec</a>
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Tusk</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">The Spec</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#tasks">Tasks</a>
     </li>
@@ -87,6 +80,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#args">Args</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#arg-types">Arg Types</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#arg-values">Arg Values</a>
     </li>
         </ul>
@@ -103,6 +98,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#private-options">Private Options</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#option-rewrite">Option Rewrite</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#shared-options">Shared Options</a>
     </li>
         </ul>
@@ -111,6 +108,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#include">Include</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#environment-files">Environment Files</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#interpreter">Interpreter</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#cli-metadata">CLI Metadata</a>
@@ -118,46 +117,36 @@
     <li class="toctree-l2"><a class="reference internal" href="#interpolation">Interpolation</a>
     </li>
     </ul>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing</a>
-                    </li>
-                </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="..">tusk</a>
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tusk</a>
+        
       </nav>
-
-      
       <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="..">Docs</a> &raquo;</li>
-    
-      
-    
-    <li>The Spec</li>
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>The Spec</li>
     <li class="wy-breadcrumbs-aside">
-      
         <a href="https://github.com/rliebz/tusk/edit/master/docs/spec.md"
           class="icon icon-github"> Edit on GitHub</a>
-      
     </li>
   </ul>
-  
   <hr/>
 </div>
-          <div role="main">
-            <div class="section">
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
               
                 <h2 id="the-spec">The Spec</h2>
 <h3 id="tasks">Tasks</h3>
@@ -171,7 +160,7 @@ top level of the <code>tusk.yml</code> file and include a list of tasks.</p>
     run: echo &quot;Goodbye, world!&quot;
 </code></pre>
 <p>The commands can be run with no additional configuration:</p>
-<pre><code class="language-text">$ tusk hello
+<pre><code class="language-console">$ tusk hello
 Running: echo &quot;Hello, world!&quot;
 Hello, world!
 </code></pre>
@@ -355,7 +344,7 @@ prevent it from being invoked directly from the command-line. For example:</p>
   configure-environment:
     private: true
     run:
-      set-environment: {APP_ENV: dev}
+      set-environment: { APP_ENV: dev }
   serve:
     run:
       - task: configure-environment
@@ -401,7 +390,7 @@ complicated example of how <code>when</code> can be used:</p>
         command: echo &quot;This is a unix machine&quot;
       - when:
           - exists: my_file.txt
-          - equal: {cat: true}
+          - equal: { cat: true }
           - command: command -v cat
         command: cat my_file.txt
 </code></pre>
@@ -410,7 +399,7 @@ complicated example of how <code>when</code> can be used:</p>
 also accept strings as shorthand. Consider the following example, which checks
 to see if some option <code>foo</code> has been set to <code>true</code>:</p>
 <pre><code class="language-yaml">when:
-  equal: {foo: true}
+  equal: { foo: true }
 </code></pre>
 <p>This can be expressed more succinctly as the following:</p>
 <pre><code class="language-yaml">when: foo
@@ -448,8 +437,8 @@ will only pass if <em>all</em> of the items pass. For example:</p>
           - os:
               - linux
               - darwin
-            equal: {ignore-os: true}
-          - equal: {verbose: true}
+            equal: { ignore-os: true }
+          - equal: { verbose: true }
         command: echo &quot;This is a unix machine&quot;
 </code></pre>
 <h3 id="args">Args</h3>
@@ -463,8 +452,20 @@ is required for the task to execute.</p>
     run: echo &quot;Hello, ${name}!&quot;
 </code></pre>
 <p>The task can be invoked as such:</p>
-<pre><code class="language-text">$ tusk greet friend
+<pre><code class="language-console">$ tusk greet friend
 Hello, friend!
+</code></pre>
+<h4 id="arg-types">Arg Types</h4>
+<p>Args can be of the types <code>string</code>, <code>integer</code>, <code>float</code>, or <code>boolean</code>. Args
+without types specified are considered strings.</p>
+<pre><code class="language-yaml">tasks:
+  add:
+    args:
+      a:
+        type: int
+      b:
+        type: int
+    run: echo $((${a} + ${b}))
 </code></pre>
 <h4 id="arg-values">Arg Values</h4>
 <p>Args can specify which values are considered valid:</p>
@@ -515,10 +516,10 @@ arugments. In the following example:</p>
         type: bool
     run:
       - when:
-          equal: {loud: true}
+          equal: { loud: true }
         command: echo &quot;HELLO!&quot;
       - when:
-          equal: {loud: false}
+          equal: { loud: false }
         command: echo &quot;Hello.&quot;
 </code></pre>
 <p>The flag should be passed as such:</p>
@@ -595,6 +596,23 @@ modified through command-line flags. In this case, use the <code>private</code> 
 </code></pre>
 <p>A private option will not accept environment variables or command line flags,
 and it will not appear in the help documentation.</p>
+<h4 id="option-rewrite">Option Rewrite</h4>
+<p>Boolean values are convenient as CLI inputs, but the interpolated output of
+<code>true</code> or <code>false</code> is often not. Use the <code>rewrite</code> clause to change the
+interpolation behavior from <code>true</code>/<code>false</code> to a conditional specified string:</p>
+<pre><code class="language-yaml">tasks:
+  greet:
+    options:
+      verbose:
+        type: boolean
+        rewrite: --level=verbose
+    run: mycli greet ${verbose}
+</code></pre>
+<p>The above will interpolate to eitehr <code>mycli greet</code> or <code>mycli greet --level=verbose</code>
+depending on whether the <code>--verbose</code> flag is passed.</p>
+<p>Note that once a boolean option has been rewritten, the output is no longer
+<code>true</code>/<code>false</code>, which means <code>when: verbose</code> in the above example would never
+evaluate to true.</p>
 <h4 id="shared-options">Shared Options</h4>
 <p>Options may also be defined at the root of the config file to be shared between
 tasks:</p>
@@ -619,6 +637,8 @@ including sub-tasks.</p>
 <p>The <code>finally</code> clause is run after a task's <code>run</code> logic has completed, whether or
 not that task was successful. This can be useful for clean-up logic. A <code>finally</code>
 clause has the same format as a <code>run</code> clause:</p>
+<!-- prettier-ignore-start -->
+
 <pre><code class="language-yaml">tasks:
   hello:
     run:
@@ -630,6 +650,8 @@ clause has the same format as a <code>run</code> clause:</p>
       - task: cleanup
   # ...
 </code></pre>
+<!-- prettier-ignore-end -->
+
 <p>If the <code>finally</code> clause runs an unsuccessful command, it will terminate early
 the same way that a <code>run</code> clause would. The exit code is still passed back to
 the command line. However, if both the <code>run</code> clause and <code>finally</code> clause fail,
@@ -654,6 +676,37 @@ run: echo &quot;Hello, ${name}!&quot;
 <p>It is invalid to split the configuration; if the <code>include</code> clause is used, no
 other keys can be specified in the <code>tusk.yml</code>, and the full task must be
 defined in the included file.</p>
+<h3 id="environment-files">Environment Files</h3>
+<p>Environment variables are also automatically read from a <code>.env</code> file in the
+same directory as <code>tusk.yml</code> before task execution. This file is optional by
+default, and supports typical "dotenv" extended syntax such as quotation marks,
+comments, variable substitution, and the <code>export</code> keyword.</p>
+<p>A typical file might look like this:</p>
+<pre><code class="language-sh">FOO=foovalue
+BAR=barvalue
+</code></pre>
+<p>Environment files can be explicitly specified as configuration at the
+top-level:</p>
+<pre><code class="language-yaml">env-file: .local.env
+</code></pre>
+<p>This is shorthand syntax for the following:</p>
+<pre><code class="language-yaml">env-file:
+  - path: .local.env
+    required: true
+</code></pre>
+<p>Multiple environment files can be specified. Entries are evaluted in order, so
+environment variables from later files override values specified in previous
+entries.</p>
+<p>Specifying any value for <code>env-file</code> will disable the default behavior of
+auto-loading an optional <code>.env</code>. To re-enable it, specify it explicitly:</p>
+<pre><code class="language-yaml">env-file:
+  - path: .env
+    required: false
+  - .local.env
+</code></pre>
+<p>To disable loading environment files completely, pass <code>[]</code> or <code>/dev/null</code>:</p>
+<pre><code class="language-yaml">env-file: []
+</code></pre>
 <h3 id="interpreter">Interpreter</h3>
 <p>By default, any command run will default to using <code>sh -c</code> as its interpreter.
 This can optionally be configured using the <code>interpreter</code> clause.</p>
@@ -681,10 +734,11 @@ are provided as part of the help documentation:</p>
 usage: A custom aliased command-line application
 
 tasks:
-  ...
+  # ...
 </code></pre>
 <p>The example above will produce the following help documentation:</p>
-<pre><code class="language-text">mycli - A custom aliased command-line application
+<pre><code class="language-console">$ tusk --help
+mycli - A custom aliased command-line application
 
 Usage:
   mycli [global options] &lt;task&gt; [task options]
@@ -737,29 +791,21 @@ interpreter will need to be considered by the user. This can be as simple as
 using quotes when appropriate.</p>
               
             </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Tusk"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../CONTRIBUTING/" class="btn btn-neutral float-right" title="Contributing">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
-        <a href=".." class="btn btn-neutral" title="Tusk"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
   </div>
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+          
         </div>
       </div>
 
@@ -767,20 +813,23 @@ using quotes when appropriate.</p>
 
   </div>
 
-  <div class="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-          <a href="https://github.com/rliebz/tusk/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
-        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
-        <span style="margin-left: 15px"><a href="../CONTRIBUTING/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
-    </span>
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/rliebz/tusk" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../CONTRIBUTING/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
 </div>
     <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
     <script src="../js/theme.js" defer></script>
       <script src="../search/main.js" defer></script>
     <script defer>
