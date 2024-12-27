@@ -6,8 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rliebz/tusk/runner"
 	"github.com/urfave/cli"
+
+	"github.com/rliebz/tusk/runner"
 )
 
 // completionFlag is the flag passed when performing shell completions.

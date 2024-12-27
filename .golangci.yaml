@@ -15,6 +15,7 @@ linters:
   enable:
     - bidichk
     - bodyclose
+    - copyloopvar
     - contextcheck
     - dupl
     - durationcheck
@@ -22,7 +23,6 @@ linters:
     - errchkjson
     - errname
     - errorlint
-    - exportloopref
     - gocognit
     - gocritic
     - gofumpt
