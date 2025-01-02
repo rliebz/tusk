@@ -231,7 +231,7 @@ func assertOptionsEqualUnordered(t *testing.T, a, b []*Option) {
 		return
 	}
 
-	bMap := make(map[*Option]interface{})
+	bMap := make(map[*Option]any)
 	for _, val := range b {
 		bMap[val] = struct{}{}
 	}

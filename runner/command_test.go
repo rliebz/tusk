@@ -141,7 +141,7 @@ func TestCommand_exec_helper(*testing.T) {
 	}
 	defer os.Exit(0)
 
-	fail := func(msg interface{}) {
+	fail := func(msg any) {
 		fmt.Fprintln(os.Stdout, msg)
 		os.Exit(1)
 	}

@@ -11,7 +11,7 @@ import (
 var escSeq = []byte("{UNLIKELY_ESCAPE_SEQUENCE}")
 
 // Interpolate an arbitrary YAML-marshallable interface.
-func Interpolate(i interface{}, values map[string]string) error {
+func Interpolate(i any, values map[string]string) error {
 	text, err := yaml.Marshal(i)
 	if err != nil {
 		return err

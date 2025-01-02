@@ -46,10 +46,10 @@ var (
 	yellow = newFormatter(color.FgYellow)
 )
 
-type formatter func(a ...interface{}) string
+type formatter func(a ...any) string
 
 func newFormatter(value ...color.Attribute) formatter {
-	return func(a ...interface{}) string {
+	return func(a ...any) string {
 		return color.New(value...).SprintFunc()(a...)
 	}
 }

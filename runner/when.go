@@ -25,7 +25,7 @@ type When struct {
 }
 
 // UnmarshalYAML warns about deprecated features.
-func (w *When) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (w *When) UnmarshalYAML(unmarshal func(any) error) error {
 	var equal marshal.Slice[string]
 	slCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&equal) },
@@ -324,7 +324,7 @@ func validateEquality(
 type WhenList marshal.Slice[When]
 
 // UnmarshalYAML allows single items to be used as lists.
-func (l *WhenList) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (l *WhenList) UnmarshalYAML(unmarshal func(any) error) error {
 	return (*marshal.Slice[When])(l).UnmarshalYAML(unmarshal)
 }
 

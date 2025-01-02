@@ -16,7 +16,7 @@ import (
 func init() { //nolint: gochecknoinits
 	// These are both used, so both must be overridden
 	cli.HelpPrinterCustom = wrapPrinter(cli.HelpPrinterCustom)
-	cli.HelpPrinter = func(w io.Writer, templ string, data interface{}) {
+	cli.HelpPrinter = func(w io.Writer, templ string, data any) {
 		cli.HelpPrinterCustom(w, templ, data, nil)
 	}
 
@@ -53,12 +53,12 @@ func ShowAppHelp(logger *ui.Logger, app *cli.App) {
 	cli.HelpPrinter(logger.Stdout, cli.AppHelpTemplate, app)
 }
 
-type helpPrinterCustom = func(io.Writer, string, interface{}, map[string]interface{})
+type helpPrinterCustom = func(io.Writer, string, any, map[string]any)
 
 // helpPrinter includes the custom indent template function.
 func wrapPrinter(p helpPrinterCustom) helpPrinterCustom {
-	return func(w io.Writer, tpl string, data interface{}, funcs map[string]interface{}) {
-		customFuncs := map[string]interface{}{
+	return func(w io.Writer, tpl string, data any, funcs map[string]any) {
+		customFuncs := map[string]any{
 			"indent": func(spaces int, text string) string {
 				padding := strings.Repeat(" ", spaces)
 				return padding + strings.ReplaceAll(text, "\n", "\n"+padding)

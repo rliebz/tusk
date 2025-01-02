@@ -36,7 +36,7 @@ type Task struct {
 }
 
 // UnmarshalYAML unmarshals and assigns names to options.
-func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (t *Task) UnmarshalYAML(unmarshal func(any) error) error {
 	var includeTarget Task
 	includeCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error {

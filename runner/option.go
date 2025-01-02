@@ -46,7 +46,7 @@ func (o *Option) Dependencies() []string {
 }
 
 // UnmarshalYAML ensures that the option definition is valid.
-func (o *Option) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (o *Option) UnmarshalYAML(unmarshal func(any) error) error {
 	type optionType Option // Use new type to avoid recursion
 	if err := unmarshal((*optionType)(o)); err != nil {
 		return err
@@ -202,7 +202,7 @@ func (o *Option) cache(value string) {
 type Options []*Option
 
 // UnmarshalYAML unmarshals an ordered set of options and assigns names.
-func (o *Options) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (o *Options) UnmarshalYAML(unmarshal func(any) error) error {
 	var ms yaml.MapSlice
 	if err := unmarshal(&ms); err != nil {
 		return err

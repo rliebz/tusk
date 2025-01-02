@@ -33,7 +33,7 @@ func (v *Value) commandValueOrDefault(ctx Context) (string, error) {
 
 // UnmarshalYAML allows plain strings to represent a full struct. The value of
 // the string is used as the Default field.
-func (v *Value) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (v *Value) UnmarshalYAML(unmarshal func(any) error) error {
 	var valueString string
 	stringCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&valueString) },

@@ -77,7 +77,7 @@ func newMetaApp(cfgText []byte) (*cli.App, error) {
 	}
 
 	app := newSilentApp()
-	app.Metadata = make(map[string]interface{})
+	app.Metadata = make(map[string]any)
 	app.Metadata["tasks"] = make(map[string]*runner.Task)
 	app.Metadata["argsPassed"] = []string{}
 	app.Metadata["flagsPassed"] = make(map[string]string)

@@ -28,12 +28,12 @@ func TestOption_Dependencies(t *testing.T) {
 }
 
 func beEqualUnordered[T comparable](a, b []T) ghost.Result {
-	aMap := make(map[T]interface{})
+	aMap := make(map[T]any)
 	for _, val := range a {
 		aMap[val] = struct{}{}
 	}
 
-	bMap := make(map[T]interface{})
+	bMap := make(map[T]any)
 	for _, val := range b {
 		bMap[val] = struct{}{}
 	}

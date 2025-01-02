@@ -33,7 +33,7 @@ func newCondFailError(msg string) error {
 }
 
 // newCondFailErrorf returns an error indicating a condition has failed.
-func newCondFailErrorf(msg string, a ...interface{}) error {
+func newCondFailErrorf(msg string, a ...any) error {
 	formatted := fmt.Sprintf(msg, a...)
 	return &conditionFailedError{formatted}
 }

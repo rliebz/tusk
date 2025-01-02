@@ -19,7 +19,7 @@ type Config struct {
 }
 
 // UnmarshalYAML unmarshals and assigns names to options and tasks.
-func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (c *Config) UnmarshalYAML(unmarshal func(any) error) error {
 	type configType Config // Use new type to avoid recursion
 	if err := unmarshal((*configType)(c)); err != nil {
 		return err

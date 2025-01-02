@@ -4,7 +4,7 @@ package marshal
 type Slice[T any] []T
 
 // UnmarshalYAML unmarshals an item or list of items always into a list.
-func (sl *Slice[T]) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (sl *Slice[T]) UnmarshalYAML(unmarshal func(any) error) error {
 	var list []T
 	listCandidate := UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&list) },

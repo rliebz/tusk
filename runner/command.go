@@ -31,7 +31,7 @@ type Command struct {
 }
 
 // UnmarshalYAML allows strings to be interpreted as Do actions.
-func (c *Command) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (c *Command) UnmarshalYAML(unmarshal func(any) error) error {
 	var str string
 	strCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&str) },

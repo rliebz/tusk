@@ -18,7 +18,7 @@ type Run struct {
 }
 
 // UnmarshalYAML allows simple commands to represent run structs.
-func (r *Run) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (r *Run) UnmarshalYAML(unmarshal func(any) error) error {
 	var cl marshal.Slice[*Command]
 	commandCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&cl) },

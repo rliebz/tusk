@@ -45,7 +45,7 @@ func Noop() *Logger {
 }
 
 // Println prints a line directly.
-func (l *Logger) Println(a ...interface{}) {
+func (l *Logger) Println(a ...any) {
 	if l.Verbosity <= VerbosityLevelSilent {
 		return
 	}
@@ -54,7 +54,7 @@ func (l *Logger) Println(a ...interface{}) {
 }
 
 // Debug prints debug information.
-func (l *Logger) Debug(a ...interface{}) {
+func (l *Logger) Debug(a ...any) {
 	if l.Verbosity < VerbosityLevelVerbose {
 		return
 	}
@@ -63,7 +63,7 @@ func (l *Logger) Debug(a ...interface{}) {
 }
 
 // Info prints normal application information.
-func (l *Logger) Info(a ...interface{}) {
+func (l *Logger) Info(a ...any) {
 	if l.Verbosity <= VerbosityLevelQuiet {
 		return
 	}
@@ -72,7 +72,7 @@ func (l *Logger) Info(a ...interface{}) {
 }
 
 // Warn prints at the warning level.
-func (l *Logger) Warn(a ...interface{}) {
+func (l *Logger) Warn(a ...any) {
 	if l.Verbosity <= VerbosityLevelQuiet {
 		return
 	}
@@ -81,7 +81,7 @@ func (l *Logger) Warn(a ...interface{}) {
 }
 
 // Error prints application errors.
-func (l *Logger) Error(a ...interface{}) {
+func (l *Logger) Error(a ...any) {
 	if l.Verbosity <= VerbosityLevelSilent {
 		return
 	}
@@ -90,7 +90,7 @@ func (l *Logger) Error(a ...interface{}) {
 }
 
 // Deprecate prints deprecation warnings no more than once.
-func (l *Logger) Deprecate(a ...interface{}) {
+func (l *Logger) Deprecate(a ...any) {
 	if l.Verbosity <= VerbosityLevelQuiet {
 		return
 	}
@@ -109,7 +109,7 @@ func (l *Logger) Deprecate(a ...interface{}) {
 	fmt.Fprintln(l.Stderr)
 }
 
-func (l *Logger) logInStyle(title string, f formatter, a ...interface{}) {
+func (l *Logger) logInStyle(title string, f formatter, a ...any) {
 	messages := make([]string, 0, len(a))
 	for _, message := range a {
 		messages = append(messages, fmt.Sprint(message))

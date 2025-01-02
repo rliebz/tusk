@@ -29,7 +29,7 @@ func (a *Arg) Evaluate() (string, error) {
 type Args []*Arg
 
 // UnmarshalYAML unmarshals an ordered set of options and assigns names.
-func (a *Args) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *Args) UnmarshalYAML(unmarshal func(any) error) error {
 	var ms yaml.MapSlice
 	if err := unmarshal(&ms); err != nil {
 		return err

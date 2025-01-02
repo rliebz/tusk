@@ -10,7 +10,7 @@ type SubTask struct {
 }
 
 // UnmarshalYAML allows unmarshaling a string to represent the subtask name.
-func (s *SubTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (s *SubTask) UnmarshalYAML(unmarshal func(any) error) error {
 	var name string
 	nameCandidate := marshal.UnmarshalCandidate{
 		Unmarshal: func() error { return unmarshal(&name) },
