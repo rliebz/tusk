@@ -43,7 +43,7 @@ func InstallCompletion(meta *runner.Metadata) error {
 	case "zsh":
 		return installZshCompletion(meta.Logger, zshInstallDir)
 	default:
-		return fmt.Errorf("tab completion for %q is not supported", shell)
+		return fmt.Errorf("completion target %q must be one of [bash, fish, zsh]", shell)
 	}
 }
 
@@ -58,7 +58,7 @@ func UninstallCompletion(meta *runner.Metadata) error {
 	case "zsh":
 		return uninstallZshCompletion(zshInstallDir)
 	default:
-		return fmt.Errorf("tab completion for %q is not supported", shell)
+		return fmt.Errorf("completion target %q must be one of [bash, fish, zsh]", shell)
 	}
 }
 

@@ -23,7 +23,9 @@ func TestInstallCompletionUnsupported(t *testing.T) {
 			InstallCompletion: "fake",
 		},
 	)
-	g.Should(be.ErrorContaining(err, `tab completion for "fake" is not supported`))
+	g.Should(be.ErrorEqual(err,
+		`completion target "fake" must be one of [bash, fish, zsh]`,
+	))
 }
 
 func TestUninstallCompletionUnsupported(t *testing.T) {
@@ -34,7 +36,9 @@ func TestUninstallCompletionUnsupported(t *testing.T) {
 			UninstallCompletion: "fake",
 		},
 	)
-	g.Should(be.ErrorContaining(err, `tab completion for "fake" is not supported`))
+	g.Should(be.ErrorEqual(err,
+		`completion target "fake" must be one of [bash, fish, zsh]`,
+	))
 }
 
 func TestInstallBashCompletion(t *testing.T) {

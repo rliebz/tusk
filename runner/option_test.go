@@ -246,7 +246,7 @@ func TestOption_Evaluate_values_with_invalid_passed(t *testing.T) {
 	}
 
 	_, err := option.Evaluate(Context{}, nil)
-	g.Should(be.ErrorEqual(err, `value "foo" for option "my-opt" must be one of [bad values FOO]`))
+	g.Should(be.ErrorEqual(err, `value "foo" for option "my-opt" must be one of [bad, values, FOO]`))
 }
 
 func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
@@ -266,7 +266,7 @@ func TestOption_Evaluate_values_with_invalid_environment(t *testing.T) {
 	t.Setenv(envVar, want)
 
 	_, err := option.Evaluate(Context{}, nil)
-	g.Should(be.ErrorEqual(err, `value "foo" for option "my-opt" must be one of [bad values FOO]`))
+	g.Should(be.ErrorEqual(err, `value "foo" for option "my-opt" must be one of [bad, values, FOO]`))
 }
 
 func TestOption_Evaluate_type_defaults(t *testing.T) {

@@ -5,8 +5,9 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
-	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/marshal"
 )
 
 func TestEvaluate(t *testing.T) {
@@ -55,7 +56,7 @@ func TestEvaluate_unspecified(t *testing.T) {
 	}
 
 	_, err := arg.Evaluate()
-	g.Should(be.ErrorEqual(err, `value "foo" for argument "my-arg" must be one of [wrong other]`))
+	g.Should(be.ErrorEqual(err, `value "foo" for argument "my-arg" must be one of [wrong, other]`))
 }
 
 func TestEvaluate_nil(t *testing.T) {

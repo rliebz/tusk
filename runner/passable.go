@@ -27,8 +27,8 @@ type Passable struct {
 func (p *Passable) validatePassed(kind string, value string) error {
 	if len(p.ValuesAllowed) != 0 && !contains(p.ValuesAllowed, value) {
 		return fmt.Errorf(
-			`value %q for %s %q must be one of %v`,
-			value, kind, p.Name, p.ValuesAllowed,
+			`value %q for %s %q must be one of [%s]`,
+			value, kind, p.Name, strings.Join(p.ValuesAllowed, ", "),
 		)
 	}
 
