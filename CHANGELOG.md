@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+### Changed
+
+- Improved error messages for invalid values passed as arguments and options.
+
 ## 0.7.1 (2024-08-07)
 
 ### Fixed
