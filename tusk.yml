@@ -3,8 +3,6 @@
 tasks:
   lint:
     usage: Run static analysis
-    description: |
-      Run golangci-lint using the project configuration.
     options:
       fast:
         usage: Only run fast linters
@@ -15,8 +13,6 @@ tasks:
 
   test:
     usage: Run the tests
-    description: |
-      Runs the full test suite using `go test -cover ./...`.
     options:
       all:
         usage: Run all tests and linters
