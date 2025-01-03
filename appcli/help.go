@@ -7,9 +7,10 @@ import (
 	"io"
 	"strings"
 
+	"github.com/urfave/cli"
+
 	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
-	"github.com/urfave/cli"
 )
 
 // init sets the help templates for urfave/cli.
@@ -115,30 +116,45 @@ func prependHyphens(flagName string) string {
 }
 
 func createCommandHelp(t *runner.Task) string {
-	//nolint: lll
 	return fmt.Sprintf(`{{.HelpName}}{{if .Usage}} - {{.Usage}}{{end}}
 
 Usage:
-   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}}{{if .VisibleFlags}} [options]{{end}}{{if .ArgsUsage}} {{.ArgsUsage}}{{end}}{{end}}{{if .Category}}
+   {{ if .UsageText }}
+   {{- .UsageText }}
+   {{- else }}
+   {{- .HelpName }}
+   {{- if .VisibleFlags }} [options]{{ end }}
+   {{- with .ArgsUsage }} {{ . }}{{ end }}
+   {{- end }}
+
+{{- if .Category }}
 
 Category:
-   {{.Category}}{{end}}{{if .Description}}
+   {{.Category}}
+{{- end }}
+
+{{- if .Description }}
 
 Description:
-{{indent 3 .Description}}{{end}}%s{{if .VisibleFlags}}
+{{ indent 3 .Description }}
+{{- end }}%s{{- if .VisibleFlags }}
 
 Options:
-   {{range  $index, $option := .VisibleFlags}}{{if $index}}
-   {{end}}{{$option}}{{end}}{{end}}
+   {{- range  $index, $option := .VisibleFlags }}
+   {{ $option }}
+   {{- end }}
+{{- end }}
 `, createArgsSection(t))
 }
 
 func createArgsSection(t *runner.Task) string {
-	argsTpl := `{{if .}}
+	argsTpl := `{{- if . }}
 
 Arguments:
-   {{range  $index, $arg := .}}{{if $index}}
-   {{end}}{{$arg}}{{end}}{{end}}`
+   {{- range  $index, $arg := . }}
+   {{ $arg }}
+   {{- end }}
+{{- end }}`
 
 	tpl := template.New(fmt.Sprintf("%s help", t.Name))
 	tpl = template.Must(tpl.Parse(argsTpl))
@@ -148,7 +164,7 @@ Arguments:
 	args := make([]string, 0, len(t.Args))
 	for _, arg := range t.Args {
 		text := fmt.Sprintf("%s%s", padArg(arg.Name), arg.Usage)
-		args = append(args, strings.Trim(text, " "))
+		args = append(args, strings.TrimSpace(text))
 	}
 
 	var argsSection bytes.Buffer

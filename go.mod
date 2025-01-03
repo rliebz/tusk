@@ -6,7 +6,7 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/google/go-cmp v0.6.0
 	github.com/joho/godotenv v1.5.1
-	github.com/rliebz/ghost v0.1.0
+	github.com/rliebz/ghost v0.2.2-0.20250102022536-5fa59741d15a
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/urfave/cli v1.22.15
 	gopkg.in/yaml.v2 v2.4.0
@@ -20,7 +20,6 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect

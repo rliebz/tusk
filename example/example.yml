@@ -58,7 +58,7 @@ options:
 tasks:
   test:
     # Documentation for tasks should also be set.
-    usage: a simple, one-line explanation
+    usage: A simple, one-line explanation
     description: |
       This description gives even more context for the task. If the usage
       section isn't big enough, feel free to take up as much space as you need
@@ -94,6 +94,7 @@ tasks:
       - task: test
 
   short:
+    usage: A short task
     options:
       info:
         default:
@@ -107,6 +108,7 @@ tasks:
       - echo "${info}"
 
   shorter:
+    usage: An even shorter task
     # If there is only one item in `run`, using a list is optional.
     run:
       task: short

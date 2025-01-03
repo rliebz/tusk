@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=../tusk.schema.yaml
+#
+# This file attempts to use every feature relevant for help text
+---
+options:
+  verbose:
+    usage: Run in verbose mode
+    short: v
+    type: bool
+    rewrite: -v
+
+tasks:
+  lint:
+    usage: Run static analysis
+    options:
+      fast:
+        usage: Only run fast linters
+        type: bool
+        short: f
+        rewrite: --fast
+    run: golangci-lint run ${fast} ${verbose} ./...
+
+  hello:
+    run: echo "Hello"
+
+  print-passed-values:
+    usage: Print values passed
+    description: |
+      This is a much longer description, which should describe what the task
+      does across multiple lines. It rolls over at least two separate times on
+      purpose.
+    args:
+      short:
+        usage: The first argument
+      longer-name:
+        usage: The second argument
+      arg-without-usage: {}
+    options:
+      brief:
+        usage: The first flag
+        type: boolean
+      much-less-brief:
+        usage: The second flag
+        short: m
+      option-without-usage:
+        type: boolean
+    run:
+      - echo ${short} ${longer-name} ${brief} ${much-less-brief}

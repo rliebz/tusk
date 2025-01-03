@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 	"testing"
 	"text/template"
 
@@ -30,31 +32,21 @@ func TestRun_printVersion(t *testing.T) {
 }
 
 func TestRun_printHelp(t *testing.T) {
-	g := ghost.New(t)
-
-	stdout := new(bytes.Buffer)
-
-	args := []string{"tusk", "--help"}
-	status := run(
-		config{
-			args:   args,
-			stdout: stdout,
-		},
-	)
-
-	executable := filepath.Base(os.Args[0])
-
-	message := `{{.}} - the modern task runner
+	tests := []struct {
+		args     []string
+		wantTmpl string
+	}{
+		{
+			args: []string{"--help"},
+			wantTmpl: `{{.}} - the modern task runner
 
 Usage:
    {{.}} [global options] <task> [task options]
 
 Tasks:
-   generate  Generate tusk.schema.json from tusk.schema.yaml
-   lint      Run static analysis
-   release   Release the latest version with goreleaser
-   test      Run the tests
-   tidy      Clean up and format the repo
+   hello                
+   lint                 Run static analysis
+   print-passed-values  Print values passed
 
 Global Options:
    -f, --file <file>                   Set file to use as the config file
@@ -65,16 +57,82 @@ Global Options:
        --uninstall-completion <shell>  Uninstall tab completion for a shell
    -V, --version                       Print version and exit
    -v, --verbose                       Print verbose output
-`
+`,
+		},
+		{
+			args: []string{"hello", "--help"},
+			wantTmpl: `{{.}} hello
 
-	tpl := template.Must(template.New("help").Parse(message))
-	var buf bytes.Buffer
-	err := tpl.Execute(&buf, executable)
-	g.NoError(err)
+Usage:
+   {{.}} hello
+`,
+		},
+		{
+			args: []string{"lint", "--help"},
+			wantTmpl: `{{.}} lint - Run static analysis
 
-	want := buf.String()
-	g.Should(be.Equal(stdout.String(), want))
-	g.Should(be.Equal(status, 0))
+Usage:
+   {{.}} lint [options]
+
+Options:
+   -f, --fast     Only run fast linters
+   -v, --verbose  Run in verbose mode
+`,
+		},
+		{
+			args: []string{"print-passed-values", "--help"},
+			wantTmpl: `{{.}} print-passed-values - Print values passed
+
+Usage:
+   {{.}} print-passed-values [options] <short> <longer-name> <arg-without-usage> 
+
+Description:
+   This is a much longer description, which should describe what the task
+   does across multiple lines. It rolls over at least two separate times on
+   purpose.
+
+Arguments:
+   short              The first argument
+   longer-name        The second argument
+   arg-without-usage
+
+Options:
+       --brief                    The first flag
+   -m, --much-less-brief <value>  The second flag
+       --option-without-usage     
+`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
+			g := ghost.New(t)
+
+			stdout := new(bytes.Buffer)
+
+			status := run(
+				config{
+					args: slices.Concat([]string{
+						"tusk",
+						"--file",
+						"testdata/help.yml",
+					}, tt.args),
+					stdout: stdout,
+				},
+			)
+
+			executable := filepath.Base(os.Args[0])
+
+			tpl := template.Must(template.New("help").Parse(tt.wantTmpl))
+			var buf bytes.Buffer
+			err := tpl.Execute(&buf, executable)
+			g.NoError(err)
+
+			want := buf.String()
+			g.Should(be.Equal(stdout.String(), want))
+			g.Should(be.Equal(status, 0))
+		})
+	}
 }
 
 func TestRun_exitCodeZero(t *testing.T) {

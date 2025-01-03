@@ -124,6 +124,10 @@ func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
 	if cfg.Usage != "" {
 		app.Usage = cfg.Usage
 	}
+	if meta.Logger != nil {
+		app.Writer = meta.Logger.Stdout
+		app.ErrWriter = meta.Logger.Stderr
+	}
 
 	if err := addTasks(app, meta, cfg, createExecuteCommand); err != nil {
 		return nil, err
