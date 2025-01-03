@@ -32,22 +32,16 @@ should be added in [docs/spec.md][spec.md].
 
 ## Setting Up a Development Environment
 
-For local development, you will need Go version 1.11+ installed.
+For local development, you will need Go and golangci-lint installed. The
+easiest way to do this is with [mise](https://mise.jdx.dev/), but it is not
+required.
 
-Tusk uses go modules for dependency management, so make sure to clone the
-project outside of the `GOPATH`. If that doesn't mean anything to you, you're
-probably fine.
-
-```bash
-git clone https://github.com/rliebz/tusk.git
-```
-
-If it is not already on your path, you probably also want to have the `GOPATH`
-binary directory available for projects installed by `go get` and `go install`.
-To do so, add the following to your `.bash_profile` or `.zshrc`:
+If it is not already on your path, you probably want to have the `GOBIN`
+directory available for projects installed by `go install`. To do so, add the
+following to your `.bash_profile` or `.zshrc`:
 
 ```bash
-export PATH="$PATH:$(go env GOPATH)/bin"
+export PATH="$PATH:$(go env GOBIN)"
 ```
 
 To install Tusk:
@@ -61,7 +55,7 @@ against the development version installed locally. If you do not get `(devel)`
 as the version, you may need to move your Go binary path earlier in your
 `PATH`:
 
-```bash
+```console
 $ tusk --version
 (devel)
 ```
@@ -83,7 +77,7 @@ To run the unit tests:
 tusk test
 ```
 
-To run the full test suite, along with the linter:
+To run the full test suite, along with golangci-lint:
 
 ```bash
 tusk test -a
@@ -95,7 +89,7 @@ violation is necessary for your contribution, you can disable a specific linter
 for that line:
 
 ```golang
-cmd := exec.Command("sh", "-c", command) // nolint: gosec
+cmd := exec.Command("sh", "-c", command) //nolint:gosec
 ```
 
 [spec.md]: https://github.com/rliebz/tusk/blob/main/docs/spec.md

@@ -1,4 +1,5 @@
 ---
+version: 2
 project_name: tusk
 before:
   hooks:
@@ -14,13 +15,13 @@ builds:
       - darwin
       - windows
     goarch:
-      - 386
+      - "386"
       - amd64
       - arm
       - arm64
     ignore:
       - goos: darwin
-        goarch: 386
+        goarch: "386"
 archives:
   - name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format: tar.gz
@@ -35,7 +36,7 @@ archives:
       - appcli/completion/tusk.fish
       - appcli/completion/_tusk
 snapshot:
-  name_template: SNAPSHOT-{{ .Commit }}
+  version_template: SNAPSHOT-{{ .Commit }}
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
 release:

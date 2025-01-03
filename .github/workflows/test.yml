@@ -20,10 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set up
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.22.5"
+      - uses: jdx/mise-action@v2
       - name: Build
         run: go build -v ./...
       - name: Test
@@ -36,29 +33,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.22.5"
+      - uses: jdx/mise-action@v2
       - name: Lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.59.1
+          install-mode: none
 
   release:
     name: Release Dry Run
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.22.5"
+      - uses: jdx/mise-action@v2
       - name: Release Dry Run
         run: |
           header='^## [0-9]+\.[0-9]+\.[0-9]+'
           awk "/${header}/{if(!found){found=1;f=1}else{f=0}} f" CHANGELOG.md |
-            go run github.com/goreleaser/goreleaser --release-notes /dev/stdin --snapshot
+            goreleaser --release-notes /dev/stdin --snapshot
 
   docs:
     name: Docs Dry Run
