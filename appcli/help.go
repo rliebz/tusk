@@ -23,28 +23,61 @@ func init() { //nolint: gochecknoinits
 
 	cli.FlagNamePrefixer = flagPrefixer
 
-	//nolint:lll
 	cli.AppHelpTemplate = `{{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
 
 Usage:
-   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .VisibleFlags}}[global options]{{end}}{{if .Commands}} <task> [task options]{{end}}{{if .ArgsUsage}} {{.ArgsUsage}}{{end}}{{end}}{{if .Version}}{{if not .HideVersion}}
+   {{ if .UsageText }}
+   {{- .UsageText }}
+   {{- else }}
+   {{- .HelpName }}
+   {{- if .VisibleFlags }} [global options]{{ end }}
+   {{- if .Commands }} <task> [task options]{{ end }}
+   {{- if .ArgsUsage }} {{ .ArgsUsage }}{{ end }}
+   {{- end }}
+
+{{- if and .Version (not .HideVersion) }}
 
 Version:
-   {{.Version}}{{end}}{{end}}{{if .Description}}
+   {{ .Version }}
+
+{{- end }}
+
+{{- if .Description }}
 
 Description:
-{{indent 3 .Description}}{{end}}{{if .VisibleCommands}}
+{{ indent 3 .Description }}
+{{- end }}
 
-Tasks:{{range .VisibleCategories}}{{$categoryName := .Name}}{{if $categoryName}}
-   {{$categoryName}}:{{end}}{{range .VisibleCommands}}
-   {{if $categoryName}}  {{end}}{{join .Names ", "}}{{"\t"}}{{.Usage}}{{end}}{{end}}{{end}}{{if .VisibleFlags}}
+{{- if .VisibleCommands }}
+
+Tasks:
+{{- range .VisibleCategories }}
+{{- $categoryName := .Name }}
+{{- with $categoryName }}
+   {{ . }}:
+{{- end }}
+{{- range .VisibleCommands }}
+   {{ if $categoryName }}  {{ end }}{{ join .Names ", " }}{{ "\t" }}{{ .Usage }}
+{{- end }}
+{{- end }}
+
+{{- end }}
+
+{{- if .VisibleFlags }}
 
 Global Options:
-   {{range $index, $option := .VisibleFlags}}{{if $index}}
-   {{end}}{{$option}}{{end}}{{end}}{{if .Copyright}}
+{{- range .VisibleFlags }}
+   {{ . }}
+{{- end }}
+
+{{- end }}
+
+{{- with .Copyright }}
 
 Copyright:
-   {{.Copyright}}{{end}}
+   {{ . }}
+
+{{- end }}
 `
 }
 
@@ -119,30 +152,35 @@ func createCommandHelp(t *runner.Task) string {
 	return fmt.Sprintf(`{{.HelpName}}{{if .Usage}} - {{.Usage}}{{end}}
 
 Usage:
-   {{ if .UsageText }}
-   {{- .UsageText }}
-   {{- else }}
-   {{- .HelpName }}
+{{- if .UsageText }}
+   {{ .UsageText }}
+{{- else }}
+   {{ .HelpName }}
    {{- if .VisibleFlags }} [options]{{ end }}
    {{- with .ArgsUsage }} {{ . }}{{ end }}
-   {{- end }}
-
-{{- if .Category }}
-
-Category:
-   {{.Category}}
 {{- end }}
 
-{{- if .Description }}
+{{- with .Category }}
+
+Category:
+   {{ . }}
+
+{{- end }}
+
+{{- with .Description }}
 
 Description:
-{{ indent 3 .Description }}
-{{- end }}%s{{- if .VisibleFlags }}
+{{ indent 3 . }}
+
+{{- end }}%s
+
+{{- if .VisibleFlags }}
 
 Options:
-   {{- range  $index, $option := .VisibleFlags }}
-   {{ $option }}
-   {{- end }}
+{{- range .VisibleFlags }}
+   {{ . }}
+{{- end }}
+
 {{- end }}
 `, createArgsSection(t))
 }
@@ -151,9 +189,10 @@ func createArgsSection(t *runner.Task) string {
 	argsTpl := `{{- if . }}
 
 Arguments:
-   {{- range  $index, $arg := . }}
-   {{ $arg }}
-   {{- end }}
+{{- range  . }}
+   {{ . }}
+{{- end }}
+
 {{- end }}`
 
 	tpl := template.New(fmt.Sprintf("%s help", t.Name))
