@@ -253,7 +253,7 @@ Options:
 		if opt.Short != "" {
 			hasShortOpt = true
 		}
-		lines = append(lines, formatOpt(opt, width))
+		lines = append(lines, formatOpt(flag, opt, width))
 	}
 
 	if !hasShortOpt {
@@ -270,8 +270,8 @@ Options:
 	return buf.String()
 }
 
-func formatOpt(opt *runner.Option, width int) string {
-	line := pad(opt.FlagText(), width) + opt.Usage
+func formatOpt(flag cli.Flag, opt *runner.Option, width int) string {
+	line := pad(flagPrefix(flag, opt), width) + opt.Usage
 	defaultValue, hasDefault := opt.StaticDefault()
 
 	if hasDefault {
@@ -296,10 +296,18 @@ func maxOptionWidth(command *cli.Command, opts []*runner.Option) int {
 	maxWidth := 0
 	for _, flag := range command.VisibleFlags() {
 		opt := optionForFlag(flag, opts)
-		maxWidth = max(maxWidth, len(opt.FlagText()))
+		maxWidth = max(maxWidth, len(flagPrefix(flag, opt)))
 	}
 
 	return maxWidth
+}
+
+func flagPrefix(flag cli.Flag, opt *runner.Option) string {
+	text := cli.FlagStringer(flag)
+	if opt.Usage != "" {
+		text, _, _ = strings.Cut(text, opt.Usage)
+	}
+	return strings.TrimRight(text, " \t")
 }
 
 func optionForFlag(f cli.Flag, opts []*runner.Option) *runner.Option {
