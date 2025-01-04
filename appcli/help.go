@@ -237,7 +237,14 @@ Options:
 	lines := make([]string, 0, len(t.Args))
 	for _, flag := range command.VisibleFlags() {
 		opt := optionForFlag(flag, dependencies)
-		lines = append(lines, pad(opt.FlagText(), width)+opt.Usage)
+		line := pad(opt.FlagText(), width) + opt.Usage
+		if defaultValue, ok := opt.StaticDefault(); ok {
+			if opt.Usage != "" {
+				line += " "
+			}
+			line += fmt.Sprintf("(default: %s)", defaultValue)
+		}
+		lines = append(lines, strings.TrimRight(line, " "))
 	}
 
 	var buf bytes.Buffer

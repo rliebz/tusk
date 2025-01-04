@@ -40,15 +40,32 @@ tasks:
       arg-without-usage: {}
     options:
       brief:
-        usage: The first flag
+        usage: A brief flag
         type: boolean
         environment: ENV_BRIEF
+        short: b
+        default:
+          when:
+            exists: tusk.yml
+          value: foo
       much-less-brief:
-        usage: The second flag
-        short: m
+        usage: A much less brief flag
         values:
           - baz
           - qux
+      usage-default:
+        usage: This is the flag usage
+        type: float64
+        default: 15.5
+      only-default:
+        default: some-default
+      bool-default-true:
+        usage: Boolean value
+        type: boolean
+        default: true
+      numeric:
+        usage: This is numeric
+        type: integer
       option-without-usage:
         type: boolean
       hidden:

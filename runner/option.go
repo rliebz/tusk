@@ -180,6 +180,27 @@ func (o *Option) getSpecified() (value string, found bool) {
 	return "", false
 }
 
+// StaticDefault returns the default value, if static.
+func (o *Option) StaticDefault() (string, bool) {
+	switch len(o.DefaultValues) {
+	case 0:
+		// "0" is informative. "" and "false" are not.
+		if o.isNumeric() {
+			return "0", true
+		}
+		return "", false
+	case 1:
+		value := o.DefaultValues[0]
+		if len(value.When) != 0 || value.Command != "" {
+			return "", false
+		}
+
+		return value.Value, true
+	default:
+		return "", false
+	}
+}
+
 func (o *Option) getDefaultValue(ctx Context, vars map[string]string) (string, error) {
 	for _, candidate := range o.DefaultValues {
 		if err := candidate.When.Validate(ctx, vars); err != nil {

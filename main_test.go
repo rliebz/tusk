@@ -97,9 +97,13 @@ Arguments:
    arg-without-usage
 
 Options:
-       --brief                    The first flag
-   -m, --much-less-brief <value>  The second flag
-       --option-without-usage     
+       --bool-default-true        Boolean value (default: true)
+   -b, --brief                    A brief flag
+       --much-less-brief <value>  A much less brief flag
+       --numeric <value>          This is numeric (default: 0)
+       --only-default <value>     (default: some-default)
+       --option-without-usage
+       --usage-default <value>    This is the flag usage (default: 15.5)
 `,
 		},
 	}
