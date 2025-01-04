@@ -234,9 +234,20 @@ Options:
 
 	width := maxOptionWidth(command, opts) + 2
 
+	hasShortOpt := false
 	lines := make([]string, 0, len(t.Args))
 	for _, flag := range command.VisibleFlags() {
-		lines = append(lines, formatFlag(flag, width, opts))
+		opt := optionForFlag(flag, opts)
+		if opt.Short != "" {
+			hasShortOpt = true
+		}
+		lines = append(lines, formatOpt(opt, width))
+	}
+
+	if !hasShortOpt {
+		for i, line := range lines {
+			lines[i] = line[4:]
+		}
 	}
 
 	var buf bytes.Buffer
@@ -247,8 +258,7 @@ Options:
 	return buf.String()
 }
 
-func formatFlag(flag cli.Flag, width int, opts []*runner.Option) string {
-	opt := optionForFlag(flag, opts)
+func formatOpt(opt *runner.Option, width int) string {
 	line := pad(opt.FlagText(), width) + opt.Usage
 	defaultValue, hasDefault := opt.StaticDefault()
 

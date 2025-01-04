@@ -5,7 +5,6 @@
 options:
   verbose:
     usage: Run in verbose mode
-    short: v
     type: bool
     rewrite: -v
 
@@ -16,7 +15,6 @@ tasks:
       fast:
         usage: Only run fast linters
         type: bool
-        short: f
         rewrite: --fast
     run: golangci-lint run ${fast} ${verbose} ./...
 

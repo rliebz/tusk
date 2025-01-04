@@ -75,8 +75,8 @@ Usage:
    {{.}} lint [options]
 
 Options:
-   -f, --fast     Only run fast linters
-   -v, --verbose  Run in verbose mode
+   --fast     Only run fast linters
+   --verbose  Run in verbose mode
 `,
 		},
 		{
