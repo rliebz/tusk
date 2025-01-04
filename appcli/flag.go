@@ -24,13 +24,8 @@ func copyFlags(target, source *cli.App) {
 }
 
 // addAllFlagsUsed adds the top-level flags to tasks where interpolation is used.
-func addAllFlagsUsed(cfg *runner.Config, cmd *cli.Command, t *runner.Task) error {
-	dependencies, err := runner.FindAllOptions(t, cfg)
-	if err != nil {
-		return err
-	}
-
-	for _, opt := range dependencies {
+func addAllFlagsUsed(cmd *cli.Command, t *runner.Task, options []*runner.Option) error {
+	for _, opt := range options {
 		if opt.Private {
 			continue
 		}

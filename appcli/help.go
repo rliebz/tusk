@@ -148,7 +148,11 @@ func prependHyphens(flagName string) string {
 	return "--" + flagName
 }
 
-func createCommandHelp(t *runner.Task) string {
+func createCommandHelp(
+	command *cli.Command,
+	t *runner.Task,
+	dependencies []*runner.Option,
+) string {
 	return fmt.Sprintf(`{{.HelpName}}{{if .Usage}} - {{.Usage}}{{end}}
 
 Usage:
@@ -173,16 +177,7 @@ Description:
 {{ indent 3 . }}
 
 {{- end }}%s
-
-{{- if .VisibleFlags }}
-
-Options:
-{{- range .VisibleFlags }}
-   {{ . }}
-{{- end }}
-
-{{- end }}
-`, createArgsSection(t))
+`, createArgsSection(t)+createOptionsSection(command, t, dependencies))
 }
 
 func createArgsSection(t *runner.Task) string {
@@ -198,31 +193,84 @@ Arguments:
 	tpl := template.New(fmt.Sprintf("%s help", t.Name))
 	tpl = template.Must(tpl.Parse(argsTpl))
 
-	padArg := getArgPadder(t)
+	width := maxArgWidth(t) + 2
 
-	args := make([]string, 0, len(t.Args))
+	lines := make([]string, 0, len(t.Args))
 	for _, arg := range t.Args {
-		text := fmt.Sprintf("%s%s", padArg(arg.Name), arg.Usage)
-		args = append(args, strings.TrimSpace(text))
+		text := fmt.Sprintf("%s%s", pad(arg.Name, width), arg.Usage)
+		lines = append(lines, strings.TrimSpace(text))
 	}
 
 	var argsSection bytes.Buffer
-	if err := tpl.Execute(&argsSection, args); err != nil {
+	if err := tpl.Execute(&argsSection, lines); err != nil {
 		panic(err)
 	}
 
 	return argsSection.String()
 }
 
-func getArgPadder(t *runner.Task) func(string) string {
-	maxLength := 0
+func maxArgWidth(t *runner.Task) int {
+	maxWidth := 0
 	for _, arg := range t.Args {
-		if len(arg.Name) > maxLength {
-			maxLength = len(arg.Name)
+		maxWidth = max(maxWidth, len(arg.Name))
+	}
+	return maxWidth
+}
+
+func createOptionsSection(
+	command *cli.Command,
+	t *runner.Task,
+	dependencies []*runner.Option,
+) string {
+	tpl := template.New(fmt.Sprintf("%s help", command.Name))
+	tpl = template.Must(tpl.Parse(`{{- if . }}
+
+Options:
+{{- range  . }}
+   {{ . }}
+{{- end }}
+
+{{- end }}`))
+
+	width := maxOptionWidth(command, dependencies) + 2
+
+	lines := make([]string, 0, len(t.Args))
+	for _, flag := range command.VisibleFlags() {
+		opt := optionForFlag(flag, dependencies)
+		lines = append(lines, pad(opt.FlagText(), width)+opt.Usage)
+	}
+
+	var buf bytes.Buffer
+	if err := tpl.Execute(&buf, lines); err != nil {
+		panic(err)
+	}
+
+	return buf.String()
+}
+
+func maxOptionWidth(command *cli.Command, opts []*runner.Option) int {
+	maxWidth := 0
+	for _, flag := range command.VisibleFlags() {
+		opt := optionForFlag(flag, opts)
+		maxWidth = max(maxWidth, len(opt.FlagText()))
+	}
+
+	return maxWidth
+}
+
+func optionForFlag(f cli.Flag, opts []*runner.Option) *runner.Option {
+	flagName, _, _ := strings.Cut(f.GetName(), ",")
+	for _, opt := range opts {
+		if opt.Name == flagName {
+			return opt
 		}
 	}
-	s := fmt.Sprintf("%%-%ds", maxLength+2)
-	return func(text string) string {
-		return fmt.Sprintf(s, text)
-	}
+
+	panic("failed to find opt for flag: " + flagName)
+}
+
+// pad a string to a given width.
+func pad(text string, width int) string {
+	s := fmt.Sprintf("%%-%ds", width)
+	return fmt.Sprintf(s, text)
 }
