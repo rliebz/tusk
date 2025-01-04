@@ -108,6 +108,7 @@ Options:
        --only-default <value>     Default: some-default
        --only-values <value>      One of: alice, bob, carol
        --option-without-usage
+       --placeholder <val>        With a value named val
        --usage-default <value>    This is the flag usage (default: 15.5)
        --values-default <value>   Default: alice
                                   One of: alice, bob, carol

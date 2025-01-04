@@ -271,7 +271,7 @@ Options:
 }
 
 func formatOpt(flag cli.Flag, opt *runner.Option, width int) string {
-	line := pad(flagPrefix(flag, opt), width) + opt.Usage
+	line := pad(flagPrefix(flag, opt), width) + unquoteUsage(opt.Usage)
 	defaultValue, hasDefault := opt.StaticDefault()
 
 	if hasDefault {
@@ -305,9 +305,28 @@ func maxOptionWidth(command *cli.Command, opts []*runner.Option) int {
 func flagPrefix(flag cli.Flag, opt *runner.Option) string {
 	text := cli.FlagStringer(flag)
 	if opt.Usage != "" {
-		text, _, _ = strings.Cut(text, opt.Usage)
+		text, _, _ = strings.Cut(text, unquoteUsage(opt.Usage))
 	}
 	return strings.TrimRight(text, " \t")
+}
+
+// Unquotes placeholder text from the usage string.
+//
+// Modified from urfave/cli.
+func unquoteUsage(usage string) string {
+	for i := 0; i < len(usage); i++ {
+		if usage[i] == '`' {
+			for j := i + 1; j < len(usage); j++ {
+				if usage[j] == '`' {
+					name := usage[i+1 : j]
+					usage = usage[:i] + name + usage[j+1:]
+					return usage
+				}
+			}
+			break
+		}
+	}
+	return usage
 }
 
 func optionForFlag(f cli.Flag, opts []*runner.Option) *runner.Option {
