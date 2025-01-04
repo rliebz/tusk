@@ -39,13 +39,19 @@ func addTask(
 
 	command, err := create(app, meta, t)
 	if err != nil {
-		return fmt.Errorf(`could not create command %q: %w`, t.Name, err)
+		return fmt.Errorf("could not create command %q: %w", t.Name, err)
 	}
 
-	if err := addAllFlagsUsed(cfg, command, t); err != nil {
-		return fmt.Errorf("could not add flags: %w", err)
+	options, err := runner.FindAllOptions(t, cfg)
+	if err != nil {
+		return fmt.Errorf("could not determine options for task %q: %w", t.Name, err)
 	}
 
+	if err := addAllFlagsUsed(command, t, options); err != nil {
+		return fmt.Errorf("could not add flags for task %q: %w", t.Name, err)
+	}
+
+	command.CustomHelpTemplate = createCommandHelp(command, t, options)
 	app.Commands = append(app.Commands, *command)
 
 	return nil

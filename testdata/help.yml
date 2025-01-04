@@ -34,15 +34,24 @@ tasks:
         usage: The first argument
       longer-name:
         usage: The second argument
+        values:
+          - foo
+          - bar
       arg-without-usage: {}
     options:
       brief:
         usage: The first flag
         type: boolean
+        environment: ENV_BRIEF
       much-less-brief:
         usage: The second flag
         short: m
+        values:
+          - baz
+          - qux
       option-without-usage:
         type: boolean
+      hidden:
+        private: true
     run:
       - echo ${short} ${longer-name} ${brief} ${much-less-brief}

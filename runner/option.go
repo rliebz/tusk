@@ -45,6 +45,21 @@ func (o *Option) Dependencies() []string {
 	return options
 }
 
+// FlagText is the text used in CLI help output.
+func (o *Option) FlagText() string {
+	prefix := "    "
+	if o.Short != "" {
+		prefix = "-" + o.Short + ", "
+	}
+
+	suffix := ""
+	if !o.isBoolean() {
+		suffix = " <value>"
+	}
+
+	return prefix + "--" + o.Name + suffix
+}
+
 // UnmarshalYAML ensures that the option definition is valid.
 func (o *Option) UnmarshalYAML(unmarshal func(any) error) error {
 	type optionType Option // Use new type to avoid recursion
