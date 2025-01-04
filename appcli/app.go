@@ -32,11 +32,11 @@ func newBaseApp() *cli.App {
 		},
 		cli.StringFlag{
 			Name:  "install-completion",
-			Usage: "Install tab completion for a `shell`",
+			Usage: "Install tab completion for a `shell` (one of: bash, fish, zsh)",
 		},
 		cli.StringFlag{
 			Name:  "uninstall-completion",
-			Usage: "Uninstall tab completion for a `shell`",
+			Usage: "Uninstall tab completion for a `shell` (one of: bash, fish, zsh)",
 		},
 		cli.BoolFlag{
 			Name:  "q, quiet",

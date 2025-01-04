@@ -38,6 +38,7 @@ func TestRun_printHelp(t *testing.T) {
 	}{
 		{
 			args: []string{"--help"},
+			//nolint:lll
 			wantTmpl: `{{.}} - the modern task runner
 
 Usage:
@@ -51,10 +52,10 @@ Tasks:
 Global Options:
    -f, --file <file>                   Set file to use as the config file
    -h, --help                          Show help and exit
-       --install-completion <shell>    Install tab completion for a shell
+       --install-completion <shell>    Install tab completion for a shell (one of: bash, fish, zsh)
    -q, --quiet                         Only print command output and application errors
    -s, --silent                        Print no output
-       --uninstall-completion <shell>  Uninstall tab completion for a shell
+       --uninstall-completion <shell>  Uninstall tab completion for a shell (one of: bash, fish, zsh)
    -V, --version                       Print version and exit
    -v, --verbose                       Print verbose output
 `,
