@@ -3,9 +3,9 @@ package appcli
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"io"
 	"strings"
+	"text/template"
 
 	"github.com/urfave/cli"
 
