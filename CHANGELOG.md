@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+### Added
+
+- Valid values are now listed as part of help text for args and options.
+- Default values are now listed as part of help text for options.
+
 ### Changed
 
 - Improved error messages for invalid values passed as arguments and options.
