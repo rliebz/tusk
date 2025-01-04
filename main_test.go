@@ -100,10 +100,14 @@ Options:
        --bool-default-true        Boolean value (default: true)
    -b, --brief                    A brief flag
        --much-less-brief <value>  A much less brief flag
+                                  One of: baz, qux
        --numeric <value>          This is numeric (default: 0)
-       --only-default <value>     (default: some-default)
+       --only-default <value>     Default: some-default
+       --only-values <value>      One of: alice, bob, carol
        --option-without-usage
        --usage-default <value>    This is the flag usage (default: 15.5)
+       --values-default <value>   Default: alice
+                                  One of: alice, bob, carol
 `,
 		},
 	}

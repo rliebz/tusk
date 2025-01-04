@@ -57,8 +57,19 @@ tasks:
         usage: This is the flag usage
         type: float64
         default: 15.5
+      only-values:
+        values:
+          - alice
+          - bob
+          - carol
       only-default:
         default: some-default
+      values-default:
+        default: alice
+        values:
+          - alice
+          - bob
+          - carol
       bool-default-true:
         usage: Boolean value
         type: boolean

@@ -220,7 +220,7 @@ func maxArgWidth(t *runner.Task) int {
 func createOptionsSection(
 	command *cli.Command,
 	t *runner.Task,
-	dependencies []*runner.Option,
+	opts []*runner.Option,
 ) string {
 	tpl := template.New(fmt.Sprintf("%s help", command.Name))
 	tpl = template.Must(tpl.Parse(`{{- if . }}
@@ -232,19 +232,11 @@ Options:
 
 {{- end }}`))
 
-	width := maxOptionWidth(command, dependencies) + 2
+	width := maxOptionWidth(command, opts) + 2
 
 	lines := make([]string, 0, len(t.Args))
 	for _, flag := range command.VisibleFlags() {
-		opt := optionForFlag(flag, dependencies)
-		line := pad(opt.FlagText(), width) + opt.Usage
-		if defaultValue, ok := opt.StaticDefault(); ok {
-			if opt.Usage != "" {
-				line += " "
-			}
-			line += fmt.Sprintf("(default: %s)", defaultValue)
-		}
-		lines = append(lines, strings.TrimRight(line, " "))
+		lines = append(lines, formatFlag(flag, width, opts))
 	}
 
 	var buf bytes.Buffer
@@ -253,6 +245,29 @@ Options:
 	}
 
 	return buf.String()
+}
+
+func formatFlag(flag cli.Flag, width int, opts []*runner.Option) string {
+	opt := optionForFlag(flag, opts)
+	line := pad(opt.FlagText(), width) + opt.Usage
+	defaultValue, hasDefault := opt.StaticDefault()
+
+	if hasDefault {
+		if opt.Usage != "" {
+			line += " " + fmt.Sprintf("(default: %s)", defaultValue)
+		} else {
+			line += "Default: " + defaultValue
+		}
+	}
+
+	if len(opt.ValuesAllowed) > 0 {
+		if opt.Usage != "" || hasDefault {
+			line += "\n" + strings.Repeat(" ", width+3)
+		}
+		line += "One of: " + strings.Join(opt.ValuesAllowed, ", ")
+	}
+
+	return strings.TrimRight(line, " ")
 }
 
 func maxOptionWidth(command *cli.Command, opts []*runner.Option) int {
