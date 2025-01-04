@@ -62,7 +62,7 @@ func createCommand(t *runner.Task, actionFunc func(*cli.Context) error) *cli.Com
 	}
 
 	for _, arg := range t.Args {
-		command.ArgsUsage += fmt.Sprintf("<%s> ", arg.Name)
+		command.ArgsUsage += fmt.Sprintf(" <%s>", arg.Name)
 	}
 
 	return command

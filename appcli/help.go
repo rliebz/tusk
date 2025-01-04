@@ -161,7 +161,7 @@ Usage:
 {{- else }}
    {{ .HelpName }}
    {{- if .VisibleFlags }} [options]{{ end }}
-   {{- with .ArgsUsage }} {{ . }}{{ end }}
+   {{- with .ArgsUsage }}{{ . }}{{ end }}
 {{- end }}
 
 {{- with .Category }}
@@ -190,15 +190,14 @@ Arguments:
 
 {{- end }}`
 
-	tpl := template.New(fmt.Sprintf("%s help", t.Name))
+	tpl := template.New(fmt.Sprintf("%s arg help", t.Name))
 	tpl = template.Must(tpl.Parse(argsTpl))
 
 	width := maxArgWidth(t) + 2
 
 	lines := make([]string, 0, len(t.Args))
 	for _, arg := range t.Args {
-		text := fmt.Sprintf("%s%s", pad(arg.Name, width), arg.Usage)
-		lines = append(lines, strings.TrimSpace(text))
+		lines = append(lines, formatArg(arg, width))
 	}
 
 	var argsSection bytes.Buffer
@@ -207,6 +206,19 @@ Arguments:
 	}
 
 	return argsSection.String()
+}
+
+func formatArg(arg *runner.Arg, width int) string {
+	line := pad(arg.Name, width) + arg.Usage
+
+	if len(arg.ValuesAllowed) > 0 {
+		if arg.Usage != "" {
+			line += "\n" + strings.Repeat(" ", width+3)
+		}
+		line += "One of: " + strings.Join(arg.ValuesAllowed, ", ")
+	}
+
+	return strings.TrimRight(line, " ")
 }
 
 func maxArgWidth(t *runner.Task) int {
@@ -222,7 +234,7 @@ func createOptionsSection(
 	t *runner.Task,
 	opts []*runner.Option,
 ) string {
-	tpl := template.New(fmt.Sprintf("%s help", command.Name))
+	tpl := template.New(fmt.Sprintf("%s option help", command.Name))
 	tpl = template.Must(tpl.Parse(`{{- if . }}
 
 Options:

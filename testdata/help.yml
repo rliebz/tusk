@@ -35,7 +35,11 @@ tasks:
         values:
           - foo
           - bar
-      arg-without-usage: {}
+      no-details: {}
+      values-only:
+        values:
+          - baz
+          - qux
     options:
       brief:
         usage: A brief flag

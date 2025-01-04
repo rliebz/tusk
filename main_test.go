@@ -84,7 +84,7 @@ Options:
 			wantTmpl: `{{.}} print-passed-values - Print values passed
 
 Usage:
-   {{.}} print-passed-values [options] <short> <longer-name> <arg-without-usage> 
+   {{.}} print-passed-values [options] <short> <longer-name> <no-details> <values-only>
 
 Description:
    This is a much longer description, which should describe what the task
@@ -92,9 +92,11 @@ Description:
    purpose.
 
 Arguments:
-   short              The first argument
-   longer-name        The second argument
-   arg-without-usage
+   short        The first argument
+   longer-name  The second argument
+                One of: foo, bar
+   no-details
+   values-only  One of: baz, qux
 
 Options:
        --bool-default-true        Boolean value (default: true)
