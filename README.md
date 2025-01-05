@@ -1,10 +1,9 @@
 # Tusk
 
 [![GitHub release](https://img.shields.io/github/release/rliebz/tusk.svg)][releases]
-[![CircleCI](https://img.shields.io/circleci/project/github/rliebz/tusk/main.svg)][circle]
-[![AppVeyor](https://img.shields.io/appveyor/ci/RobertLiebowitz/tusk/main.svg?label=windows)][appveyor]
+[![Test Workflow](https://github.com/rliebz/tusk/actions/workflows/test.yml/badge.svg)](https://github.com/rliebz/tusk/actions?query=workflow%3ATest+branch%3Amain++)
+[![Go Report Card](https://goreportcard.com/badge/github.com/rliebz/tusk)](https://goreportcard.com/report/github.com/rliebz/tusk)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Gitter](https://img.shields.io/gitter/room/tusk-cli/tusk.svg)][gitter]
 
 Tusk is a yaml-based task runner. By creating a `tusk.yml` in the root of a
 repository, Tusk becomes a custom command line tool with minimal configuration.
@@ -149,11 +148,8 @@ file.
 Set-up instructions for a development environment and contribution guidelines
 can be found in [CONTRIBUTING.md][contributing].
 
-[appveyor]: https://ci.appveyor.com/project/RobertLiebowitz/tusk
-[circle]: https://circleci.com/gh/rliebz/tusk/tree/main
 [contributing]: https://github.com/rliebz/tusk/blob/main/CONTRIBUTING.md
 [documentation]: https://rliebz.github.io/tusk/
-[gitter]: https://gitter.im/tusk-cli/tusk
 [homebrew]: https://brew.sh
 [releases]: https://github.com/rliebz/tusk/releases
 [spec]: https://rliebz.github.io/tusk/spec/
