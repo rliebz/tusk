@@ -114,16 +114,13 @@ suite can be found <a href="#running-tests">here</a>.</p>
 <p>For features which change the spec of the configuration file, documentation
 should be added in <a href="https://github.com/rliebz/tusk/blob/main/docs/spec.md">docs/spec.md</a>.</p>
 <h2 id="setting-up-a-development-environment">Setting Up a Development Environment</h2>
-<p>For local development, you will need Go version 1.11+ installed.</p>
-<p>Tusk uses go modules for dependency management, so make sure to clone the
-project outside of the <code>GOPATH</code>. If that doesn't mean anything to you, you're
-probably fine.</p>
-<pre><code class="language-bash">git clone https://github.com/rliebz/tusk.git
-</code></pre>
-<p>If it is not already on your path, you probably also want to have the <code>GOPATH</code>
-binary directory available for projects installed by <code>go get</code> and <code>go install</code>.
-To do so, add the following to your <code>.bash_profile</code> or <code>.zshrc</code>:</p>
-<pre><code class="language-bash">export PATH=&quot;$PATH:$(go env GOPATH)/bin&quot;
+<p>For local development, you will need Go and golangci-lint installed. The
+easiest way to do this is with <a href="https://mise.jdx.dev/">mise</a>, but it is not
+required.</p>
+<p>If it is not already on your path, you probably want to have the <code>GOBIN</code>
+directory available for projects installed by <code>go install</code>. To do so, add the
+following to your <code>.bash_profile</code> or <code>.zshrc</code>:</p>
+<pre><code class="language-bash">export PATH=&quot;$PATH:$(go env GOBIN)&quot;
 </code></pre>
 <p>To install Tusk:</p>
 <pre><code class="language-bash">go install
@@ -132,7 +129,7 @@ To do so, add the following to your <code>.bash_profile</code> or <code>.zshrc</
 against the development version installed locally. If you do not get <code>(devel)</code>
 as the version, you may need to move your Go binary path earlier in your
 <code>PATH</code>:</p>
-<pre><code class="language-bash">$ tusk --version
+<pre><code class="language-console">$ tusk --version
 (devel)
 </code></pre>
 <h2 id="making-changes">Making Changes</h2>
@@ -145,14 +142,14 @@ will be cut separately.</p>
 <p>To run the unit tests:</p>
 <pre><code class="language-bash">tusk test
 </code></pre>
-<p>To run the full test suite, along with the linter:</p>
+<p>To run the full test suite, along with golangci-lint:</p>
 <pre><code class="language-bash">tusk test -a
 </code></pre>
 <p>If the linter fails, execution will stop short and not actually run the
 unit test suite. If there is a linter error that is a false-positive, or the
 violation is necessary for your contribution, you can disable a specific linter
 for that line:</p>
-<pre><code class="language-golang">cmd := exec.Command(&quot;sh&quot;, &quot;-c&quot;, command) // nolint: gosec
+<pre><code class="language-golang">cmd := exec.Command(&quot;sh&quot;, &quot;-c&quot;, command) //nolint:gosec
 </code></pre>
               
             </div>
