@@ -95,6 +95,7 @@ Description:
 Arguments:
    short        The first argument
    longer-name  The second argument
+                which is multi-line
                 One of: foo, bar
    no-details
    values-only  One of: baz, qux
@@ -103,6 +104,7 @@ Options:
        --bool-default-true        Boolean value (default: true)
    -b, --brief                    A brief flag
        --much-less-brief <value>  A much less brief flag
+                                  which is multi-line
                                   One of: baz, qux
        --numeric <value>          This is numeric (default: 0)
        --only-default <value>     Default: some-default

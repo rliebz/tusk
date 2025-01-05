@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 0.7.3 (2025-01-05)
+
+### Fixed
+
+- Handle multi-line usage for args and options in help text.
+
 ## 0.7.2 (2025-01-05)
 
 ### Added

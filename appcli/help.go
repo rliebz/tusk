@@ -209,7 +209,7 @@ Arguments:
 }
 
 func formatArg(arg *runner.Arg, width int) string {
-	line := pad(arg.Name, width) + arg.Usage
+	line := pad(arg.Name, width) + formatUsage(arg.Usage, width)
 
 	if len(arg.ValuesAllowed) > 0 {
 		if arg.Usage != "" {
@@ -271,7 +271,7 @@ Options:
 }
 
 func formatOpt(flag cli.Flag, opt *runner.Option, width int) string {
-	line := pad(flagPrefix(flag, opt), width) + unquoteUsage(opt.Usage)
+	line := pad(flagPrefix(flag, opt), width) + formatUsage(opt.Usage, width)
 	defaultValue, hasDefault := opt.StaticDefault()
 
 	if hasDefault {
@@ -305,9 +305,15 @@ func maxOptionWidth(command *cli.Command, opts []*runner.Option) int {
 func flagPrefix(flag cli.Flag, opt *runner.Option) string {
 	text := cli.FlagStringer(flag)
 	if opt.Usage != "" {
-		text, _, _ = strings.Cut(text, unquoteUsage(opt.Usage))
+		text, _, _ = strings.Cut(text, strings.TrimSpace(unquoteUsage(opt.Usage)))
 	}
 	return strings.TrimRight(text, " \t")
+}
+
+func formatUsage(usage string, width int) string {
+	usage = unquoteUsage(usage)
+	indent := strings.Repeat(" ", width+3)
+	return strings.TrimSpace(strings.ReplaceAll(usage, "\n", "\n"+indent))
 }
 
 // Unquotes placeholder text from the usage string.

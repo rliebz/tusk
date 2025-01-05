@@ -31,7 +31,9 @@ tasks:
       short:
         usage: The first argument
       longer-name:
-        usage: The second argument
+        usage: |
+          The second argument
+          which is multi-line
         values:
           - foo
           - bar
@@ -53,7 +55,9 @@ tasks:
       placeholder:
         usage: With a value named `val`
       much-less-brief:
-        usage: A much less brief flag
+        usage: |
+          A much less brief flag
+          which is multi-line
         values:
           - baz
           - qux
