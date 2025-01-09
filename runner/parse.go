@@ -31,7 +31,7 @@ func ParseComplete(
 		return nil, err
 	}
 
-	err = loadEnvFiles(cfg.EnvFile)
+	err = loadEnvFiles(meta.Directory, cfg.EnvFile)
 	if err != nil {
 		return nil, err
 	}

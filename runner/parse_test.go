@@ -942,7 +942,7 @@ BAZ=bazvalue
 	g.NoError(err)
 
 	for _, tt := range interpolatetests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.name+" same dir", func(t *testing.T) {
 			g := ghost.New(t)
 
 			t.Logf(`
@@ -958,6 +958,37 @@ given input:
 
 			meta := &Metadata{
 				CfgText: []byte(tt.input),
+			}
+
+			cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
+			g.NoError(err)
+
+			got := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
+			g.Should(be.DeepEqual(got, tt.want))
+		})
+
+		t.Run(tt.name+" other dir", func(t *testing.T) {
+			g := ghost.New(t)
+
+			t.Logf(`
+executing test case: %s
+for task %q with parameters: %s
+---
+given input:
+%s
+---
+`,
+				tt.name, tt.taskName, tt.flags, tt.input,
+			)
+
+			wd, err := os.Getwd()
+			g.NoError(err)
+
+			useTempDir(t)
+
+			meta := &Metadata{
+				CfgText:   []byte(tt.input),
+				Directory: wd,
 			}
 
 			cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)

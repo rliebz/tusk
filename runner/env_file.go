@@ -3,6 +3,7 @@ package runner
 import (
 	"maps"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 
@@ -38,7 +39,7 @@ func (f *EnvFile) UnmarshalYAML(unmarshal func(any) error) error {
 //
 // If no files are specified, it will load from an optional default of .env.
 // If an empty list is specified, no files will be loaded.
-func loadEnvFiles(envFiles []EnvFile) error {
+func loadEnvFiles(dir string, envFiles []EnvFile) error {
 	// An explicit [] is an obvious attempt to remove the default, so check only
 	// for nilness.
 	if envFiles == nil {
@@ -47,7 +48,7 @@ func loadEnvFiles(envFiles []EnvFile) error {
 
 	envMap := make(map[string]string)
 	for _, envFile := range envFiles {
-		m, err := readEnvFile(envFile)
+		m, err := readEnvFile(dir, envFile)
 		if err != nil {
 			return err
 		}
@@ -66,8 +67,8 @@ func loadEnvFiles(envFiles []EnvFile) error {
 	return nil
 }
 
-func readEnvFile(envFile EnvFile) (map[string]string, error) {
-	m, err := godotenv.Read(envFile.Path)
+func readEnvFile(dir string, envFile EnvFile) (map[string]string, error) {
+	m, err := godotenv.Read(filepath.Join(dir, envFile.Path))
 	switch {
 	case !envFile.Required && os.IsNotExist(err):
 	case err != nil:

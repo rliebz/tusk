@@ -80,7 +80,7 @@ QUUX=${FOO}
 		err := os.WriteFile(filepath.Join(tmpdir, ".env"), data, 0o644)
 		g.NoError(err)
 
-		err = loadEnvFiles(nil)
+		err = loadEnvFiles(tmpdir, nil)
 		g.NoError(err)
 
 		g.Should(be.All(
@@ -94,18 +94,18 @@ QUUX=${FOO}
 	t.Run("default not found", func(t *testing.T) {
 		g := ghost.New(t)
 		stashEnv(t)
-		useTempDir(t)
+		tmpdir := useTempDir(t)
 
-		err := loadEnvFiles(nil)
+		err := loadEnvFiles(tmpdir, nil)
 		g.NoError(err)
 	})
 
 	t.Run("dev null", func(t *testing.T) {
 		g := ghost.New(t)
 		stashEnv(t)
-		useTempDir(t)
+		tmpdir := useTempDir(t)
 
-		err := loadEnvFiles([]EnvFile{{Path: "/dev/null"}})
+		err := loadEnvFiles(tmpdir, []EnvFile{{Path: "/dev/null"}})
 		g.NoError(err)
 	})
 
@@ -119,7 +119,7 @@ QUUX=${FOO}
 		err := os.WriteFile(filepath.Join(tmpdir, ".env"), []byte(`FOO=foovalue`), 0o644)
 		g.NoError(err)
 
-		err = loadEnvFiles([]EnvFile{})
+		err = loadEnvFiles(tmpdir, []EnvFile{})
 		g.NoError(err)
 
 		g.Should(be.Zero(os.Getenv("FOO")))
@@ -133,7 +133,7 @@ QUUX=${FOO}
 		err := os.WriteFile(filepath.Join(tmpdir, ".env"), []byte("FOO=foovalue"), 0o644)
 		g.NoError(err)
 
-		err = loadEnvFiles([]EnvFile{
+		err = loadEnvFiles(tmpdir, []EnvFile{
 			{Path: ".env", Required: true},
 		})
 		g.NoError(err)
@@ -144,13 +144,33 @@ QUUX=${FOO}
 	t.Run("required not found", func(t *testing.T) {
 		g := ghost.New(t)
 		stashEnv(t)
-		useTempDir(t)
+		tmpdir := useTempDir(t)
 
-		err := loadEnvFiles([]EnvFile{
+		err := loadEnvFiles(tmpdir, []EnvFile{
 			{Path: ".env", Required: true},
 		})
-		g.Should(be.ErrorContaining(err, "open .env:"))
+		g.Should(be.ErrorIs(err, os.ErrNotExist))
 		g.Should(be.True(os.IsNotExist(err)))
+	})
+
+	t.Run("directory respected", func(t *testing.T) {
+		g := ghost.New(t)
+		stashEnv(t)
+
+		// Write the file we plan to use
+		tmpdir := useTempDir(t)
+		err := os.WriteFile(filepath.Join(tmpdir, ".env"), []byte("FOO=foovalue"), 0o644)
+		g.NoError(err)
+
+		// Navigate to a directory where the .env file is NOT located
+		useTempDir(t)
+
+		err = loadEnvFiles(tmpdir, []EnvFile{
+			{Path: ".env", Required: true},
+		})
+		g.NoError(err)
+
+		g.Should(be.Equal(os.Getenv("FOO"), "foovalue"))
 	})
 
 	t.Run("overrides earlier values", func(t *testing.T) {
@@ -165,7 +185,7 @@ QUUX=${FOO}
 		err = os.WriteFile(filepath.Join(tmpdir, "3.env"), []byte("BAR=three"), 0o644)
 		g.NoError(err)
 
-		err = loadEnvFiles([]EnvFile{
+		err = loadEnvFiles(tmpdir, []EnvFile{
 			{Path: "1.env"},
 			{Path: "2.env"},
 			{Path: "3.env"},
