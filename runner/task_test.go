@@ -308,7 +308,7 @@ func TestTask_run_finally_ui(t *testing.T) {
 	ctx := Context{
 		Logger: logger,
 	}
-	ctx.PushTask(&task)
+	ctx = ctx.WithTask(&task)
 
 	var err error
 	task.runFinally(ctx, &err)
@@ -346,7 +346,7 @@ func TestTask_run_finally_ui_fails(t *testing.T) {
 	ctx := Context{
 		Logger: logger,
 	}
-	ctx.PushTask(&task)
+	ctx = ctx.WithTask(&task)
 
 	var err error
 	task.runFinally(ctx, &err)

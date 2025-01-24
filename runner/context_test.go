@@ -10,11 +10,13 @@ import (
 func TestContext_TaskNames(t *testing.T) {
 	g := ghost.New(t)
 
-	var ctx Context
-	g.Should(be.SliceLen(ctx.TaskNames(), 0))
+	var ctx0 Context
+	g.Should(be.SliceLen(ctx0.TaskNames(), 0))
 
-	ctx.PushTask(&Task{Name: "foo"})
-	ctx.PushTask(&Task{Name: "bar"})
+	ctx := ctx0
+	ctx = ctx.WithTask(&Task{Name: "foo"})
+	ctx = ctx.WithTask(&Task{Name: "bar"})
 
 	g.Should(be.DeepEqual(ctx.TaskNames(), []string{"foo", "bar"}))
+	g.Should(be.SliceLen(ctx0.TaskNames(), 0))
 }

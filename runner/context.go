@@ -1,6 +1,10 @@
 package runner
 
-import "github.com/rliebz/tusk/ui"
+import (
+	"slices"
+
+	"github.com/rliebz/tusk/ui"
+)
 
 // Context contains contextual information about a run.
 type Context struct {
@@ -18,16 +22,17 @@ type Context struct {
 	taskStack []*Task
 }
 
-// PushTask adds a sub-task to the task stack.
-func (r *Context) PushTask(t *Task) {
-	r.taskStack = append(r.taskStack, t)
+// WithTask adds a sub-task to the task stack.
+func (c Context) WithTask(t *Task) Context {
+	c.taskStack = append(slices.Clip(c.taskStack), t)
+	return c
 }
 
 // TaskNames returns the list of task names in the stack, in order. Private
 // tasks are filtered out.
-func (r *Context) TaskNames() []string {
-	output := make([]string, 0, len(r.taskStack))
-	for _, t := range r.taskStack {
+func (c Context) TaskNames() []string {
+	output := make([]string, 0, len(c.taskStack))
+	for _, t := range c.taskStack {
 		if !t.Private {
 			output = append(output, t.Name)
 		}

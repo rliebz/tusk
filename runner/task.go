@@ -127,19 +127,19 @@ func (t *Task) Dependencies() []string {
 
 // Execute runs the Run scripts in the task.
 func (t *Task) Execute(ctx Context) (err error) {
-	ctx.PushTask(t)
+	ctx = ctx.WithTask(t)
 	ctx.Logger.PrintTask(t.Name)
 
 	defer ctx.Logger.PrintTaskCompleted(t.Name)
 	defer t.runFinally(ctx, &err)
 
 	for _, r := range t.RunList {
-		if rerr := t.run(ctx, r, stateRunning); rerr != nil {
-			return rerr
+		if err := t.run(ctx, r, stateRunning); err != nil {
+			return err
 		}
 	}
 
-	return err
+	return nil
 }
 
 func (t *Task) runFinally(ctx Context, err *error) {
