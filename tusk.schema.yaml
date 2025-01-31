@@ -401,6 +401,22 @@ $defs:
           Command output will still be printed.
         type: boolean
         default: false
+      source:
+        title: task source
+        description: >
+          File patterns used as inputs for the task.
+
+          If all target patterns exist and are newer than the newest source
+          pattern, the task will be skipped.
+        $ref: "#/$defs/stringOrArray"
+      target:
+        title: task target
+        description: >
+          File patterns used as outputs for the task.
+
+          If all target patterns exist and are newer than the newest source
+          pattern, the task will be skipped.
+        $ref: "#/$defs/stringOrArray"
       usage:
         title: task usage
         description: A one-line summary of the task.

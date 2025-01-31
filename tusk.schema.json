@@ -464,6 +464,16 @@
 					"$ref": "#/$defs/runClause",
 					"title": "task run"
 				},
+				"source": {
+					"$ref": "#/$defs/stringOrArray",
+					"description": "File patterns used as inputs for the task.\nIf all target patterns exist and are newer than the newest source pattern, the task will be skipped.\n",
+					"title": "task source"
+				},
+				"target": {
+					"$ref": "#/$defs/stringOrArray",
+					"description": "File patterns used as outputs for the task.\nIf all target patterns exist and are newer than the newest source pattern, the task will be skipped.\n",
+					"title": "task target"
+				},
 				"usage": {
 					"description": "A one-line summary of the task.",
 					"title": "task usage",

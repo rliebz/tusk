@@ -1213,6 +1213,30 @@ tasks:
 		taskName: "mytask",
 		wantErr:  "rewrite may only be performed on boolean values",
 	},
+
+	{
+		name: "only source",
+		input: `
+tasks:
+  mytask:
+    source: foo.txt
+    run: echo ${bar}
+`,
+		taskName: "mytask",
+		wantErr:  "task source cannot be defined without target",
+	},
+
+	{
+		name: "only target",
+		input: `
+tasks:
+  mytask:
+    target: foo.txt
+    run: echo ${bar}
+`,
+		taskName: "mytask",
+		wantErr:  "task target cannot be defined without source",
+	},
 }
 
 func TestParseComplete_invalid(t *testing.T) {
