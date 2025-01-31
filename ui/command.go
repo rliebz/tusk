@@ -111,6 +111,8 @@ func (l Logger) PrintEnvironment(variables map[string]*string) {
 }
 
 // PrintSkipped prints the command skipped and the reason.
+//
+// TODO: Split into PrintCommandSkipped and PrintTaskSkipped
 func (l Logger) PrintSkipped(command, reason string) {
 	if l.Verbosity < VerbosityLevelVerbose {
 		return

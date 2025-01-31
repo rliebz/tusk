@@ -66,6 +66,7 @@ func TestSearchForFile(t *testing.T) {
 	}
 }
 
+// useTempDir creates a temporary directory and switches to it.
 func useTempDir(t *testing.T) string {
 	t.Helper()
 
