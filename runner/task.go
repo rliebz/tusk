@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
+	"time"
 
 	yaml "gopkg.in/yaml.v2"
 
@@ -25,10 +27,13 @@ type Task struct {
 
 	RunList     marshal.Slice[*Run] `yaml:"run"`
 	Finally     marshal.Slice[*Run] `yaml:"finally,omitempty"`
-	Usage       string              `yaml:",omitempty"`
-	Description string              `yaml:",omitempty"`
-	Private     bool
-	Quiet       bool
+	Usage       string              `yaml:"usage,omitempty"`
+	Description string              `yaml:"description,omitempty"`
+	Private     bool                `yaml:"private"`
+	Quiet       bool                `yaml:"quiet"`
+
+	Source marshal.Slice[string] `yaml:"source"`
+	Target marshal.Slice[string] `yaml:"target"`
 
 	// Computed members not specified in yaml file
 	Name string            `yaml:"-"`
@@ -82,16 +87,23 @@ func (t *Task) UnmarshalYAML(unmarshal func(any) error) error {
 			type taskType Task // Use new type to avoid recursion
 			return unmarshal((*taskType)(&taskTarget))
 		},
-		Validate: taskTarget.checkOptArgCollisions,
+		Validate: taskTarget.isValid,
 		Assign:   func() { *t = taskTarget },
 	}
 
 	return marshal.UnmarshalOneOf(includeCandidate, taskCandidate)
 }
 
-// includedTask is the configuration for reading a task definition from another
-// file.
-func (t *Task) checkOptArgCollisions() error {
+// isValid checks whether a given task definition is valid.
+func (t *Task) isValid() error {
+	if len(t.Source) > 0 && len(t.Target) == 0 {
+		return errors.New("task source cannot be defined without target")
+	}
+
+	if len(t.Target) > 0 && len(t.Source) == 0 {
+		return errors.New("task target cannot be defined without source")
+	}
+
 	for _, o := range t.Options {
 		for _, a := range t.Args {
 			if o.Name == a.Name {
@@ -128,6 +140,16 @@ func (t *Task) Dependencies() []string {
 // Execute runs the Run scripts in the task.
 func (t *Task) Execute(ctx Context) (err error) {
 	ctx = ctx.WithTask(t)
+
+	isUpToDate, err := t.isUpToDate(ctx)
+	if err != nil {
+		return err
+	}
+	if isUpToDate {
+		ctx.Logger.PrintSkipped("task: "+t.Name, "all targets up to date")
+		return nil
+	}
+
 	ctx.Logger.PrintTask(t.Name)
 
 	defer ctx.Logger.PrintTaskCompleted(t.Name)
@@ -140,6 +162,96 @@ func (t *Task) Execute(ctx Context) (err error) {
 	}
 
 	return nil
+}
+
+func (t *Task) isUpToDate(ctx Context) (bool, error) {
+	targetModTime, err := t.targetModTime(ctx)
+	if err != nil {
+		return false, err
+	}
+	if targetModTime.IsZero() {
+		return false, nil
+	}
+
+	for _, glob := range t.Source {
+		isNewer, err := hasNewerFile(glob, targetModTime)
+		if err != nil {
+			return false, err
+		}
+		if isNewer {
+			return false, nil
+		}
+	}
+
+	return true, nil
+}
+
+// targetModTime returns the mod time representing the task's "target" clause.
+//
+// If any files are missing, a zero time will be returned to force regeneration.
+func (t *Task) targetModTime(ctx Context) (time.Time, error) {
+	var targetModTime time.Time
+	for _, glob := range t.Target {
+		modTime, err := targetGlobModTime(filepath.Join(ctx.Dir, glob))
+		if err != nil {
+			return time.Time{}, err
+		}
+
+		if modTime.IsZero() {
+			return time.Time{}, nil
+		}
+
+		if targetModTime.IsZero() || modTime.Before(targetModTime) {
+			targetModTime = modTime
+		}
+	}
+
+	return targetModTime, nil
+}
+
+func targetGlobModTime(glob string) (time.Time, error) {
+	files, err := filepath.Glob(glob)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("syntax error in target pattern: %s", glob)
+	}
+
+	var modTime time.Time
+	for _, file := range files {
+		info, err := os.Stat(file)
+		if err != nil {
+			return time.Time{}, err
+		}
+
+		if t := info.ModTime(); modTime.IsZero() || t.Before(modTime) {
+			modTime = t
+		}
+	}
+
+	return modTime, nil
+}
+
+func hasNewerFile(glob string, modtime time.Time) (bool, error) {
+	files, err := filepath.Glob(glob)
+	if err != nil {
+		return false, fmt.Errorf("syntax error in source pattern: %s", glob)
+	}
+
+	if len(files) == 0 {
+		return false, fmt.Errorf("no source files found matching pattern: %s", glob)
+	}
+
+	for _, file := range files {
+		info, err := os.Stat(file)
+		if err != nil {
+			return false, err
+		}
+
+		if info.ModTime().After(modtime) {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
 
 func (t *Task) runFinally(ctx Context, err *error) {
