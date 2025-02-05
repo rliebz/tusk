@@ -3,6 +3,7 @@ module github.com/rliebz/tusk
 go 1.22.5
 
 require (
+	github.com/bmatcuk/doublestar/v4 v4.8.1
 	github.com/fatih/color v1.18.0
 	github.com/google/go-cmp v0.6.0
 	github.com/joho/godotenv v1.5.1
