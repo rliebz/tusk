@@ -93,6 +93,18 @@ tasks:
       # Sub-tasks can be referenced by just name, but must be defined first.
       - task: test
 
+  generate:
+    usage: Create files from other files
+    # Source files can be specified as patterns to check if running the task
+    # again is necessary.
+    source:
+      - generate.sh
+      - data/**/*
+    # If the target is up-to-date, the task will be skipped. Lists and patterns
+    # are supported here as well.
+    target: output.txt
+    run: ./generate.sh
+
   short:
     usage: A short task
     options:
