@@ -466,12 +466,12 @@
 				},
 				"source": {
 					"$ref": "#/$defs/stringOrArray",
-					"description": "File patterns used as inputs for the task.\nIf all target patterns exist and are newer than the newest source pattern, the task will be skipped.\n",
+					"description": "File patterns used as inputs for the task using glob syntax.\nIf all target patterns exist and have newer timestamps than the newest source pattern, the task will be skipped. Otherwise, the task will execute as normal.\n",
 					"title": "task source"
 				},
 				"target": {
 					"$ref": "#/$defs/stringOrArray",
-					"description": "File patterns used as outputs for the task.\nIf all target patterns exist and are newer than the newest source pattern, the task will be skipped.\n",
+					"description": "File patterns used as outputs for the task using glob syntax.\nIf all target patterns exist and have newer timestamps than the newest source pattern, the task will be skipped. Otherwise, the task will execute as normal.\n",
 					"title": "task target"
 				},
 				"usage": {

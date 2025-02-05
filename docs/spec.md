@@ -1,6 +1,6 @@
-## The Spec
+# The Spec
 
-### Tasks
+## Tasks
 
 The core of every `tusk.yml` file is a list of tasks. Tasks are declared at the
 top level of the `tusk.yml` file and include a list of tasks.
@@ -265,7 +265,7 @@ tasks:
       - command: python main.py
 ```
 
-### When
+#### When
 
 For conditional execution, `when` clauses are available.
 
@@ -316,7 +316,7 @@ tasks:
         command: cat my_file.txt
 ```
 
-#### Short Form
+##### Short Form
 
 Because it's common to check if a boolean flag is set to true, `when` clauses
 also accept strings as shorthand. Consider the following example, which checks
@@ -333,7 +333,7 @@ This can be expressed more succinctly as the following:
 when: foo
 ```
 
-#### When Any/All Logic
+##### When Any/All Logic
 
 A `when` clause takes a list of items, where each item can have multiple checks.
 Each `when` item will pass if _any_ of the checks pass, while the whole clause
@@ -668,6 +668,34 @@ the same way that a `run` clause would. The exit code is still passed back to
 the command line. However, if both the `run` clause and `finally` clause fail,
 the exit code from the `run` clause takes precedence.
 
+### Source / Target
+
+For tasks that generate files from other files, it often makes sense to skip
+work when those generated files are already up-to-date. For this, tasks can
+specify a `source` and `target`:
+
+```yaml
+tasks:
+  generate:
+    source:
+      - generate.sh
+      - data/**/*
+    target: output.txt
+    run: ./generate.sh
+```
+
+The `source` and `target` clauses are each specified as one or more filepath
+patterns relative to the config file using [glob pattern syntax][glob].
+Both `source` and `target` must be specified together.
+
+[glob]: https://github.com/bmatcuk/doublestar?tab=readme-ov-file#patterns
+
+If all target patterns exist and have newer timestamps than the newest source
+pattern, the task will be skipped. Otherwise, the task will execute as normal.
+
+With directories, in most cases you'll want to use a pattern to specify the
+files in the directory for tracking changes rather than the directory itself.
+
 ### Include
 
 In some cases it may be desirable to split the task definition into a separate
@@ -697,7 +725,7 @@ It is invalid to split the configuration; if the `include` clause is used, no
 other keys can be specified in the `tusk.yml`, and the full task must be
 defined in the included file.
 
-### Environment Files
+## Environment Files
 
 Environment variables are also automatically read from a `.env` file in the
 same directory as `tusk.yml` before task execution. This file is optional by
@@ -746,7 +774,7 @@ To disable loading environment files completely, pass `[]` or `/dev/null`:
 env-file: []
 ```
 
-### Interpreter
+## Interpreter
 
 By default, any command run will default to using `sh -c` as its interpreter.
 This can optionally be configured using the `interpreter` clause.
@@ -770,7 +798,7 @@ argument. The above example is effectively equivalent to the following:
 node -e 'console.log("Hello!")'
 ```
 
-### CLI Metadata
+## CLI Metadata
 
 It is also possible to create a custom CLI tool for use outside of a project's
 directory by using shell aliases:
@@ -803,7 +831,7 @@ Tasks:
   ...
 ```
 
-### Interpolation
+## Interpolation
 
 The interpolation syntax for a variable `foo` is `${foo}`, meaning any instances
 of `${foo}` in the configuration file will be replaced with the value of `foo`

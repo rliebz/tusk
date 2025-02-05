@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+### Added
+
+- Tasks can now specify a `source` and `target` to avoid unnecessary work.
+
 ### Fixed
 
 - Use the directory of the config file as the working directory for finding
