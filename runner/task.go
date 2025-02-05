@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/bmatcuk/doublestar/v4"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/rliebz/tusk/marshal"
@@ -210,7 +211,7 @@ func (t *Task) targetModTime(ctx Context) (time.Time, error) {
 }
 
 func targetGlobModTime(glob string) (time.Time, error) {
-	files, err := filepath.Glob(glob)
+	files, err := doublestar.FilepathGlob(glob)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("syntax error in target pattern: %s", glob)
 	}
@@ -231,7 +232,7 @@ func targetGlobModTime(glob string) (time.Time, error) {
 }
 
 func hasNewerFile(glob string, modtime time.Time) (bool, error) {
-	files, err := filepath.Glob(glob)
+	files, err := doublestar.FilepathGlob(glob)
 	if err != nil {
 		return false, fmt.Errorf("syntax error in source pattern: %s", glob)
 	}
