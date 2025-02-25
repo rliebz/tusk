@@ -10,6 +10,7 @@ import (
 	// Embed completion scripts.
 	_ "embed"
 
+	"github.com/rliebz/tusk/internal/xdg"
 	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
 )
@@ -218,32 +219,26 @@ func uninstallFishCompletion() error {
 	return uninstallFileFromDir(dir, fishCompletionFile)
 }
 
+// getDataDir gets the directory to place user data in, adhering to the XDG
+// base directory specification.
 func getDataDir() (string, error) {
-	if xdgHome := os.Getenv("XDG_DATA_HOME"); xdgHome != "" {
-		return filepath.Join(xdgHome, "tusk"), nil
-	}
-
-	homedir, err := os.UserHomeDir()
+	xdgDataHome, err := xdg.DataHome()
 	if err != nil {
 		return "", err
 	}
 
-	return filepath.Join(homedir, ".local", "share", "tusk"), nil
+	return filepath.Join(xdgDataHome, "tusk"), nil
 }
 
 // getFishCompletionsDir gets the directory to place completions in, adhering
-// to the XDG base directory.
+// to the XDG base directory specification.
 func getFishCompletionsDir() (string, error) {
-	if xdgHome := os.Getenv("XDG_CONFIG_HOME"); xdgHome != "" {
-		return filepath.Join(xdgHome, "fish", "completions"), nil
-	}
-
-	homedir, err := os.UserHomeDir()
+	xdgConfigHome, err := xdg.ConfigHome()
 	if err != nil {
 		return "", err
 	}
 
-	return filepath.Join(homedir, ".config", "fish", "completions"), nil
+	return filepath.Join(xdgConfigHome, "fish", "completions"), nil
 }
 
 func installZshCompletion(logger *ui.Logger, dir string) error {
