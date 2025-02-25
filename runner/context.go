@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"path/filepath"
 	"slices"
 
 	"github.com/rliebz/tusk/ui"
@@ -8,9 +9,8 @@ import (
 
 // Context contains contextual information about a run.
 type Context struct {
-	// Dir is the directory that defines the config file, which is the relative
-	// directory for all command execution.
-	Dir string
+	// CfgPath is the full path of the configuration file.
+	CfgPath string
 
 	// Logger is responsible for logging actions as they occur. It is required to
 	// be defined for a Context.
@@ -20,6 +20,12 @@ type Context struct {
 	Interpreter []string
 
 	taskStack []*Task
+}
+
+// Dir is the directory that defines the config file, which is the relative
+// directory for all command execution.
+func (c Context) Dir() string {
+	return filepath.Dir(c.CfgPath)
 }
 
 // WithTask adds a sub-task to the task stack.

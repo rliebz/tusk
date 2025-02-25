@@ -987,8 +987,8 @@ given input:
 			useTempDir(t)
 
 			meta := &Metadata{
-				CfgText:   []byte(tt.input),
-				Directory: wd,
+				CfgPath: filepath.Join(wd, "tusk.yml"),
+				CfgText: []byte(tt.input),
 			}
 
 			cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)

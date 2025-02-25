@@ -2,6 +2,7 @@ package runner
 
 import (
 	"fmt"
+	"path/filepath"
 
 	yaml "gopkg.in/yaml.v2"
 
@@ -31,7 +32,7 @@ func ParseComplete(
 		return nil, err
 	}
 
-	err = loadEnvFiles(meta.Directory, cfg.EnvFile)
+	err = loadEnvFiles(filepath.Dir(meta.CfgPath), cfg.EnvFile)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +48,7 @@ func ParseComplete(
 	}
 
 	ctx := Context{
-		Dir:         meta.Directory,
+		CfgPath:     meta.CfgPath,
 		Interpreter: meta.Interpreter,
 	}
 

@@ -3,7 +3,6 @@ package runner
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
 	yaml "gopkg.in/yaml.v2"
@@ -22,9 +21,9 @@ func NewMetadata() *Metadata {
 //
 // Metadata should be instantiated using NewMetadata.
 type Metadata struct {
+	CfgPath             string
 	CfgText             []byte
 	Interpreter         []string
-	Directory           string
 	InstallCompletion   string
 	UninstallCompletion string
 	PrintHelp           bool
@@ -34,9 +33,8 @@ type Metadata struct {
 
 // Set sets the metadata based on options.
 func (m *Metadata) Set(o OptGetter) error {
-	var fullPath string
 	var err error
-	fullPath, m.CfgText, err = getConfigFile(o)
+	m.CfgPath, m.CfgText, err = getConfigFile(o)
 	if err != nil {
 		return err
 	}
@@ -48,7 +46,6 @@ func (m *Metadata) Set(o OptGetter) error {
 
 	m.InstallCompletion = o.String("install-completion")
 	m.UninstallCompletion = o.String("uninstall-completion")
-	m.Directory = filepath.Dir(fullPath)
 	m.PrintHelp = o.Bool("help")
 	m.PrintVersion = o.Bool("version")
 	if m.Logger == nil {

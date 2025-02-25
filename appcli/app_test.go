@@ -188,7 +188,7 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 	wd, err := os.Getwd()
 	g.NoError(err)
 
-	g.Should(be.Equal(metadata.Directory, filepath.Dir(wd)))
+	g.Should(be.Equal(metadata.CfgPath, filepath.Join(filepath.Dir(wd), "tusk.yml")))
 	g.Should(be.Equal(metadata.Logger.Verbosity, ui.VerbosityLevelNormal))
 	g.Should(be.False(metadata.PrintVersion))
 }
@@ -202,7 +202,7 @@ func TestGetConfigMetadata_file(t *testing.T) {
 	metadata, err := GetConfigMetadata(args)
 	g.NoError(err)
 
-	g.Should(be.Equal(metadata.Directory, "testdata"))
+	g.Should(be.Equal(metadata.CfgPath, filepath.Join("testdata", "example.yml")))
 
 	cfgText, err := os.ReadFile(cfgPath)
 	g.NoError(err)

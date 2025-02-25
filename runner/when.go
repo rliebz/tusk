@@ -159,7 +159,7 @@ func (w *When) validateExists(ctx Context) error {
 	}
 
 	for _, f := range w.Exists {
-		if _, err := os.Stat(filepath.Join(ctx.Dir, f)); err != nil {
+		if _, err := os.Stat(filepath.Join(ctx.Dir(), f)); err != nil {
 			if !os.IsNotExist(err) {
 				return err
 			}
@@ -178,7 +178,7 @@ func (w *When) validateNotExists(ctx Context) error {
 	}
 
 	for _, f := range w.NotExists {
-		if _, err := os.Stat(filepath.Join(ctx.Dir, f)); err != nil {
+		if _, err := os.Stat(filepath.Join(ctx.Dir(), f)); err != nil {
 			if os.IsNotExist(err) {
 				return nil
 			}

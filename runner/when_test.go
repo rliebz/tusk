@@ -2,6 +2,7 @@ package runner
 
 import (
 	"fmt"
+	"path/filepath"
 	"runtime"
 	"strconv"
 	"testing"
@@ -372,27 +373,23 @@ func TestWhen_Validate(t *testing.T) {
 
 	// TODO: Combine this table with above tests
 	tests := []struct {
-		name    string
-		context Context
-		when    When
+		name string
+		when When
 	}{
 		{
-			name:    "directory exists",
-			context: Context{Dir: "testdata"},
+			name: "directory exists",
 			when: createWhen(
 				withWhenExists("exists.txt"), // file in testdata
 			),
 		},
 		{
-			name:    "directory not exists",
-			context: Context{Dir: "testdata"},
+			name: "directory not exists",
 			when: createWhen(
 				withWhenNotExists("when_test.go"), // file in working dir, not in testdata
 			),
 		},
 		{
-			name:    "directory command",
-			context: Context{Dir: "testdata"},
+			name: "directory command",
 			when: createWhen(
 				withWhenCommand(`test "$(basename "$(pwd)")" = "testdata"`),
 			),
@@ -403,7 +400,10 @@ func TestWhen_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			g := ghost.New(t)
 
-			err := tt.when.Validate(tt.context, nil)
+			ctx := Context{
+				CfgPath: filepath.Join("testdata", "tusk.yml"),
+			}
+			err := tt.when.Validate(ctx, nil)
 			g.NoError(err)
 		})
 	}

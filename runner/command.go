@@ -72,7 +72,7 @@ func newCmd(ctx Context, script string) *exec.Cmd {
 	}
 
 	cmd := execCommand(path, args...)
-	cmd.Dir = ctx.Dir
+	cmd.Dir = ctx.Dir()
 	return cmd
 }
 

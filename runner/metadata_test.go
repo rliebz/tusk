@@ -8,8 +8,9 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
-	"github.com/rliebz/tusk/ui"
 	"gotest.tools/v3/fs"
+
+	"github.com/rliebz/tusk/ui"
 )
 
 // mockOptGetter returns opts from maps
@@ -59,153 +60,120 @@ func TestMetadata_Set(t *testing.T) {
 		wd      string
 	}{
 		{
-			"defaults",
-			nil,
-			nil,
-			Metadata{
-				Directory: ".",
-				Logger:    normal,
+			name: "defaults",
+			meta: Metadata{
+				Logger: normal,
 			},
-			"",
 		},
 		{
-			"passed-config-file",
-			nil,
-			map[string]string{
+			name: "passed-config-file",
+			strings: map[string]string{
 				"file": cfgFile.Path(),
 			},
-			Metadata{
-				CfgText:   []byte(cfgFileContents),
-				Directory: filepath.Dir(cfgFile.Path()),
-				Logger:    normal,
+			meta: Metadata{
+				CfgPath: cfgFile.Path(),
+				CfgText: []byte(cfgFileContents),
+				Logger:  normal,
 			},
-			"",
 		},
 		{
-			"found-config-file",
-			nil,
-			nil,
-			Metadata{
-				CfgText:   []byte(dirFullContents),
-				Directory: dirFull.Path(),
-				Logger:    normal,
+			name: "found-config-file",
+			meta: Metadata{
+				CfgPath: filepath.Join(dirFull.Path(), "tusk.yml"),
+				CfgText: []byte(dirFullContents),
+				Logger:  normal,
 			},
-			dirFull.Path(),
+			wd: dirFull.Path(),
 		},
 		{
-			"passed-overwrites-found",
-			nil,
-			map[string]string{
+			name: "passed-overwrites-found",
+			strings: map[string]string{
 				"file": cfgFile.Path(),
 			},
-			Metadata{
-				CfgText:   []byte(cfgFileContents),
-				Directory: filepath.Dir(cfgFile.Path()),
-				Logger:    normal,
+			meta: Metadata{
+				CfgPath: cfgFile.Path(),
+				CfgText: []byte(cfgFileContents),
+				Logger:  normal,
 			},
-			dirFull.Path(),
+			wd: dirFull.Path(),
 		},
 		{
-			"install-completion",
-			nil,
-			map[string]string{
+			name: "install-completion",
+			strings: map[string]string{
 				"install-completion": "zsh",
 			},
-			Metadata{
-				Directory:         ".",
+			meta: Metadata{
 				InstallCompletion: "zsh",
 				Logger:            normal,
 			},
-			"",
 		},
 		{
-			"uninstall-completion",
-			nil,
-			map[string]string{
+			name: "uninstall-completion",
+			strings: map[string]string{
 				"uninstall-completion": "zsh",
 			},
-			Metadata{
-				Directory:           ".",
+			meta: Metadata{
 				UninstallCompletion: "zsh",
 				Logger:              normal,
 			},
-			"",
 		},
 		{
-			"print-help",
-			map[string]bool{
+			name: "print-help",
+			bools: map[string]bool{
 				"help": true,
 			},
-			nil,
-			Metadata{
-				Directory: ".",
+			meta: Metadata{
 				PrintHelp: true,
 				Logger:    normal,
 			},
-			"",
 		},
 		{
-			"print-version",
-			map[string]bool{
+			name: "print-version",
+			bools: map[string]bool{
 				"version": true,
 			},
-			nil,
-			Metadata{
-				Directory:    ".",
+			meta: Metadata{
 				PrintVersion: true,
 				Logger:       normal,
 			},
-			"",
 		},
 		{
-			"verbosity-silent",
-			map[string]bool{
+			name: "verbosity-silent",
+			bools: map[string]bool{
 				"silent": true,
 			},
-			nil,
-			Metadata{
-				Directory: ".",
-				Logger:    silent,
+			meta: Metadata{
+				Logger: silent,
 			},
-			"",
 		},
 		{
-			"verbosity-quiet",
-			map[string]bool{
+			name: "verbosity-quiet",
+			bools: map[string]bool{
 				"quiet": true,
 			},
-			nil,
-			Metadata{
-				Directory: ".",
-				Logger:    quiet,
+			meta: Metadata{
+				Logger: quiet,
 			},
-			"",
 		},
 		{
-			"verbosity-verbose",
-			map[string]bool{
+			name: "verbosity-verbose",
+			bools: map[string]bool{
 				"verbose": true,
 			},
-			nil,
-			Metadata{
-				Directory: ".",
-				Logger:    verbose,
+			meta: Metadata{
+				Logger: verbose,
 			},
-			"",
 		},
 		{
-			"verbosity-prefers-silence",
-			map[string]bool{
+			name: "verbosity-prefers-silence",
+			bools: map[string]bool{
 				"silent":  true,
 				"quiet":   true,
 				"verbose": true,
 			},
-			nil,
-			Metadata{
-				Directory: ".",
-				Logger:    silent,
+			meta: Metadata{
+				Logger: silent,
 			},
-			"",
 		},
 	}
 
@@ -239,10 +207,10 @@ func TestMetadata_Set(t *testing.T) {
 			g.NoError(err)
 
 			// evaluate symlinks to avoid noise
-			meta.Directory, err = filepath.EvalSymlinks(meta.Directory)
+			meta.CfgPath, err = filepath.EvalSymlinks(meta.CfgPath)
 			g.NoError(err)
 
-			tt.meta.Directory, err = filepath.EvalSymlinks(tt.meta.Directory)
+			tt.meta.CfgPath, err = filepath.EvalSymlinks(tt.meta.CfgPath)
 			g.NoError(err)
 
 			g.Should(be.DeepEqual(meta, tt.meta))
