@@ -344,7 +344,6 @@ func TestTask_isUpToDate(t *testing.T) {
 			}
 
 			got, err := task.isUpToDate(Context{
-				Dir:    dir,
 				Logger: ui.Noop(),
 			})
 			if tt.wantError != "" {

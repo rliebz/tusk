@@ -165,7 +165,7 @@ func (t *Task) Execute(ctx Context) (err error) {
 	return nil
 }
 
-func (t *Task) isUpToDate(ctx Context) (bool, error) {
+func (t *Task) isUpToDateTS(ctx Context) (bool, error) {
 	targetModTime, err := t.targetModTime(ctx)
 	if err != nil {
 		return false, err
@@ -193,7 +193,7 @@ func (t *Task) isUpToDate(ctx Context) (bool, error) {
 func (t *Task) targetModTime(ctx Context) (time.Time, error) {
 	var targetModTime time.Time
 	for _, glob := range t.Target {
-		modTime, err := targetGlobModTime(filepath.Join(ctx.Dir, glob))
+		modTime, err := targetGlobModTime(filepath.Join(ctx.Dir(), glob))
 		if err != nil {
 			return time.Time{}, err
 		}
