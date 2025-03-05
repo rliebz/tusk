@@ -4,10 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
-	"time"
 
-	"github.com/bmatcuk/doublestar/v4"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/rliebz/tusk/marshal"
@@ -142,9 +139,15 @@ func (t *Task) Dependencies() []string {
 func (t *Task) Execute(ctx Context) (err error) {
 	ctx = ctx.WithTask(t)
 
-	isUpToDate, err := t.isUpToDate(ctx)
+	cachePath, err := t.taskInputCachePath(ctx)
 	if err != nil {
+		fmt.Println("YOYOYO")
 		return err
+	}
+
+	isUpToDate, err := t.isUpToDate(ctx, cachePath)
+	if err != nil {
+		ctx.Logger.Warn("Failed to check cache", err)
 	}
 	if isUpToDate {
 		ctx.Logger.PrintSkipped("task: "+t.Name, "all targets up to date")
@@ -162,97 +165,11 @@ func (t *Task) Execute(ctx Context) (err error) {
 		}
 	}
 
+	if err := t.cache(ctx, cachePath); err != nil {
+		ctx.Logger.Warn("Failed to cache task", err)
+	}
+
 	return nil
-}
-
-func (t *Task) isUpToDateTS(ctx Context) (bool, error) {
-	targetModTime, err := t.targetModTime(ctx)
-	if err != nil {
-		return false, err
-	}
-	if targetModTime.IsZero() {
-		return false, nil
-	}
-
-	for _, glob := range t.Source {
-		isNewer, err := hasNewerFile(glob, targetModTime)
-		if err != nil {
-			return false, err
-		}
-		if isNewer {
-			return false, nil
-		}
-	}
-
-	return true, nil
-}
-
-// targetModTime returns the mod time representing the task's "target" clause.
-//
-// If any files are missing, a zero time will be returned to force regeneration.
-func (t *Task) targetModTime(ctx Context) (time.Time, error) {
-	var targetModTime time.Time
-	for _, glob := range t.Target {
-		modTime, err := targetGlobModTime(filepath.Join(ctx.Dir(), glob))
-		if err != nil {
-			return time.Time{}, err
-		}
-
-		if modTime.IsZero() {
-			return time.Time{}, nil
-		}
-
-		if targetModTime.IsZero() || modTime.Before(targetModTime) {
-			targetModTime = modTime
-		}
-	}
-
-	return targetModTime, nil
-}
-
-func targetGlobModTime(glob string) (time.Time, error) {
-	files, err := doublestar.FilepathGlob(glob)
-	if err != nil {
-		return time.Time{}, fmt.Errorf("syntax error in target pattern: %s", glob)
-	}
-
-	var modTime time.Time
-	for _, file := range files {
-		info, err := os.Stat(file)
-		if err != nil {
-			return time.Time{}, err
-		}
-
-		if t := info.ModTime(); modTime.IsZero() || t.Before(modTime) {
-			modTime = t
-		}
-	}
-
-	return modTime, nil
-}
-
-func hasNewerFile(glob string, modtime time.Time) (bool, error) {
-	files, err := doublestar.FilepathGlob(glob)
-	if err != nil {
-		return false, fmt.Errorf("syntax error in source pattern: %s", glob)
-	}
-
-	if len(files) == 0 {
-		return false, fmt.Errorf("no source files found matching pattern: %s", glob)
-	}
-
-	for _, file := range files {
-		info, err := os.Stat(file)
-		if err != nil {
-			return false, err
-		}
-
-		if info.ModTime().After(modtime) {
-			return true, nil
-		}
-	}
-
-	return false, nil
 }
 
 func (t *Task) runFinally(ctx Context, err *error) {
