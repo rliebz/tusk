@@ -16,10 +16,21 @@ import (
 	"github.com/rliebz/tusk/internal/xdg"
 )
 
-func (t *Task) isUpToDate(ctx Context) (bool, error) {
-	cachePath, err := t.taskInputCachePath(ctx)
+func (t *Task) isUpToDate(ctx Context, cachePath string) (bool, error) {
+	if !t.isCacheable() {
+		return false, nil
+	}
+
+	cachedChecksumBytes, err := os.ReadFile(cachePath)
+	if errors.Is(err, fs.ErrNotExist) {
+		return false, nil
+	}
 	if err != nil {
 		return false, err
+	}
+
+	if len(cachedChecksumBytes) == 0 {
+		return false, nil
 	}
 
 	outputChecksum, err := t.outputChecksum(ctx)
@@ -27,10 +38,7 @@ func (t *Task) isUpToDate(ctx Context) (bool, error) {
 		return false, err
 	}
 
-	// TODO: A non-timestamp based implementation
-	fmt.Println("cache location:", cachePath)
-	fmt.Println("output checksum:", outputChecksum)
-	return t.isUpToDateTS(ctx)
+	return outputChecksum == string(cachedChecksumBytes), nil
 }
 
 // taskInputCachePath returns a unique file path based on the inputs of a task.
@@ -126,6 +134,31 @@ func (t *Task) outputChecksum(ctx Context) (string, error) {
 
 	filename := base64.RawStdEncoding.EncodeToString(h.Sum(nil))
 	return filename, nil
+}
+
+func (t *Task) cache(ctx Context, cachePath string) error {
+	if !t.isCacheable() {
+		return nil
+	}
+
+	outputChecksum, err := t.outputChecksum(ctx)
+	if err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(cachePath), 0o700); err != nil {
+		return err
+	}
+
+	if err := os.WriteFile(cachePath, []byte(outputChecksum), 0o600); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *Task) isCacheable() bool {
+	return len(t.Source) != 0 && len(t.Target) != 0
 }
 
 func hashFile(hasher io.Writer, path string, d fs.DirEntry) error {
