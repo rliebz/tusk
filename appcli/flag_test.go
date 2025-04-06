@@ -5,8 +5,9 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
-	"github.com/rliebz/tusk/runner"
 	"github.com/urfave/cli"
+
+	"github.com/rliebz/tusk/runner"
 )
 
 func TestCreateCLIFlag_undefined(t *testing.T) {

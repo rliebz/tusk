@@ -114,7 +114,7 @@ func (l *Logger) logInStyle(title string, f formatter, a ...any) {
 	for _, message := range a {
 		messages = append(messages, fmt.Sprint(message))
 	}
-	message := strings.Join(messages, fmt.Sprintf("\n%s", f(outputPrefix)))
+	message := strings.Join(messages, "\n"+f(outputPrefix))
 
 	fmt.Fprintf(l.Stderr, logFormat, tag(title, f), message)
 }

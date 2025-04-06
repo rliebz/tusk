@@ -8,9 +8,10 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
+	"github.com/urfave/cli"
+
 	"github.com/rliebz/tusk/marshal"
 	"github.com/rliebz/tusk/runner"
-	"github.com/urfave/cli"
 )
 
 func TestDefaultComplete(t *testing.T) {

@@ -3,8 +3,9 @@ package runner
 import (
 	"errors"
 
-	"github.com/rliebz/tusk/marshal"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/marshal"
 )
 
 // Arg represents a command-line argument.

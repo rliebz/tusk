@@ -97,7 +97,7 @@ var commandTests = []printTestCase{
 		func(l *Logger) { l.PrintCommandError(errors.New("oops")) },
 		VerbosityLevelQuiet,
 		VerbosityLevelNormal,
-		fmt.Sprintf("%s\n", "oops"),
+		"oops\n",
 	},
 }
 

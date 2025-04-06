@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"fmt"
-
 	"github.com/fatih/color"
 )
 
@@ -56,7 +54,7 @@ func newFormatter(value ...color.Attribute) formatter {
 
 func tag(name string, f formatter) string {
 	if color.NoColor {
-		return fmt.Sprintf("%s:", name)
+		return name + ":"
 	}
 
 	return f(name)
