@@ -66,7 +66,7 @@ func createWhen(operators ...func(w *When)) When {
 	return w
 }
 
-// withWhenCommand returns an operator that runs a given command
+// withWhenCommand returns an operator that runs a given command.
 func withWhenCommand(command string) func(w *When) {
 	return func(w *When) {
 		w.Command = append(w.Command, command)

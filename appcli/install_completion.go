@@ -2,13 +2,11 @@ package appcli
 
 import (
 	"bufio"
+	_ "embed" // completion scripts
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
-
-	// Embed completion scripts.
-	_ "embed"
 
 	"github.com/rliebz/tusk/internal/xdg"
 	"github.com/rliebz/tusk/runner"

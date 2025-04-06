@@ -13,7 +13,7 @@ import (
 	"github.com/rliebz/tusk/ui"
 )
 
-// mockOptGetter returns opts from maps
+// mockOptGetter returns opts from maps.
 type mockOptGetter struct {
 	bools   map[string]bool
 	strings map[string]string
@@ -277,7 +277,7 @@ func stashEnv(t testing.TB) {
 	t.Cleanup(func() {
 		for _, val := range environ {
 			parts := strings.Split(val, "=")
-			os.Setenv(parts[0], parts[1]) //nolint: errcheck
+			os.Setenv(parts[0], parts[1]) //nolint:errcheck,usetesting
 		}
 	})
 

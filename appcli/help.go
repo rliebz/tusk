@@ -190,7 +190,7 @@ Arguments:
 
 {{- end }}`
 
-	tpl := template.New(fmt.Sprintf("%s arg help", t.Name))
+	tpl := template.New(t.Name + " arg help")
 	tpl = template.Must(tpl.Parse(argsTpl))
 
 	width := maxArgWidth(t) + 2
@@ -234,7 +234,7 @@ func createOptionsSection(
 	t *runner.Task,
 	opts []*runner.Option,
 ) string {
-	tpl := template.New(fmt.Sprintf("%s option help", command.Name))
+	tpl := template.New(command.Name + " option help")
 	tpl = template.Must(tpl.Parse(`{{- if . }}
 
 Options:

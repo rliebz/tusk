@@ -1,99 +1,98 @@
+version: "2"
 issues:
   max-same-issues: 0
-  exclude-use-default: false
-  exclude:
-    - if-return
-    - should have a package comment
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - dupl
-        - gocognit
-        - gosec
 
 linters:
   enable:
     - bidichk
     - bodyclose
-    - copyloopvar
     - contextcheck
-    - dupl
+    - copyloopvar
     - durationcheck
     - errcheck
     - errchkjson
     - errname
     - errorlint
+    - exptostd
+    - fatcontext
     - gocognit
     - gocritic
-    - gofumpt
+    - gocyclo
+    - godot
     - gosec
+    - intrange
     - lll
     - makezero
     - mirror
     - misspell
     - nakedret
     - nilerr
+    - nilnesserr
     - noctx
     - nolintlint
+    - perfsprint
     - prealloc
     - predeclared
     - promlinter
     - reassign
     - revive
     - rowserrcheck
+    - sloglint
     - sqlclosecheck
-    - tenv
     - tparallel
     - unconvert
     - unparam
     - usestdlibvars
+    - usetesting
+  settings:
+    errcheck:
+      exclude-functions:
+        # We're only ever writing to stdout/stderr (outside of tests)
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+    gocognit:
+      min-complexity: 10
+    gocritic:
+      enable-all: true
+      disabled-checks:
+        - paramTypeCombine
+        - ptrToRefParam
+        - whyNoLint # TODO: Address these
+    gosec:
+      excludes:
+        - G104 # duplicate of errcheck
+        - G304 # include files from variables on purpose
+        - G307 # duplicate of errcheck
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+    lll:
+      line-length: 100
+      tab-width: 2
+    misspell:
+      locale: US
+    nakedret:
+      max-func-lines: 0
+    revive:
+      confidence: 0
+  exclusions:
+    rules:
+      - linters: [revive]
+        text: package-comments
+      - linters:
+          - gocognit
+          - gosec
+        path: _test\.go
 
-linters-settings:
-  errcheck:
-    exclude-functions:
-      # We're only ever writing to stdout/stderr (outside of tests)
-      - fmt.Fprint
-      - fmt.Fprintf
-      - fmt.Fprintln
-
-  gocognit:
-    min-complexity: 10
-
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
-      - experimental
-      - opinionated
-    disabled-checks:
-      - paramTypeCombine
-      - ptrToRefParam
-      - whyNoLint # TODO: Address these
-
-  gofumpt:
-    module-path: github.com/rliebz/ghost
-
-  gosec:
-    excludes:
-      - G104 # duplicate of errcheck
-      - G304 # include files from variables on purpose
-      - G307 # duplicate of errcheck
-
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment
-
-  lll:
-    line-length: 100
-    tab-width: 2
-
-  misspell:
-    locale: US
-
-  nakedret:
-    max-func-lines: 0
-
-  revive:
-    confidence: 0
+formatters:
+  enable:
+    - gci
+    - gofumpt
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - localmodule

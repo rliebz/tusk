@@ -232,7 +232,7 @@ func (w *When) isEnvVarValid(varName string, values marshal.Slice[*string]) bool
 	}
 
 	err := validateOneOf(
-		fmt.Sprintf("environment variable %s", varName),
+		"environment variable "+varName,
 		actual,
 		stringValues,
 		func(a, b string) bool { return a == b },
