@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/rliebz/ghost"
@@ -123,7 +125,7 @@ args: { foo: {} }
 	}
 }
 
-func TestTaskExecute_errors_returned(t *testing.T) {
+func TestTask_Execute_errors_returned(t *testing.T) {
 	tests := []struct {
 		name    string
 		run     string
@@ -162,6 +164,349 @@ func TestTaskExecute_errors_returned(t *testing.T) {
 
 			err := task.Execute(Context{Logger: ui.Noop()})
 			g.Should(be.ErrorEqual(err, tt.wantErr))
+		})
+	}
+}
+
+func TestTask_Execute_cache(t *testing.T) {
+	tests := []struct {
+		name          string
+		source        marshal.Slice[string]
+		target        marshal.Slice[string]
+		mutate        func(t *testing.T)
+		wantRunCount  int
+		wantFirstErr  string
+		wantSecondErr string
+	}{
+		{
+			name: "one source one target",
+			source: marshal.Slice[string]{
+				"a1.txt",
+			},
+			target: marshal.Slice[string]{
+				"b1.txt",
+			},
+			wantRunCount: 1,
+		},
+		{
+			name: "multi source multi target",
+			source: marshal.Slice[string]{
+				"a1.txt",
+				"b1.txt",
+			},
+			target: marshal.Slice[string]{
+				"c2.txt",
+				"d2.txt",
+			},
+			wantRunCount: 1,
+		},
+		{
+			name: "removed source",
+			source: marshal.Slice[string]{
+				"a1.txt",
+				"b1.txt",
+			},
+			target: marshal.Slice[string]{
+				"c2.txt",
+				"d2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.Remove("a1.txt")
+				g.NoError(err)
+			},
+			wantSecondErr: "no source files found matching pattern: a1.txt",
+		},
+		{
+			name: "removed target",
+			source: marshal.Slice[string]{
+				"a1.txt",
+				"b1.txt",
+			},
+			target: marshal.Slice[string]{
+				"c2.txt",
+				"d2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.Remove("c2.txt")
+				g.NoError(err)
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "modified source",
+			source: marshal.Slice[string]{
+				"a1.txt",
+				"b1.txt",
+			},
+			target: marshal.Slice[string]{
+				"c2.txt",
+				"d2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.WriteFile("a1.txt", []byte("different data"), 0o600)
+				g.NoError(err)
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "modified target",
+			source: marshal.Slice[string]{
+				"a1.txt",
+				"b1.txt",
+			},
+			target: marshal.Slice[string]{
+				"c2.txt",
+				"d2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.WriteFile("c2.txt", []byte("different data"), 0o600)
+				g.NoError(err)
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "glob no change",
+			source: marshal.Slice[string]{
+				"*1.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+			},
+			wantRunCount: 1,
+		},
+		{
+			name: "glob modified source",
+			source: marshal.Slice[string]{
+				"*1.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.WriteFile("a1.txt", []byte("different data"), 0o600)
+				g.NoError(err)
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "glob modified target",
+			source: marshal.Slice[string]{
+				"*1.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.WriteFile("c2.txt", []byte("different data"), 0o600)
+				g.NoError(err)
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "glob new source",
+			source: marshal.Slice[string]{
+				"*1.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.WriteFile("x1.txt", []byte("different data"), 0o600)
+				g.NoError(err)
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "glob new target",
+			source: marshal.Slice[string]{
+				"*1.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.WriteFile("x2.txt", []byte("different data"), 0o600)
+				g.NoError(err)
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "glob removed source",
+			source: marshal.Slice[string]{
+				"*1.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.Remove("a1.txt")
+				g.NoError(err)
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "glob removed target",
+			source: marshal.Slice[string]{
+				"*1.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+			},
+			mutate: func(t *testing.T) {
+				g := ghost.New(t)
+				err := os.Remove("c2.txt")
+				g.NoError(err)
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "glob no sources",
+			source: marshal.Slice[string]{
+				"*3.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+			},
+			wantFirstErr: "no source files found matching pattern: *3.txt",
+		},
+		{
+			name: "glob no targets",
+			source: marshal.Slice[string]{
+				"*1.txt",
+			},
+			target: marshal.Slice[string]{
+				"*3.txt",
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "glob partial sources",
+			source: marshal.Slice[string]{
+				"*1.txt",
+				"*3.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+			},
+			wantFirstErr: "no source files found matching pattern: *3.txt",
+		},
+		{
+			name: "glob partial targets",
+			source: marshal.Slice[string]{
+				"*1.txt",
+			},
+			target: marshal.Slice[string]{
+				"*2.txt",
+				"*3.txt",
+			},
+			wantRunCount: 2,
+		},
+		{
+			name: "unreadable source",
+			source: marshal.Slice[string]{
+				"writeonly.txt",
+			},
+			target: marshal.Slice[string]{
+				"c2.txt",
+			},
+			wantFirstErr: "open writeonly.txt: permission denied",
+		},
+		// TODO: This logs, but doesn't throw an error. Is that right?
+		// {
+		// 	name: "unreadable target",
+		// 	source: marshal.Slice[string]{
+		// 		"a1.txt",
+		// 	},
+		// 	target: marshal.Slice[string]{
+		// 		"writeonly.txt",
+		// 	},
+		// 	// wantFirstErr: "open writeonly.txt: permission denied",
+		// },
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
+			wd := useTempDir(t)
+			cfgPath := filepath.Join(wd, "tusk.yml")
+
+			err := os.WriteFile("a1.txt", []byte("data a"), 0o600)
+			g.NoError(err)
+
+			err = os.WriteFile("b1.txt", []byte("data b"), 0o600)
+			g.NoError(err)
+
+			err = os.WriteFile("c2.txt", []byte("data c"), 0o600)
+			g.NoError(err)
+
+			err = os.WriteFile("d2.txt", []byte("data d"), 0o600)
+			g.NoError(err)
+
+			err = os.WriteFile("writeonly.txt", []byte("data d"), 0o200)
+			g.NoError(err)
+
+			cacheHome := t.TempDir()
+			t.Setenv("XDG_CACHE_HOME", cacheHome)
+
+			var buf bytes.Buffer
+
+			logger := ui.New()
+			logger.Stdout = io.Discard
+			logger.Stderr = &buf
+
+			ctx := Context{
+				CfgPath: cfgPath,
+				Logger:  logger,
+			}
+
+			task := Task{
+				Name:   "my-task",
+				Source: tt.source,
+				Target: tt.target,
+				RunList: marshal.Slice[*Run]{
+					{
+						Command: marshal.Slice[*Command]{
+							{
+								Print: "exit 0",
+								Exec:  "exit 0",
+							},
+						},
+					},
+				},
+			}
+
+			err = task.Execute(ctx)
+			if tt.wantFirstErr != "" {
+				g.Should(be.ErrorEqual(err, tt.wantFirstErr))
+				return
+			}
+			g.NoError(err)
+
+			if tt.mutate != nil {
+				tt.mutate(t)
+			}
+
+			err = task.Execute(ctx)
+			if tt.wantSecondErr != "" {
+				g.Should(be.ErrorEqual(err, tt.wantSecondErr))
+				return
+			}
+			g.NoError(err)
+
+			runCount := strings.Count(buf.String(), "exit 0")
+			if !g.Should(be.Equal(runCount, tt.wantRunCount)) {
+				t.Log(buf.String())
+			}
 		})
 	}
 }

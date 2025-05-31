@@ -141,7 +141,6 @@ func (t *Task) Execute(ctx Context) (err error) {
 
 	cachePath, err := t.taskInputCachePath(ctx)
 	if err != nil {
-		fmt.Println("YOYOYO")
 		return err
 	}
 

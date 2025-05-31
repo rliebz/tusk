@@ -51,10 +51,12 @@ func (t *Task) taskInputCachePath(ctx Context) (string, error) {
 	h := fnv.New64a()
 
 	for _, glob := range t.Source {
+		count := 0
 		err := doublestar.GlobWalk(
 			os.DirFS(ctx.Dir()),
 			glob,
 			func(path string, d fs.DirEntry) error {
+				count++
 				return hashFile(h, path, d)
 			},
 			doublestar.WithFailOnIOErrors(),
@@ -63,7 +65,7 @@ func (t *Task) taskInputCachePath(ctx Context) (string, error) {
 		)
 		switch {
 		// If a source pattern does not exist, that's an error
-		case errors.Is(err, doublestar.ErrPatternNotExist):
+		case errors.Is(err, doublestar.ErrPatternNotExist) || (err == nil && count == 0):
 			return "", fmt.Errorf("no source files found matching pattern: %s", glob)
 		case err != nil:
 			return "", err
@@ -75,8 +77,6 @@ func (t *Task) taskInputCachePath(ctx Context) (string, error) {
 }
 
 // taskCacheDir returns the file path specific to this task.
-//
-// It incorporates
 func (t *Task) taskCacheDir(ctx Context) (string, error) {
 	projectCacheDir, err := projectCacheDir(ctx)
 	if err != nil {
@@ -113,10 +113,12 @@ func (t *Task) outputChecksum(ctx Context) (string, error) {
 	h := fnv.New64a()
 
 	for _, glob := range t.Target {
+		count := 0
 		err := doublestar.GlobWalk(
 			os.DirFS(ctx.Dir()),
 			glob,
 			func(path string, d fs.DirEntry) error {
+				count++
 				return hashFile(h, path, d)
 			},
 			doublestar.WithFailOnIOErrors(),
@@ -125,7 +127,7 @@ func (t *Task) outputChecksum(ctx Context) (string, error) {
 		)
 		switch {
 		// If a target pattern does not exist, we're not up to date.
-		case errors.Is(err, doublestar.ErrPatternNotExist):
+		case errors.Is(err, doublestar.ErrPatternNotExist) || (err == nil && count == 0):
 			return "", nil
 		case err != nil:
 			return "", err
