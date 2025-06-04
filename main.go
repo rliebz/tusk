@@ -71,6 +71,7 @@ func run(cfg config) (status int) {
 func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 	printHelp := false
 
+	// TODO: Check if multiple commands are specified?
 	switch {
 	case appcli.IsCompleting(args):
 	case meta.PrintHelp:
@@ -82,6 +83,15 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 		return 0, appcli.InstallCompletion(meta)
 	case meta.UninstallCompletion != "":
 		return 0, appcli.UninstallCompletion(meta)
+	case meta.CleanCache:
+		return 0, runner.CleanCache()
+	case meta.CleanProjectCache:
+		// TODO: Do we need to validate that this exists?
+		return 0, runner.CleanProjectCache(meta.CfgPath)
+	case meta.CleanTaskCache != "":
+		// TODO: Do we need to validate that this exists?
+		// TODO: Completion values should be tasks only
+		return 0, runner.CleanTaskCache(meta.CfgPath, meta.CleanTaskCache)
 	}
 
 	app, err := appcli.NewApp(args, meta)

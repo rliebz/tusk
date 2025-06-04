@@ -21,14 +21,18 @@ func NewMetadata() *Metadata {
 //
 // Metadata should be instantiated using NewMetadata.
 type Metadata struct {
-	CfgPath             string
-	CfgText             []byte
-	Interpreter         []string
+	CfgPath     string
+	CfgText     []byte
+	Interpreter []string
+	Logger      *ui.Logger
+
 	InstallCompletion   string
 	UninstallCompletion string
 	PrintHelp           bool
 	PrintVersion        bool
-	Logger              *ui.Logger
+	CleanCache          bool
+	CleanProjectCache   bool
+	CleanTaskCache      string
 }
 
 // Set sets the metadata based on options.
@@ -44,14 +48,19 @@ func (m *Metadata) Set(o OptGetter) error {
 		return err
 	}
 
-	m.InstallCompletion = o.String("install-completion")
-	m.UninstallCompletion = o.String("uninstall-completion")
-	m.PrintHelp = o.Bool("help")
-	m.PrintVersion = o.Bool("version")
 	if m.Logger == nil {
 		m.Logger = ui.New()
 	}
 	m.Logger.Verbosity = getVerbosity(o)
+
+	m.InstallCompletion = o.String("install-completion")
+	m.UninstallCompletion = o.String("uninstall-completion")
+	m.PrintHelp = o.Bool("help")
+	m.PrintVersion = o.Bool("version")
+	m.CleanCache = o.Bool("clean-cache")
+	m.CleanProjectCache = o.Bool("clean-project-cache")
+	m.CleanTaskCache = o.String("clean-task-cache")
+
 	return nil
 }
 

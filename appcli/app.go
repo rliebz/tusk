@@ -23,21 +23,10 @@ func newBaseApp() *cli.App {
 	app.ExitErrHandler = func(*cli.Context, error) {}
 
 	app.Flags = append(app.Flags,
-		cli.BoolFlag{
-			Name:  "h, help",
-			Usage: "Show help and exit",
-		},
+		// Options
 		cli.StringFlag{
 			Name:  "f, file",
 			Usage: "Set `file` to use as the config file",
-		},
-		cli.StringFlag{
-			Name:  "install-completion",
-			Usage: "Install tab completion for a `shell` (one of: bash, fish, zsh)",
-		},
-		cli.StringFlag{
-			Name:  "uninstall-completion",
-			Usage: "Uninstall tab completion for a `shell` (one of: bash, fish, zsh)",
 		},
 		cli.BoolFlag{
 			Name:  "q, quiet",
@@ -51,9 +40,35 @@ func newBaseApp() *cli.App {
 			Name:  "v, verbose",
 			Usage: "Print verbose output",
 		},
+
+		// Commands
+		cli.BoolFlag{
+			Name:  "h, help",
+			Usage: "Show help and exit",
+		},
 		cli.BoolFlag{
 			Name:  "V, version",
 			Usage: "Print version and exit",
+		},
+		cli.StringFlag{
+			Name:  "install-completion",
+			Usage: "Install tab completion for a `shell` (one of: bash, fish, zsh)",
+		},
+		cli.StringFlag{
+			Name:  "uninstall-completion",
+			Usage: "Uninstall tab completion for a `shell` (one of: bash, fish, zsh)",
+		},
+		cli.BoolFlag{
+			Name:  "clean-cache",
+			Usage: "Delete all cached files",
+		},
+		cli.BoolFlag{
+			Name:  "clean-project-cache",
+			Usage: "Delete cached files related to the current config file",
+		},
+		cli.StringFlag{
+			Name:  "clean-task-cache",
+			Usage: "Delete cached files related to the given task",
 		},
 	)
 
