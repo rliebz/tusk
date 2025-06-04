@@ -690,6 +690,9 @@ Both `source` and `target` must be specified together.
 
 [glob]: https://github.com/bmatcuk/doublestar?tab=readme-ov-file#patterns
 
+All specified sources must exist. For each individual glob entry, at least one
+file must match the pattern.
+
 If all target patterns exist and have newer timestamps than the newest source
 pattern, the task will be skipped. Otherwise, the task will execute as normal.
 
