@@ -62,11 +62,11 @@ func (r *Run) shouldRun(ctx Context, vars map[string]string) (bool, error) {
 		}
 
 		for _, command := range r.Command {
-			ctx.Logger.PrintSkipped(command.Print, err.Error())
+			ctx.Logger.PrintCommandSkipped(command.Print, err.Error())
 		}
 
 		for _, subTask := range r.SubTaskList {
-			ctx.Logger.PrintSkipped("task: "+subTask.Name, err.Error())
+			ctx.Logger.PrintTaskSkipped(subTask.Name, err.Error())
 		}
 
 		return false, nil

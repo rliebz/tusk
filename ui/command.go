@@ -10,13 +10,15 @@ const (
 	namespaceSeparator = " > "
 	promptCharacter    = "$"
 
-	completedString        = "Completed"
-	environmentString      = "Setting Environment"
-	finallyString          = "Finally"
-	startedString          = "Started"
+	completedString      = "Completed"
+	environmentString    = "Setting Environment"
+	finallyString        = "Finally"
+	startedString        = "Started"
+	skippedCommandString = "Skipping Command"
+	skippedTaskString    = "Skipping Task"
+	taskString           = "Task"
+
 	setEnvironmentString   = "set"
-	skippedString          = "Skipping"
-	taskString             = "Task"
 	unsetEnvironmentString = "unset"
 )
 
@@ -110,10 +112,8 @@ func (l Logger) PrintEnvironment(variables map[string]*string) {
 	}
 }
 
-// PrintSkipped prints the command skipped and the reason.
-//
-// TODO: Split into PrintCommandSkipped and PrintTaskSkipped.
-func (l Logger) PrintSkipped(command, reason string) {
+// PrintCommandSkipped prints the command skipped and the reason.
+func (l Logger) PrintCommandSkipped(command, reason string) {
 	if l.Verbosity < VerbosityLevelVerbose {
 		return
 	}
@@ -123,8 +123,31 @@ func (l Logger) PrintSkipped(command, reason string) {
 	fmt.Fprintf(
 		l.Stderr,
 		logFormat,
-		tag(skippedString, f),
+		tag(skippedCommandString, f),
 		bold(command),
+	)
+
+	fmt.Fprintf(
+		l.Stderr,
+		"%s%s\n",
+		f(outputPrefix),
+		reason,
+	)
+}
+
+// PrintTaskSkipped prints the task skipped and the reason.
+func (l Logger) PrintTaskSkipped(task, reason string) {
+	if l.Verbosity < VerbosityLevelVerbose {
+		return
+	}
+
+	f := cyan
+
+	fmt.Fprintf(
+		l.Stderr,
+		logFormat,
+		tag(skippedTaskString, f),
+		bold(task),
 	)
 
 	fmt.Fprintf(

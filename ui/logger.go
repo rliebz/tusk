@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -104,10 +105,8 @@ func (l *Logger) Deprecate(a ...any) {
 
 	if len(a) > 0 {
 		message := fmt.Sprint(a[0])
-		for _, d := range l.deprecations {
-			if message == d {
-				return
-			}
+		if slices.Contains(l.deprecations, message) {
+			return
 		}
 		l.deprecations = append(l.deprecations, message)
 	}
