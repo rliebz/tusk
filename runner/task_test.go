@@ -420,17 +420,16 @@ func TestTask_Execute_cache(t *testing.T) {
 			},
 			wantFirstErr: "open writeonly.txt: permission denied",
 		},
-		// TODO: This logs, but doesn't throw an error. Is that right?
-		// {
-		// 	name: "unreadable target",
-		// 	source: marshal.Slice[string]{
-		// 		"a1.txt",
-		// 	},
-		// 	target: marshal.Slice[string]{
-		// 		"writeonly.txt",
-		// 	},
-		// 	// wantFirstErr: "open writeonly.txt: permission denied",
-		// },
+		{
+			name: "unreadable target",
+			source: marshal.Slice[string]{
+				"a1.txt",
+			},
+			target: marshal.Slice[string]{
+				"writeonly.txt",
+			},
+			wantFirstErr: "caching task: open writeonly.txt: permission denied",
+		},
 	}
 
 	for _, tt := range tests {
@@ -452,7 +451,7 @@ func TestTask_Execute_cache(t *testing.T) {
 			err = os.WriteFile("d2.txt", []byte("data d"), 0o600)
 			g.NoError(err)
 
-			err = os.WriteFile("writeonly.txt", []byte("data d"), 0o200)
+			err = os.WriteFile("writeonly.txt", []byte("data writeonly"), 0o200)
 			g.NoError(err)
 
 			cacheHome := t.TempDir()
@@ -509,6 +508,140 @@ func TestTask_Execute_cache(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("readonly cache path", func(t *testing.T) {
+		g := ghost.New(t)
+
+		wd := useTempDir(t)
+		cfgPath := filepath.Join(wd, "tusk.yml")
+
+		err := os.WriteFile("input.txt", []byte("data a"), 0o600)
+		g.NoError(err)
+
+		err = os.WriteFile("output.txt", []byte("data b"), 0o600)
+		g.NoError(err)
+
+		cacheHome := t.TempDir()
+		t.Setenv("XDG_CACHE_HOME", cacheHome)
+
+		var buf bytes.Buffer
+
+		logger := ui.New()
+		logger.Stdout = io.Discard
+		logger.Stderr = &buf
+
+		ctx := Context{
+			CfgPath: cfgPath,
+			Logger:  logger,
+		}
+
+		task := Task{
+			Name: "my-task",
+			Source: marshal.Slice[string]{
+				"input.txt",
+			},
+			Target: marshal.Slice[string]{
+				"output.txt",
+			},
+			RunList: marshal.Slice[*Run]{
+				{
+					Command: marshal.Slice[*Command]{
+						{
+							Print: "exit 0",
+							Exec:  "exit 0",
+						},
+					},
+				},
+			},
+		}
+
+		cachePath, err := task.taskInputCachePath(ctx)
+		g.NoError(err)
+
+		err = os.MkdirAll(filepath.Dir(cachePath), 0o700)
+		g.NoError(err)
+
+		err = os.WriteFile(cachePath, []byte("data readonly"), 0o400)
+		g.NoError(err)
+
+		err = task.Execute(ctx)
+		g.Should(be.ErrorEqual(
+			err,
+			fmt.Sprintf("caching task: open %s: permission denied", cachePath),
+		))
+
+		runCount := strings.Count(buf.String(), "exit 0")
+		if !g.Should(be.Equal(runCount, 1)) {
+			t.Log(buf.String())
+		}
+	})
+
+	t.Run("writeonly cache path", func(t *testing.T) {
+		g := ghost.New(t)
+
+		wd := useTempDir(t)
+		cfgPath := filepath.Join(wd, "tusk.yml")
+
+		err := os.WriteFile("input.txt", []byte("data a"), 0o600)
+		g.NoError(err)
+
+		err = os.WriteFile("output.txt", []byte("data b"), 0o600)
+		g.NoError(err)
+
+		cacheHome := t.TempDir()
+		t.Setenv("XDG_CACHE_HOME", cacheHome)
+
+		var buf bytes.Buffer
+
+		logger := ui.New()
+		logger.Stdout = io.Discard
+		logger.Stderr = &buf
+
+		ctx := Context{
+			CfgPath: cfgPath,
+			Logger:  logger,
+		}
+
+		task := Task{
+			Name: "my-task",
+			Source: marshal.Slice[string]{
+				"input.txt",
+			},
+			Target: marshal.Slice[string]{
+				"output.txt",
+			},
+			RunList: marshal.Slice[*Run]{
+				{
+					Command: marshal.Slice[*Command]{
+						{
+							Print: "exit 0",
+							Exec:  "exit 0",
+						},
+					},
+				},
+			},
+		}
+
+		cachePath, err := task.taskInputCachePath(ctx)
+		g.NoError(err)
+
+		err = os.MkdirAll(filepath.Dir(cachePath), 0o700)
+		g.NoError(err)
+
+		err = os.WriteFile(cachePath, []byte("data writeonly"), 0o200)
+		g.NoError(err)
+
+		err = task.Execute(ctx)
+		g.Should(be.ErrorEqual(
+			err,
+			fmt.Sprintf("checking cache: open %s: permission denied", cachePath),
+		))
+
+		runCount := strings.Count(buf.String(), "exit 0")
+		if !g.Should(be.Equal(runCount, 0)) {
+			t.Log(buf.String())
+		}
+	})
 }
 
 func TestTask_run_commands(t *testing.T) {

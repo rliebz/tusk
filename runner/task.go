@@ -146,7 +146,7 @@ func (t *Task) Execute(ctx Context) (err error) {
 
 	isUpToDate, err := t.isUpToDate(ctx, cachePath)
 	if err != nil {
-		ctx.Logger.Warn("Failed to check cache", err)
+		return fmt.Errorf("checking cache: %w", err)
 	}
 	if isUpToDate {
 		ctx.Logger.PrintSkipped("task: "+t.Name, "all targets up to date")
@@ -165,7 +165,7 @@ func (t *Task) Execute(ctx Context) (err error) {
 	}
 
 	if err := t.cache(ctx, cachePath); err != nil {
-		ctx.Logger.Warn("Failed to cache task", err)
+		return fmt.Errorf("caching task: %w", err)
 	}
 
 	return nil
