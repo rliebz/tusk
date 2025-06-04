@@ -149,7 +149,7 @@ func (t *Task) Execute(ctx Context) (err error) {
 		return fmt.Errorf("checking cache: %w", err)
 	}
 	if isUpToDate {
-		ctx.Logger.PrintSkipped("task: "+t.Name, "all targets up to date")
+		ctx.Logger.PrintTaskSkipped(t.Name, "all targets up to date")
 		return nil
 	}
 
