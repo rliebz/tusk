@@ -16,6 +16,51 @@ import (
 	"github.com/rliebz/tusk/internal/xdg"
 )
 
+// CleanCache deletes all cached files.
+func CleanCache() error {
+	cacheDir, err := tuskCacheDir()
+	if err != nil {
+		return err
+	}
+
+	err = os.RemoveAll(cacheDir)
+	if err != nil {
+		return fmt.Errorf("cleaning cache dir: %w", err)
+	}
+
+	return nil
+}
+
+// CleanProjectCache deletes cached files related to the current config file.
+func CleanProjectCache(cfgPath string) error {
+	cacheDir, err := projectCacheDir(cfgPath)
+	if err != nil {
+		return err
+	}
+
+	err = os.RemoveAll(cacheDir)
+	if err != nil {
+		return fmt.Errorf("cleaning cache dir: %w", err)
+	}
+
+	return nil
+}
+
+// CleanTaskCache deletes cached files related to the given task.
+func CleanTaskCache(cfgPath string, task string) error {
+	cacheDir, err := taskCacheDir(cfgPath, task)
+	if err != nil {
+		return err
+	}
+
+	err = os.RemoveAll(cacheDir)
+	if err != nil {
+		return fmt.Errorf("cleaning cache dir: %w", err)
+	}
+
+	return nil
+}
+
 func (t *Task) isUpToDate(ctx Context, cachePath string) (bool, error) {
 	if !t.isCacheable() {
 		return false, nil
@@ -43,7 +88,7 @@ func (t *Task) isUpToDate(ctx Context, cachePath string) (bool, error) {
 
 // taskInputCachePath returns a unique file path based on the inputs of a task.
 func (t *Task) taskInputCachePath(ctx Context) (string, error) {
-	taskCacheDir, err := t.taskCacheDir(ctx)
+	taskCacheDir, err := taskCacheDir(ctx.CfgPath, t.Name)
 	if err != nil {
 		return "", err
 	}
@@ -77,14 +122,14 @@ func (t *Task) taskInputCachePath(ctx Context) (string, error) {
 }
 
 // taskCacheDir returns the file path specific to this task.
-func (t *Task) taskCacheDir(ctx Context) (string, error) {
-	projectCacheDir, err := projectCacheDir(ctx)
+func taskCacheDir(cfgPath string, taskName string) (string, error) {
+	projectCacheDir, err := projectCacheDir(cfgPath)
 	if err != nil {
 		return "", err
 	}
 
 	h := fnv.New64a()
-	if _, err := io.WriteString(h, t.Name); err != nil {
+	if _, err := io.WriteString(h, taskName); err != nil {
 		return "", err
 	}
 
@@ -92,20 +137,34 @@ func (t *Task) taskCacheDir(ctx Context) (string, error) {
 	return filepath.Join(projectCacheDir, filename), nil
 }
 
-func projectCacheDir(ctx Context) (string, error) {
-	xdgCacheHome, err := xdg.CacheHome()
+func projectCacheDir(cfgPath string) (string, error) {
+	cfgPath, err := filepath.Abs(cfgPath)
+	if err != nil {
+		return "", err
+	}
+
+	cacheDir, err := tuskCacheDir()
 	if err != nil {
 		return "", err
 	}
 
 	h := fnv.New64a()
 
-	if _, err := io.WriteString(h, ctx.CfgPath); err != nil {
+	if _, err := io.WriteString(h, cfgPath); err != nil {
 		return "", err
 	}
 
 	filename := encodeToString(h)
-	return filepath.Join(xdgCacheHome, "tusk", filename), nil
+	return filepath.Join(cacheDir, filename), nil
+}
+
+func tuskCacheDir() (string, error) {
+	xdgCacheHome, err := xdg.CacheHome()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(xdgCacheHome, "tusk"), nil
 }
 
 // outputChecksum returns a checksum for the output of a task.

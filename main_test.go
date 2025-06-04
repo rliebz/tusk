@@ -52,6 +52,9 @@ Tasks:
    print-passed-values  Print values passed
 
 Global Options:
+       --clean-cache                   Delete all cached files
+       --clean-project-cache           Delete cached files related to the current config file
+       --clean-task-cache <value>      Delete cached files related to the given task
    -f, --file <file>                   Set file to use as the config file
    -h, --help                          Show help and exit
        --install-completion <shell>    Install tab completion for a shell (one of: bash, fish, zsh)
