@@ -1155,7 +1155,7 @@ tasks:
       task: fake
 `,
 		taskName: "mytask",
-		wantErr:  `sub-task "fake" does not exist`,
+		wantErr:  `sub-task "fake" is not defined`,
 	},
 	{
 		name: "argument and option share name",

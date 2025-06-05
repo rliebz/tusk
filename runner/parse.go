@@ -238,7 +238,7 @@ func addSubTasks(ctx Context, t *Task, cfg *Config) error {
 func newTaskFromSub(ctx Context, desc *SubTask, cfg *Config) (*Task, error) {
 	st, ok := cfg.Tasks[desc.Name]
 	if !ok {
-		return nil, fmt.Errorf("sub-task %q does not exist", desc.Name)
+		return nil, fmt.Errorf("sub-task %q is not defined", desc.Name)
 	}
 
 	subTask := copyTask(st)

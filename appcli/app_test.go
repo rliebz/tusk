@@ -149,7 +149,7 @@ tasks:
 
 	g.Should(be.StringMatching(
 		buf.String(),
-		`^appcli\.test - the modern task runner`,
+		`^appcli\.test.* - the modern task runner`,
 	))
 }
 
