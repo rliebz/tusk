@@ -201,7 +201,7 @@ func TestRun_incorrectUsage(t *testing.T) {
 		},
 	)
 
-	want := "Error: No help topic for 'fake-command'\n"
+	want := "Error: task \"fake-command\" is not defined\n"
 	g.Should(be.Equal(stderr.String(), want))
 	g.Should(be.Equal(status, 1))
 }

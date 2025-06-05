@@ -1,6 +1,7 @@
 package appcli
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -79,13 +80,13 @@ func TestNewApp(t *testing.T) {
 	name := "new-name"
 	usage := "new usage"
 
-	cfgText := []byte(fmt.Sprintf(`
+	cfgText := fmt.Appendf(nil, `
 name: %s
 usage: %s
 tasks: { %q: {} }
 `,
 		name, usage, taskName,
-	))
+	)
 	meta := &runner.Metadata{CfgText: cfgText}
 
 	app, err := NewApp([]string{"tusk", taskName}, meta)
@@ -122,6 +123,51 @@ tasks:
 
 	exitCode := exitErr.Sys().(syscall.WaitStatus).ExitStatus()
 	g.Should(be.Equal(exitCode, wantExitCode))
+}
+
+func TestNewApp_print_help(t *testing.T) {
+	g := ghost.New(t)
+
+	args := []string{"tusk"}
+	cfgText := []byte(`
+tasks:
+  my-task:
+    run: exit 99`)
+	meta := &runner.Metadata{
+		CfgText: cfgText,
+		Logger:  ui.Noop(),
+	}
+
+	app, err := NewApp(args, meta)
+	g.NoError(err)
+
+	var buf bytes.Buffer
+	app.Writer = &buf
+
+	err = app.Run(args)
+	g.NoError(err)
+
+	g.Should(be.StringMatching(
+		buf.String(),
+		`^appcli\.test - the modern task runner`,
+	))
+}
+
+func TestNewApp_task_not_found(t *testing.T) {
+	g := ghost.New(t)
+
+	args := []string{"tusk", "fake-task"}
+	cfgText := []byte(`
+tasks:
+  my-task:
+    run: exit 99`)
+	meta := &runner.Metadata{
+		CfgText: cfgText,
+		Logger:  ui.Noop(),
+	}
+
+	_, err := NewApp(args, meta)
+	g.Should(be.ErrorEqual(err, `task "fake-task" is not defined`))
 }
 
 func TestNewApp_private_task(t *testing.T) {

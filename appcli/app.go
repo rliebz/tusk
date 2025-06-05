@@ -2,6 +2,7 @@ package appcli
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"sort"
@@ -14,6 +15,7 @@ import (
 // newBaseApp creates a basic cli.App with top-level flags.
 func newBaseApp() *cli.App {
 	app := cli.NewApp()
+	app.Action = helpAction
 	app.Usage = "the modern task runner"
 	app.HideVersion = true
 	app.HideHelp = true
@@ -87,6 +89,15 @@ func newMetaApp(cfgText []byte) (*cli.App, error) {
 	}
 
 	return app, nil
+}
+
+func helpAction(c *cli.Context) error {
+	if args := c.Args(); args.Present() {
+		return fmt.Errorf("task %q is not defined", args.First())
+	}
+
+	cli.ShowAppHelp(c) //nolint:errcheck
+	return nil
 }
 
 // NewApp creates a cli.App that executes tasks.
