@@ -69,13 +69,10 @@ func run(cfg config) (status int) {
 }
 
 func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
-	printHelp := false
-
 	// TODO: Check if multiple commands are specified?
 	switch {
 	case appcli.IsCompleting(args):
 	case meta.PrintHelp:
-		printHelp = true
 	case meta.PrintVersion:
 		printVersion(meta)
 		return 0, nil
@@ -86,12 +83,7 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 	case meta.CleanCache:
 		return 0, runner.CleanCache()
 	case meta.CleanProjectCache:
-		// TODO: Do we need to validate that this exists?
 		return 0, runner.CleanProjectCache(meta.CfgPath)
-	case meta.CleanTaskCache != "":
-		// TODO: Do we need to validate that this exists?
-		// TODO: Completion values should be tasks only
-		return 0, runner.CleanTaskCache(meta.CfgPath, meta.CleanTaskCache)
 	}
 
 	app, err := appcli.NewApp(args, meta)
@@ -99,9 +91,15 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 		return 1, err
 	}
 
-	if printHelp {
+	switch {
+	case meta.PrintHelp:
 		appcli.ShowAppHelp(meta.Logger, app)
 		return 0, nil
+	case meta.CleanTaskCache != "":
+		if app.Command(meta.CleanTaskCache) == nil {
+			return 0, fmt.Errorf("task %q is not defined", meta.CleanTaskCache)
+		}
+		return 0, runner.CleanTaskCache(meta.CfgPath, meta.CleanTaskCache)
 	}
 
 	return runApp(app, meta, args)

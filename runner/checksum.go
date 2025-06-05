@@ -33,6 +33,10 @@ func CleanCache() error {
 
 // CleanProjectCache deletes cached files related to the current config file.
 func CleanProjectCache(cfgPath string) error {
+	if cfgPath == "" {
+		return errors.New("no config file found")
+	}
+
 	cacheDir, err := projectCacheDir(cfgPath)
 	if err != nil {
 		return err
@@ -48,6 +52,10 @@ func CleanProjectCache(cfgPath string) error {
 
 // CleanTaskCache deletes cached files related to the given task.
 func CleanTaskCache(cfgPath string, task string) error {
+	if cfgPath == "" {
+		return errors.New("no config file found")
+	}
+
 	cacheDir, err := taskCacheDir(cfgPath, task)
 	if err != nil {
 		return err

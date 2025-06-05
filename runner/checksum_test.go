@@ -56,6 +56,16 @@ func TestCleanProjectCache(t *testing.T) {
 	g.Must(be.SliceLen(entries, 1))
 }
 
+func TestCleanProjectCache_no_cfg_path(t *testing.T) {
+	g := ghost.New(t)
+
+	cacheHome := t.TempDir()
+	t.Setenv("XDG_CACHE_HOME", cacheHome) // just in case
+
+	err := CleanProjectCache("")
+	g.Should(be.ErrorEqual(err, "no config file found"))
+}
+
 func TestCleanTaskCache(t *testing.T) {
 	g := ghost.New(t)
 
@@ -97,4 +107,14 @@ func TestCleanTaskCache(t *testing.T) {
 	otherEntries, err := os.ReadDir(otherProjectDir)
 	g.NoError(err)
 	g.Must(be.SliceLen(otherEntries, 1))
+}
+
+func TestCleanTaskCache_no_cfg_path(t *testing.T) {
+	g := ghost.New(t)
+
+	cacheHome := t.TempDir()
+	t.Setenv("XDG_CACHE_HOME", cacheHome) // just in case
+
+	err := CleanTaskCache("", "foo")
+	g.Should(be.ErrorEqual(err, "no config file found"))
 }
