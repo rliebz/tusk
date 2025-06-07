@@ -18,6 +18,11 @@ tasks:
         usage: Run all tests and linters
         short: a
         type: bool
+      race:
+        usage: Enable the race detector
+        short: r
+        type: bool
+        rewrite: -race
       verbose:
         usage: Run the tests in verbose mode
         short: v
@@ -26,7 +31,7 @@ tasks:
     run:
       - when: all
         task: lint
-      - command: go test -race ${verbose} ./...
+      - command: go test ${race} ${verbose} ./...
       - when: all
         task:
           name: release
