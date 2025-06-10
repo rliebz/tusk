@@ -286,6 +286,9 @@ func Test_run_completion(t *testing.T) {
 		g.Should(be.Equal(status, 0))
 		// If we can't parse the config file, we can still show global flags
 		g.Should(be.Equal(stdout.String(), `normal
+--clean-cache:Delete all cached files
+--clean-project-cache:Delete cached files related to the current config file
+--clean-task-cache:Delete cached files related to the given task
 --help:Show help and exit
 --install-completion:Install tab completion for a shell (one of: bash, fish, zsh)
 --quiet:Only print command output and application errors
@@ -321,6 +324,9 @@ func Test_run_completion(t *testing.T) {
 		g.Should(be.Equal(status, 0))
 		// If we can't parse the config file, we can still show global flags
 		g.Should(be.Equal(stdout.String(), `normal
+--clean-cache:Delete all cached files
+--clean-project-cache:Delete cached files related to the current config file
+--clean-task-cache:Delete cached files related to the given task
 --help:Show help and exit
 --install-completion:Install tab completion for a shell (one of: bash, fish, zsh)
 --quiet:Only print command output and application errors

@@ -47,7 +47,14 @@ func defaultComplete(w io.Writer, c context, app *cli.App) {
 	}
 
 	trailingArg := os.Args[len(os.Args)-2]
-	if isCompletingFlagArg(app.Flags, trailingArg) {
+	switch {
+	case trailingArg == "--clean-task-cache":
+		fmt.Fprintln(w, "normal")
+		for i := range app.Commands {
+			printCommand(w, &app.Commands[i])
+		}
+		return
+	case isCompletingFlagArg(app.Flags, trailingArg):
 		fmt.Fprintln(w, "file")
 		return
 	}

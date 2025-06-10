@@ -38,6 +38,13 @@ foo:a foo command
 			trailing: "tusk",
 		},
 		{
+			name: "clean task cache",
+			want: `normal
+foo:a foo command
+`,
+			trailing: "--clean-task-cache",
+		},
+		{
 			name: "ignores set values",
 			want: `normal
 foo:a foo command
