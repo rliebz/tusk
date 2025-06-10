@@ -87,7 +87,10 @@ tasks: { %q: {} }
 `,
 		name, usage, taskName,
 	)
-	meta := &runner.Metadata{CfgText: cfgText}
+	meta := &runner.Metadata{
+		CfgText: cfgText,
+		Logger:  ui.Noop(),
+	}
 
 	app, err := NewApp([]string{"tusk", taskName}, meta)
 	g.NoError(err)

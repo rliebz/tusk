@@ -83,8 +83,8 @@ func (c *Command) exec(ctx Context) error {
 	cmd.Dir = filepath.Join(cmd.Dir, c.Dir)
 	cmd.Stdin = os.Stdin
 	if ctx.Logger.Verbosity > ui.VerbosityLevelSilent {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		cmd.Stdout = ctx.Logger.Stdout
+		cmd.Stderr = ctx.Logger.Stderr
 	}
 
 	return cmd.Run()

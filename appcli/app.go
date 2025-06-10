@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"sort"
 
 	"github.com/urfave/cli"
@@ -146,10 +145,10 @@ func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
 
 	copyFlags(app, metaApp)
 
-	app.BashComplete = createDefaultComplete(os.Stdout, app)
+	app.BashComplete = createDefaultComplete(meta.Logger.Stdout, app)
 	for i := range app.Commands {
 		cmd := &app.Commands[i]
-		cmd.BashComplete = createCommandComplete(os.Stdout, cmd, cfg)
+		cmd.BashComplete = createCommandComplete(meta.Logger.Stdout, cmd, cfg)
 	}
 
 	return app, nil

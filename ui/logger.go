@@ -18,6 +18,13 @@ const (
 	deprecatedString = "Deprecated"
 )
 
+var (
+	// Stdout is the default writer for stdout.
+	Stdout io.Writer = os.Stdout
+	// Stderr is the default writer for stderr.
+	Stderr io.Writer = os.Stderr
+)
+
 // Logger writes CLI output at the appropriate level.
 type Logger struct {
 	Stdout, Stderr io.Writer
@@ -29,8 +36,8 @@ type Logger struct {
 // New returns a new logger with the default settings.
 func New() *Logger {
 	return &Logger{
-		Stdout:    os.Stdout,
-		Stderr:    os.Stderr,
+		Stdout:    Stdout,
+		Stderr:    Stderr,
 		Verbosity: VerbosityLevelNormal,
 	}
 }

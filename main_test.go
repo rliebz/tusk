@@ -11,9 +11,11 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
+
+	"github.com/rliebz/tusk/ui"
 )
 
-func TestRun_printVersion(t *testing.T) {
+func Test_run_printVersion(t *testing.T) {
 	g := ghost.New(t)
 
 	stdout := new(bytes.Buffer)
@@ -31,7 +33,7 @@ func TestRun_printVersion(t *testing.T) {
 	g.Should(be.Equal(status, 0))
 }
 
-func TestRun_printHelp(t *testing.T) {
+func Test_run_printHelp(t *testing.T) {
 	tests := []struct {
 		args     []string
 		wantTmpl string
@@ -149,7 +151,7 @@ Options:
 	}
 }
 
-func TestRun_exitCodeZero(t *testing.T) {
+func Test_run_exitCodeZero(t *testing.T) {
 	g := ghost.New(t)
 
 	stderr := new(bytes.Buffer)
@@ -167,7 +169,7 @@ func TestRun_exitCodeZero(t *testing.T) {
 	g.Should(be.Equal(status, 0))
 }
 
-func TestRun_exitCodeNonZero(t *testing.T) {
+func Test_run_exitCodeNonZero(t *testing.T) {
 	g := ghost.New(t)
 
 	stderr := new(bytes.Buffer)
@@ -188,7 +190,7 @@ exit status 5
 	g.Should(be.Equal(status, 5))
 }
 
-func TestRun_incorrectUsage(t *testing.T) {
+func Test_run_incorrect_usage(t *testing.T) {
 	g := ghost.New(t)
 
 	stderr := new(bytes.Buffer)
@@ -201,7 +203,129 @@ func TestRun_incorrectUsage(t *testing.T) {
 		},
 	)
 
-	want := "Error: task \"fake-command\" is not defined\n"
-	g.Should(be.Equal(stderr.String(), want))
+	wantErr := "Error: task \"fake-command\" is not defined\n"
+	g.Should(be.Equal(stderr.String(), wantErr))
 	g.Should(be.Equal(status, 1))
+}
+
+func Test_run_missing_config(t *testing.T) {
+	g := ghost.New(t)
+
+	t.Cleanup(func() { ui.Stdout, ui.Stderr = os.Stdout, os.Stderr })
+
+	stdout := new(bytes.Buffer)
+	stderr := new(bytes.Buffer)
+	ui.Stdout, ui.Stderr = stdout, stderr
+
+	args := []string{"tusk", "-f", "./testdata/does-not-exist.yml"}
+	status := run(
+		config{
+			args:   args,
+			stderr: stderr,
+		},
+	)
+
+	wantErr := `Error: reading config file "./testdata/does-not-exist.yml": ` +
+		"open ./testdata/does-not-exist.yml: no such file or directory\n"
+
+	g.Should(be.Zero(stdout.String()))
+	g.Should(be.Equal(stderr.String(), wantErr))
+	g.Should(be.Equal(status, 1))
+}
+
+func Test_run_completion(t *testing.T) {
+	t.Run("unknown task", func(t *testing.T) {
+		g := ghost.New(t)
+
+		stdout := new(bytes.Buffer)
+		stderr := new(bytes.Buffer)
+
+		args := []string{
+			"tusk",
+			"-f",
+			"./testdata/tusk.yml",
+			"fake-command",
+			"--generate-bash-completion",
+		}
+		status := run(config{
+			args:   args,
+			stdout: stdout,
+			stderr: stderr,
+		})
+
+		g.Should(be.Equal(status, 0))
+		// Once a task has been specified, only task-specific args can be specified
+		g.Should(be.Zero(stdout.String()))
+		g.Should(be.Zero(stderr.String()))
+	})
+
+	t.Run("bad config", func(t *testing.T) {
+		g := ghost.New(t)
+
+		t.Cleanup(func() { ui.Stdout, ui.Stderr = os.Stdout, os.Stderr })
+
+		stdout := new(bytes.Buffer)
+		stderr := new(bytes.Buffer)
+		ui.Stdout, ui.Stderr = stdout, stderr
+
+		args := []string{
+			"tusk",
+			"-f",
+			"./testdata/bad.yml",
+			"--generate-bash-completion",
+		}
+		status := run(config{
+			args:   args,
+			stdout: stdout,
+			stderr: stderr,
+		})
+
+		g.Should(be.Equal(status, 0))
+		// If we can't parse the config file, we can still show global flags
+		g.Should(be.Equal(stdout.String(), `normal
+--help:Show help and exit
+--install-completion:Install tab completion for a shell (one of: bash, fish, zsh)
+--quiet:Only print command output and application errors
+--silent:Print no output
+--uninstall-completion:Uninstall tab completion for a shell (one of: bash, fish, zsh)
+--version:Print version and exit
+--verbose:Print verbose output
+`))
+		g.Should(be.Zero(stderr.String()))
+	})
+
+	t.Run("missing config", func(t *testing.T) {
+		g := ghost.New(t)
+
+		t.Cleanup(func() { ui.Stdout, ui.Stderr = os.Stdout, os.Stderr })
+
+		stdout := new(bytes.Buffer)
+		stderr := new(bytes.Buffer)
+		ui.Stdout, ui.Stderr = stdout, stderr
+
+		args := []string{
+			"tusk",
+			"-f",
+			"./testdata/does-not-exist.yml",
+			"--generate-bash-completion",
+		}
+		status := run(config{
+			args:   args,
+			stdout: stdout,
+			stderr: stderr,
+		})
+
+		g.Should(be.Equal(status, 0))
+		// If we can't parse the config file, we can still show global flags
+		g.Should(be.Equal(stdout.String(), `normal
+--help:Show help and exit
+--install-completion:Install tab completion for a shell (one of: bash, fish, zsh)
+--quiet:Only print command output and application errors
+--silent:Print no output
+--uninstall-completion:Uninstall tab completion for a shell (one of: bash, fish, zsh)
+--version:Print version and exit
+--verbose:Print verbose output
+`))
+		g.Should(be.Zero(stderr.String()))
+	})
 }
