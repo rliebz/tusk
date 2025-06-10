@@ -8,6 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - Use the directory of the config file as the working directory for finding
   the env-file location, instead of the actual working directory.
+- Completions are now more likely to produce useful output and less likely to
+  print error messages to the CLI.
 
 ## 0.7.3 (2025-01-05)
 
