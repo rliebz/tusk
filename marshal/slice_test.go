@@ -27,7 +27,7 @@ func TestSlice(t *testing.T) {
 	g.Should(be.DeepEqual(h1, SliceHolder[string]{Foo: Slice[string]{"example"}}))
 }
 
-func TestSlice_fails(t *testing.T) {
+func TestSlice_error(t *testing.T) {
 	g := ghost.New(t)
 
 	var h1 SliceHolder[string]
@@ -90,7 +90,7 @@ func TestSlice_pointer_null_item(t *testing.T) {
 	}
 }
 
-func TestSlice_pointer_fails(t *testing.T) {
+func TestSlice_pointer_error(t *testing.T) {
 	g := ghost.New(t)
 
 	var nsl1 Slice[*string]

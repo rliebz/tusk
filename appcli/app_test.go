@@ -205,7 +205,7 @@ tasks:
 	g.Should(be.Equal(exitCode, wantExitCode))
 }
 
-func TestNewApp_fails_bad_config(t *testing.T) {
+func TestNewApp_bad_config(t *testing.T) {
 	g := ghost.New(t)
 
 	_, err := NewApp(
@@ -218,7 +218,7 @@ func TestNewApp_fails_bad_config(t *testing.T) {
 	))
 }
 
-func TestNewApp_fails_bad_flag(t *testing.T) {
+func TestNewApp_bad_flag(t *testing.T) {
 	g := ghost.New(t)
 
 	_, err := NewApp([]string{"tusk", "--invalid"}, &runner.Metadata{})

@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -171,6 +172,7 @@ func TestTask_Execute_errors_returned(t *testing.T) {
 func TestTask_Execute_cache(t *testing.T) {
 	tests := []struct {
 		name          string
+		skipWindows   bool
 		source        marshal.Slice[string]
 		target        marshal.Slice[string]
 		mutate        func(t *testing.T)
@@ -411,7 +413,8 @@ func TestTask_Execute_cache(t *testing.T) {
 			wantRunCount: 2,
 		},
 		{
-			name: "unreadable source",
+			name:        "unreadable source",
+			skipWindows: true,
 			source: marshal.Slice[string]{
 				"writeonly.txt",
 			},
@@ -421,7 +424,8 @@ func TestTask_Execute_cache(t *testing.T) {
 			wantFirstErr: "open writeonly.txt: permission denied",
 		},
 		{
-			name: "unreadable target",
+			name:        "unreadable target",
+			skipWindows: true,
 			source: marshal.Slice[string]{
 				"a1.txt",
 			},
@@ -434,6 +438,10 @@ func TestTask_Execute_cache(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.skipWindows && runtime.GOOS == "windows" {
+				t.Skip("test is for unix file permissions")
+			}
+
 			g := ghost.New(t)
 
 			wd := useTempDir(t)
@@ -564,10 +572,15 @@ func TestTask_Execute_cache(t *testing.T) {
 		err = os.WriteFile(cachePath, []byte("data readonly"), 0o400)
 		g.NoError(err)
 
+		permissionDenied := "permission denied"
+		if runtime.GOOS == "windows" {
+			permissionDenied = "Access is denied."
+		}
+
 		err = task.Execute(ctx)
 		g.Should(be.ErrorEqual(
 			err,
-			fmt.Sprintf("caching task: open %s: permission denied", cachePath),
+			fmt.Sprintf("caching task: open %s: %s", cachePath, permissionDenied),
 		))
 
 		runCount := strings.Count(buf.String(), "exit 0")
@@ -577,6 +590,10 @@ func TestTask_Execute_cache(t *testing.T) {
 	})
 
 	t.Run("writeonly cache path", func(t *testing.T) {
+		if runtime.GOOS == "windows" {
+			t.Skip("test is for unix file permissions")
+		}
+
 		g := ghost.New(t)
 
 		wd := useTempDir(t)
@@ -794,7 +811,7 @@ func TestTask_run_finally_ui(t *testing.T) {
 	g.Should(be.Equal(got.String(), want.String()))
 }
 
-func TestTask_run_finally_ui_fails(t *testing.T) {
+func TestTask_run_finally_ui_error(t *testing.T) {
 	g := ghost.New(t)
 
 	taskName := "foo"

@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -228,8 +230,13 @@ func Test_run_missing_config(t *testing.T) {
 		},
 	)
 
+	notFound := "no such file or directory"
+	if runtime.GOOS == "windows" {
+		notFound = "The system cannot find the file specified."
+	}
+
 	wantErr := `Error: reading config file "./testdata/does-not-exist.yml": ` +
-		"open ./testdata/does-not-exist.yml: no such file or directory\n"
+		fmt.Sprintf("open ./testdata/does-not-exist.yml: %s\n", notFound)
 
 	g.Should(be.Zero(stdout.String()))
 	g.Should(be.Equal(stderr.String(), wantErr))
