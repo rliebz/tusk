@@ -9,13 +9,13 @@ type VerbosityLevel int
 
 const (
 	// VerbosityLevelSilent does not print any output to stderr/stdout.
-	VerbosityLevelSilent VerbosityLevel = iota
+	VerbosityLevelSilent VerbosityLevel = -8
 	// VerbosityLevelQuiet only prints command output and error messages.
-	VerbosityLevelQuiet VerbosityLevel = iota
+	VerbosityLevelQuiet VerbosityLevel = -4
 	// VerbosityLevelNormal is the normal level of verbosity.
-	VerbosityLevelNormal VerbosityLevel = iota
+	VerbosityLevelNormal VerbosityLevel = 0
 	// VerbosityLevelVerbose prints all messages, include debug info.
-	VerbosityLevelVerbose VerbosityLevel = iota
+	VerbosityLevelVerbose VerbosityLevel = 4
 )
 
 const outputPrefix = " => "

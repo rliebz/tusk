@@ -13,8 +13,6 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
-
-	"github.com/rliebz/tusk/ui"
 )
 
 func Test_run_printVersion(t *testing.T) {
@@ -216,11 +214,8 @@ func Test_run_incorrect_usage(t *testing.T) {
 func Test_run_missing_config(t *testing.T) {
 	g := ghost.New(t)
 
-	t.Cleanup(func() { ui.Stdout, ui.Stderr = os.Stdout, os.Stderr })
-
 	stdout := new(bytes.Buffer)
 	stderr := new(bytes.Buffer)
-	ui.Stdout, ui.Stderr = stdout, stderr
 
 	args := []string{"tusk", "-f", "./testdata/does-not-exist.yml"}
 	status := run(
@@ -272,11 +267,8 @@ func Test_run_completion(t *testing.T) {
 	t.Run("bad config", func(t *testing.T) {
 		g := ghost.New(t)
 
-		t.Cleanup(func() { ui.Stdout, ui.Stderr = os.Stdout, os.Stderr })
-
 		stdout := new(bytes.Buffer)
 		stderr := new(bytes.Buffer)
-		ui.Stdout, ui.Stderr = stdout, stderr
 
 		args := []string{
 			"tusk",
@@ -310,11 +302,8 @@ func Test_run_completion(t *testing.T) {
 	t.Run("missing config", func(t *testing.T) {
 		g := ghost.New(t)
 
-		t.Cleanup(func() { ui.Stdout, ui.Stderr = os.Stdout, os.Stderr })
-
 		stdout := new(bytes.Buffer)
 		stderr := new(bytes.Buffer)
-		ui.Stdout, ui.Stderr = stdout, stderr
 
 		args := []string{
 			"tusk",

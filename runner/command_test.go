@@ -117,7 +117,7 @@ func TestCommand_exec(t *testing.T) {
 			}
 
 			ctx := Context{
-				Logger:      ui.New(),
+				Logger:      ui.Noop(),
 				Interpreter: tt.interpreter,
 			}
 

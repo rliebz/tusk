@@ -84,7 +84,7 @@ Copyright:
 // ShowAppHelp shows the help for a given app.
 func ShowAppHelp(logger *ui.Logger, app *cli.App) {
 	app.Setup()
-	cli.HelpPrinter(logger.Stdout, cli.AppHelpTemplate, app)
+	cli.HelpPrinter(logger.Stdout(), cli.AppHelpTemplate, app)
 }
 
 type helpPrinterCustom = func(io.Writer, string, any, map[string]any)

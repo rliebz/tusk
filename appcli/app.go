@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"strings"
 
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/runner"
+	"github.com/rliebz/tusk/ui"
 )
 
 // newBaseApp creates a basic cli.App with top-level flags.
@@ -149,10 +151,8 @@ func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
 	if cfg.Usage != "" {
 		app.Usage = cfg.Usage
 	}
-	if meta.Logger != nil {
-		app.Writer = meta.Logger.Stdout
-		app.ErrWriter = meta.Logger.Stderr
-	}
+	app.Writer = meta.Logger.Stdout()
+	app.ErrWriter = meta.Logger.Stderr()
 
 	if err := addTasks(app, meta, cfg, createExecuteCommand); err != nil {
 		return nil, err
@@ -160,10 +160,10 @@ func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
 
 	copyFlags(app, metaApp)
 
-	app.BashComplete = createDefaultComplete(meta.Logger.Stdout, app)
+	app.BashComplete = createDefaultComplete(meta.Logger.Stdout(), app)
 	for i := range app.Commands {
 		cmd := &app.Commands[i]
-		cmd.BashComplete = createCommandComplete(meta.Logger.Stdout, cmd, cfg)
+		cmd.BashComplete = createCommandComplete(meta.Logger.Stdout(), cmd, cfg)
 	}
 
 	return app, nil
@@ -183,24 +183,22 @@ func getPassedValues(app *cli.App) (args []string, flags map[string]string, err 
 	return argsPassed, flagsPassed, nil
 }
 
-// GetConfigMetadata returns a metadata object based on global options passed.
-func GetConfigMetadata(args []string) (*runner.Metadata, error) {
-	var err error
+// NewMetadata returns a metadata object based on global options passed.
+func NewMetadata(logger *ui.Logger, args []string) (*runner.Metadata, error) {
 	app := newSilentApp()
-	metadata := runner.NewMetadata()
+	metadata := runner.Metadata{Logger: logger}
 
+	var err error
 	app.Action = func(c *cli.Context) error {
 		// To prevent app from exiting, app.Action must return nil on error.
 		// The enclosing function will still return the error.
 		err = metadata.Set(c)
 		return nil
 	}
-
 	if runErr := populateMetadata(app, args); runErr != nil {
 		return nil, runErr
 	}
-
-	return metadata, err
+	return &metadata, err
 }
 
 // populateMetadata runs the app to populate the metadata struct.
@@ -217,4 +215,8 @@ func populateMetadata(app *cli.App, args []string) error {
 	}
 
 	return nil
+}
+
+func isFlagArgumentError(err error) bool {
+	return strings.HasPrefix(err.Error(), "flag needs an argument")
 }

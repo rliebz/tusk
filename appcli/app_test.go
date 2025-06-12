@@ -230,16 +230,16 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 
 	args := []string{"tusk"}
 
-	metadata, err := GetConfigMetadata(args)
+	meta, err := NewMetadata(ui.Noop(), args)
 	g.NoError(err)
 
 	// The project's tuskfile should be found in the project root.
 	wd, err := os.Getwd()
 	g.NoError(err)
 
-	g.Should(be.Equal(metadata.CfgPath, filepath.Join(filepath.Dir(wd), "tusk.yml")))
-	g.Should(be.Equal(metadata.Logger.Verbosity, ui.VerbosityLevelNormal))
-	g.Should(be.False(metadata.PrintVersion))
+	g.Should(be.Equal(meta.CfgPath, filepath.Join(filepath.Dir(wd), "tusk.yml")))
+	g.Should(be.Equal(meta.Logger.Level(), ui.VerbosityLevelNormal))
+	g.Should(be.False(meta.PrintVersion))
 }
 
 func TestGetConfigMetadata_file(t *testing.T) {
@@ -248,21 +248,21 @@ func TestGetConfigMetadata_file(t *testing.T) {
 	cfgPath := "testdata/example.yml"
 	args := []string{"tusk", "--file", cfgPath}
 
-	metadata, err := GetConfigMetadata(args)
+	meta, err := NewMetadata(ui.Noop(), args)
 	g.NoError(err)
 
-	g.Should(be.Equal(metadata.CfgPath, cfgPath))
+	g.Should(be.Equal(meta.CfgPath, cfgPath))
 
 	cfgText, err := os.ReadFile(cfgPath)
 	g.NoError(err)
 
-	g.Should(be.Equal(string(metadata.CfgText), string(cfgText)))
+	g.Should(be.Equal(string(meta.CfgText), string(cfgText)))
 }
 
 func TestGetConfigMetadata_fileNoExist(t *testing.T) {
 	g := ghost.New(t)
 
-	_, err := GetConfigMetadata([]string{"tusk", "--file", "fakefile.yml"})
+	_, err := NewMetadata(ui.Noop(), []string{"tusk", "--file", "fakefile.yml"})
 	if !g.Should(be.True(errors.Is(err, os.ErrNotExist))) {
 		t.Log(err)
 	}
@@ -271,10 +271,10 @@ func TestGetConfigMetadata_fileNoExist(t *testing.T) {
 func TestGetConfigMetadata_version(t *testing.T) {
 	g := ghost.New(t)
 
-	metadata, err := GetConfigMetadata([]string{"tusk", "--version"})
+	meta, err := NewMetadata(ui.Noop(), []string{"tusk", "--version"})
 	g.NoError(err)
 
-	g.Should(be.True(metadata.PrintVersion))
+	g.Should(be.True(meta.PrintVersion))
 }
 
 func TestGetConfigMetadata_verbosity(t *testing.T) {
@@ -329,10 +329,10 @@ func TestGetConfigMetadata_verbosity(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			g := ghost.New(t)
 
-			metadata, err := GetConfigMetadata(tt.args)
+			meta, err := NewMetadata(ui.Noop(), tt.args)
 			g.NoError(err)
 
-			g.Should(be.Equal(metadata.Logger.Verbosity, tt.want))
+			g.Should(be.Equal(meta.Logger.Level(), tt.want))
 		})
 	}
 }

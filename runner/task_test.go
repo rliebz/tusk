@@ -467,9 +467,10 @@ func TestTask_Execute_cache(t *testing.T) {
 
 			var buf bytes.Buffer
 
-			logger := ui.New()
-			logger.Stdout = io.Discard
-			logger.Stderr = &buf
+			logger := ui.New(ui.Config{
+				Stdout: io.Discard,
+				Stderr: &buf,
+			})
 
 			ctx := Context{
 				CfgPath: cfgPath,
@@ -534,9 +535,10 @@ func TestTask_Execute_cache(t *testing.T) {
 
 		var buf bytes.Buffer
 
-		logger := ui.New()
-		logger.Stdout = io.Discard
-		logger.Stderr = &buf
+		logger := ui.New(ui.Config{
+			Stdout: io.Discard,
+			Stderr: &buf,
+		})
 
 		ctx := Context{
 			CfgPath: cfgPath,
@@ -610,9 +612,10 @@ func TestTask_Execute_cache(t *testing.T) {
 
 		var buf bytes.Buffer
 
-		logger := ui.New()
-		logger.Stdout = io.Discard
-		logger.Stderr = &buf
+		logger := ui.New(ui.Config{
+			Stdout: io.Discard,
+			Stderr: &buf,
+		})
 
 		ctx := Context{
 			CfgPath: cfgPath,
@@ -782,15 +785,19 @@ func TestTask_run_finally_ui(t *testing.T) {
 	command := "exit 0"
 
 	want := new(bytes.Buffer)
-	logger := ui.New()
-	logger.Verbosity = ui.VerbosityLevelVerbose
-	logger.Stderr = want
+	wantLogger := ui.New(ui.Config{
+		Stderr:    want,
+		Verbosity: ui.VerbosityLevelVerbose,
+	})
 
-	logger.PrintTaskFinally(taskName)
-	logger.PrintCommandWithParenthetical(command, "finally", taskName)
+	wantLogger.PrintTaskFinally(taskName)
+	wantLogger.PrintCommandWithParenthetical(command, "finally", taskName)
 
 	got := new(bytes.Buffer)
-	logger.Stderr = got
+	gotLogger := ui.New(ui.Config{
+		Stderr:    got,
+		Verbosity: ui.VerbosityLevelVerbose,
+	})
 
 	task := Task{
 		Name: taskName,
@@ -800,7 +807,7 @@ func TestTask_run_finally_ui(t *testing.T) {
 	}
 
 	ctx := Context{
-		Logger: logger,
+		Logger: gotLogger,
 	}
 	ctx = ctx.WithTask(&task)
 
@@ -819,16 +826,20 @@ func TestTask_run_finally_ui_error(t *testing.T) {
 	wantErr := errors.New("exit status 1")
 
 	want := new(bytes.Buffer)
-	logger := ui.New()
-	logger.Verbosity = ui.VerbosityLevelVerbose
-	logger.Stderr = want
+	wantLogger := ui.New(ui.Config{
+		Stderr:    want,
+		Verbosity: ui.VerbosityLevelVerbose,
+	})
 
-	logger.PrintTaskFinally(taskName)
-	logger.PrintCommandWithParenthetical(command, "finally", taskName)
-	logger.PrintCommandError(wantErr)
+	wantLogger.PrintTaskFinally(taskName)
+	wantLogger.PrintCommandWithParenthetical(command, "finally", taskName)
+	wantLogger.PrintCommandError(wantErr)
 
 	got := new(bytes.Buffer)
-	logger.Stderr = got
+	gotLogger := ui.New(ui.Config{
+		Stderr:    got,
+		Verbosity: ui.VerbosityLevelVerbose,
+	})
 
 	task := Task{
 		Name: taskName,
@@ -838,7 +849,7 @@ func TestTask_run_finally_ui_error(t *testing.T) {
 	}
 
 	ctx := Context{
-		Logger: logger,
+		Logger: gotLogger,
 	}
 	ctx = ctx.WithTask(&task)
 

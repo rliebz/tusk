@@ -10,11 +10,11 @@ import (
 )
 
 func withStdout(l *Logger, out io.Writer) {
-	l.Stdout = out
+	l.stdout = out
 }
 
 func withStderr(l *Logger, err io.Writer) {
-	l.Stderr = err
+	l.stderr = err
 }
 
 type printTestCase struct {
@@ -34,9 +34,10 @@ func testPrint(t *testing.T, tt printTestCase) {
 		g.Should(be.Zero(empty.String()))
 	})
 
-	logger := New()
-	logger.Stderr = empty
-	logger.Stdout = empty
+	logger := New(Config{
+		Stdout: empty,
+		Stderr: empty,
+	})
 
 	buf := new(bytes.Buffer)
 	tt.setOutput(logger, buf)
@@ -44,7 +45,7 @@ func testPrint(t *testing.T, tt printTestCase) {
 	t.Run(tt.levelNoOutput.String(), func(t *testing.T) {
 		g := ghost.New(t)
 
-		logger.Verbosity = tt.levelNoOutput
+		logger.level = tt.levelNoOutput
 		tt.printFunc(logger)
 		g.Should(be.Zero(buf.String()))
 	})
@@ -54,7 +55,7 @@ func testPrint(t *testing.T, tt printTestCase) {
 	t.Run(tt.levelWithOutput.String(), func(t *testing.T) {
 		g := ghost.New(t)
 
-		logger.Verbosity = tt.levelWithOutput
+		logger.level = tt.levelWithOutput
 		tt.printFunc(logger)
 		g.Should(be.Equal(buf.String(), tt.expected))
 	})

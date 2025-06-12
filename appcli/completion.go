@@ -242,7 +242,3 @@ func getFlagName(flag string) string {
 
 	return flag[len(flag)-1:]
 }
-
-func isFlagArgumentError(err error) bool {
-	return strings.HasPrefix(err.Error(), "flag needs an argument")
-}

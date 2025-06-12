@@ -35,33 +35,31 @@ type config struct {
 }
 
 func run(cfg config) (status int) {
+	logger := ui.New(ui.Config{
+		Stdout: cfg.stdout,
+		Stderr: cfg.stderr,
+	})
+
 	defer func() {
 		if r := recover(); r != nil {
-			logError(ui.New(), cfg.args, fmt.Errorf("recovered from panic: %v", r))
+			logError(logger, cfg.args, fmt.Errorf("recovered from panic: %v", r))
 			status = cmp.Or(status, 1)
 		}
 	}()
 
-	meta, err := appcli.GetConfigMetadata(cfg.args)
-	switch {
-	case err != nil && appcli.IsCompleting(cfg.args):
-		// Keep going without the config file to get global option completions
-		meta = runner.NewMetadata()
-	case err != nil:
-		logError(ui.New(), cfg.args, err)
+	meta, err := appcli.NewMetadata(logger, cfg.args)
+	if err != nil && !appcli.IsCompleting(cfg.args) {
+		logError(logger, cfg.args, err)
 		return 1
-	default:
-		meta.Logger.Stdout = cfg.stdout
-		meta.Logger.Stderr = cfg.stderr
 	}
 
 	status, err = runMeta(meta, cfg.args)
 	if err != nil && appcli.IsCompleting(cfg.args) && meta.CfgPath != "" {
 		// Try again without the config file to get global option completions
-		status, err = runMeta(runner.NewMetadata(), cfg.args)
+		status, err = runMeta(&runner.Metadata{Logger: logger}, cfg.args)
 	}
 	if err != nil {
-		logError(meta.Logger, cfg.args, err)
+		logError(logger, cfg.args, err)
 		return cmp.Or(status, 1)
 	}
 
@@ -118,7 +116,7 @@ func runApp(app *cli.App, meta *runner.Metadata, args []string) (int, error) {
 	if err := app.Run(args); err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
-			if meta.Logger.Verbosity < ui.VerbosityLevelVerbose {
+			if meta.Logger.Level() < ui.VerbosityLevelVerbose {
 				err = nil
 			}
 			ws := exitErr.Sys().(syscall.WaitStatus)

@@ -24,7 +24,7 @@ const (
 
 // PrintCommand prints the command to be executed.
 func (l Logger) PrintCommand(command string, namespaces ...string) {
-	if l.Verbosity <= VerbosityLevelQuiet {
+	if l.level <= VerbosityLevelQuiet {
 		return
 	}
 
@@ -34,12 +34,12 @@ func (l Logger) PrintCommand(command string, namespaces ...string) {
 
 	s := strings.Join(namespaces, bold(blue(namespaceSeparator)))
 
-	fmt.Fprintf(l.Stderr, "%s %s %s\n", s, bold(blue(promptCharacter)), bold(command))
+	fmt.Fprintf(l.Stderr(), "%s %s %s\n", s, bold(blue(promptCharacter)), bold(command))
 }
 
 // PrintCommandWithParenthetical prints a command with additional information.
 func (l Logger) PrintCommandWithParenthetical(command, parenthetical string, namespaces ...string) {
-	if l.Verbosity <= VerbosityLevelQuiet {
+	if l.level <= VerbosityLevelQuiet {
 		return
 	}
 
@@ -50,7 +50,7 @@ func (l Logger) PrintCommandWithParenthetical(command, parenthetical string, nam
 	s := strings.Join(namespaces, bold(blue(namespaceSeparator)))
 
 	fmt.Fprintf(
-		l.Stderr,
+		l.Stderr(),
 		"%s (%s) %s %s\n",
 		s,
 		yellow(parenthetical),
@@ -61,7 +61,7 @@ func (l Logger) PrintCommandWithParenthetical(command, parenthetical string, nam
 
 // PrintEnvironment prints when environment variables are set.
 func (l Logger) PrintEnvironment(variables map[string]*string) {
-	if l.Verbosity <= VerbosityLevelQuiet {
+	if l.level <= VerbosityLevelQuiet {
 		return
 	}
 
@@ -71,7 +71,7 @@ func (l Logger) PrintEnvironment(variables map[string]*string) {
 
 	f := blue
 
-	fmt.Fprintln(l.Stderr, f(environmentString))
+	fmt.Fprintln(l.Stderr(), f(environmentString))
 
 	// Print in deterministic order
 	keys := make([]string, 0, len(variables))
@@ -87,7 +87,7 @@ func (l Logger) PrintEnvironment(variables map[string]*string) {
 		}
 
 		fmt.Fprintf(
-			l.Stderr,
+			l.Stderr(),
 			"%s%s %s=%s\n",
 			f(outputPrefix),
 			setEnvironmentString,
@@ -103,7 +103,7 @@ func (l Logger) PrintEnvironment(variables map[string]*string) {
 		}
 
 		fmt.Fprintf(
-			l.Stderr,
+			l.Stderr(),
 			"%s%s %s\n",
 			f(outputPrefix),
 			unsetEnvironmentString,
@@ -114,21 +114,21 @@ func (l Logger) PrintEnvironment(variables map[string]*string) {
 
 // PrintCommandSkipped prints the command skipped and the reason.
 func (l Logger) PrintCommandSkipped(command, reason string) {
-	if l.Verbosity < VerbosityLevelVerbose {
+	if l.Level() < VerbosityLevelVerbose {
 		return
 	}
 
 	f := cyan
 
 	fmt.Fprintf(
-		l.Stderr,
+		l.Stderr(),
 		logFormat,
 		tag(skippedCommandString, f),
 		bold(command),
 	)
 
 	fmt.Fprintf(
-		l.Stderr,
+		l.Stderr(),
 		"%s%s\n",
 		f(outputPrefix),
 		reason,
@@ -137,21 +137,21 @@ func (l Logger) PrintCommandSkipped(command, reason string) {
 
 // PrintTaskSkipped prints the task skipped and the reason.
 func (l Logger) PrintTaskSkipped(task, reason string) {
-	if l.Verbosity < VerbosityLevelVerbose {
+	if l.Level() < VerbosityLevelVerbose {
 		return
 	}
 
 	f := cyan
 
 	fmt.Fprintf(
-		l.Stderr,
+		l.Stderr(),
 		logFormat,
 		tag(skippedTaskString, f),
 		bold(task),
 	)
 
 	fmt.Fprintf(
-		l.Stderr,
+		l.Stderr(),
 		"%s%s\n",
 		f(outputPrefix),
 		reason,
@@ -160,14 +160,14 @@ func (l Logger) PrintTaskSkipped(task, reason string) {
 
 // PrintTask prints when a task has begun.
 func (l Logger) PrintTask(taskName string) {
-	if l.Verbosity <= VerbosityLevelNormal {
+	if l.level <= VerbosityLevelNormal {
 		return
 	}
 
 	s := fmt.Sprintf("%s %s", taskString, startedString)
 
 	fmt.Fprintf(
-		l.Stderr,
+		l.Stderr(),
 		logFormat,
 		tag(s, blue),
 		bold(taskName),
@@ -176,14 +176,14 @@ func (l Logger) PrintTask(taskName string) {
 
 // PrintTaskFinally prints when a task's finally clause has begun.
 func (l Logger) PrintTaskFinally(taskName string) {
-	if l.Verbosity <= VerbosityLevelNormal {
+	if l.level <= VerbosityLevelNormal {
 		return
 	}
 
 	s := fmt.Sprintf("%s %s", taskString, finallyString)
 
 	fmt.Fprintf(
-		l.Stderr,
+		l.Stderr(),
 		logFormat,
 		tag(s, blue),
 		bold(taskName),
@@ -192,14 +192,14 @@ func (l Logger) PrintTaskFinally(taskName string) {
 
 // PrintTaskCompleted prints when a task has completed.
 func (l Logger) PrintTaskCompleted(taskName string) {
-	if l.Verbosity <= VerbosityLevelNormal {
+	if l.level <= VerbosityLevelNormal {
 		return
 	}
 
 	s := fmt.Sprintf("%s %s", taskString, completedString)
 
 	fmt.Fprintf(
-		l.Stderr,
+		l.Stderr(),
 		logFormat,
 		tag(s, blue),
 		bold(taskName),
@@ -208,12 +208,12 @@ func (l Logger) PrintTaskCompleted(taskName string) {
 
 // PrintCommandError prints an error from a running command.
 func (l Logger) PrintCommandError(err error) {
-	if l.Verbosity <= VerbosityLevelQuiet {
+	if l.level <= VerbosityLevelQuiet {
 		return
 	}
 
 	fmt.Fprintf(
-		l.Stderr,
+		l.Stderr(),
 		"%s\n",
 		red(err.Error()),
 	)

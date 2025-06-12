@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"cmp"
 	"fmt"
 	"os"
 	"strings"
@@ -10,16 +11,7 @@ import (
 	"github.com/rliebz/tusk/ui"
 )
 
-// NewMetadata creates a metadata struct with a default logger.
-func NewMetadata() *Metadata {
-	return &Metadata{
-		Logger: ui.New(),
-	}
-}
-
 // Metadata contains global configuration settings.
-//
-// Metadata should be instantiated using NewMetadata.
 type Metadata struct {
 	CfgPath     string
 	CfgText     []byte
@@ -38,21 +30,18 @@ type Metadata struct {
 // Set sets the metadata based on options.
 func (m *Metadata) Set(o OptGetter) error {
 	var err error
-	m.CfgPath, m.CfgText, err = getConfigFile(o)
+	cfgPath, cfgText, err := getConfigFile(o)
 	if err != nil {
 		return err
 	}
 
-	m.Interpreter, err = getInterpreter(m.CfgText)
+	interpreter, err := getInterpreter(cfgText)
 	if err != nil {
 		return err
 	}
 
-	if m.Logger == nil {
-		m.Logger = ui.New()
-	}
-	m.Logger.Verbosity = getVerbosity(o)
-
+	m.CfgPath, m.CfgText = cfgPath, cfgText
+	m.Interpreter = interpreter
 	m.InstallCompletion = o.String("install-completion")
 	m.UninstallCompletion = o.String("uninstall-completion")
 	m.PrintHelp = o.Bool("help")
@@ -61,6 +50,8 @@ func (m *Metadata) Set(o OptGetter) error {
 	m.CleanProjectCache = o.Bool("clean-project-cache")
 	m.CleanTaskCache = o.String("clean-task-cache")
 
+	m.Logger = cmp.Or(m.Logger, ui.New(ui.Config{}))
+	m.Logger.SetLevel(getVerbosity(o))
 	return nil
 }
 
