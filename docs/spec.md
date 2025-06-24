@@ -679,7 +679,7 @@ tasks:
   generate:
     source:
       - generate.sh
-      - data/**/*
+      - data/**
     target: output.txt
     run: ./generate.sh
 ```

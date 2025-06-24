@@ -99,7 +99,7 @@ tasks:
     # again is necessary.
     source:
       - generate.sh
-      - data/**/*
+      - data/**
     # If the target is up-to-date, the task will be skipped. Lists and patterns
     # are supported here as well.
     target: output.txt

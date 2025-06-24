@@ -47,7 +47,7 @@ tasks:
   generate:
     usage: Generate tusk.schema.json from tusk.schema.yaml
     source:
-      - schemagen/**/*
+      - schemagen/**
       - tusk.schema.yaml
     target: tusk.schema.json
     run: go run ./schemagen
