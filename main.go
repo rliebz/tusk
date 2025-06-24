@@ -69,7 +69,6 @@ func run(cfg config) (status int) {
 }
 
 func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
-	// TODO: Check if multiple commands are specified?
 	switch {
 	case appcli.IsCompleting(args):
 	case meta.PrintHelp:
