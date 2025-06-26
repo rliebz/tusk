@@ -3,6 +3,7 @@ package runner
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/rliebz/ghost"
@@ -195,4 +196,43 @@ QUUX=${FOO}
 		g.Should(be.Equal(os.Getenv("FOO"), "two"))
 		g.Should(be.Equal(os.Getenv("BAR"), "three"))
 	})
+}
+
+// useTempDir creates a temporary directory and switches to it.
+func useTempDir(t *testing.T) string {
+	t.Helper()
+
+	g := ghost.New(t)
+
+	// MacOS gets fancy with symlinks, so this gets us the real working path.
+	tmpdir, err := filepath.EvalSymlinks(t.TempDir())
+	g.NoError(err)
+
+	oldwd, err := os.Getwd()
+	g.NoError(err)
+
+	err = os.Chdir(tmpdir)
+	g.NoError(err)
+
+	t.Cleanup(func() {
+		err := os.Chdir(oldwd)
+		g.Should(be.Nil(err))
+	})
+
+	return tmpdir
+}
+
+func stashEnv(t testing.TB) {
+	t.Helper()
+
+	environ := os.Environ()
+
+	t.Cleanup(func() {
+		for _, val := range environ {
+			parts := strings.Split(val, "=")
+			os.Setenv(parts[0], parts[1]) //nolint:errcheck,usetesting
+		}
+	})
+
+	os.Clearenv()
 }

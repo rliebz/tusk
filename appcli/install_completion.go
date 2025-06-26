@@ -9,7 +9,6 @@ import (
 	"regexp"
 
 	"github.com/rliebz/tusk/internal/xdg"
-	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
 )
 
@@ -32,7 +31,7 @@ const (
 var bashRCFiles = []string{".bashrc", ".bash_profile", ".profile"}
 
 // InstallCompletion installs command line tab completion for a given shell.
-func InstallCompletion(meta *runner.Metadata) error {
+func InstallCompletion(meta *Metadata) error {
 	shell := meta.InstallCompletion
 	switch shell {
 	case "bash":
@@ -47,7 +46,7 @@ func InstallCompletion(meta *runner.Metadata) error {
 }
 
 // UninstallCompletion uninstalls command line tab completion for a given shell.
-func UninstallCompletion(meta *runner.Metadata) error {
+func UninstallCompletion(meta *Metadata) error {
 	shell := meta.UninstallCompletion
 	switch shell {
 	case "bash":

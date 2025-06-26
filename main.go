@@ -56,7 +56,7 @@ func run(cfg config) (status int) {
 	status, err = runMeta(meta, cfg.args)
 	if err != nil && appcli.IsCompleting(cfg.args) && meta.CfgPath != "" {
 		// Try again without the config file to get global option completions
-		status, err = runMeta(&runner.Metadata{Logger: logger}, cfg.args)
+		status, err = runMeta(&appcli.Metadata{Logger: logger}, cfg.args)
 	}
 	if err != nil {
 		logError(logger, cfg.args, err)
@@ -66,7 +66,7 @@ func run(cfg config) (status int) {
 	return status
 }
 
-func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
+func runMeta(meta *appcli.Metadata, args []string) (exitStatus int, err error) {
 	switch {
 	case appcli.IsCompleting(args):
 	case meta.PrintHelp:
@@ -102,7 +102,7 @@ func runMeta(meta *runner.Metadata, args []string) (exitStatus int, err error) {
 	return runApp(app, meta, args)
 }
 
-func printVersion(meta *runner.Metadata) {
+func printVersion(meta *appcli.Metadata) {
 	if version == "" {
 		if info, ok := debug.ReadBuildInfo(); ok {
 			version = info.Main.Version
@@ -112,7 +112,7 @@ func printVersion(meta *runner.Metadata) {
 	meta.Logger.Println(version)
 }
 
-func runApp(app *cli.App, meta *runner.Metadata, args []string) (int, error) {
+func runApp(app *cli.App, meta *appcli.Metadata, args []string) (int, error) {
 	if err := app.Run(args); err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {

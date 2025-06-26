@@ -14,7 +14,6 @@ import (
 	"github.com/rliebz/ghost/be"
 	"github.com/urfave/cli"
 
-	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
 )
 
@@ -87,7 +86,7 @@ tasks: { %q: {} }
 `,
 		name, usage, taskName,
 	)
-	meta := &runner.Metadata{
+	meta := &Metadata{
 		CfgText: cfgText,
 		Logger:  ui.Noop(),
 	}
@@ -109,7 +108,7 @@ func TestNewApp_exit_code(t *testing.T) {
 tasks:
   foo:
     run: exit 99`)
-	meta := &runner.Metadata{
+	meta := &Metadata{
 		CfgText: cfgText,
 		Logger:  ui.Noop(),
 	}
@@ -136,7 +135,7 @@ func TestNewApp_print_help(t *testing.T) {
 tasks:
   my-task:
     run: exit 99`)
-	meta := &runner.Metadata{
+	meta := &Metadata{
 		CfgText: cfgText,
 		Logger:  ui.Noop(),
 	}
@@ -164,7 +163,7 @@ func TestNewApp_task_not_found(t *testing.T) {
 tasks:
   my-task:
     run: exit 99`)
-	meta := &runner.Metadata{
+	meta := &Metadata{
 		CfgText: cfgText,
 		Logger:  ui.Noop(),
 	}
@@ -185,7 +184,7 @@ tasks:
     run: exit 99
   public:
     run: {task: private}`)
-	meta := &runner.Metadata{
+	meta := &Metadata{
 		CfgText: cfgText,
 		Logger:  ui.Noop(),
 	}
@@ -210,7 +209,7 @@ func TestNewApp_bad_config(t *testing.T) {
 
 	_, err := NewApp(
 		[]string{"tusk"},
-		&runner.Metadata{CfgText: []byte(`invalid`)},
+		&Metadata{CfgText: []byte(`invalid`)},
 	)
 	g.Should(be.ErrorEqual(
 		err,
@@ -221,7 +220,7 @@ func TestNewApp_bad_config(t *testing.T) {
 func TestNewApp_bad_flag(t *testing.T) {
 	g := ghost.New(t)
 
-	_, err := NewApp([]string{"tusk", "--invalid"}, &runner.Metadata{})
+	_, err := NewApp([]string{"tusk", "--invalid"}, &Metadata{})
 	g.Should(be.ErrorEqual(err, "flag provided but not defined: -invalid"))
 }
 

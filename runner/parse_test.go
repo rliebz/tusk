@@ -956,11 +956,12 @@ given input:
 				tt.name, tt.taskName, tt.flags, tt.input,
 			)
 
-			meta := &Metadata{
-				CfgText: []byte(tt.input),
-			}
-
-			cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
+			cfg, err := ParseComplete(ParseConfig{
+				Args:     tt.args,
+				Flags:    tt.flags,
+				CfgText:  []byte(tt.input),
+				TaskName: tt.taskName,
+			})
 			g.NoError(err)
 
 			got := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
@@ -986,12 +987,13 @@ given input:
 
 			useTempDir(t)
 
-			meta := &Metadata{
-				CfgPath: filepath.Join(wd, "tusk.yml"),
-				CfgText: []byte(tt.input),
-			}
-
-			cfg, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
+			cfg, err := ParseComplete(ParseConfig{
+				Args:     tt.args,
+				Flags:    tt.flags,
+				CfgPath:  filepath.Join(wd, "tusk.yml"),
+				CfgText:  []byte(tt.input),
+				TaskName: tt.taskName,
+			})
 			g.NoError(err)
 
 			got := flattenRuns(cfg.Tasks[tt.taskName].AllRunItems())
@@ -1255,11 +1257,12 @@ given input:
 				tt.name, tt.taskName, tt.flags, tt.input,
 			)
 
-			meta := &Metadata{
-				CfgText: []byte(tt.input),
-			}
-
-			_, err := ParseComplete(meta, tt.taskName, tt.args, tt.flags)
+			_, err := ParseComplete(ParseConfig{
+				Args:     tt.args,
+				Flags:    tt.flags,
+				CfgText:  []byte(tt.input),
+				TaskName: tt.taskName,
+			})
 			g.Must(be.Error(err))
 			g.Should(be.Equal(err.Error(), tt.wantErr))
 		})
@@ -1280,11 +1283,12 @@ tasks:
     run: echo ${bar}
 `)
 
-	meta := &Metadata{
-		CfgText: cfgText,
-	}
-
-	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
+	cfg, err := ParseComplete(ParseConfig{
+		Args:     []string{},
+		Flags:    map[string]string{},
+		CfgText:  cfgText,
+		TaskName: "",
+	})
 	g.NoError(err)
 
 	wantBar := "${foo}"
@@ -1311,11 +1315,12 @@ tasks:
       - echo quiet
 `)
 
-	meta := &Metadata{
-		CfgText: cfgText,
-	}
-
-	cfg, err := ParseComplete(meta, "", []string{}, map[string]string{})
+	cfg, err := ParseComplete(ParseConfig{
+		Args:     []string{},
+		Flags:    map[string]string{},
+		CfgText:  cfgText,
+		TaskName: "",
+	})
 	g.NoError(err)
 
 	g.Should(be.True(cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet))

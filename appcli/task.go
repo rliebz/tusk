@@ -12,7 +12,7 @@ import (
 // addTasks adds a series of tasks to a cli.App using a command creator.
 func addTasks(
 	app *cli.App,
-	meta *runner.Metadata,
+	meta *Metadata,
 	cfg *runner.Config,
 	create commandCreator,
 ) error {
@@ -28,7 +28,7 @@ func addTasks(
 
 func addTask(
 	app *cli.App,
-	meta *runner.Metadata,
+	meta *Metadata,
 	cfg *runner.Config,
 	t *runner.Task,
 	create commandCreator,

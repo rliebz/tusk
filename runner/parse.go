@@ -19,14 +19,19 @@ func Parse(text []byte) (*Config, error) {
 	return &cfg, nil
 }
 
+// ParseConfig is the configuration for parsing the configuration file.
+type ParseConfig struct {
+	Args        []string
+	CfgPath     string
+	CfgText     []byte
+	Flags       map[string]string
+	Interpreter []string
+	TaskName    string
+}
+
 // ParseComplete parses the file completely with env file parsing and
 // interpolation.
-func ParseComplete(
-	meta *Metadata,
-	taskName string,
-	args []string,
-	flags map[string]string,
-) (*Config, error) {
+func ParseComplete(meta ParseConfig) (*Config, error) { //nolint:gocritic
 	cfg, err := Parse(meta.CfgText)
 	if err != nil {
 		return nil, err
@@ -37,12 +42,12 @@ func ParseComplete(
 		return nil, err
 	}
 
-	t, isTaskSet := cfg.Tasks[taskName]
+	t, isTaskSet := cfg.Tasks[meta.TaskName]
 	if !isTaskSet {
 		return cfg, nil
 	}
 
-	passed, err := combineArgsAndFlags(t, args, flags)
+	passed, err := combineArgsAndFlags(t, meta.Args, meta.Flags)
 	if err != nil {
 		return nil, err
 	}

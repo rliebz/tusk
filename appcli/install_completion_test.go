@@ -11,7 +11,6 @@ import (
 	"github.com/rliebz/ghost/be"
 	"gotest.tools/v3/fs"
 
-	"github.com/rliebz/tusk/runner"
 	"github.com/rliebz/tusk/ui"
 )
 
@@ -19,7 +18,7 @@ func TestInstallCompletionUnsupported(t *testing.T) {
 	g := ghost.New(t)
 
 	err := InstallCompletion(
-		&runner.Metadata{
+		&Metadata{
 			InstallCompletion: "fake",
 		},
 	)
@@ -32,7 +31,7 @@ func TestUninstallCompletionUnsupported(t *testing.T) {
 	g := ghost.New(t)
 
 	err := UninstallCompletion(
-		&runner.Metadata{
+		&Metadata{
 			UninstallCompletion: "fake",
 		},
 	)

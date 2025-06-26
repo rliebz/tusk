@@ -117,7 +117,7 @@ func helpAction(c *cli.Context) error {
 }
 
 // NewApp creates a cli.App that executes tasks.
-func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
+func NewApp(args []string, meta *Metadata) (*cli.App, error) {
 	metaApp, err := newMetaApp(meta.CfgText)
 	if err != nil {
 		return nil, err
@@ -138,7 +138,14 @@ func NewApp(args []string, meta *runner.Metadata) (*cli.App, error) {
 		return nil, err
 	}
 
-	cfg, err := runner.ParseComplete(meta, taskName, argsPassed, flagsPassed)
+	cfg, err := runner.ParseComplete(runner.ParseConfig{
+		Args:        argsPassed,
+		CfgPath:     meta.CfgPath,
+		CfgText:     meta.CfgText,
+		Flags:       flagsPassed,
+		Interpreter: meta.Interpreter,
+		TaskName:    taskName,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -184,9 +191,9 @@ func getPassedValues(app *cli.App) (args []string, flags map[string]string, err 
 }
 
 // NewMetadata returns a metadata object based on global options passed.
-func NewMetadata(logger *ui.Logger, args []string) (*runner.Metadata, error) {
+func NewMetadata(logger *ui.Logger, args []string) (*Metadata, error) {
 	app := newSilentApp()
-	metadata := runner.Metadata{Logger: logger}
+	metadata := Metadata{Logger: logger}
 
 	var err error
 	app.Action = func(c *cli.Context) error {
