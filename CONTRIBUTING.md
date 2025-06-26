@@ -51,14 +51,7 @@ go install
 ```
 
 If you have already installed tusk from another source, make sure you test
-against the development version installed locally. If you do not get `(devel)`
-as the version, you may need to move your Go binary path earlier in your
-`PATH`:
-
-```console
-$ tusk --version
-(devel)
-```
+against the development version installed locally.
 
 ## Making Changes
 

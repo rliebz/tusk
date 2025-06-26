@@ -7,13 +7,10 @@ import (
 	"testing"
 
 	"github.com/rliebz/ghost"
-	"github.com/rliebz/ghost/be"
 )
 
 // StashEnv clears the environment for the duration of the testing.
 func StashEnv(t testing.TB) {
-	t.Helper()
-
 	environ := os.Environ()
 
 	t.Cleanup(func() {
@@ -28,23 +25,13 @@ func StashEnv(t testing.TB) {
 
 // UseTempDir creates a temporary directory and switches to it.
 func UseTempDir(t *testing.T) string {
-	t.Helper()
 	g := ghost.New(t)
 
 	// MacOS gets fancy with symlinks, so this gets us the real working path.
 	tmpdir, err := filepath.EvalSymlinks(t.TempDir())
 	g.NoError(err)
 
-	oldwd, err := os.Getwd()
-	g.NoError(err)
-
-	err = os.Chdir(tmpdir)
-	g.NoError(err)
-
-	t.Cleanup(func() {
-		err := os.Chdir(oldwd)
-		g.Should(be.Nil(err))
-	})
+	t.Chdir(tmpdir)
 
 	return tmpdir
 }

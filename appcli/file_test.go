@@ -57,8 +57,7 @@ func Test_searchForFile(t *testing.T) {
 		t.Run(tt.wd+"_"+tt.wantPath, func(t *testing.T) {
 			g := ghost.New(t)
 
-			err := os.Chdir(tt.wd)
-			g.NoError(err)
+			t.Chdir(tt.wd)
 
 			fullPath, err := searchForFile()
 			g.NoError(err)

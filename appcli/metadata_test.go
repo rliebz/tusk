@@ -293,19 +293,12 @@ func TestMetadata_Set(t *testing.T) {
 
 			xtesting.StashEnv(t)
 
-			cwd, err := os.Getwd()
-			g.NoError(err)
-
 			// default to no config for irrelevant tests
 			if tt.wd == "" {
 				tt.wd = dirEmpty.Path()
 			}
 
-			err = os.Chdir(tt.wd)
-			g.NoError(err)
-			t.Cleanup(func() {
-				os.Chdir(cwd) //nolint: errcheck
-			})
+			t.Chdir(tt.wd)
 
 			opts := mockOptGetter{
 				bools:   tt.bools,
@@ -313,7 +306,7 @@ func TestMetadata_Set(t *testing.T) {
 			}
 
 			meta := Metadata{Logger: ui.New(ui.Config{})}
-			err = meta.set(opts)
+			err := meta.set(opts)
 			g.NoError(err)
 
 			// evaluate symlinks to avoid noise
