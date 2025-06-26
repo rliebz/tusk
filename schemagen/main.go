@@ -19,7 +19,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	defer schemaFile.Close() //nolint: errcheck
+	defer schemaFile.Close() //nolint:errcheck
 
 	var schemaData any
 	err = yaml.NewDecoder(schemaFile).Decode(&schemaData)
@@ -31,7 +31,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	defer outfile.Close() //nolint: errcheck
+	defer outfile.Close() //nolint:errcheck
 
 	enc := json.NewEncoder(outfile)
 	enc.SetIndent("", "\t")

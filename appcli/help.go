@@ -14,7 +14,7 @@ import (
 )
 
 // init sets the help templates for urfave/cli.
-func init() { //nolint: gochecknoinits
+func init() { //nolint:gochecknoinits
 	// These are both used, so both must be overridden
 	cli.HelpPrinterCustom = wrapPrinter(cli.HelpPrinterCustom)
 	cli.HelpPrinter = func(w io.Writer, templ string, data any) {

@@ -136,7 +136,7 @@ func NewApp(args []string, meta *Metadata) (*cli.App, error) {
 		return nil, err
 	}
 
-	cfg, err := runner.ParseComplete(runner.ParseConfig{
+	cfg, err := runner.ParseComplete(&runner.ParseConfig{
 		Args:        argsPassed,
 		CfgPath:     meta.CfgPath,
 		CfgText:     meta.CfgText,

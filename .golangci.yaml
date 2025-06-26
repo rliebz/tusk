@@ -58,7 +58,7 @@ linters:
       disabled-checks:
         - paramTypeCombine
         - ptrToRefParam
-        - whyNoLint # TODO: Address these
+        - whyNoLint
     gosec:
       excludes:
         - G104 # duplicate of errcheck

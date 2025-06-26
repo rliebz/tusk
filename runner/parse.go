@@ -31,7 +31,7 @@ type ParseConfig struct {
 
 // ParseComplete parses the file completely with env file parsing and
 // interpolation.
-func ParseComplete(meta ParseConfig) (*Config, error) { //nolint:gocritic
+func ParseComplete(meta *ParseConfig) (*Config, error) {
 	cfg, err := Parse(meta.CfgText)
 	if err != nil {
 		return nil, err

@@ -104,12 +104,12 @@ func getBashRCFile() (string, error) {
 }
 
 func appendIfAbsent(path, text string) error {
-	//nolint: gosec
+	//nolint:gosec
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0o644)
 	if err != nil {
 		return err
 	}
-	defer f.Close() //nolint: errcheck
+	defer f.Close() //nolint:errcheck
 
 	scanner := bufio.NewScanner(f)
 
@@ -133,7 +133,11 @@ func appendIfAbsent(path, text string) error {
 	}
 
 	_, err = fmt.Fprintln(f, text)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return f.Close()
 }
 
 func uninstallBashCompletion() error {
@@ -157,17 +161,17 @@ func uninstallBashCompletion() error {
 }
 
 func removeLineInFile(path string, re *regexp.Regexp) error {
-	rf, err := os.OpenFile(path, os.O_RDONLY, 0o644) //nolint: gosec
+	rf, err := os.OpenFile(path, os.O_RDONLY, 0o644) //nolint:gosec
 	if err != nil {
 		return err
 	}
-	defer rf.Close() //nolint: errcheck
+	defer rf.Close() //nolint:errcheck
 
 	wf, err := os.CreateTemp("", ".profile.tusk.bkp")
 	if err != nil {
 		return err
 	}
-	defer wf.Close() //nolint: errcheck
+	defer wf.Close() //nolint:errcheck
 
 	scanner := bufio.NewScanner(rf)
 
@@ -193,8 +197,8 @@ func removeLineInFile(path string, re *regexp.Regexp) error {
 		return serr
 	}
 
-	rf.Close() //nolint: errcheck
-	wf.Close() //nolint: errcheck
+	rf.Close() //nolint:errcheck
+	wf.Close() //nolint:errcheck
 	return os.Rename(wf.Name(), path)
 }
 
@@ -243,14 +247,14 @@ func installZshCompletion(logger *ui.Logger, dir string) error {
 }
 
 func installFileInDir(logger *ui.Logger, dir, file string, content []byte) error {
-	//nolint: gosec
+	//nolint:gosec
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
 
 	target := filepath.Join(dir, file)
 
-	//nolint: gosec
+	//nolint:gosec
 	if err := os.WriteFile(target, content, 0o644); err != nil {
 		return err
 	}

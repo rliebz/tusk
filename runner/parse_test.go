@@ -957,7 +957,7 @@ given input:
 				tt.name, tt.taskName, tt.flags, tt.input,
 			)
 
-			cfg, err := ParseComplete(ParseConfig{
+			cfg, err := ParseComplete(&ParseConfig{
 				Args:     tt.args,
 				Flags:    tt.flags,
 				CfgText:  []byte(tt.input),
@@ -988,7 +988,7 @@ given input:
 
 			xtesting.UseTempDir(t)
 
-			cfg, err := ParseComplete(ParseConfig{
+			cfg, err := ParseComplete(&ParseConfig{
 				Args:     tt.args,
 				Flags:    tt.flags,
 				CfgPath:  filepath.Join(wd, "tusk.yml"),
@@ -1258,7 +1258,7 @@ given input:
 				tt.name, tt.taskName, tt.flags, tt.input,
 			)
 
-			_, err := ParseComplete(ParseConfig{
+			_, err := ParseComplete(&ParseConfig{
 				Args:     tt.args,
 				Flags:    tt.flags,
 				CfgText:  []byte(tt.input),
@@ -1284,7 +1284,7 @@ tasks:
     run: echo ${bar}
 `)
 
-	cfg, err := ParseComplete(ParseConfig{
+	cfg, err := ParseComplete(&ParseConfig{
 		Args:     []string{},
 		Flags:    map[string]string{},
 		CfgText:  cfgText,
@@ -1316,7 +1316,7 @@ tasks:
       - echo quiet
 `)
 
-	cfg, err := ParseComplete(ParseConfig{
+	cfg, err := ParseComplete(&ParseConfig{
 		Args:     []string{},
 		Flags:    map[string]string{},
 		CfgText:  cfgText,

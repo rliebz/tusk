@@ -135,7 +135,7 @@ var withWhenEnvSuccess = func(w *When) {
 	ensureEnv(w)
 	key := randomString()
 	value := randomString()
-	os.Setenv(key, value) //nolint: errcheck
+	os.Setenv(key, value) //nolint:errcheck
 	w.Environment[key] = append(w.Environment[key], &value)
 }
 
@@ -159,7 +159,7 @@ var withoutWhenEnvFailure = func(w *When) {
 	ensureEnv(w)
 	key := randomString()
 	value := randomString()
-	os.Setenv(key, value) //nolint: errcheck
+	os.Setenv(key, value) //nolint:errcheck
 	w.Environment[key] = append(w.Environment[key], nil)
 }
 
