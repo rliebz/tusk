@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"syscall"
 	"testing"
 
@@ -222,116 +220,4 @@ func TestNewApp_bad_flag(t *testing.T) {
 
 	_, err := NewApp([]string{"tusk", "--invalid"}, &Metadata{})
 	g.Should(be.ErrorEqual(err, "flag provided but not defined: -invalid"))
-}
-
-func TestGetConfigMetadata_defaults(t *testing.T) {
-	g := ghost.New(t)
-
-	args := []string{"tusk"}
-
-	meta, err := NewMetadata(ui.Noop(), args)
-	g.NoError(err)
-
-	// The project's tuskfile should be found in the project root.
-	wd, err := os.Getwd()
-	g.NoError(err)
-
-	g.Should(be.Equal(meta.CfgPath, filepath.Join(filepath.Dir(wd), "tusk.yml")))
-	g.Should(be.Equal(meta.Logger.Level(), ui.LevelNormal))
-	g.Should(be.False(meta.PrintVersion))
-}
-
-func TestGetConfigMetadata_file(t *testing.T) {
-	g := ghost.New(t)
-
-	cfgPath := "testdata/example.yml"
-	args := []string{"tusk", "--file", cfgPath}
-
-	meta, err := NewMetadata(ui.Noop(), args)
-	g.NoError(err)
-
-	g.Should(be.Equal(meta.CfgPath, cfgPath))
-
-	cfgText, err := os.ReadFile(cfgPath)
-	g.NoError(err)
-
-	g.Should(be.Equal(string(meta.CfgText), string(cfgText)))
-}
-
-func TestGetConfigMetadata_fileNoExist(t *testing.T) {
-	g := ghost.New(t)
-
-	_, err := NewMetadata(ui.Noop(), []string{"tusk", "--file", "fakefile.yml"})
-	if !g.Should(be.True(errors.Is(err, os.ErrNotExist))) {
-		t.Log(err)
-	}
-}
-
-func TestGetConfigMetadata_version(t *testing.T) {
-	g := ghost.New(t)
-
-	meta, err := NewMetadata(ui.Noop(), []string{"tusk", "--version"})
-	g.NoError(err)
-
-	g.Should(be.True(meta.PrintVersion))
-}
-
-func TestGetConfigMetadata_verbosity(t *testing.T) {
-	tests := []struct {
-		name string
-		args []string
-		want ui.Level
-	}{
-		{
-			"normal",
-			[]string{"tusk"},
-			ui.LevelNormal,
-		},
-		{
-			"silent",
-			[]string{"tusk", "--silent"},
-			ui.LevelSilent,
-		},
-		{
-			"quiet",
-			[]string{"tusk", "--quiet"},
-			ui.LevelQuiet,
-		},
-		{
-			"verbose",
-			[]string{"tusk", "--verbose"},
-			ui.LevelVerbose,
-		},
-		{
-			"quiet verbose",
-			[]string{"tusk", "--quiet", "--verbose"},
-			ui.LevelQuiet,
-		},
-		{
-			"silent quiet",
-			[]string{"tusk", "--silent", "--quiet"},
-			ui.LevelSilent,
-		},
-		{
-			"silent verbose",
-			[]string{"tusk", "--silent", "--verbose"},
-			ui.LevelSilent,
-		},
-		{
-			"silent quiet verbose",
-			[]string{"tusk", "--silent", "--quiet", "--verbose"},
-			ui.LevelSilent,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			g := ghost.New(t)
-
-			meta, err := NewMetadata(ui.Noop(), tt.args)
-			g.NoError(err)
-
-			g.Should(be.Equal(meta.Logger.Level(), tt.want))
-		})
-	}
 }

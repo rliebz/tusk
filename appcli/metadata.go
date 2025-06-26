@@ -1,11 +1,11 @@
 package appcli
 
 import (
-	"cmp"
 	"fmt"
 	"os"
 	"strings"
 
+	"github.com/urfave/cli"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/rliebz/tusk/ui"
@@ -27,8 +27,33 @@ type Metadata struct {
 	CleanTaskCache      string
 }
 
-// Set sets the metadata based on options.
-func (m *Metadata) Set(o OptGetter) error {
+// NewMetadata returns a metadata object based on global options passed.
+func NewMetadata(logger *ui.Logger, args []string) (*Metadata, error) {
+	app := newSilentApp()
+	metadata := Metadata{Logger: logger}
+
+	var err error
+	app.Action = func(c *cli.Context) error {
+		// To prevent app from exiting, app.Action must return nil on error.
+		// The enclosing function will still return the error.
+		err = metadata.set(c)
+		return nil
+	}
+	if runErr := populateMetadata(app, args); runErr != nil {
+		return nil, runErr
+	}
+	return &metadata, err
+}
+
+// optGetter pulls various options based on a name.
+// These options will generally come from the command line.
+type optGetter interface {
+	Bool(string) bool
+	String(string) string
+}
+
+// set sets the metadata based on options.
+func (m *Metadata) set(o optGetter) error {
 	var err error
 	cfgPath, cfgText, err := getConfigFile(o)
 	if err != nil {
@@ -49,13 +74,27 @@ func (m *Metadata) Set(o OptGetter) error {
 	m.CleanCache = o.Bool("clean-cache")
 	m.CleanProjectCache = o.Bool("clean-project-cache")
 	m.CleanTaskCache = o.String("clean-task-cache")
-
-	m.Logger = cmp.Or(m.Logger, ui.New(ui.Config{}))
-	m.Logger.SetLevel(getVerbosity(o))
+	m.Logger.SetLevel(getLogLevel(o))
 	return nil
 }
 
-func getConfigFile(o OptGetter) (fullPath string, cfgText []byte, _ error) {
+// populateMetadata runs the app to populate the metadata struct.
+func populateMetadata(app *cli.App, args []string) error {
+	args = removeCompletionArg(args)
+
+	if err := app.Run(args); err != nil {
+		// Ignore flags without arguments during metadata creation
+		if isFlagArgumentError(err) {
+			return app.Run(args[:len(args)-1])
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+func getConfigFile(o optGetter) (fullPath string, cfgText []byte, _ error) {
 	fullPath = o.String("file")
 
 	if fullPath == "" {
@@ -95,14 +134,7 @@ func getInterpreter(cfgText []byte) ([]string, error) {
 	return strings.Fields(cfg.Interpreter), nil
 }
 
-// OptGetter pulls various options based on a name.
-// These options will generally come from the command line.
-type OptGetter interface {
-	Bool(string) bool
-	String(string) string
-}
-
-func getVerbosity(c OptGetter) ui.Level {
+func getLogLevel(c optGetter) ui.Level {
 	switch {
 	case c.Bool("silent"):
 		return ui.LevelSilent
@@ -113,4 +145,8 @@ func getVerbosity(c OptGetter) ui.Level {
 	default:
 		return ui.LevelNormal
 	}
+}
+
+func isFlagArgumentError(err error) bool {
+	return strings.HasPrefix(err.Error(), "flag needs an argument")
 }

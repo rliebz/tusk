@@ -1,6 +1,7 @@
 package appcli
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,6 +13,118 @@ import (
 
 	"github.com/rliebz/tusk/ui"
 )
+
+func TestNewMetadata_defaults(t *testing.T) {
+	g := ghost.New(t)
+
+	args := []string{"tusk"}
+
+	meta, err := NewMetadata(ui.Noop(), args)
+	g.NoError(err)
+
+	// The project's tuskfile should be found in the project root.
+	wd, err := os.Getwd()
+	g.NoError(err)
+
+	g.Should(be.Equal(meta.CfgPath, filepath.Join(filepath.Dir(wd), "tusk.yml")))
+	g.Should(be.Equal(meta.Logger.Level(), ui.LevelNormal))
+	g.Should(be.False(meta.PrintVersion))
+}
+
+func TestNewMetadata_file(t *testing.T) {
+	g := ghost.New(t)
+
+	cfgPath := "testdata/example.yml"
+	args := []string{"tusk", "--file", cfgPath}
+
+	meta, err := NewMetadata(ui.Noop(), args)
+	g.NoError(err)
+
+	g.Should(be.Equal(meta.CfgPath, cfgPath))
+
+	cfgText, err := os.ReadFile(cfgPath)
+	g.NoError(err)
+
+	g.Should(be.Equal(string(meta.CfgText), string(cfgText)))
+}
+
+func TestNewMetadata_fileNoExist(t *testing.T) {
+	g := ghost.New(t)
+
+	_, err := NewMetadata(ui.Noop(), []string{"tusk", "--file", "fakefile.yml"})
+	if !g.Should(be.True(errors.Is(err, os.ErrNotExist))) {
+		t.Log(err)
+	}
+}
+
+func TestNewMetadata_version(t *testing.T) {
+	g := ghost.New(t)
+
+	meta, err := NewMetadata(ui.Noop(), []string{"tusk", "--version"})
+	g.NoError(err)
+
+	g.Should(be.True(meta.PrintVersion))
+}
+
+func TestNewMetadata_log_level(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want ui.Level
+	}{
+		{
+			"normal",
+			[]string{"tusk"},
+			ui.LevelNormal,
+		},
+		{
+			"silent",
+			[]string{"tusk", "--silent"},
+			ui.LevelSilent,
+		},
+		{
+			"quiet",
+			[]string{"tusk", "--quiet"},
+			ui.LevelQuiet,
+		},
+		{
+			"verbose",
+			[]string{"tusk", "--verbose"},
+			ui.LevelVerbose,
+		},
+		{
+			"quiet verbose",
+			[]string{"tusk", "--quiet", "--verbose"},
+			ui.LevelQuiet,
+		},
+		{
+			"silent quiet",
+			[]string{"tusk", "--silent", "--quiet"},
+			ui.LevelSilent,
+		},
+		{
+			"silent verbose",
+			[]string{"tusk", "--silent", "--verbose"},
+			ui.LevelSilent,
+		},
+		{
+			"silent quiet verbose",
+			[]string{"tusk", "--silent", "--quiet", "--verbose"},
+			ui.LevelSilent,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := ghost.New(t)
+
+			meta, err := NewMetadata(ui.Noop(), tt.args)
+			g.NoError(err)
+
+			g.Should(be.Equal(meta.Logger.Level(), tt.want))
+		})
+	}
+}
 
 // mockOptGetter returns opts from maps.
 type mockOptGetter struct {
@@ -199,8 +312,8 @@ func TestMetadata_Set(t *testing.T) {
 				strings: tt.strings,
 			}
 
-			var meta Metadata
-			err = meta.Set(opts)
+			meta := Metadata{Logger: ui.New(ui.Config{})}
+			err = meta.set(opts)
 			g.NoError(err)
 
 			// evaluate symlinks to avoid noise
@@ -253,8 +366,8 @@ func TestMetadata_Set_interpreter(t *testing.T) {
 				strings: map[string]string{"file": cfgFile.Path()},
 			}
 
-			var meta Metadata
-			err := meta.Set(opts)
+			meta := Metadata{Logger: ui.Noop()}
+			err := meta.set(opts)
 			if tt.wantErr != "" {
 				g.Should(be.ErrorEqual(err, tt.wantErr))
 				return

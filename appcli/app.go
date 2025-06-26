@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"io"
 	"sort"
-	"strings"
 
 	"github.com/urfave/cli"
 
 	"github.com/rliebz/tusk/runner"
-	"github.com/rliebz/tusk/ui"
 )
 
 // newBaseApp creates a basic cli.App with top-level flags.
@@ -188,42 +186,4 @@ func getPassedValues(app *cli.App) (args []string, flags map[string]string, err 
 	}
 
 	return argsPassed, flagsPassed, nil
-}
-
-// NewMetadata returns a metadata object based on global options passed.
-func NewMetadata(logger *ui.Logger, args []string) (*Metadata, error) {
-	app := newSilentApp()
-	metadata := Metadata{Logger: logger}
-
-	var err error
-	app.Action = func(c *cli.Context) error {
-		// To prevent app from exiting, app.Action must return nil on error.
-		// The enclosing function will still return the error.
-		err = metadata.Set(c)
-		return nil
-	}
-	if runErr := populateMetadata(app, args); runErr != nil {
-		return nil, runErr
-	}
-	return &metadata, err
-}
-
-// populateMetadata runs the app to populate the metadata struct.
-func populateMetadata(app *cli.App, args []string) error {
-	args = removeCompletionArg(args)
-
-	if err := app.Run(args); err != nil {
-		// Ignore flags without arguments during metadata creation
-		if isFlagArgumentError(err) {
-			return app.Run(args[:len(args)-1])
-		}
-
-		return err
-	}
-
-	return nil
-}
-
-func isFlagArgumentError(err error) bool {
-	return strings.HasPrefix(err.Error(), "flag needs an argument")
 }
