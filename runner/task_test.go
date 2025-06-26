@@ -15,6 +15,7 @@ import (
 	"github.com/rliebz/ghost/be"
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/rliebz/tusk/internal/xtesting"
 	"github.com/rliebz/tusk/marshal"
 	"github.com/rliebz/tusk/ui"
 )
@@ -444,7 +445,7 @@ func TestTask_Execute_cache(t *testing.T) {
 
 			g := ghost.New(t)
 
-			wd := useTempDir(t)
+			wd := xtesting.UseTempDir(t)
 			cfgPath := filepath.Join(wd, "tusk.yml")
 
 			err := os.WriteFile("a1.txt", []byte("data a"), 0o600)
@@ -521,7 +522,7 @@ func TestTask_Execute_cache(t *testing.T) {
 	t.Run("readonly cache path", func(t *testing.T) {
 		g := ghost.New(t)
 
-		wd := useTempDir(t)
+		wd := xtesting.UseTempDir(t)
 		cfgPath := filepath.Join(wd, "tusk.yml")
 
 		err := os.WriteFile("input.txt", []byte("data a"), 0o600)
@@ -598,7 +599,7 @@ func TestTask_Execute_cache(t *testing.T) {
 
 		g := ghost.New(t)
 
-		wd := useTempDir(t)
+		wd := xtesting.UseTempDir(t)
 		cfgPath := filepath.Join(wd, "tusk.yml")
 
 		err := os.WriteFile("input.txt", []byte("data a"), 0o600)

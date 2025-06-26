@@ -4,13 +4,13 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
 	"gotest.tools/v3/fs"
 
+	"github.com/rliebz/tusk/internal/xtesting"
 	"github.com/rliebz/tusk/ui"
 )
 
@@ -291,7 +291,7 @@ func TestMetadata_Set(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			g := ghost.New(t)
 
-			stashEnv(t)
+			xtesting.StashEnv(t)
 
 			cwd, err := os.Getwd()
 			g.NoError(err)
@@ -377,19 +377,4 @@ func TestMetadata_Set_interpreter(t *testing.T) {
 			g.Should(be.DeepEqual(meta.Interpreter, tt.want))
 		})
 	}
-}
-
-func stashEnv(t testing.TB) {
-	t.Helper()
-
-	environ := os.Environ()
-
-	t.Cleanup(func() {
-		for _, val := range environ {
-			parts := strings.Split(val, "=")
-			os.Setenv(parts[0], parts[1]) //nolint:errcheck,usetesting
-		}
-	})
-
-	os.Clearenv()
 }

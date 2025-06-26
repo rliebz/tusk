@@ -3,12 +3,13 @@ package runner
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
 	"gopkg.in/yaml.v2"
+
+	"github.com/rliebz/tusk/internal/xtesting"
 )
 
 func TestEnvFile_UnmarshalYAML(t *testing.T) {
@@ -64,8 +65,8 @@ func TestEnvFile_UnmarshalYAML(t *testing.T) {
 func Test_loadEnvFiles(t *testing.T) {
 	t.Run("default used", func(t *testing.T) {
 		g := ghost.New(t)
-		stashEnv(t)
-		tmpdir := useTempDir(t)
+		xtesting.StashEnv(t)
+		tmpdir := xtesting.UseTempDir(t)
 
 		t.Setenv("BAZ", "bazvalue")
 
@@ -94,8 +95,8 @@ QUUX=${FOO}
 
 	t.Run("default not found", func(t *testing.T) {
 		g := ghost.New(t)
-		stashEnv(t)
-		tmpdir := useTempDir(t)
+		xtesting.StashEnv(t)
+		tmpdir := xtesting.UseTempDir(t)
 
 		err := loadEnvFiles(tmpdir, nil)
 		g.NoError(err)
@@ -103,8 +104,8 @@ QUUX=${FOO}
 
 	t.Run("dev null", func(t *testing.T) {
 		g := ghost.New(t)
-		stashEnv(t)
-		tmpdir := useTempDir(t)
+		xtesting.StashEnv(t)
+		tmpdir := xtesting.UseTempDir(t)
 
 		err := loadEnvFiles(tmpdir, []EnvFile{{Path: "/dev/null"}})
 		g.NoError(err)
@@ -112,8 +113,8 @@ QUUX=${FOO}
 
 	t.Run("empty list", func(t *testing.T) {
 		g := ghost.New(t)
-		stashEnv(t)
-		tmpdir := useTempDir(t)
+		xtesting.StashEnv(t)
+		tmpdir := xtesting.UseTempDir(t)
 
 		t.Setenv("BAZ", "bazvalue")
 
@@ -128,8 +129,8 @@ QUUX=${FOO}
 
 	t.Run("required found", func(t *testing.T) {
 		g := ghost.New(t)
-		stashEnv(t)
-		tmpdir := useTempDir(t)
+		xtesting.StashEnv(t)
+		tmpdir := xtesting.UseTempDir(t)
 
 		err := os.WriteFile(filepath.Join(tmpdir, ".env"), []byte("FOO=foovalue"), 0o644)
 		g.NoError(err)
@@ -144,8 +145,8 @@ QUUX=${FOO}
 
 	t.Run("required not found", func(t *testing.T) {
 		g := ghost.New(t)
-		stashEnv(t)
-		tmpdir := useTempDir(t)
+		xtesting.StashEnv(t)
+		tmpdir := xtesting.UseTempDir(t)
 
 		err := loadEnvFiles(tmpdir, []EnvFile{
 			{Path: ".env", Required: true},
@@ -156,15 +157,15 @@ QUUX=${FOO}
 
 	t.Run("directory respected", func(t *testing.T) {
 		g := ghost.New(t)
-		stashEnv(t)
+		xtesting.StashEnv(t)
 
 		// Write the file we plan to use
-		tmpdir := useTempDir(t)
+		tmpdir := xtesting.UseTempDir(t)
 		err := os.WriteFile(filepath.Join(tmpdir, ".env"), []byte("FOO=foovalue"), 0o644)
 		g.NoError(err)
 
 		// Navigate to a directory where the .env file is NOT located
-		useTempDir(t)
+		xtesting.UseTempDir(t)
 
 		err = loadEnvFiles(tmpdir, []EnvFile{
 			{Path: ".env", Required: true},
@@ -176,8 +177,8 @@ QUUX=${FOO}
 
 	t.Run("overrides earlier values", func(t *testing.T) {
 		g := ghost.New(t)
-		stashEnv(t)
-		tmpdir := useTempDir(t)
+		xtesting.StashEnv(t)
+		tmpdir := xtesting.UseTempDir(t)
 
 		err := os.WriteFile(filepath.Join(tmpdir, "1.env"), []byte("FOO=one"), 0o644)
 		g.NoError(err)
@@ -196,43 +197,4 @@ QUUX=${FOO}
 		g.Should(be.Equal(os.Getenv("FOO"), "two"))
 		g.Should(be.Equal(os.Getenv("BAR"), "three"))
 	})
-}
-
-// useTempDir creates a temporary directory and switches to it.
-func useTempDir(t *testing.T) string {
-	t.Helper()
-
-	g := ghost.New(t)
-
-	// MacOS gets fancy with symlinks, so this gets us the real working path.
-	tmpdir, err := filepath.EvalSymlinks(t.TempDir())
-	g.NoError(err)
-
-	oldwd, err := os.Getwd()
-	g.NoError(err)
-
-	err = os.Chdir(tmpdir)
-	g.NoError(err)
-
-	t.Cleanup(func() {
-		err := os.Chdir(oldwd)
-		g.Should(be.Nil(err))
-	})
-
-	return tmpdir
-}
-
-func stashEnv(t testing.TB) {
-	t.Helper()
-
-	environ := os.Environ()
-
-	t.Cleanup(func() {
-		for _, val := range environ {
-			parts := strings.Split(val, "=")
-			os.Setenv(parts[0], parts[1]) //nolint:errcheck,usetesting
-		}
-	})
-
-	os.Clearenv()
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
 
+	"github.com/rliebz/tusk/internal/xtesting"
 	"github.com/rliebz/tusk/marshal"
 )
 
@@ -929,8 +930,8 @@ tasks:
 func TestParseComplete_interpolates(t *testing.T) {
 	g := ghost.New(t)
 
-	stashEnv(t)
-	tmpdir := useTempDir(t)
+	xtesting.StashEnv(t)
+	tmpdir := xtesting.UseTempDir(t)
 
 	envFileData := []byte(`
 FOO=foovalue
@@ -985,7 +986,7 @@ given input:
 			wd, err := os.Getwd()
 			g.NoError(err)
 
-			useTempDir(t)
+			xtesting.UseTempDir(t)
 
 			cfg, err := ParseComplete(ParseConfig{
 				Args:     tt.args,

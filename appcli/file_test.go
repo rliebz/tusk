@@ -7,10 +7,12 @@ import (
 
 	"github.com/rliebz/ghost"
 	"github.com/rliebz/ghost/be"
+
+	"github.com/rliebz/tusk/internal/xtesting"
 )
 
-func TestSearchForFile(t *testing.T) {
-	tmpdir := useTempDir(t)
+func Test_searchForFile(t *testing.T) {
+	tmpdir := xtesting.UseTempDir(t)
 
 	emptyDir := mkDir(t, tmpdir, "empty")
 
@@ -64,30 +66,6 @@ func TestSearchForFile(t *testing.T) {
 			g.Should(be.Equal(fullPath, tt.wantPath))
 		})
 	}
-}
-
-// useTempDir creates a temporary directory and switches to it.
-func useTempDir(t *testing.T) string {
-	t.Helper()
-
-	g := ghost.New(t)
-
-	// MacOS gets fancy with symlinks, so this gets us the real working path.
-	tmpdir, err := filepath.EvalSymlinks(t.TempDir())
-	g.NoError(err)
-
-	oldwd, err := os.Getwd()
-	g.NoError(err)
-
-	err = os.Chdir(tmpdir)
-	g.NoError(err)
-
-	t.Cleanup(func() {
-		err := os.Chdir(oldwd)
-		g.Should(be.Nil(err))
-	})
-
-	return tmpdir
 }
 
 func mkDir(t *testing.T, elem ...string) string {
