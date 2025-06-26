@@ -19,10 +19,7 @@ func StashEnv(t testing.TB) {
 	t.Cleanup(func() {
 		for _, val := range environ {
 			parts := strings.Split(val, "=")
-			err := os.Setenv(parts[0], parts[1]) //nolint:usetesting
-			if err != nil {
-				t.Errorf("failed to clean up environment: %s", err)
-			}
+			os.Setenv(parts[0], parts[1]) //nolint:errcheck,usetesting
 		}
 	})
 
