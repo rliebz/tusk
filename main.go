@@ -116,7 +116,7 @@ func runApp(app *cli.App, meta *runner.Metadata, args []string) (int, error) {
 	if err := app.Run(args); err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
-			if meta.Logger.Level() < ui.VerbosityLevelVerbose {
+			if meta.Logger.Level() < ui.LevelVerbose {
 				err = nil
 			}
 			ws := exitErr.Sys().(syscall.WaitStatus)

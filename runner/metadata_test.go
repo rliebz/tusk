@@ -44,10 +44,10 @@ func TestMetadata_Set(t *testing.T) {
 	cfgFileContents := `value: yaml config passed from --file`
 	cfgFile := fs.NewFile(t, "", fs.WithContent(cfgFileContents))
 
-	normal := ui.New(ui.Config{Verbosity: ui.VerbosityLevelNormal})
-	silent := ui.New(ui.Config{Verbosity: ui.VerbosityLevelSilent})
-	quiet := ui.New(ui.Config{Verbosity: ui.VerbosityLevelQuiet})
-	verbose := ui.New(ui.Config{Verbosity: ui.VerbosityLevelVerbose})
+	normal := ui.New(ui.Config{Verbosity: ui.LevelNormal})
+	silent := ui.New(ui.Config{Verbosity: ui.LevelSilent})
+	quiet := ui.New(ui.Config{Verbosity: ui.LevelQuiet})
+	verbose := ui.New(ui.Config{Verbosity: ui.LevelVerbose})
 
 	tests := []struct {
 		name    string

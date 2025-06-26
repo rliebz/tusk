@@ -24,7 +24,7 @@ const (
 
 // PrintCommand prints the command to be executed.
 func (l Logger) PrintCommand(command string, namespaces ...string) {
-	if l.level <= VerbosityLevelQuiet {
+	if l.level <= LevelQuiet {
 		return
 	}
 
@@ -39,7 +39,7 @@ func (l Logger) PrintCommand(command string, namespaces ...string) {
 
 // PrintCommandWithParenthetical prints a command with additional information.
 func (l Logger) PrintCommandWithParenthetical(command, parenthetical string, namespaces ...string) {
-	if l.level <= VerbosityLevelQuiet {
+	if l.level <= LevelQuiet {
 		return
 	}
 
@@ -61,7 +61,7 @@ func (l Logger) PrintCommandWithParenthetical(command, parenthetical string, nam
 
 // PrintEnvironment prints when environment variables are set.
 func (l Logger) PrintEnvironment(variables map[string]*string) {
-	if l.level <= VerbosityLevelQuiet {
+	if l.level <= LevelQuiet {
 		return
 	}
 
@@ -114,7 +114,7 @@ func (l Logger) PrintEnvironment(variables map[string]*string) {
 
 // PrintCommandSkipped prints the command skipped and the reason.
 func (l Logger) PrintCommandSkipped(command, reason string) {
-	if l.Level() < VerbosityLevelVerbose {
+	if l.Level() < LevelVerbose {
 		return
 	}
 
@@ -137,7 +137,7 @@ func (l Logger) PrintCommandSkipped(command, reason string) {
 
 // PrintTaskSkipped prints the task skipped and the reason.
 func (l Logger) PrintTaskSkipped(task, reason string) {
-	if l.Level() < VerbosityLevelVerbose {
+	if l.Level() < LevelVerbose {
 		return
 	}
 
@@ -160,7 +160,7 @@ func (l Logger) PrintTaskSkipped(task, reason string) {
 
 // PrintTask prints when a task has begun.
 func (l Logger) PrintTask(taskName string) {
-	if l.level <= VerbosityLevelNormal {
+	if l.level <= LevelNormal {
 		return
 	}
 
@@ -176,7 +176,7 @@ func (l Logger) PrintTask(taskName string) {
 
 // PrintTaskFinally prints when a task's finally clause has begun.
 func (l Logger) PrintTaskFinally(taskName string) {
-	if l.level <= VerbosityLevelNormal {
+	if l.level <= LevelNormal {
 		return
 	}
 
@@ -192,7 +192,7 @@ func (l Logger) PrintTaskFinally(taskName string) {
 
 // PrintTaskCompleted prints when a task has completed.
 func (l Logger) PrintTaskCompleted(taskName string) {
-	if l.level <= VerbosityLevelNormal {
+	if l.level <= LevelNormal {
 		return
 	}
 
@@ -208,7 +208,7 @@ func (l Logger) PrintTaskCompleted(taskName string) {
 
 // PrintCommandError prints an error from a running command.
 func (l Logger) PrintCommandError(err error) {
-	if l.level <= VerbosityLevelQuiet {
+	if l.level <= LevelQuiet {
 		return
 	}
 

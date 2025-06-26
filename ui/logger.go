@@ -23,7 +23,7 @@ const (
 // Logger writes CLI output at the appropriate level.
 type Logger struct {
 	stdout, stderr io.Writer
-	level          VerbosityLevel
+	level          Level
 
 	deprecations []string
 }
@@ -32,7 +32,7 @@ type Logger struct {
 type Config struct {
 	Stdout    io.Writer
 	Stderr    io.Writer
-	Verbosity VerbosityLevel
+	Verbosity Level
 }
 
 // New returns a new logger with the default settings.
@@ -49,7 +49,7 @@ func Noop() *Logger {
 	return &Logger{
 		stdout: io.Discard,
 		stderr: io.Discard,
-		level:  VerbosityLevelSilent,
+		level:  LevelSilent,
 	}
 }
 
@@ -64,18 +64,18 @@ func (l *Logger) Stderr() io.Writer {
 }
 
 // Level returns the logger's verbosity level.
-func (l *Logger) Level() VerbosityLevel {
+func (l *Logger) Level() Level {
 	return l.level
 }
 
 // SetLevel set the logger's verbosity level.
-func (l *Logger) SetLevel(level VerbosityLevel) {
+func (l *Logger) SetLevel(level Level) {
 	l.level = level
 }
 
 // Println prints a line directly.
 func (l *Logger) Println(a ...any) {
-	if l.level <= VerbosityLevelSilent {
+	if l.level <= LevelSilent {
 		return
 	}
 
@@ -84,7 +84,7 @@ func (l *Logger) Println(a ...any) {
 
 // Debug prints debug information.
 func (l *Logger) Debug(a ...any) {
-	if l.level < VerbosityLevelVerbose {
+	if l.level < LevelVerbose {
 		return
 	}
 
@@ -93,7 +93,7 @@ func (l *Logger) Debug(a ...any) {
 
 // Info prints normal application information.
 func (l *Logger) Info(a ...any) {
-	if l.level <= VerbosityLevelQuiet {
+	if l.level <= LevelQuiet {
 		return
 	}
 
@@ -102,7 +102,7 @@ func (l *Logger) Info(a ...any) {
 
 // Warn prints at the warning level.
 func (l *Logger) Warn(a ...any) {
-	if l.level <= VerbosityLevelQuiet {
+	if l.level <= LevelQuiet {
 		return
 	}
 
@@ -111,7 +111,7 @@ func (l *Logger) Warn(a ...any) {
 
 // Error prints application errors.
 func (l *Logger) Error(a ...any) {
-	if l.level <= VerbosityLevelSilent {
+	if l.level <= LevelSilent {
 		return
 	}
 
@@ -120,7 +120,7 @@ func (l *Logger) Error(a ...any) {
 
 // Deprecate prints deprecation warnings no more than once.
 func (l *Logger) Deprecate(a ...any) {
-	if l.level <= VerbosityLevelQuiet {
+	if l.level <= LevelQuiet {
 		return
 	}
 

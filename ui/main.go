@@ -4,31 +4,31 @@ import (
 	"github.com/fatih/color"
 )
 
-// VerbosityLevel describes the verbosity of output.
-type VerbosityLevel int
+// Level describes the verbosity of output.
+type Level int
 
 const (
-	// VerbosityLevelSilent does not print any output to stderr/stdout.
-	VerbosityLevelSilent VerbosityLevel = -8
-	// VerbosityLevelQuiet only prints command output and error messages.
-	VerbosityLevelQuiet VerbosityLevel = -4
-	// VerbosityLevelNormal is the normal level of verbosity.
-	VerbosityLevelNormal VerbosityLevel = 0
-	// VerbosityLevelVerbose prints all messages, include debug info.
-	VerbosityLevelVerbose VerbosityLevel = 4
+	// LevelSilent does not print any output to stderr/stdout.
+	LevelSilent Level = -8
+	// LevelQuiet only prints command output and error messages.
+	LevelQuiet Level = -4
+	// LevelNormal is the normal level of verbosity.
+	LevelNormal Level = 0
+	// LevelVerbose prints all messages, include debug info.
+	LevelVerbose Level = 4
 )
 
 const outputPrefix = " => "
 
-func (v VerbosityLevel) String() string {
+func (v Level) String() string {
 	switch v {
-	case VerbosityLevelSilent:
+	case LevelSilent:
 		return "Silent"
-	case VerbosityLevelQuiet:
+	case LevelQuiet:
 		return "Quiet"
-	case VerbosityLevelNormal:
+	case LevelNormal:
 		return "Normal"
-	case VerbosityLevelVerbose:
+	case LevelVerbose:
 		return "Verbose"
 	default:
 		return "Unknown"

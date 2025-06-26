@@ -238,7 +238,7 @@ func TestGetConfigMetadata_defaults(t *testing.T) {
 	g.NoError(err)
 
 	g.Should(be.Equal(meta.CfgPath, filepath.Join(filepath.Dir(wd), "tusk.yml")))
-	g.Should(be.Equal(meta.Logger.Level(), ui.VerbosityLevelNormal))
+	g.Should(be.Equal(meta.Logger.Level(), ui.LevelNormal))
 	g.Should(be.False(meta.PrintVersion))
 }
 
@@ -281,47 +281,47 @@ func TestGetConfigMetadata_verbosity(t *testing.T) {
 	tests := []struct {
 		name string
 		args []string
-		want ui.VerbosityLevel
+		want ui.Level
 	}{
 		{
 			"normal",
 			[]string{"tusk"},
-			ui.VerbosityLevelNormal,
+			ui.LevelNormal,
 		},
 		{
 			"silent",
 			[]string{"tusk", "--silent"},
-			ui.VerbosityLevelSilent,
+			ui.LevelSilent,
 		},
 		{
 			"quiet",
 			[]string{"tusk", "--quiet"},
-			ui.VerbosityLevelQuiet,
+			ui.LevelQuiet,
 		},
 		{
 			"verbose",
 			[]string{"tusk", "--verbose"},
-			ui.VerbosityLevelVerbose,
+			ui.LevelVerbose,
 		},
 		{
 			"quiet verbose",
 			[]string{"tusk", "--quiet", "--verbose"},
-			ui.VerbosityLevelQuiet,
+			ui.LevelQuiet,
 		},
 		{
 			"silent quiet",
 			[]string{"tusk", "--silent", "--quiet"},
-			ui.VerbosityLevelSilent,
+			ui.LevelSilent,
 		},
 		{
 			"silent verbose",
 			[]string{"tusk", "--silent", "--verbose"},
-			ui.VerbosityLevelSilent,
+			ui.LevelSilent,
 		},
 		{
 			"silent quiet verbose",
 			[]string{"tusk", "--silent", "--quiet", "--verbose"},
-			ui.VerbosityLevelSilent,
+			ui.LevelSilent,
 		},
 	}
 

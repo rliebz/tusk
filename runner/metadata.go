@@ -102,15 +102,15 @@ type OptGetter interface {
 	String(string) string
 }
 
-func getVerbosity(c OptGetter) ui.VerbosityLevel {
+func getVerbosity(c OptGetter) ui.Level {
 	switch {
 	case c.Bool("silent"):
-		return ui.VerbosityLevelSilent
+		return ui.LevelSilent
 	case c.Bool("quiet"):
-		return ui.VerbosityLevelQuiet
+		return ui.LevelQuiet
 	case c.Bool("verbose"):
-		return ui.VerbosityLevelVerbose
+		return ui.LevelVerbose
 	default:
-		return ui.VerbosityLevelNormal
+		return ui.LevelNormal
 	}
 }

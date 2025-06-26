@@ -82,7 +82,7 @@ func (c *Command) exec(ctx Context) error {
 
 	cmd.Dir = filepath.Join(cmd.Dir, c.Dir)
 	cmd.Stdin = os.Stdin
-	if ctx.Logger.Level() > ui.VerbosityLevelSilent {
+	if ctx.Logger.Level() > ui.LevelSilent {
 		cmd.Stdout = ctx.Logger.Stdout()
 		cmd.Stderr = ctx.Logger.Stderr()
 	}

@@ -787,7 +787,7 @@ func TestTask_run_finally_ui(t *testing.T) {
 	want := new(bytes.Buffer)
 	wantLogger := ui.New(ui.Config{
 		Stderr:    want,
-		Verbosity: ui.VerbosityLevelVerbose,
+		Verbosity: ui.LevelVerbose,
 	})
 
 	wantLogger.PrintTaskFinally(taskName)
@@ -796,7 +796,7 @@ func TestTask_run_finally_ui(t *testing.T) {
 	got := new(bytes.Buffer)
 	gotLogger := ui.New(ui.Config{
 		Stderr:    got,
-		Verbosity: ui.VerbosityLevelVerbose,
+		Verbosity: ui.LevelVerbose,
 	})
 
 	task := Task{
@@ -828,7 +828,7 @@ func TestTask_run_finally_ui_error(t *testing.T) {
 	want := new(bytes.Buffer)
 	wantLogger := ui.New(ui.Config{
 		Stderr:    want,
-		Verbosity: ui.VerbosityLevelVerbose,
+		Verbosity: ui.LevelVerbose,
 	})
 
 	wantLogger.PrintTaskFinally(taskName)
@@ -838,7 +838,7 @@ func TestTask_run_finally_ui_error(t *testing.T) {
 	got := new(bytes.Buffer)
 	gotLogger := ui.New(ui.Config{
 		Stderr:    got,
-		Verbosity: ui.VerbosityLevelVerbose,
+		Verbosity: ui.LevelVerbose,
 	})
 
 	task := Task{

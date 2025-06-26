@@ -21,8 +21,8 @@ type printTestCase struct {
 	name            string
 	setOutput       func(l *Logger, out io.Writer)
 	printFunc       func(l *Logger)
-	levelNoOutput   VerbosityLevel
-	levelWithOutput VerbosityLevel
+	levelNoOutput   Level
+	levelWithOutput Level
 	expected        string
 }
 
@@ -63,14 +63,14 @@ func testPrint(t *testing.T, tt printTestCase) {
 
 func TestVerbosityLevel_String(t *testing.T) {
 	tests := []struct {
-		level VerbosityLevel
+		level Level
 		want  string
 	}{
-		{VerbosityLevelSilent, "Silent"},
-		{VerbosityLevelQuiet, "Quiet"},
-		{VerbosityLevelNormal, "Normal"},
-		{VerbosityLevelVerbose, "Verbose"},
-		{VerbosityLevel(99), "Unknown"},
+		{LevelSilent, "Silent"},
+		{LevelQuiet, "Quiet"},
+		{LevelNormal, "Normal"},
+		{LevelVerbose, "Verbose"},
+		{Level(99), "Unknown"},
 	}
 
 	for _, tt := range tests {
