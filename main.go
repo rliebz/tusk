@@ -56,7 +56,7 @@ func run(cfg config) (status int) {
 	status, err = runMeta(meta, cfg.args)
 	if err != nil && appcli.IsCompleting(cfg.args) && meta.CfgPath != "" {
 		// Try again without the config file to get global option completions
-		status, err = runMeta(&appcli.Metadata{Logger: logger}, cfg.args)
+		status, err = runMeta(appcli.NewConfiglessMetadata(logger), cfg.args)
 	}
 	if err != nil {
 		logError(logger, cfg.args, err)

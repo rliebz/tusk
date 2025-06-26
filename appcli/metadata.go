@@ -45,6 +45,13 @@ func NewMetadata(logger *ui.Logger, args []string) (*Metadata, error) {
 	return &metadata, err
 }
 
+// NewConfiglessMetadata returns a metadata object with application defaults,
+// without any user configuration. This can be used to provide basic
+// functionality in case of user error.
+func NewConfiglessMetadata(logger *ui.Logger) *Metadata {
+	return &Metadata{Logger: logger}
+}
+
 // optGetter pulls various options based on a name.
 // These options will generally come from the command line.
 type optGetter interface {
