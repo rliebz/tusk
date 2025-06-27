@@ -33,8 +33,8 @@ func UnmarshalOneOf(candidates ...UnmarshalCandidate) error {
 
 	for _, c := range candidates {
 		if err = unmarshalOne(c); err != nil {
-			//nolint:errorlint // Not sure why, but errors.As breaks tests.
-			if _, ok := err.(*yaml.TypeError); ok {
+			var yerr *yaml.TypeError
+			if errors.As(err, &yerr) {
 				continue
 			}
 			return err

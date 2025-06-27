@@ -71,7 +71,8 @@ func (t *Task) UnmarshalYAML(unmarshal func(any) error) error {
 			decoder.SetStrict(true)
 
 			if err := decoder.Decode(&includeTarget); err != nil {
-				return fmt.Errorf("decoding included file %q: %w", def.Include, err)
+				//nolint:errorlint // opaque the error to prevent unmarshal retries
+				return fmt.Errorf("decoding included file %q: %v", def.Include, err)
 			}
 
 			return nil
