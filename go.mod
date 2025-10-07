@@ -7,7 +7,7 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/google/go-cmp v0.6.0
 	github.com/joho/godotenv v1.5.1
-	github.com/rliebz/ghost v0.2.4
+	github.com/rliebz/ghost v0.3.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/urfave/cli v1.22.15
 	gopkg.in/yaml.v2 v2.4.0

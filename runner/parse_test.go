@@ -1324,6 +1324,6 @@ tasks:
 	})
 	g.NoError(err)
 
-	g.Should(be.True(cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet))
-	g.Should(be.True(cfg.Tasks["quietTask"].Quiet))
+	g.Check(cfg.Tasks["quietCmd"].RunList[0].Command[0].Quiet)
+	g.Check(cfg.Tasks["quietTask"].Quiet)
 }

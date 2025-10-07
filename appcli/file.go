@@ -1,6 +1,7 @@
 package appcli
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 )
@@ -45,7 +46,7 @@ func findFileInDir(dirPath string) (fullPath string, found bool, err error) {
 func findFileInDirByName(dirPath, fileName string) (fullPath string, found bool, err error) {
 	fullPath = filepath.Join(dirPath, fileName)
 	if _, err := os.Stat(fullPath); err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			return "", false, nil
 		}
 		return "", false, err

@@ -24,12 +24,12 @@ func TestParseOrderedMap(t *testing.T) {
 		defer func() { index++ }()
 
 		key, ok := ms[index].Key.(string)
-		g.Should(be.True(ok))
+		g.Check(ok)
 
 		g.Should(be.Equal(key, name))
 
 		value, ok := ms[index].Value.(string)
-		g.Should(be.True(ok))
+		g.Check(ok)
 
 		g.Should(be.Equal(string(text), value+"\n"))
 

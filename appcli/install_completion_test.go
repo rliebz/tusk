@@ -210,7 +210,7 @@ func TestUninstallBashCompletion(t *testing.T) {
 	g.NoError(err)
 
 	_, err = os.Stat(rcfile)
-	g.Should(be.True(os.IsNotExist(err)))
+	g.Should(be.ErrorIs(err, os.ErrNotExist))
 
 	got, err := os.ReadFile(filepath.Join(homedir.Path(), ".bashrc"))
 	g.NoError(err)
@@ -285,7 +285,7 @@ func TestUninstallFishCompletion(t *testing.T) {
 	g.NoError(err)
 
 	_, err = os.Stat(completionFile)
-	g.Should(be.True(os.IsNotExist(err)))
+	g.Should(be.ErrorIs(err, os.ErrNotExist))
 }
 
 func TestGetDataDir_xdg(t *testing.T) {
@@ -367,7 +367,7 @@ func TestUninstallZshCompletion(t *testing.T) {
 	g.NoError(err)
 
 	_, err = os.Stat(filepath.Join(dir.Path(), "_tusk"))
-	g.Should(be.True(os.IsNotExist(err)))
+	g.Should(be.ErrorIs(err, os.ErrNotExist))
 }
 
 func TestUninstallZshCompletion_empty(t *testing.T) {
@@ -379,5 +379,5 @@ func TestUninstallZshCompletion_empty(t *testing.T) {
 	g.NoError(err)
 
 	_, err = os.Stat(filepath.Join(dir.Path(), "_tusk"))
-	g.Should(be.True(os.IsNotExist(err)))
+	g.Should(be.ErrorIs(err, os.ErrNotExist))
 }

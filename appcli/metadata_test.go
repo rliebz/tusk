@@ -1,7 +1,6 @@
 package appcli
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -28,7 +27,7 @@ func TestNewMetadata_defaults(t *testing.T) {
 
 	g.Should(be.Equal(meta.CfgPath, filepath.Join(filepath.Dir(wd), "tusk.yml")))
 	g.Should(be.Equal(meta.Logger.Level(), ui.LevelNormal))
-	g.Should(be.False(meta.PrintVersion))
+	g.Check(!meta.PrintVersion)
 }
 
 func TestNewMetadata_file(t *testing.T) {
@@ -52,9 +51,7 @@ func TestNewMetadata_fileNoExist(t *testing.T) {
 	g := ghost.New(t)
 
 	_, err := NewMetadata(ui.Noop(), []string{"tusk", "--file", "fakefile.yml"})
-	if !g.Should(be.True(errors.Is(err, os.ErrNotExist))) {
-		t.Log(err)
-	}
+	g.Should(be.ErrorIs(err, os.ErrNotExist))
 }
 
 func TestNewMetadata_version(t *testing.T) {
@@ -63,7 +60,7 @@ func TestNewMetadata_version(t *testing.T) {
 	meta, err := NewMetadata(ui.Noop(), []string{"tusk", "--version"})
 	g.NoError(err)
 
-	g.Should(be.True(meta.PrintVersion))
+	g.Check(meta.PrintVersion)
 }
 
 func TestNewMetadata_log_level(t *testing.T) {

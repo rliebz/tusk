@@ -35,12 +35,12 @@ tasks:
 	g.NoError(err)
 
 	command, ok := flagApp.Metadata["command"].(*cli.Command)
-	g.Must(be.True(ok))
+	g.Assert(ok)
 
 	g.Should(be.Equal(command.Name, "mytask"))
 
 	flags, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
-	g.Must(be.True(ok))
+	g.Assert(ok)
 
 	g.Should(be.DeepEqual(flags, map[string]string{"foo": "other"}))
 }
@@ -60,12 +60,12 @@ func TestNewFlagApp_no_options(t *testing.T) {
 	g.NoError(err)
 
 	command, ok := flagApp.Metadata["command"].(*cli.Command)
-	g.Must(be.True(ok))
+	g.Assert(ok)
 
 	g.Should(be.Equal(command.Name, "mytask"))
 
 	flags, ok := flagApp.Metadata["flagsPassed"].(map[string]string)
-	g.Must(be.True(ok))
+	g.Assert(ok)
 
 	g.Should(be.DeepEqual(flags, map[string]string{}))
 }
@@ -119,7 +119,7 @@ tasks:
 	err = app.Run(args)
 	var exitErr *exec.ExitError
 	ok := errors.As(err, &exitErr)
-	g.Must(be.True(ok))
+	g.Assert(ok)
 
 	exitCode := exitErr.Sys().(syscall.WaitStatus).ExitStatus()
 	g.Should(be.Equal(exitCode, wantExitCode))
@@ -196,7 +196,7 @@ tasks:
 	err = app.Run(args)
 	var exitErr *exec.ExitError
 	ok := errors.As(err, &exitErr)
-	g.Must(be.True(ok))
+	g.Assert(ok)
 
 	exitCode := exitErr.Sys().(syscall.WaitStatus).ExitStatus()
 	g.Should(be.Equal(exitCode, wantExitCode))

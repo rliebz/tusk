@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"errors"
 	"maps"
 	"os"
 	"path/filepath"
@@ -70,7 +71,7 @@ func loadEnvFiles(dir string, envFiles []EnvFile) error {
 func readEnvFile(dir string, envFile EnvFile) (map[string]string, error) {
 	m, err := godotenv.Read(filepath.Join(dir, envFile.Path))
 	switch {
-	case !envFile.Required && os.IsNotExist(err):
+	case !envFile.Required && errors.Is(err, os.ErrNotExist):
 	case err != nil:
 		return nil, err
 	}

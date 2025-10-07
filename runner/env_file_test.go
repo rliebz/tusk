@@ -152,7 +152,6 @@ QUUX=${FOO}
 			{Path: ".env", Required: true},
 		})
 		g.Should(be.ErrorIs(err, os.ErrNotExist))
-		g.Should(be.True(os.IsNotExist(err)))
 	})
 
 	t.Run("directory respected", func(t *testing.T) {

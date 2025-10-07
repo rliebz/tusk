@@ -3,6 +3,7 @@ package appcli
 import (
 	"bufio"
 	_ "embed" // completion scripts
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -90,7 +91,7 @@ func getBashRCFile() (string, error) {
 	for _, rcfile := range bashRCFiles {
 		path := filepath.Join(homedir, rcfile)
 		if _, err := os.Stat(path); err != nil {
-			if os.IsNotExist(err) {
+			if errors.Is(err, os.ErrNotExist) {
 				continue
 			}
 
@@ -270,7 +271,7 @@ func uninstallZshCompletion(dir string) error {
 
 func uninstallFileFromDir(dir, file string) error {
 	err := os.Remove(filepath.Join(dir, file))
-	if !os.IsNotExist(err) {
+	if !errors.Is(err, os.ErrNotExist) {
 		return err
 	}
 

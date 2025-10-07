@@ -238,7 +238,7 @@ func assertOptionsEqualUnordered(t *testing.T, a, b []*Option) {
 
 	for _, item := range a {
 		_, ok := bMap[item]
-		if !g.Should(be.True(ok)) {
+		if !g.Check(ok) {
 			t.Log("missing item:", item)
 		}
 	}

@@ -81,8 +81,8 @@ func TestOneOf_success(t *testing.T) {
 	assignCalled := false
 
 	t.Cleanup(func() {
-		g.Should(be.True(validateCalled))
-		g.Should(be.True(assignCalled))
+		g.Check(validateCalled)
+		g.Check(assignCalled)
 	})
 
 	successCandidate := UnmarshalCandidate{
