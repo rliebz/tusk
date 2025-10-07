@@ -414,6 +414,16 @@ func TestTask_Execute_cache(t *testing.T) {
 			wantRunCount: 2,
 		},
 		{
+			name: "relative paths",
+			source: marshal.Slice[string]{
+				"./a1.txt",
+			},
+			target: marshal.Slice[string]{
+				"./b1.txt",
+			},
+			wantRunCount: 1,
+		},
+		{
 			name:        "unreadable source",
 			skipWindows: true,
 			source: marshal.Slice[string]{

@@ -272,7 +272,7 @@ func walkEntries(
 		count := 0
 		err := doublestar.GlobWalk(
 			dir,
-			glob,
+			filepath.Clean(glob),
 			func(path string, d fs.DirEntry) error {
 				count++
 				select {
