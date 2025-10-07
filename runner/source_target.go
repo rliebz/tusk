@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"cmp"
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -10,8 +12,11 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
+	"slices"
 
 	"github.com/bmatcuk/doublestar/v4"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/rliebz/tusk/internal/xdg"
 )
@@ -95,37 +100,17 @@ func (t *Task) isUpToDate(ctx Context, cachePath string) (bool, error) {
 }
 
 // taskInputCachePath returns a unique file path based on the inputs of a task.
-func (t *Task) taskInputCachePath(ctx Context) (string, error) {
-	taskCacheDir, err := taskCacheDir(ctx.CfgPath, t.Name)
+func (t *Task) taskInputCachePath(c Context) (string, error) {
+	taskCacheDir, err := taskCacheDir(c.CfgPath, t.Name)
 	if err != nil {
 		return "", err
 	}
 
-	h := fnv.New64a()
-
-	for _, glob := range t.Source {
-		count := 0
-		err := doublestar.GlobWalk(
-			os.DirFS(ctx.Dir()),
-			glob,
-			func(path string, d fs.DirEntry) error {
-				count++
-				return hashFile(h, path, d)
-			},
-			doublestar.WithFailOnIOErrors(),
-			doublestar.WithFilesOnly(),
-			doublestar.WithFailOnPatternNotExist(),
-		)
-		switch {
-		// If a source pattern does not exist, that's an error
-		case errors.Is(err, doublestar.ErrPatternNotExist) || (err == nil && count == 0):
-			return "", fmt.Errorf("no source files found matching pattern: %s", glob)
-		case err != nil:
-			return "", err
-		}
+	filename, err := dirChecksum("source", os.DirFS(c.Dir()), t.Source)
+	if err != nil {
+		return "", err
 	}
 
-	filename := encodeToString(h)
 	return filepath.Join(taskCacheDir, filename), nil
 }
 
@@ -176,32 +161,16 @@ func tuskCacheDir() (string, error) {
 }
 
 // outputChecksum returns a checksum for the output of a task.
-func (t *Task) outputChecksum(ctx Context) (string, error) {
-	h := fnv.New64a()
-
-	for _, glob := range t.Target {
-		count := 0
-		err := doublestar.GlobWalk(
-			os.DirFS(ctx.Dir()),
-			glob,
-			func(path string, d fs.DirEntry) error {
-				count++
-				return hashFile(h, path, d)
-			},
-			doublestar.WithFailOnIOErrors(),
-			doublestar.WithFilesOnly(),
-			doublestar.WithFailOnPatternNotExist(),
-		)
-		switch {
-		// If a target pattern does not exist, we're not up to date.
-		case errors.Is(err, doublestar.ErrPatternNotExist) || (err == nil && count == 0):
-			return "", nil
-		case err != nil:
-			return "", err
-		}
+func (t *Task) outputChecksum(c Context) (string, error) {
+	filename, err := dirChecksum("target", os.DirFS(c.Dir()), t.Target)
+	var pnfe *patternNotFoundError
+	switch {
+	case errors.As(err, &pnfe):
+		return "", nil
+	case err != nil:
+		return "", err
 	}
 
-	filename := base64.RawStdEncoding.EncodeToString(h.Sum(nil))
 	return filename, nil
 }
 
@@ -230,26 +199,146 @@ func (t *Task) isCacheable() bool {
 	return len(t.Source) != 0 && len(t.Target) != 0
 }
 
-func hashFile(hasher io.Writer, path string, d fs.DirEntry) error {
-	if _, err := io.WriteString(hasher, path); err != nil {
-		return err
+type patternNotFoundError struct {
+	kind    string // one of: source, target
+	pattern string
+}
+
+func (e *patternNotFoundError) Error() string {
+	return fmt.Sprintf("no %s files found matching pattern: %s", e.kind, e.pattern)
+}
+
+type entry struct {
+	path string
+	d    fs.DirEntry
+}
+
+type result struct {
+	path string
+	sum  []byte
+}
+
+func dirChecksum(kind string, dir fs.FS, patterns []string) (string, error) {
+	g, ctx := errgroup.WithContext(context.Background())
+	numWorkers := runtime.GOMAXPROCS(0)
+
+	entries := make(chan entry, numWorkers*2)
+	g.Go(func() error {
+		defer close(entries)
+		return walkEntries(ctx, entries, kind, dir, patterns)
+	})
+
+	results := make(chan result, numWorkers*2)
+	for range numWorkers {
+		g.Go(func() error {
+			return hashEntries(ctx, results, entries)
+		})
+	}
+	go func() {
+		g.Wait() //nolint:errcheck
+		close(results)
+	}()
+
+	var resultList []result //nolint:prealloc
+	for result := range results {
+		resultList = append(resultList, result)
 	}
 
-	if _, err := io.WriteString(hasher, d.Type().String()); err != nil {
-		return err
+	if err := g.Wait(); err != nil {
+		return "", err
+	}
+
+	slices.SortFunc(resultList, func(a, b result) int {
+		return cmp.Compare(a.path, b.path)
+	})
+
+	h := fnv.New64a()
+	for _, result := range resultList {
+		h.Write(result.sum)
+	}
+
+	return encodeToString(h), nil
+}
+
+// walkEntries iterates over a set of files and writes them to entries.
+func walkEntries(
+	ctx context.Context,
+	entries chan<- entry,
+	kind string,
+	dir fs.FS,
+	patterns []string,
+) error {
+	for _, glob := range patterns {
+		count := 0
+		err := doublestar.GlobWalk(
+			dir,
+			glob,
+			func(path string, d fs.DirEntry) error {
+				count++
+				select {
+				case entries <- entry{path, d}:
+				case <-ctx.Done():
+					return ctx.Err()
+				}
+				return nil
+			},
+			doublestar.WithFailOnIOErrors(),
+			doublestar.WithFilesOnly(),
+			doublestar.WithFailOnPatternNotExist(),
+		)
+		switch {
+		case errors.Is(err, doublestar.ErrPatternNotExist) || (err == nil && count == 0):
+			return &patternNotFoundError{kind: kind, pattern: glob}
+		case err != nil:
+			return err
+		}
+	}
+
+	return nil
+}
+
+// hashEntries iterates over entries and hashes the files into results.
+func hashEntries(
+	ctx context.Context,
+	results chan<- result,
+	entries <-chan entry,
+) error {
+	buf := make([]byte, 1024*1024)
+	for entry := range entries {
+		sum, err := hashFile(entry.path, entry.d, buf)
+		if err != nil {
+			return err
+		}
+		select {
+		case results <- result{entry.path, sum}:
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+	return nil
+}
+
+func hashFile(path string, d fs.DirEntry, buf []byte) ([]byte, error) {
+	h := fnv.New64a()
+	if _, err := io.WriteString(h, path); err != nil {
+		return nil, err
+	}
+
+	if _, err := io.WriteString(h, d.Type().String()); err != nil {
+		return nil, err
 	}
 
 	file, err := os.Open(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer file.Close() //nolint:errcheck
 
-	if _, err := io.Copy(hasher, file); err != nil {
-		return err
+	if _, err := io.CopyBuffer(h, file, buf); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return h.Sum(nil), nil
 }
 
 func encodeToString(h hash.Hash) string {
