@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 0.8.0 (2026-01-05)
+
 ### Added
 
 - Tasks can now specify a `source` and `target` to avoid unnecessary work.

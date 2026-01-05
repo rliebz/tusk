@@ -699,6 +699,9 @@ pattern, the task will be skipped. Otherwise, the task will execute as normal.
 With directories, in most cases you'll want to use a pattern to specify the
 files in the directory for tracking changes rather than the directory itself.
 
+The task run history can be managed with the `--clean-cache`,
+`--clean-project-cache`, and `--clean-task-cache` flags.
+
 ### Include
 
 In some cases it may be desirable to split the task definition into a separate
