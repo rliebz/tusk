@@ -49,64 +49,52 @@
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">The Spec</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#tasks">Tasks</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#run">Run</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#command">Command</a>
+    <li class="toctree-l3"><a class="reference internal" href="#run">Run</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#exec">Exec</a>
+    <li class="toctree-l4"><a class="reference internal" href="#command">Command</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#print">Print</a>
+    <li class="toctree-l4"><a class="reference internal" href="#set-environment">Set Environment</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#quiet">Quiet</a>
+    <li class="toctree-l4"><a class="reference internal" href="#sub-tasks">Sub-Tasks</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#dir">Dir</a>
+    <li class="toctree-l4"><a class="reference internal" href="#when">When</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#set-environment">Set Environment</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#sub-tasks">Sub-Tasks</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#when">When</a>
+    <li class="toctree-l3"><a class="reference internal" href="#args">Args</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#short-form">Short Form</a>
+    <li class="toctree-l4"><a class="reference internal" href="#arg-types">Arg Types</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#when-anyall-logic">When Any/All Logic</a>
+    <li class="toctree-l4"><a class="reference internal" href="#arg-values">Arg Values</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#args">Args</a>
+    <li class="toctree-l3"><a class="reference internal" href="#options">Options</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#arg-types">Arg Types</a>
+    <li class="toctree-l4"><a class="reference internal" href="#option-types">Option Types</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#arg-values">Arg Values</a>
+    <li class="toctree-l4"><a class="reference internal" href="#option-defaults">Option Defaults</a>
     </li>
-        </ul>
+    <li class="toctree-l4"><a class="reference internal" href="#option-values">Option Values</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#options">Options</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#option-types">Option Types</a>
+    <li class="toctree-l4"><a class="reference internal" href="#required-options">Required Options</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#option-defaults">Option Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#private-options">Private Options</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#option-values">Option Values</a>
+    <li class="toctree-l4"><a class="reference internal" href="#option-rewrite">Option Rewrite</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#required-options">Required Options</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#private-options">Private Options</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#option-rewrite">Option Rewrite</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#shared-options">Shared Options</a>
+    <li class="toctree-l4"><a class="reference internal" href="#shared-options">Shared Options</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#finally">Finally</a>
+    <li class="toctree-l3"><a class="reference internal" href="#finally">Finally</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#include">Include</a>
+    <li class="toctree-l3"><a class="reference internal" href="#source-target">Source / Target</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#include">Include</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#environment-files">Environment Files</a>
     </li>
@@ -148,8 +136,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="the-spec">The Spec</h2>
-<h3 id="tasks">Tasks</h3>
+                <h1 id="the-spec">The Spec</h1>
+<h2 id="tasks">Tasks</h2>
 <p>The core of every <code>tusk.yml</code> file is a list of tasks. Tasks are declared at the
 top level of the <code>tusk.yml</code> file and include a list of tasks.</p>
 <p>For the following tasks:</p>
@@ -350,7 +338,7 @@ prevent it from being invoked directly from the command-line. For example:</p>
       - task: configure-environment
       - command: python main.py
 </code></pre>
-<h3 id="when">When</h3>
+<h4 id="when">When</h4>
 <p>For conditional execution, <code>when</code> clauses are available.</p>
 <pre><code class="language-yaml">run:
   when:
@@ -394,7 +382,7 @@ complicated example of how <code>when</code> can be used:</p>
           - command: command -v cat
         command: cat my_file.txt
 </code></pre>
-<h4 id="short-form">Short Form</h4>
+<h5 id="short-form">Short Form</h5>
 <p>Because it's common to check if a boolean flag is set to true, <code>when</code> clauses
 also accept strings as shorthand. Consider the following example, which checks
 to see if some option <code>foo</code> has been set to <code>true</code>:</p>
@@ -404,7 +392,7 @@ to see if some option <code>foo</code> has been set to <code>true</code>:</p>
 <p>This can be expressed more succinctly as the following:</p>
 <pre><code class="language-yaml">when: foo
 </code></pre>
-<h4 id="when-anyall-logic">When Any/All Logic</h4>
+<h5 id="when-anyall-logic">When Any/All Logic</h5>
 <p>A <code>when</code> clause takes a list of items, where each item can have multiple checks.
 Each <code>when</code> item will pass if <em>any</em> of the checks pass, while the whole clause
 will only pass if <em>all</em> of the items pass. For example:</p>
@@ -656,6 +644,29 @@ clause has the same format as a <code>run</code> clause:</p>
 the same way that a <code>run</code> clause would. The exit code is still passed back to
 the command line. However, if both the <code>run</code> clause and <code>finally</code> clause fail,
 the exit code from the <code>run</code> clause takes precedence.</p>
+<h3 id="source-target">Source / Target</h3>
+<p>For tasks that generate files from other files, it often makes sense to skip
+work when those generated files are already up-to-date. For this, tasks can
+specify a <code>source</code> and <code>target</code>:</p>
+<pre><code class="language-yaml">tasks:
+  generate:
+    source:
+      - generate.sh
+      - data/**
+    target: output.txt
+    run: ./generate.sh
+</code></pre>
+<p>The <code>source</code> and <code>target</code> clauses are each specified as one or more filepath
+patterns relative to the config file using <a href="https://github.com/bmatcuk/doublestar?tab=readme-ov-file#patterns">glob pattern syntax</a>.
+Both <code>source</code> and <code>target</code> must be specified together.</p>
+<p>All specified sources must exist. For each individual glob entry, at least one
+file must match the pattern.</p>
+<p>If all target patterns exist and have newer timestamps than the newest source
+pattern, the task will be skipped. Otherwise, the task will execute as normal.</p>
+<p>With directories, in most cases you'll want to use a pattern to specify the
+files in the directory for tracking changes rather than the directory itself.</p>
+<p>The task run history can be managed with the <code>--clean-cache</code>,
+<code>--clean-project-cache</code>, and <code>--clean-task-cache</code> flags.</p>
 <h3 id="include">Include</h3>
 <p>In some cases it may be desirable to split the task definition into a separate
 file. The <code>include</code> clause serves this purpose. At the top-level of a task, a
@@ -676,7 +687,7 @@ run: echo &quot;Hello, ${name}!&quot;
 <p>It is invalid to split the configuration; if the <code>include</code> clause is used, no
 other keys can be specified in the <code>tusk.yml</code>, and the full task must be
 defined in the included file.</p>
-<h3 id="environment-files">Environment Files</h3>
+<h2 id="environment-files">Environment Files</h2>
 <p>Environment variables are also automatically read from a <code>.env</code> file in the
 same directory as <code>tusk.yml</code> before task execution. This file is optional by
 default, and supports typical "dotenv" extended syntax such as quotation marks,
@@ -707,7 +718,7 @@ auto-loading an optional <code>.env</code>. To re-enable it, specify it explicit
 <p>To disable loading environment files completely, pass <code>[]</code> or <code>/dev/null</code>:</p>
 <pre><code class="language-yaml">env-file: []
 </code></pre>
-<h3 id="interpreter">Interpreter</h3>
+<h2 id="interpreter">Interpreter</h2>
 <p>By default, any command run will default to using <code>sh -c</code> as its interpreter.
 This can optionally be configured using the <code>interpreter</code> clause.</p>
 <p>The interpreter is specified as an executable, which can either be an absolute
@@ -723,7 +734,7 @@ tasks:
 argument. The above example is effectively equivalent to the following:</p>
 <pre><code class="language-sh">node -e 'console.log(&quot;Hello!&quot;)'
 </code></pre>
-<h3 id="cli-metadata">CLI Metadata</h3>
+<h2 id="cli-metadata">CLI Metadata</h2>
 <p>It is also possible to create a custom CLI tool for use outside of a project's
 directory by using shell aliases:</p>
 <pre><code class="language-bash">alias mycli=&quot;tusk -f /path/to/tusk.yml&quot;
@@ -746,7 +757,7 @@ Usage:
 Tasks:
   ...
 </code></pre>
-<h3 id="interpolation">Interpolation</h3>
+<h2 id="interpolation">Interpolation</h2>
 <p>The interpolation syntax for a variable <code>foo</code> is <code>${foo}</code>, meaning any instances
 of <code>${foo}</code> in the configuration file will be replaced with the value of <code>foo</code>
 during execution.</p>
