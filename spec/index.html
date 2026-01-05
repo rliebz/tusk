@@ -659,14 +659,19 @@ specify a <code>source</code> and <code>target</code>:</p>
 <p>The <code>source</code> and <code>target</code> clauses are each specified as one or more filepath
 patterns relative to the config file using <a href="https://github.com/bmatcuk/doublestar?tab=readme-ov-file#patterns">glob pattern syntax</a>.
 Both <code>source</code> and <code>target</code> must be specified together.</p>
+<p>Tasked are cached on a per-task, per-project basis by matching checksums across
+sources and targets.</p>
 <p>All specified sources must exist. For each individual glob entry, at least one
-file must match the pattern.</p>
-<p>If all target patterns exist and have newer timestamps than the newest source
-pattern, the task will be skipped. Otherwise, the task will execute as normal.</p>
-<p>With directories, in most cases you'll want to use a pattern to specify the
+file must match the pattern. If all targets exist and their contents are
+consistent with the most recent successful run of the task, the task will be
+skipped. If there is a discrepancy, or any of the targets do not exist, the
+task will execute as normal. The task run history can be managed with the
+<code>--clean-cache</code>, <code>--clean-project-cache</code>, and <code>--clean-task-cache</code> flags.</p>
+<p>With directories, in most cases it is best to use a pattern to specify the
 files in the directory for tracking changes rather than the directory itself.</p>
-<p>The task run history can be managed with the <code>--clean-cache</code>,
-<code>--clean-project-cache</code>, and <code>--clean-task-cache</code> flags.</p>
+<p>If the task definition inside the <code>tusk.yml</code> changes regularly, you may specify
+<code>tusk.yml</code> as one of the sources to force the cache to be busted whenever the
+task definition changes.</p>
 <h3 id="include">Include</h3>
 <p>In some cases it may be desirable to split the task definition into a separate
 file. The <code>include</code> clause serves this purpose. At the top-level of a task, a
