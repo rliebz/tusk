@@ -690,17 +690,22 @@ Both `source` and `target` must be specified together.
 
 [glob]: https://github.com/bmatcuk/doublestar?tab=readme-ov-file#patterns
 
+Tasked are cached on a per-task, per-project basis by matching checksums across
+sources and targets.
+
 All specified sources must exist. For each individual glob entry, at least one
-file must match the pattern.
+file must match the pattern. If all targets exist and their contents are
+consistent with the most recent successful run of the task, the task will be
+skipped. If there is a discrepancy, or any of the targets do not exist, the
+task will execute as normal. The task run history can be managed with the
+`--clean-cache`, `--clean-project-cache`, and `--clean-task-cache` flags.
 
-If all target patterns exist and have newer timestamps than the newest source
-pattern, the task will be skipped. Otherwise, the task will execute as normal.
-
-With directories, in most cases you'll want to use a pattern to specify the
+With directories, in most cases it is best to use a pattern to specify the
 files in the directory for tracking changes rather than the directory itself.
 
-The task run history can be managed with the `--clean-cache`,
-`--clean-project-cache`, and `--clean-task-cache` flags.
+If the task definition inside the `tusk.yml` changes regularly, you may specify
+`tusk.yml` as one of the sources to force the cache to be busted whenever the
+task definition changes.
 
 ### Include
 

@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 0.8.1 (2026-01-05)
+
+### Fixed
+
+- Updated documentation to reflect the current implementation of `source` and
+  `target` task caching behavior.
+
 ## 0.8.0 (2026-01-05)
 
 ### Added

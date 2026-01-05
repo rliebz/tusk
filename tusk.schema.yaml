@@ -406,18 +406,16 @@ $defs:
         description: >
           File patterns used as inputs for the task using glob syntax.
 
-          If all target patterns exist and have newer timestamps than the
-          newest source pattern, the task will be skipped. Otherwise, the task
-          will execute as normal.
+          Task execution will be skipped if the contents of the specified
+          targets match the most recent run with the specified sources.
         $ref: "#/$defs/stringOrArray"
       target:
         title: task target
         description: >
           File patterns used as outputs for the task using glob syntax.
 
-          If all target patterns exist and have newer timestamps than the
-          newest source pattern, the task will be skipped. Otherwise, the task
-          will execute as normal.
+          Task execution will be skipped if the contents of the specified
+          targets match the most recent run with the specified sources.
         $ref: "#/$defs/stringOrArray"
       usage:
         title: task usage
